@@ -1,0 +1,77 @@
+name: pik-free
+# Свободный голос Пика (v5_cis, MIT): мерка — нынешний голос iPhone (24.11.2026)
+on:
+  push:
+    branches: [golos-pik]
+    paths: ['pik-free-request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pik-free
+  cancel-in-progress: false
+jobs:
+  r1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: pik-free-cache-v1
+          restore-keys: svoy-free-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld
+      - run: python pik_free.py r1 ${{ matrix.part }} 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: R1-${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  final:
+    needs: [r1]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'R*'
+          merge-multiple: true
+          path: pack/
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          python pik_free.py final
+          ls -la pik
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name golos-pik
+          git config user.email golos-pik@users.noreply.github.com
+          git add pik/itog.md pik/pik_free.json
+          git commit -m "pik-free result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin golos-pik && git rebase -q FETCH_HEAD && git push origin HEAD:golos-pik && break; sleep 5; done
