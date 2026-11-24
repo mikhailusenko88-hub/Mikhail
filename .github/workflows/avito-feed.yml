@@ -6,6 +6,8 @@ name: Авито — фид из CRM
 # Тем же разом ставит цены и наличие из CRM в товарный фид Яндекс Товаров 0f7s1eez/yml.xml
 # (его собирает сайт, nashdekor-build/build.py) → https://nashdekor.ru/yml.xml (с 11.11.2026).
 # Если CRM не ответила, фид не собирается и на сайте остаётся прежний.
+# С 24.11.2026 тем же разом наличие из фида ставится на страницы товаров и разделов (stock_pages.py, ветка avito):
+# разметка schema.org availability и текст «В наличии / Под заказ» — чтобы Яндекс Товары видели на сайте то же, что в фиде.
 
 on:
   schedule:
@@ -62,13 +64,19 @@ jobs:
             python3 avito/yml_prices.py mebel/0f7s1eez/yml.xml | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Наличие из фида на страницах товаров и разделов
+        run: |
+          if [ -f mebel/0f7s1eez/yml.xml ] && [ -f avito/stock_pages.py ]; then
+            python3 avito/stock_pages.py mebel/0f7s1eez | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Опубликовать, если изменился
         run: |
           if ! cmp -s new_avito.xml mebel/0f7s1eez/avito.xml; then
             cp new_avito.xml mebel/0f7s1eez/avito.xml
           fi
           cd mebel
-          if git diff --quiet -- 0f7s1eez/avito.xml 0f7s1eez/yml.xml; then
+          if git diff --quiet -- 0f7s1eez/avito.xml 0f7s1eez/yml.xml 0f7s1eez/p 0f7s1eez/catalog; then
             echo "Фиды не изменились — публиковать нечего." | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
@@ -76,6 +84,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add 0f7s1eez/avito.xml
           [ -f 0f7s1eez/yml.xml ] && git add 0f7s1eez/yml.xml
+          git add 0f7s1eez/p 0f7s1eez/catalog
           git commit -q -m "Фиды Авито и Яндекс Товаров: цены и наличие из CRM ($(date -u +'%Y-%m-%d %H:%M') UTC)"
           for i in 1 2 3; do
             if git push -q origin HEAD:mebel; then
