@@ -1,0 +1,275 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 226.1,
+  "dur": 338.56,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 338.06,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 338,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 175.3
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 5.0,
+  "peak_db": -1.0,
+  "silences": []
+ },
+ "words_second_pass": 1,
+ "words": {
+  "pct": 95.8,
+  "lines": 89,
+  "by_hero": {
+   "Барсик": 93.1,
+   "Рон": 98.8,
+   "Топа": 95.5,
+   "Пик": 89.7,
+   "Филя": 99.0
+  },
+  "worst": [
+   {
+    "t": 99.533,
+    "name": "Барсик",
+    "text": "А мы пока попьём чаю.",
+    "ok": 2,
+    "n": 5,
+    "miss": [
+     "а",
+     "мы",
+     "пока"
+    ],
+    "heard": "она така попьем чаю"
+   },
+   {
+    "t": 245.603,
+    "name": "Пик",
+    "text": "Рон, она же мокрая!",
+    "ok": 2,
+    "n": 4,
+    "miss": [
+     "рон",
+     "мокрая"
+    ],
+    "heard": "хи хи хи хи рун она же мокрее зато мокрее",
+    "second": true
+   },
+   {
+    "t": 247.215,
+    "name": "Рон",
+    "text": "Зато мягкая.",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "мягкая"
+    ],
+    "heard": "зато мягкое хорошо"
+   },
+   {
+    "t": 262.993,
+    "name": "Пик",
+    "text": "В воду!",
+    "ok": 1,
+    "n": 2,
+    "miss": [
+     "в"
+    ],
+    "heard": "воду правильно"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 222.0,
+   "range_st": 5.8,
+   "hnr": 13.5,
+   "jitter": 2.1,
+   "shimmer": 8.8,
+   "F1": 494.0,
+   "F2": 2255.0,
+   "F3": 3347.0,
+   "bright": -13.9,
+   "air": -12.9,
+   "cog": 708.0,
+   "rate": 4.2,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 93.1
+  },
+  "Пик": {
+   "f0": 377.0,
+   "range_st": 7.4,
+   "hnr": 21.3,
+   "jitter": 0.9,
+   "shimmer": 4.8,
+   "F1": 470.0,
+   "F2": 1711.0,
+   "F3": 3642.0,
+   "bright": -20.9,
+   "air": -24.3,
+   "cog": 507.0,
+   "rate": 5.9,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 89.7
+  },
+  "Рон": {
+   "f0": 263.0,
+   "range_st": 9.5,
+   "hnr": 14.1,
+   "jitter": 2.3,
+   "shimmer": 7.3,
+   "F1": 448.0,
+   "F2": 1925.0,
+   "F3": 3578.0,
+   "bright": -14.9,
+   "air": -12.9,
+   "cog": 832.0,
+   "rate": 3.3,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.8
+  },
+  "Топа": {
+   "f0": 158.0,
+   "range_st": 5.9,
+   "hnr": 11.8,
+   "jitter": 2.6,
+   "shimmer": 10.7,
+   "F1": 438.0,
+   "F2": 2067.0,
+   "F3": 3370.0,
+   "bright": -15.9,
+   "air": -24.6,
+   "cog": 543.0,
+   "rate": 3.6,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 95.5
+  },
+  "Филя": {
+   "f0": 288.0,
+   "range_st": 6.2,
+   "hnr": 14.5,
+   "jitter": 2.0,
+   "shimmer": 8.3,
+   "F1": 505.0,
+   "F2": 2011.0,
+   "F3": 3146.0,
+   "bright": -14.0,
+   "air": -20.0,
+   "cog": 774.0,
+   "rate": 4.7,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.0
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 35,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 113,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2451,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 338.058,
+   "video": "video/Кот Барсик - 36. Куда ушёл снеговик!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "696f713",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 47.8,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 126,
+    "b": 4,
+    "w": 1,
+    "n": 8450,
+    "at": 8450,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 16,
+   "ttsFail": 0,
+   "voice": 85,
+   "voiceFail": 0,
+   "voiceSec": 50,
+   "ttsSec": 13,
+   "frames": 9077,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -23.6,
+   "lufs_out": -15.1,
+   "gain_db": 9.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 36,
+   "title": "Куда ушёл снеговик?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}
