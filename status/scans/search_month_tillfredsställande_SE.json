@@ -1,0 +1,83 @@
+{
+ "spec": "search-month:tillfredsställande @SE",
+ "url": "https://www.youtube.com/results?search_query=tillfredsst%C3%A4llande&sp=EgIIBA%3D%3D&gl=SE",
+ "status": 200,
+ "checked": "2026-11-24 18:54 UTC",
+ "header": "",
+ "items": [
+  {
+   "id": "YDMF2d-VSrE",
+   "kind": "short",
+   "title": "#Tillfredsställande bränslekraft är värt ansträngningen!",
+   "views": 555,
+   "views_txt": "555 просмотров",
+   "age": "1 ч назад",
+   "length": "1:25",
+   "channel": "Satisfactory News",
+   "handle": "@SatisfactoryNews",
+   "channel_id": "UCIRxLf-kVbDmkTG-JR9IPCA",
+   "snippet": "The shift from coal power to fuel power can seem scary, but the gains are so worth it!",
+   "published": "2026-11-24T17:00:36+00:00",
+   "channel_subs": 46700,
+   "age_h": 1.9038556247222223,
+   "per_day": 6996,
+   "tags": [
+    "#tillfredsställande"
+   ]
+  },
+  {
+   "id": "1SdQUDHpZ0k",
+   "kind": "video",
+   "title": "I Found a New Way To Play Satisfactory",
+   "views": 12396,
+   "views_txt": "12 396 просмотров",
+   "age": "1 дн. назад",
+   "length": "25:50",
+   "channel": "TheProGinge",
+   "handle": "@theproginge",
+   "channel_id": "UChNXOoTBhpBlZjs_eK9yVOQ",
+   "snippet": "I think I've found a new way to play Satisfactory. Tiny factories, little trains, and somehow just as many opportunities to get ...",
+   "published": "2026-11-22T19:00:09+00:00",
+   "channel_subs": 10200,
+   "age_h": 24,
+   "per_day": 12396,
+   "tags": []
+  },
+  {
+   "id": "ed3SOgMuMCw",
+   "kind": "video",
+   "title": "Den perfekta bränslegeneratorns ritning - Satisfactory",
+   "views": 141089,
+   "views_txt": "141 089 просмотров",
+   "age": "3 дн. назад",
+   "length": "20:17",
+   "channel": "ImKibitz",
+   "handle": "@ImKibitz",
+   "channel_id": "UCz9qw5nupdzCGwHwQiqs7qA",
+   "snippet": "The Perfect Fuel Generator Blueprint - Satisfactory Satisfactory 1.2 let's play gameplay today starting my Final Factory, the last ...",
+   "published": "2026-11-21T16:01:40+00:00",
+   "channel_subs": 648000,
+   "age_h": 72,
+   "per_day": 47029,
+   "tags": []
+  },
+  {
+   "id": "0oAc4kIju4U",
+   "kind": "video",
+   "title": "Mina föräldrar lämnade min 8-åriga son ute i stormen – sen hittade jag den hemliga mappen",
+   "views": 108,
+   "views_txt": "108 просмотров",
+   "age": "1 ч назад",
+   "length": "11:42",
+   "channel": "Jag Teg För Länge",
+   "handle": "@JagTegFörLänge",
+   "channel_id": "",
+   "snippet": "De sa att de skulle \"göra honom till en man.\" Istället lämnade de min åttaårige son ensam ute när ovädret drog in. Jag skrek inte ...",
+   "published": "2026-11-24T17:00:36+00:00",
+   "channel_subs": 47,
+   "age_h": 1.9038556247222223,
+   "per_day": 1361,
+   "tags": []
+  }
+ ]
+}
