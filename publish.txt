@@ -1,2 +1,2 @@
-# 24.11 21:38 — 37: ролик 37f снять с таймера — на слоте теперь 6yBYiyfdcc4 (37g)
-cancel AvGNLuWuMBQ
+# 24.11 21:42 — Shorts 37 заново из 37g; потом cancel x4j-vG29c0s
+short 37g 37 2026-11-27T16:30 --again
