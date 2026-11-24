@@ -2,14 +2,14 @@
 /* Hook Truck — рисование, кнопки, звук. Логика — в sim.js. */
 (function () {
   const P = window.TPhys, H = window.HookSim;
-  const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '');
-  const T = RU ? {
+  let RU = /^(ru|uk|be|kk)/i.test(navigator.language || '');
+  const TRU = {
     title: 'HOOK TRUCK', sub: 'Барсик и грузовик на тросе', solo: '1 игрок', duo: '2 игрока',
-    touchSolo: 'Правый палец: газ и тормоз · Левый палец: держи КРЮК', touchDuo: 'Игрок 1 — газ справа · Игрок 2 — крюк слева',
+    touchSolo: 'Правый палец: газ и тормоз · Левый палец: держи КРЮК', touchDuo: 'Игрок 1 — газ справа · Игрок 2 — крюк и «тяни» слева',
     soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)'],
-    duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк'],
+    duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк, S — тянуть'],
     one: 'Один палец', hand: 'Газ и крюк', two: 'Вдвоём', touchAuto: 'Газ сам. Держи палец — крюк, отпусти — летишь', keyAuto: 'Газ сам. Пробел или мышь: держи — крюк, отпусти — летишь',
-    legendAuto: 'Пробел или мышь: держи — крюк, отпусти — летишь', hold: 'ДЕРЖИ', rel: 'ОТПУСТИ!', go: 'Нажми — поехали!', keyHint: 'мышь или Пробел', gasW: 'ГАЗ', space: 'Пробел', series: 'Серия', opens: 'Откроется за', boing: 'Батут!',
+    legendAuto: 'Пробел или мышь: держи — крюк, отпусти — летишь', hold: 'ДЕРЖИ', rel: 'ОТПУСТИ!', go: 'Нажми — поехали!', keyHint: 'мышь или Пробел', gasW: 'ГАЗ', space: 'Пробел', x2: '×2', noad: 'Реклама сейчас недоступна', series: 'Серия', opens: 'Откроется за', boing: 'Батут!',
     phone: 'На телефоне: справа газ и тормоз, слева крюк (вся левая половина экрана)',
     legend: '→ газ   ← тормоз   ·   Пробел / W — крюк', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
@@ -17,13 +17,13 @@
     pump: 'Жми ГАЗ — раскачайся!', levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
     garage: 'Гараж', tabs: ['Грузовик', 'Колёса', 'Цвет', 'Прокачка'], buy: 'Купить', take: 'Забрать', chosen: 'Выбрано', need: 'Не хватает', needStars: 'Нужно', have: 'у тебя',
     eng: 'Мотор', engD: 'Быстрее разгон', winch: 'Лебёдка', winchD: 'Тянет быстрее', max: 'МАКС', total: 'всего', test: 'проба: +500',
-  } : {
+  }, TEN = {
     title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
-    touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook on the left',
+    touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook and pull on the left',
     soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook'],
-    duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook'],
+    duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook, S — pull'],
     one: 'One finger', hand: 'Gas & hook', two: '2 players', touchAuto: 'Auto gas. Hold to hook, let go to fly', keyAuto: 'Auto gas. Space or mouse: hold to hook, let go to fly',
-    legendAuto: 'Space or mouse: hold to hook, let go to fly', hold: 'HOLD', rel: 'LET GO!', go: 'Tap to go!', keyHint: 'mouse or Space', gasW: 'GAS', space: 'Space', series: 'World', opens: 'Opens at', boing: 'Boing!',
+    legendAuto: 'Space or mouse: hold to hook, let go to fly', hold: 'HOLD', rel: 'LET GO!', go: 'Tap to go!', keyHint: 'mouse or Space', gasW: 'GAS', space: 'Space', x2: '×2', noad: 'No ad available right now', series: 'World', opens: 'Opens at', boing: 'Boing!',
     phone: 'On phones: gas and brake on the right, hook on the left (whole left half)',
     legend: '→ gas   ← brake   ·   Space / W — hook', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
@@ -32,6 +32,7 @@
     garage: 'Garage', tabs: ['Truck', 'Wheels', 'Color', 'Upgrades'], buy: 'Buy', take: 'Unlock', chosen: 'Selected', need: 'Need', needStars: 'Need', have: 'you have',
     eng: 'Engine', engD: 'Faster start', winch: 'Winch', winchD: 'Pulls faster', max: 'MAX', total: 'total', test: 'test: +500',
   };
+  let T = RU ? TRU : TEN;
 
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
   // объёмный вид (r3d.js): если WebGL нет или в адресе ?flat — остаётся плоский
@@ -45,6 +46,45 @@
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   // текст по словам в несколько строк, если не влезает в ширину
   function lines(text, maxW) { const out = []; let cur = ''; for (const w of text.split(' ')) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; } if (cur) out.push(cur); return out; }
+
+  // ---------- площадка (Playgama Bridge): язык, пауза, звук, реклама, облачное сохранение ----------
+  // Без моста (страница проверки) всё это выключено: рекламных кнопок нет, межстраничной нет.
+  const PG = { on: false, rew: false, inter: false, ad: false, paused: false, mutedP: false, ready: false, t0: performance.now(), lastInter: -1e9, lastRew: -1e9, pend: null, got: false };
+  const pgNow = () => performance.now() / 1000;
+  const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
+  function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
+  // межстраничная: только между уровнями, с 3-го пройденного, не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду
+  function pgCanInter() { const t = pgNow(); return PG.on && PG.inter && lvl >= 2 && t - PG.t0 / 1000 > 60 && t - PG.lastInter > 60 && t - PG.lastRew > 90 && !PG.pend; }
+  function pgInter(cb) {
+    if (!pgCanInter()) return cb();
+    PG.lastInter = pgNow(); PG.pend = { type: 'inter', cb, tm: setTimeout(() => pgDone(false), 45000) };
+    try { window.bridge.advertisement.showInterstitial('level_end'); } catch (e) { pgDone(false); }
+  }
+  function pgRewarded(place, cb) {
+    if (!PG.on || !PG.rew || PG.pend) return cb(false);
+    PG.got = false; PG.pend = { type: 'rew', cb, tm: setTimeout(() => pgDone(PG.got), 90000) };
+    try { window.bridge.advertisement.showRewarded(place); } catch (e) { pgDone(false); }
+  }
+  if (window.bridge) {
+    Promise.race([window.bridge.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))]).then(() => {
+      const B = window.bridge, id = B.platform.id || '';
+      PG.on = id !== 'mock' && id !== '';
+      // язык: мост отдаёт язык площадки; на CrazyGames там код страны — язык берём из их SDK
+      try {
+        let lg = String(B.platform.language || '').toLowerCase();
+        if (id === 'crazy_games') { const si = (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.user && window.CrazyGames.SDK.user.systemInfo) || {}; lg = String(si.locale || 'en').toLowerCase(); }
+        if (lg) setLang(/^(ru|uk|be|kk)/.test(lg));
+      } catch (e) { /* */ }
+      try { PG.rew = !!B.advertisement.isRewardedSupported; PG.inter = !!B.advertisement.isInterstitialSupported; } catch (e) { /* */ }
+      if (window.GAME_ADS === false) { PG.rew = false; PG.inter = false; }
+      try { B.platform.on('pause_state_changed', (p) => { PG.paused = !!p; }); B.platform.on('audio_state_changed', (on) => { PG.mutedP = !on; }); PG.mutedP = B.platform.isAudioEnabled === false; } catch (e) { /* */ }
+      B.advertisement.on('interstitial_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'inter') return; if (st === 'opened') PG.ad = true; else if (st === 'closed' || st === 'failed') pgDone(true); });
+      B.advertisement.on('rewarded_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'rew') return; if (st === 'opened') PG.ad = true; else if (st === 'rewarded') PG.got = true; else if (st === 'closed' || st === 'failed') { PG.lastRew = pgNow(); pgDone(PG.got); } });
+      // облачное сохранение площадки: берём его, если оно свежее браузерного и игрок ещё не начал заезд
+      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } }).catch(() => {});
+    }).catch(() => { PG.on = false; });
+  }
+  addEventListener('contextmenu', (e) => e.preventDefault()); // долгое нажатие и правый клик не открывают меню браузера
 
   // ---------- звук (всё синтезом, без файлов) ----------
   let AC = null, master = null, eng = null, muted = false;
@@ -81,7 +121,8 @@
   }
 
   // ---------- состояние ----------
-  const LANG = RU ? 1 : 0, NL = H.levels.length;
+  let LANG = RU ? 1 : 0; const NL = H.levels.length;
+  function setLang(ru) { RU = !!ru; T = RU ? TRU : TEN; LANG = RU ? 1 : 0; }
   // гараж: монеты дают за финиш и звёзды; на них — колёса, цвета, грузовик и прокачка. Звёзды не тратятся: за них открывается джип
   // три последних — дорогие, с блеском: хром, золото и «радуга» (переливается на ходу)
   const PAINT = [['#ff5a36', '#c63b1f'], ['#2f7df6', '#1c55b8'], ['#3fbf5a', '#2a8a3f'], ['#ffc928', '#d99a00'], ['#ff6fb1', '#d1437f'], ['#3a4047', '#22272c'], ['#bcc9d0', '#8496a0', 'chrome'], ['#f5b400', '#b97c00', 'gold'], ['#b36bff', '#7a3fd0', 'rainbow']];
@@ -92,13 +133,20 @@
   };
   const TABS = ['truck', 'wheels', 'color', 'up'], OWN = { truck: 'own', wheels: 'ownW', color: 'ownC' }, UPC = [100, 150, 220, 300, 400];
   let save = { stars: [], best: [], duo: false, coins: 0, own: [0], ownW: [0], ownC: [0], truck: 0, wheels: 0, color: 0, up: { eng: 0, winch: 0 } };
-  try {
-    const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null');
-    if (q && Array.isArray(q.stars)) { const old = q.coins === undefined; save = Object.assign(save, q); if (old) save.coins = save.stars.reduce((a, n) => a + (n ? 20 + 40 * n : 0), 0); } // прошлые звёзды — в монеты
-  } catch (e) { /* без сохранения */ }
-  save.up = Object.assign({ eng: 0, winch: 0 }, save.up); save.coins = Math.max(0, save.coins | 0);
-  for (const k in OWN) { if (!Array.isArray(save[OWN[k]]) || !save[OWN[k]].includes(0)) save[OWN[k]] = [0]; if (!save[OWN[k]].includes(save[k]) || !SHOP[k][save[k]]) save[k] = 0; }
-  const store = () => { try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* без сохранения */ } };
+  const SAVE0 = JSON.stringify(save);
+  function adopt(q) { // принять сохранение (из браузера или из облака площадки), поправив старые и битые поля
+    const s2 = JSON.parse(SAVE0);
+    if (q && Array.isArray(q.stars)) { const old = q.coins === undefined; Object.assign(s2, q); if (old) s2.coins = s2.stars.reduce((a, n) => a + (n ? 20 + 40 * n : 0), 0); } // прошлые звёзды — в монеты
+    s2.up = Object.assign({ eng: 0, winch: 0 }, s2.up); s2.coins = Math.max(0, s2.coins | 0);
+    for (const k in OWN) { if (!Array.isArray(s2[OWN[k]]) || !s2[OWN[k]].includes(0)) s2[OWN[k]] = [0]; if (!s2[OWN[k]].includes(s2[k]) || !SHOP[k][s2[k]]) s2[k] = 0; }
+    save = s2;
+  }
+  try { adopt(JSON.parse(localStorage.getItem('hooktruck_v1') || 'null')); } catch (e) { adopt(null); }
+  const store = () => {
+    save.ts = Date.now(); const js = JSON.stringify(save);
+    try { localStorage.setItem('hooktruck_v1', js); } catch (e) { /* без сохранения */ }
+    if (PG.on) { try { window.bridge.storage.set('hooktruck_v1', js).catch(() => {}); } catch (e) { /* */ } } // облако площадки (YouTube и др.)
+  };
   const starsTotal = () => save.stars.reduce((a, n) => a + (n || 0), 0);
   const curLook = () => ({ truck: save.truck, wheels: save.wheels, color: save.color });
   function applyLook(l) { TR.main = PAINT[l.color][0]; TR.dark = PAINT[l.color][1]; if (use3d) R3.setLook({ truck: l.truck, wheels: l.wheels, paint: PAINT[l.color] }); }
@@ -116,7 +164,7 @@
   ser = H.levels[firstOpen()].ser;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
-  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; } else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
+  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win' && !PG.pend) pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; ptrs.clear(); });
 
@@ -130,7 +178,7 @@
       { id: 'gas', x: W - gw - m, y: y - b * 0.15, w: gw, h: b * 1.15 },
       { id: 'brake', x: W - gw - m - b - m * 0.6, y: y + b * 0.05, w: b * 0.95, h: b * 0.95 },
       { id: 'hook', x: m, y: y - b * 0.35, w: b * 1.35, h: b * 1.35 },
-    ]).concat([
+    ]).concat(duo ? [{ id: 'pull', x: m + b * 0.25, y: y - b * 0.35 - b * 0.75 - m * 0.6, w: b * 0.85, h: b * 0.75 }] : []).concat([ // вдвоём: «тяни» над крюком — второй игрок сам тянет лебёдку
       { id: 'restart', x: W - 58, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'menu', x: W - 112, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'mute', x: W - 166, y: 12, w: 46, h: 46, ui: 1 },
@@ -141,9 +189,10 @@
   cv.addEventListener('pointerdown', (e) => {
     audio(); try { cv.setPointerCapture(e.pointerId); } catch (er) { /* синтетические касания */ }
     const x = e.clientX, y = e.clientY;
+    if (PG.pend) return; // идёт реклама
     if (mode !== 'play') { menuClick(x, y); return; }
     const b = hit(x, y);
-    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; } else if (b.id === 'mute') muted = !muted; return; }
+    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; pgMsg('gameplay_stopped'); } else if (b.id === 'mute') muted = !muted; return; }
     ptrs.set(e.pointerId, { x, y, btn: b ? b.id : isAuto() || (e.pointerType !== 'mouse' && x < W / 2) ? 'hook' : null });
   });
   const up = (e) => ptrs.delete(e.pointerId);
@@ -155,17 +204,17 @@
     const gas = !!(k.ArrowRight || k.ArrowUp) || held('gas');
     const brake = !!(k.ArrowLeft || k.ArrowDown) || held('brake');
     const hook = !!(k.Space || k.KeyW || k.ShiftLeft || (isAuto() && k.ArrowUp)) || held('hook');
-    return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: false };
+    return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: duo && (!!k.KeyS || held('pull')) };
   }
 
-  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
     // монеты: 20 за финиш, по 10 за каждую звезду заезда и по 30 за каждую звезду, взятую на этом уровне впервые
     const fresh = Math.max(0, n - (save.stars[lvl] || 0)), earn = 20 + 10 * n + 30 * fresh;
     res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt), earn };
-    save.coins += earn; (save.tut = save.tut || [])[lvl] = 1;
+    save.coins += earn; (save.tut = save.tut || [])[lvl] = 1; pgMsg('level_completed', { level: lvl + 1 }); pgMsg('gameplay_stopped');
     save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
   }
 
@@ -179,7 +228,8 @@
     else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
     else if (b.id === 'play') startGame(duo, firstOpen());
     else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); tone(700, 0.05, 'triangle', 0.08); }
-    else if (b.id === 'again') restart(); else if (b.id === 'next') { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; } else if (b.id === 'menu') mode = 'menu';
+    else if (b.id === 'x2') pgRewarded('double_coins', (ok) => { if (ok && res && !res.x2) { res.x2 = true; save.coins += res.earn; store(); sfx.star(); } else if (!ok && res) { res.noad = true; toasts.push({ t: 0, text: T.noad, col: '#ffcc80' }); } });
+    else if (b.id === 'again') pgInter(() => restart()); else if (b.id === 'next') pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (b.id === 'menu') { if (mode === 'win') pgInter(() => { mode = 'menu'; }); else mode = 'menu'; }
   }
 
   // ---------- обучение рукой ----------
@@ -515,6 +565,7 @@
     if (!isAuto() && (touchy || ptrs.size)) {
       button(B.brake, '◀', '#e53935', inp.brake); button(B.gas, '▶', '#43a047', inp.gas);
       button(B.hook, '⚓', S.target || S.rope ? '#ff9800' : '#8d6e63', inp.hook, T.hook);
+      if (B.pull) button(B.pull, '⇡', '#5c6bc0', inp.pull, T.pull);
       if (duo) {
         ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.font = '900 15px system-ui, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(T.p1, B.gas.x + B.gas.w, B.gas.y - 14);
         ctx.textAlign = 'left'; ctx.fillText(T.p2, B.hook.x, B.hook.y - 14);
@@ -765,7 +816,13 @@
     if (!tight) ctx.fillText(`${T.time}: ${res.t.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${res.tries}`, W / 2, y + 222);
     // монеты за заезд: счётчик набегает после звёзд
     const shown = Math.round(res.earn * clamp((realT - res.t0 - 0.9) * 1.6, 0, 1));
-    rich([{ t: '+' + shown, c: '#ef6c00' }, { coin: 1 }, { t: ' ' }, { t: `${T.total} ${save.coins - res.earn + shown}`, c: '#90a4ae', b: 800 }], W / 2, y + (tight ? 224 : 256), 21);
+    const ry = y + (tight ? 224 : 256), canX2 = PG.on && PG.rew && !res.x2 && !res.noad, gain = res.x2 ? res.earn * 2 : shown;
+    if (canX2) { // ролик за награду: по желанию игрока, со значком видео и точной наградой; без ролика монеты всё равно начислены
+      const bw2 = Math.min(190, w * 0.44), bx2 = x + w - 24 - bw2; menuBtns.push({ id: 'x2', x: bx2, y: ry - 22, w: bw2, h: 44 });
+      ctx.fillStyle = 'rgba(0,0,0,0.18)'; rr(bx2, ry - 19, bw2, 44, 14); ctx.fill(); ctx.fillStyle = '#7e57c2'; rr(bx2, ry - 22, bw2, 44, 14); ctx.fill();
+      rich([{ t: '🎬 ' + T.x2 }, { t: '+' + res.earn }, { coin: 1 }], bx2 + bw2 / 2, ry, 18);
+      rich([{ t: '+' + gain, c: '#ef6c00' }, { coin: 1 }], x + 24 + (w - 48 - bw2 - 12) / 2, ry, 22);
+    } else rich([{ t: '+' + gain, c: '#ef6c00' }, { coin: 1 }, { t: ' ' }, { t: `${T.total} ${save.coins - (res.x2 ? 0 : res.earn - shown)}`, c: '#90a4ae', b: 800 }], W / 2, ry, 21);
     const bh = 54, bw = (w - 48 - 20) / 3, b0 = x + 24, byy = y + h - bh - 22;
     bigBtn('menu', b0, byy, bw, bh, '☰', '#78909c');
     bigBtn('again', b0 + bw + 10, byy, bw, bh, '↻', '#fb8c00');
@@ -774,11 +831,13 @@
 
   // ---------- главный цикл ----------
   function frame(now) {
+    const hold = PG.ad || PG.paused || !!PG.pend || document.hidden; // реклама, пауза площадки, скрытая вкладка — мир стоит
+    if (master) master.gain.value = hold || PG.mutedP ? 0 : 0.7;
     const dt = Math.min(0.05, (now - last) / 1000); last = now; realT += dt;
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
-    if (mode === 'play' && !dbg.freeze) {
+    if (mode === 'play' && !dbg.freeze && !hold) {
       inp = input(); const auto = isAuto();
       if (auto && wait && inp.hook) wait = false; // «один палец»: уровень и каждая новая попытка начинаются с первого нажатия
       const want = auto && wait ? 0 : tutor(inp);
@@ -801,7 +860,7 @@
       }
       if (S.state === 'win' && S.wonT > 0.9) { finish(); mode = 'win'; }
     }
-    if (mode === 'garage') { acc += dt; let n = 0; while (acc >= P.DT && n < 10) { S.step(inp); acc -= P.DT; n++; } S.events.length = 0; } // в гараже грузовик просто стоит на подвеске
+    if (mode === 'garage' && !hold) { acc += dt; let n = 0; while (acc >= P.DT && n < 10) { S.step(inp); acc -= P.DT; n++; } S.events.length = 0; } // в гараже грузовик просто стоит на подвеске
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
@@ -821,7 +880,9 @@
     if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); else if (mode === 'garage') drawGarage(); }
     requestAnimationFrame(frame);
   }
-  window.__hook = { dbg, use3d, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, use3d, pg: PG, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   applyLook(curLook());
   requestAnimationFrame(frame);
+  // «игра готова»: после первых кадров, когда мост ответил (или сразу, если моста нет)
+  (function ready() { if (PG.ready) return; if (PG.on) { PG.ready = true; pgMsg('game_ready'); } else if (performance.now() - PG.t0 < 7000) setTimeout(ready, 200); })();
 })();

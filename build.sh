@@ -46,3 +46,19 @@ cp core/core.js g6-truck/physics.js g6-truck/game.js dist/ball-truck-poki/
 grep -v 'playgama-bridge.js' g6-truck/index.html | sed 's#<script src="core.js"></script>#<script>window.GAME_ADS=false;</script>\n<script src="core.js"></script>#' > dist/ball-truck-poki/index.html
 (cd dist/ball-truck-poki && rm -f ../../zips/ball-truck-poki.zip && zip -qr ../../zips/ball-truck-poki.zip .)
 echo ball-truck-poki: $(du -sh zips/ball-truck-poki.zip | cut -f1)
+
+# ---- Hook Truck (объёмная) для Playgama: мост, three.js внутри, без следов проверки ----
+hk_build() {
+  local D=dist/hook-truck-pg Z=zips/hook-truck-playgama.zip
+  rm -rf $D; mkdir -p $D zips
+  cp g8-hook3d/physics.js g8-hook3d/sim.js g8-hook3d/levels.js g8-hook3d/r3d.js g8-hook3d/view.js vendor/three.min.js $D/
+  sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > $D/playgama-bridge.js
+  grep -q 'Promise.allSettled(\[e\]).finally(' $D/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
+  echo '{}' > $D/playgama-bridge-config.json
+  grep -v 'name="robots"' g8-hook3d/index.html | sed 's#?v=[0-9]*##; s#<script src="physics.js"></script>#<script src="playgama-bridge.js"></script>\n<script src="physics.js"></script>#' > $D/index.html
+  grep -q 'playgama-bridge.js' $D/index.html || { echo 'index patch failed'; exit 1; }
+  ! grep -rqi 'claude\|anthropic\|HOOK_TEST = true' $D/ || { echo 'следы в сборке'; exit 1; }
+  (cd $D && rm -f ../../$Z && zip -qr ../../$Z .)
+  echo hook-truck-pg: $(du -sh $Z | cut -f1)
+}
+hk_build
