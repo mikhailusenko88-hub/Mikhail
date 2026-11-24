@@ -40,7 +40,6 @@ TOTAL = pos.shape[1]
 print('кадров', nf, 'шаров всего', TOTAL, 'в кубе к концу', int(cnt[min(len(cnt) - 1, F0 - 1 + nf - 1)]))
 fb = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 150)
 fs = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 40)
-HOLD = 12                                              # 0,4 с на последнем кадре
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', raw, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
 enc = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', '30', '-i', '-',
                         '-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p', '-colorspace', 'bt709', '-color_primaries', 'bt709',
@@ -52,6 +51,10 @@ TY = int(os.environ.get('TY', '170'))                  # верх счётчик
 SW = int(os.environ.get('SW', '0'))                    # обводка цифр, px (0 — без обводки)
 SCOL = tuple(json.loads(os.environ.get('SCOL', '[245,245,247]')))
 last = None
+used = 0
+LOOP = bool(os.environ.get('LOOP'))                    # петля «туда и обратно»: вперёд, пауза, те же кадры назад — конец стыкуется с началом
+HOLD = int(os.environ.get('HOLD', '8' if LOOP else '12'))
+mm = np.memmap(os.path.join(tmp, 'frames.dat'), np.uint8, 'w+', shape=(max(1, min(E, F0 + nf - 1) - max(S, F0) + 1), H * W * 3)) if LOOP else None
 used = 0
 for i in range(nf):
     buf = dec.stdout.read(W * H * 3)
@@ -71,13 +74,28 @@ for i in range(nf):
     lw = dr.textlength(LABEL, font=fs)
     dr.text((CX - lw / 2, TY + 180), LABEL, font=fs, fill=COL, stroke_width=max(0, SW // 2), stroke_fill=SCOL)
     enc.stdin.write(im.tobytes())
+    if LOOP:
+        mm[used - 1] = np.frombuffer(im.tobytes(), np.uint8)
     last = im
 for _ in range(HOLD):
     enc.stdin.write(last.tobytes())
+back = 0
+if LOOP:                                               # обратный ход: кадры n-2 … 1 (без повторов на стыках)
+    for j in range(used - 2, 0, -1):
+        enc.stdin.write(mm[j].tobytes())
+        back += 1
 enc.stdin.close(); enc.wait(); dec.wait()
-dur = (used + HOLD) / 30
+dur = (used + HOLD + back) / 30
 wav = os.path.join(tmp, 'a.wav')
-subprocess.run(['python3', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sound3d.py'), posf, wav, str((max(S, F0) - 1) / 30), str(dur)], check=True)
+snd = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sound3d.py')
+if LOOP:                                               # звук — из той же траектории, пройденной вперёд, с паузой и назад
+    a, b = max(S, F0) - 1, max(S, F0) - 1 + used       # индексы кадров в pos
+    seq = np.concatenate([d['pos'][a:b], np.repeat(d['pos'][b - 1:b], HOLD, 0), d['pos'][a + 1:b - 1][::-1], d['pos'][a:a + 3]])
+    lp = os.path.join(tmp, 'pos_loop.npz')
+    np.savez_compressed(lp, **{k: (seq if k == 'pos' else d[k]) for k in d.files})
+    subprocess.run(['python3', snd, lp, wav, '0', str(dur)], check=True)
+else:
+    subprocess.run(['python3', snd, posf, wav, str((max(S, F0) - 1) / 30), str(dur)], check=True)
 subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', os.path.join(tmp, 'v.mp4'), '-i', wav, '-c:v', 'copy',
                 '-af', 'loudnorm=I=-15:TP=-1.5:LRA=11', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-shortest', OUT], check=True)
 print('готово', OUT, round(dur, 2), 'с')
