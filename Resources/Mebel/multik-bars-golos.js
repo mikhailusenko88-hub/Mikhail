@@ -56,6 +56,16 @@
     while (i < N - 1) { if (!L.test(T[i])) { i++; continue; } const a = i; while (i < N - 1 && L.test(T[i])) i++; const b = i; let lv = -1;
       for (let j = b - 1; j >= a; j--) if ('аеёиоуыэюя'.includes(T[j])) { lv = j; break; }
       if (lv > a && 'ая'.includes(T[lv]) && 'шжчщц'.includes(T[lv - 1]) && T[lv - 1] !== '+' && T.slice(a, lv).includes('+')) c.d[lv] = c.d[lv] * k; } };
+  /** qrise (паспорт героя, полутоны): в вопросе без вопросительного слова («А иней вкусный?», «Правда?») голос поднимается на последнем ударном слоге и опускается после —
+      как в живой речи. У голоса kseniya такие вопросы звучали утверждением (анализатор 23.11: «нет вопросительного подъёма»). Вопросы «кто/где/почему…» не трогаем — там голос и так верный. */
+  const QW = new Set('кто кого кому кем ком что чего чему чем чём где куда откуда когда почему зачем как какой какая какое какие какого каким чей чья чьё чьи сколько отчего'.split(' '));
+  G.qShape = st => c => { const T = c.toks, N = c.N, P = c.pitch, voiced = j => Math.abs(P[j]) > .001; let s0 = 1;
+    for (let i = 1; i < N - 1; i++) { if ('.!…'.includes(T[i])) { s0 = i + 1; continue; } if (T[i] !== '?') continue;
+      const words = (T.slice(s0, i).join('').replace(/\+/g, '').toLowerCase().match(/[а-яё]+/g) || []);
+      if (words.length && !words.some(w => QW.has(w)) && !words.includes('ли')) { let k = -1; for (let j = i - 1; j > s0; j--) if (T[j - 1] === '+' && VOW.includes(T[j])) { k = j; break; }
+        if (k > 0) { let a = k; while (a > s0 && T[a - 1] !== ' ' && !VOW.includes(T[a - 1])) a--;   // слог: согласные перед ударной гласной
+          for (let j = s0; j < i; j++) if (voiced(j)) { let v = p2st(P[j], c.coef); if (j >= a && j <= k) v += st; else if (j > k) v -= st * .35; P[j] = st2p(v, c.coef); } } }
+      s0 = i + 1; } };
   G.pauseShape = (sec, F) => c => { const cap = Math.max(4, Math.round(sec * (F || 1) / c.frame)), cap2 = Math.round(cap * 1.5);
     for (let i = 1; i < c.N - 3; i++) { const t = c.toks[i]; if (',;:—–-'.includes(t)) { if (c.d[i] > cap) c.d[i] = cap; } else if ('.!?…'.includes(t)) { if (c.d[i] > cap2) c.d[i] = cap2; } } };
 
@@ -246,7 +256,7 @@
     const act = b.actx || (b.emo && b.act !== false && G.ACT[b.emo]) || null, K = b.k == null ? 1 : b.k, mk = x => 1 + ((x == null ? 1 : x) - 1) * K;   // act — игра эмоции (БАРС-актёр); без неё — прежние G.EMO
     const fx = (act && act.fx) || null, e = act ? {} : ((b.emo && G.EMO[b.emo]) || {}), F = (b.F || 1) * (fx ? mk(fx.F) : 1), P = (b.P || 1) * (e.P || 1), T = (b.T || 1) * (act ? mk(act.T) : (e.T || 1)), R = (b.R || 1) * (e.R || 1);
     const s = G.stretch(text); let marked = o.accent === false ? s.text : await MKVoice.marks(s.text, o.lex); marked = G.applyStretch(marked, s.cues); MKVoice.lastText = marked;
-    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (act) shapes.push(G.actShape(act, K)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F)); if (b.vend) shapes.push(G.vendShape(b.vend));
+    const shapes = []; if (R !== 1 || e.trem) shapes.push(G.liveShape(R, e.trem)); if (act) shapes.push(G.actShape(act, K)); if (s.cues.length) shapes.push(G.stretchShape(F)); if (b.pause) shapes.push(G.pauseShape(b.pause, F)); if (b.vend) shapes.push(G.vendShape(b.vend)); if (b.qrise) shapes.push(G.qShape(b.qrise));
     const y = await core(marked, o, { rate: T / F * (o.rate || 1), pitch: P / F * (o.pitch || 1), accent: false, post: !s.cues.length, typeFix: !!b.typeFix, shape: shapes.length ? c => shapes.forEach(f => f(c)) : null });
     return fx ? G.fx(G.resample(y, F), fx, K) : G.resample(y, F); }
   async function sound(name, o, b) { const F = b.F || 1, mk = G.SOUNDS[name]; if (!mk) return new Float32Array(0); const sc = G.score(mk());

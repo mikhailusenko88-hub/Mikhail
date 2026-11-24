@@ -836,7 +836,7 @@ function lineFor(ep, lib, who, text, step, vi) {
   const bp = who !== 'Р' && !synth && !hn ? MK.barsPassport(lib, who) : null;
   if (bp && MK.prepSpeech) { // БАРС-озвучка: герой с паспортом голоса — нейроголос в телефоне (тон и тембр раздельно, живость, эмоции); не вышло — его голос iPhone (fb)
     const marked = MK.prepSpeech(text, lex, 'acute', MK.rechOn()).text.replace(/([аеёиоуыэюяАЕЁИОУЫЭЮЯ])\u0301/g, '+$1');
-    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }, an = MK.barsAct(lib, step); if (bp.pause) bars.pause = bp.pause; if (bp.gap) bars.gap = bp.gap; if (bp.vend) bars.vend = bp.vend;
+    const bars = { P: bp.P || 1, F: bp.F || 1, T: bp.T || 1, R: bp.R || 1 }, an = MK.barsAct(lib, step); if (bp.pause) bars.pause = bp.pause; if (bp.gap) bars.gap = bp.gap; if (bp.vend) bars.vend = bp.vend; if (bp.qrise) bars.qrise = bp.qrise;
     if (an) bars.emo = an; else if (step && step.say && step.emotion && BARSGolos.EMO[step.emotion]) { bars.emo = step.emotion; bars.act = false; }   // игра эмоции (если включена) или прежний сдвиг тона и темпа
     return { key: hash32('bg1|' + (bp.model || '') + '|' + bp.speaker + '|' + JSON.stringify(bars) + '|' + marked).toString(36), who, text: say, voice: v, fx: actFx(an), synth: null, age, variant: 0, short: false, seed,
       srv: { text: marked, speaker: bp.speaker, model: bp.model || '', bars, local: true }, fb: { fx }, src: text }; }
