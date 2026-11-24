@@ -357,16 +357,25 @@ def final():
 
 
 def video(pick, outp, phrases):
+    """Ролик-проба: голоса подряд, на экране номер и подпись.
+    Одна сплошная звуковая дорожка и одно кодирование (24.11.2026: при склейке кусков «-shortest» + «-c copy» видео каждого
+    куска выходило длиннее звука, и в звуковой дорожке получались дыры по 1–2 с — на телефоне звук мог рваться)."""
     font = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     os.makedirs("tmp", exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono", "-t", "0.7",
                     "-c:a", "pcm_s16le", "tmp/sil.wav"], check=True)
-    parts = []
-    for i, (title, tag, sub) in enumerate(pick, 1):
+
+    def dur(p):
+        return float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p],
+                                    capture_output=True, text=True).stdout.strip())
+
+    wavs, marks, t0 = [], [], 0.0
+    for title, tag, sub in pick:
         fl = [f"pack/{tag}__{k:02d}.flac" for k, (_, lis) in enumerate(phrases) if lis]
         fl = [f for f in fl if os.path.exists(f)]
         if not fl:
             log("нет звука для", tag); continue
+        i = len(wavs) + 1
         seq = ["tmp/sil.wav"]
         for f in fl:
             seq += [f, "tmp/sil.wav"]
@@ -375,21 +384,34 @@ def video(pick, outp, phrases):
             cmd += ["-i", f]
         fc = "".join(f"[{j}:a]aresample=48000,aformat=channel_layouts=mono[x{j}];" for j in range(len(seq)))
         fc += "".join(f"[x{j}]" for j in range(len(seq))) + f"concat=n={len(seq)}:v=0:a=1,{svoy.SOFT}[o]"
-        subprocess.run(cmd + ["-filter_complex", fc, "-map", "[o]", "-ar", "48000", "-ac", "1", f"tmp/a{i}.wav"], check=True)
-        open(f"tmp/t{i}.txt", "w", encoding="utf-8").write(f"{i}. {title}")
+        subprocess.run(cmd + ["-filter_complex", fc, "-map", "[o]", "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le",
+                              f"tmp/a{i}.wav"], check=True)
+        d = dur(f"tmp/a{i}.wav")
+        head = f"{i}. {title}"
+        open(f"tmp/t{i}.txt", "w", encoding="utf-8").write(head)
         open(f"tmp/s{i}.txt", "w", encoding="utf-8").write(sub or " ")
-        vf = (f"drawtext=fontfile={font}:textfile=tmp/t{i}.txt:fontsize=44:fontcolor=white:x=(w-text_w)/2:y=h/2-80,"
-              f"drawtext=fontfile={font}:textfile=tmp/s{i}.txt:fontsize=30:fontcolor=0xbbbbbb:x=(w-text_w)/2:y=h/2+10")
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x1e2230:s=1080x1080:r=25",
-                        "-i", f"tmp/a{i}.wav", "-vf", vf, "-shortest", "-c:v", "libx264", "-pix_fmt", "yuv420p",
-                        "-tune", "stillimage", "-c:a", "aac", "-b:a", "160k", "-ar", "48000", f"tmp/v{i}.mp4"], check=True)
-        parts.append(f"tmp/v{i}.mp4")
-    if parts:
-        with open("tmp/all.txt", "w") as fh:
-            for p in parts:
-                fh.write(f"file '../{p}'\n")
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", "tmp/all.txt", "-c", "copy", outp], check=True)
-        log("ролик:", outp, os.path.getsize(outp))
+        size = lambda text, top: max(20, min(top, int(1000 / (0.66 * max(len(text), 1)))))     # чтобы строка влезала в 1080
+        marks.append((i, t0, t0 + d, size(head, 44), size(sub or " ", 30)))
+        wavs.append(f"tmp/a{i}.wav"); t0 += d
+    if not wavs:
+        return
+    cmd = ["ffmpeg", "-v", "error", "-y"]
+    for w in wavs:
+        cmd += ["-i", w]
+    fc = "".join(f"[{j}:a]" for j in range(len(wavs))) + f"concat=n={len(wavs)}:v=0:a=1[o]"
+    subprocess.run(cmd + ["-filter_complex", fc, "-map", "[o]", "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le", "tmp/all.wav"],
+                   check=True)
+    total = dur("tmp/all.wav")
+    vf = ",".join(
+        f"drawtext=fontfile={font}:textfile=tmp/t{i}.txt:fontsize={f1}:fontcolor=white:x=(w-text_w)/2:y=h/2-80:"
+        f"enable='between(t,{a:.3f},{b:.3f})',"
+        f"drawtext=fontfile={font}:textfile=tmp/s{i}.txt:fontsize={f2}:fontcolor=0xbbbbbb:x=(w-text_w)/2:y=h/2+10:"
+        f"enable='between(t,{a:.3f},{b:.3f})'" for i, a, b, f1, f2 in marks)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-t", f"{total:.3f}", "-i", "color=c=0x1e2230:s=1080x1080:r=25",
+                    "-i", "tmp/all.wav", "-vf", vf, "-t", f"{total:.3f}", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-tune", "stillimage", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "1",
+                    "-movflags", "+faststart", outp], check=True)
+    log("ролик:", outp, os.path.getsize(outp), f"{total:.1f} с")
 
 
 if __name__ == "__main__":
