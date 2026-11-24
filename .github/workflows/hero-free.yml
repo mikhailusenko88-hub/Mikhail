@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: hero-free
   cancel-in-progress: false
@@ -21,10 +22,15 @@ jobs:
         part: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
+      - name: Запрос
+        id: rq
+        run: echo "only=$(grep -o 'only=[a-z]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
+        if: steps.rq.outputs.only == '' || steps.rq.outputs.only == matrix.hero
         with:
           python-version: '3.11'
       - uses: actions/cache@v4
+        if: steps.rq.outputs.only == '' || steps.rq.outputs.only == matrix.hero
         with:
           path: |
             ~/.cache/pip
@@ -35,11 +41,13 @@ jobs:
           key: pik-free-cache-v2
           restore-keys: svoy-free-cache-v1
       - name: Install
+        if: steps.rq.outputs.only == '' || steps.rq.outputs.only == matrix.hero
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng unzip
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld
       - name: Мерка — реплики героев из сборок студии
+        if: steps.rq.outputs.only == '' || steps.rq.outputs.only == matrix.hero
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -50,6 +58,7 @@ jobs:
           done
           ls dubz/*/dub | head
       - run: python hero_free.py r1 ${{ matrix.hero }} ${{ matrix.part }} 5
+        if: steps.rq.outputs.only == '' || steps.rq.outputs.only == matrix.hero
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-artifact@v4
@@ -68,9 +77,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Запрос
+        id: rq
+        run: |
+          echo "prev=$(grep -o 'prev=[0-9]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          echo "only=$(grep -o 'only=[a-z]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+      - name: Второй герой — из прошлого запуска
+        if: steps.rq.outputs.prev != '' && steps.rq.outputs.only == 'ron'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'H-barsik-*'
+          merge-multiple: true
+          path: pack/
+          run-id: ${{ steps.rq.outputs.prev }}
+          github-token: ${{ github.token }}
       - uses: actions/download-artifact@v4
         with:
-          pattern: 'H-*'
+          pattern: 'H-${{ steps.rq.outputs.only }}*'
           merge-multiple: true
           path: pack/
       - name: Итог

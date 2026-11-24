@@ -72,7 +72,7 @@ def target(hero, save_ref):
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", l["path"], "-ar", "48000", "-ac", "1", f"pack/T__{hero}__{k:02d}.flac"], check=True)
         T.update(gop=float(np.mean(g)), utmos=float(np.mean(u)), match=float(np.mean(m)))
         json.dump({k: v for k, v in T.items()}, open(f"pack/target_{hero}.json", "w"))
-        json.dump([l["text"] for l in E], open(f"pack/phrases_{hero}.json", "w", encoding="utf-8"), ensure_ascii=False)
+        json.dump([l["text"].replace("\u0301", "").replace("\u0300", "") for l in E], open(f"pack/phrases_{hero}.json", "w", encoding="utf-8"), ensure_ascii=False)
     return T, E
 
 
@@ -108,7 +108,7 @@ def r1(hero, part, n):
     svoy_omo.ruacc(); svoy2.patch_ruaccent()
     T, E = target(hero, save_ref=(part == 0))
     log(hero, "мерка:", {k: round(T[k], 2) for k in ("f0", "cen", "range", "rate")}, "реплик", T["n"])
-    PH = [l["text"] for l in E]
+    PH = [l["text"].replace("\u0301", "").replace("\u0300", "") for l in E]      # знак ударения из сценария («Са́харом») ломал разметку
     marks = {t: svoy_free.mark_full(t) for t in PH}
     log("разметка:", marks[PH[0]], "|", marks[PH[1]])
     m = gen.silero_model("v5_cis_base")
