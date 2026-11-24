@@ -36,6 +36,14 @@ fs.mkdirSync(OUT, { recursive: true });
     await p.evaluate(() => { window.__hook.pg.t0 = -1e9; window.__hook.pg.lastInter = -1e9; window.__hook.pg.lastRew = -1e9; window.__hook.start(false, 2); }); await p.waitForTimeout(400); await win();
     await tap('next'); await p.waitForTimeout(300); s = await st(); ok(/inter:level_end/.test(s.ads) && s.mode === 'win' && s.pend, name + ': после 3-го уровня — межстраничная, игра ждёт');
     await p.waitForTimeout(1200); s = await st(); ok(s.mode === 'play' && s.lvl === 3, name + ': после рекламы — следующий уровень');
+    // старт уровня из меню: 1-й уровень — без рекламы; 4-й через минуту после прошлой — с межстраничной, потом уровень начинается
+    const hudMenu = async () => { const m = await p.evaluate(() => { const b = window.__hook.buttons.find((q) => q.id === 'menu'); return [b.x + b.w / 2, b.y + b.h / 2]; }); if (w < 900) await p.touchscreen.tap(m[0], m[1]); else await p.mouse.click(m[0], m[1]); await p.waitForTimeout(400); };
+    await hudMenu();
+    await p.evaluate(() => { window.__hook.pg.lastInter = -1e9; window.__pg.ads.length = 0; }); await tap('L0'); await p.waitForTimeout(300);
+    s = await st(); ok(s.mode === 'play' && s.lvl === 0 && !/inter/.test(s.ads), name + ': старт 1-го уровня из меню — без рекламы');
+    await hudMenu();
+    await tap('L3'); await p.waitForTimeout(300); s = await st(); ok(/inter:level_end/.test(s.ads) && s.mode === 'menu' && s.pend, name + ': старт 4-го уровня из меню — межстраничная, игра ждёт');
+    await p.waitForTimeout(1200); s = await st(); ok(s.mode === 'play' && s.lvl === 3, name + ': после рекламы уровень начался');
     // ролик не загрузился: награды нет, кнопка исчезает
     await p.evaluate(() => { window.__adMode = 'fail'; window.__hook.pg.lastRew = -1e9; window.__hook.start(false, 4); }); await p.waitForTimeout(400); await win();
     const c1 = (await st()).coins; await tap('x2'); await p.waitForTimeout(800); s = await st();

@@ -53,10 +53,11 @@
   const pgNow = () => performance.now() / 1000;
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
-  // межстраничная: только между уровнями, с 3-го пройденного, не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду
-  function pgCanInter() { const t = pgNow(); return PG.on && PG.inter && lvl >= 2 && t - PG.t0 / 1000 > 60 && t - PG.lastInter > 60 && t - PG.lastRew > 90 && !PG.pend; }
-  function pgInter(cb) {
-    if (!pgCanInter()) return cb();
+  // межстраничная: только в паузах между уровнями (после уровня или перед стартом уровня из меню), начиная с 3-го уровня,
+  // не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду; чаще не даст и сама площадка
+  function pgCanInter(li) { const t = pgNow(); return PG.on && PG.inter && li >= 2 && t - PG.t0 / 1000 > 60 && t - PG.lastInter > 60 && t - PG.lastRew > 90 && !PG.pend; }
+  function pgInter(cb, li = lvl) {
+    if (!pgCanInter(li)) return cb();
     PG.lastInter = pgNow(); PG.pend = { type: 'inter', cb, tm: setTimeout(() => pgDone(false), 45000) };
     try { window.bridge.advertisement.showInterstitial('level_end'); } catch (e) { pgDone(false); }
   }
@@ -225,8 +226,8 @@
     if (b.id.slice(0, 2) === 'g:') garClick(b.id);
     else if (b.id === 'garage') openGarage();
     else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); }
-    else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
-    else if (b.id === 'play') startGame(duo, firstOpen());
+    else if (b.id[0] === 'L') { const li = +b.id.slice(1); pgInter(() => startGame(duo, li), li); }
+    else if (b.id === 'play') { const li = firstOpen(); pgInter(() => startGame(duo, li), li); }
     else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); tone(700, 0.05, 'triangle', 0.08); }
     else if (b.id === 'x2') pgRewarded('double_coins', (ok) => { if (ok && res && !res.x2) { res.x2 = true; save.coins += res.earn; store(); sfx.star(); } else if (!ok && res) { res.noad = true; toasts.push({ t: 0, text: T.noad, col: '#ffcc80' }); } });
     else if (b.id === 'again') pgInter(() => restart()); else if (b.id === 'next') pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (b.id === 'menu') { if (mode === 'win') pgInter(() => { mode = 'menu'; }); else mode = 'menu'; }
