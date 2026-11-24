@@ -45,7 +45,7 @@ xs = np.arange(x0, x1 + hs, hs); ys = np.arange(y0, y1 + hs, hs); zs = np.arange
 X, Y, Z = np.meshgrid(xs, ys, zs, indexing='ij')
 Ds = C.sdf(np.stack([X, Y, Z], -1))
 np.savez_compressed(NAME + '_sdf.npz', d=Ds.astype(np.float16), o=np.array([x0, y0, z0]), h=hs,
-                    mouth=np.array([C.OPEN_C[0], C.OPEN_C[1], C.OPEN_R, rim[:, 2].min()]))
+                    mouth=np.array([C.OPEN_C[0], C.OPEN_C[1], C.OPEN_R, rim[:, 2].min()]), rimmax=float(rim[:, 2].max()))
 zr = rim[:, 2].min()
 vol = ((Ds < 0) & (Z < zr)).sum() * hs ** 3
 for r in (0.0075, 0.008, 0.009):

@@ -7,7 +7,9 @@ import os
 K = float(os.environ.get("BEAR_K", "0.84"))   # масштаб (вместимость)
 HEAD_C = np.array([0.0, -0.008, 0.268]) * K
 OPEN_C = HEAD_C[:2]
-OPEN_R = 0.049 * K
+OPEN_RX = float(os.environ.get("BEAR_ORX", "0.049")) * K   # отверстие — овал между ушами, вытянут вперёд-назад (ловит больше струи)
+OPEN_RY = float(os.environ.get("BEAR_ORY", "0.049")) * K
+OPEN_R = OPEN_RX
 OPEN_Z = HEAD_C[2]
 
 
@@ -30,4 +32,4 @@ def sdf(P):
 
 
 def in_open(c):
-    return (np.hypot(c[..., 0] - OPEN_C[0], c[..., 1] - OPEN_C[1]) < OPEN_R) & (c[..., 2] > OPEN_Z)
+    return ((((c[..., 0] - OPEN_C[0]) / OPEN_RX) ** 2 + ((c[..., 1] - OPEN_C[1]) / OPEN_RY) ** 2) < 1) & (c[..., 2] > OPEN_Z)

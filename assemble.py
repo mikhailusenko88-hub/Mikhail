@@ -25,7 +25,7 @@ if 'vessel' in d.files:                                # сосуд-зверь: 
     from scipy.ndimage import map_coordinates, median_filter
     vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vessels', str(d['vessel']) + '_sdf.npz'))
     D, O, HH = vs['d'].astype(np.float32), vs['o'], float(vs['h'])
-    rimz = float(vs['mouth'][3]) + float(d['lift'])
+    rimz = (float(vs['rimmax']) if 'rimmax' in vs.files else float(vs['mouth'][3])) + float(d['lift'])
     P = pos.reshape(-1, 3) - np.array([0, 0, float(d['lift'])])
     sd = map_coordinates(D, ((P - O) / HH).T, order=1, mode='nearest').reshape(pos.shape[:2])
     inside = (sd < 0) & (pos[..., 2] < rimz + 0.004)
