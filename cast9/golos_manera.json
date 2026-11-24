@@ -1,0 +1,52 @@
+{
+ "made": "2026-11-25",
+ "model": "v5_cis_base (MIT)",
+ "pitch": "low",
+ "rate": "medium",
+ "voices": {
+  "ru_manera1": {
+   "w": {
+    "dp": {
+     "ru_alfia": 1.0
+    },
+    "pp": {
+     "ru_oksana": 0.361,
+     "ru_zinaida": 0.165,
+     "ru_kermen": 0.474
+    },
+    "spe": {
+     "ru_kejilgan": 0.178,
+     "ru_nash2": 0.822
+    }
+   },
+   "J": 9.814,
+   "rhythm": 0.964,
+   "melody": 0.874,
+   "sim": 0.8285,
+   "match": 0.961,
+   "utmos": 3.749,
+   "gop": 0.7103
+  },
+  "ru_manera2": {
+   "w": {
+    "dp": {
+     "ru_nash3": 1.0
+    },
+    "pp": {
+     "ru_zinaida": 1.0
+    },
+    "spe": {
+     "ru_nash2": 0.82,
+     "ru_kejilgan": 0.18
+    }
+   },
+   "J": 9.804,
+   "rhythm": 0.965,
+   "melody": 0.875,
+   "sim": 0.8305,
+   "match": 0.944,
+   "utmos": 3.639,
+   "gop": 0.7153
+  }
+ }
+}
