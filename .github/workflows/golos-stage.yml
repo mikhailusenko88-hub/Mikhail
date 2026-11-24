@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -39,17 +39,18 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
           git clone -q --depth 1 --branch pochemu-albina --single-branch https://github.com/mikhailusenko88-hub/Mikhail pa
           cp stage/patch_server.py stage/albina.py stage/albina_fix.json pa/
+          cp stage/nash_voices.py stage/voices.json pa/ 2>/dev/null || true     # свои голоса стенда (25.11: ru_svoy1, ru_manera1/2)
           python -m venv /opt/multik-tts/venv
           timeout 900 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 torch --index-url https://download.pytorch.org/whl/cpu
           timeout 600 /opt/multik-tts/venv/bin/pip install -q --timeout 30 --retries 5 numpy ruaccent praat-parselmouth
           [ -s /opt/multik-tts/v5_cis_base.pt ] || curl -fsSL --retry 3 --connect-timeout 20 --max-time 900 -o /opt/multik-tts/v5_cis_base.pt https://models.silero.ai/models/tts/ru/v5_cis_base.pt
           curl -fsSL --retry 3 --connect-timeout 20 --max-time 120 -o /opt/multik-tts/server.py https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/mebel-3d/tools/multik/tts/server.py
           python pa/patch_server.py /opt/multik-tts/server.py
-          cp pa/albina_worker.py /opt/multik-tts/
-      - name: Озвучка (часть ${{ matrix.shard }} из 8)
+          cp pa/albina_worker.py pa/nash_voices.py pa/voices.json /opt/multik-tts/
+      - name: Озвучка (часть ${{ matrix.shard }} из 12)
         run: |
           BANK=$(grep '^bank:' stage_request.txt | cut -d: -f2 | tr -d ' '); BANK=${BANK:-stage_bank.json}
-          cd pa && ALBINA_NO_GH=1 python farm.py ../$BANK ../part --shard ${{ matrix.shard }}/8 --max-minutes 40
+          cd pa && ALBINA_NO_GH=1 python farm.py ../$BANK ../part --shard ${{ matrix.shard }}/12 --max-minutes 40
           ls ../part/v | wc -l
       - name: Звук в ветку golos-stage-voice
         run: |

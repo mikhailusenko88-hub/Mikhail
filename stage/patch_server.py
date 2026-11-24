@@ -28,6 +28,9 @@ BOT_Q_BASE = "low"
 # затем взлетает до BOT_Q_HIGH к самому концу, без спада. Делается в Praat (PSOLA), тембр не меняется.
 BOT_Q_MELODY = True
 BOT_Q_LOW, BOT_Q_HIGH, BOT_Q_PRE = -3.0, 6.5, 0.14
+# свои голоса (12.11.2026) живее Альбины: начало вопроса само поднимается на 5–7 полутонов, и подъём в конце теряется на его фоне.
+# Для них в вопросе без вопросительного слова всё, что выше BOT_Q_HEAD полутонов над серединой, сжимается вчетверо. Альбину не трогает.
+BOT_Q_HEAD = {"ru_nash1": 2.5, "ru_nash2": 2.5, "ru_nash3": 2.5}
 
 
 def _guess_stress(w):
@@ -149,6 +152,162 @@ def _bot_sent(m):
     return _assim(WORD.sub(lambda w: _old_word(w) if w.start() >= cut else _bot_word(w), s))
 
 
+# ---------- Омографы по правилам (25.11.2026, чат «Свой голос») ----------
+# ruaccent выбирает ударение омографа сам и в части слов ошибается (проверка 24.11: 43 из 60 без правил, 87 из 87 с правилами).
+# Правило ставит «+» по соседним словам ДО ruaccent — mark() своё «+» не трогает. Каждое слово, которое Михаил услышал
+# с неверным ударением, добавлять сюда.
+BOT_OMO = os.environ.get("BOT_OMO", "1") == "1"
+_GEN_PREP = set("из до у от с со без около возле для ни против вдоль кроме после мимо вокруг среди посреди напротив "
+                "внутри вне близ недалеко".split())
+_OMO_PUNCT = re.compile(r"[.!?…,;:—–]")
+_OMO_TOK = re.compile(r"[А-Яа-яЁё+]+(?:-[А-Яа-яЁё+]+)*|[^А-Яа-яЁё+]+")
+
+
+def _o_sg_gen(sg_gen, plural, extra=()):
+    """леса / слова / окна / берега: после предлога родительного падежа или прилагательного на -ого/-его — ед. ч.; иначе мн. ч."""
+    def f(prev, nxt, left):
+        return sg_gen if (prev in _GEN_PREP or prev == "нет" or prev in extra or prev.endswith(("ого", "его"))) else plural
+    return f
+
+
+def _o_voda(prev, nxt, left):
+    return 0 if (prev.endswith(("ые", "ие")) or nxt in ("текут", "текли", "омывают", "реки", "океана", "морей")) else 1
+
+
+def _o_ruki(prev, nxt, left):
+    return 1 if (re.search(r"(попроси|проси)\w*(\s+\S+){0,3}$", left) or prev in _GEN_PREP) else 0
+
+
+def _o_uzhe(prev, nxt, left):
+    if nxt in ("чем", "той", "того", "тех", "тот", "этой", "этого") or prev in ("гораздо", "намного", "чуть", "немного", "вдвое", "втрое", "ещё"):
+        return 0
+    return 1
+
+
+def _o_zasyp(prev, nxt, left):
+    return 1 if nxt in ("яму", "ров", "канаву", "яма", "песком", "землёй", "землей", "снегом", "зерно", "крупу", "сахар", "соль") else 2
+
+
+def _o_duhi(prev, nxt, left):
+    if prev in ("лесные", "злые", "добрые", "горные", "водные", "домашние", "все", "эти", "тёмные", "темные") or nxt in ("предков", "леса", "гор"):
+        return 0
+    if prev in ("новые", "любимые", "мои", "её", "ее", "французские", "дорогие", "купила", "купил", "флакон") or nxt in ("пахнут",):
+        return 1
+    return None
+
+
+def _o_muki(prev, nxt, left):
+    if prev in ("мешок", "мешка", "стакан", "стакана", "стаканов", "килограмм", "килограмма", "много", "немного", "без", "из",
+                "пшеничной", "ржаной", "кукурузной", "горсть", "ложка", "ложки"):
+        return 1
+    if prev in ("адские", "крестные", "творческие", "душевные") or nxt in ("совести", "ада", "творчества"):
+        return 0
+    return None
+
+
+_OMO_RULES = {
+    "леса": _o_sg_gen(0, 1, ("много", "мало", "немного", "нет", "край", "опушка", "опушке", "краю")),
+    "слова": _o_sg_gen(0, 1, ("значение", "смысл", "смысла", "значения", "одного", "этого", "нового")),
+    "окна": _o_sg_gen(1, 0, ("стекло", "рама", "раму", "подоконник")),
+    "берега": _o_sg_gen(0, 2, ("недалеко",)),
+    "воды": _o_voda, "руки": _o_ruki, "уже": _o_uzhe, "засыпать": _o_zasyp, "духи": _o_duhi, "муки": _o_muki,
+    "мою": lambda prev, nxt, left: 0 if prev == "я" else 1,
+    "ирис": lambda prev, nxt, left: 1 if prev in ("сладкий", "сладкие", "конфета", "конфеты", "молочный", "жевательный", "твёрдый", "твердый") else None,
+    "гвоздики": lambda prev, nxt, left: 0 if prev in ("маленькие", "мелкие", "железные", "медные", "забил", "забила", "забивать", "тонкие") else None,
+}
+
+
+def _omo_pre(text):
+    """«+» в омографах, для которых есть правило (номер ударной гласной по соседним словам). Остальное — как было."""
+    if not BOT_OMO:
+        return text
+    toks = _OMO_TOK.findall(str(text))
+    idx = [i for i, t in enumerate(toks) if t[0] == "+" or t[0].isalpha()]
+    low = {i: toks[i].replace("+", "").lower() for i in idx}
+    for n, i in enumerate(idx):
+        f = _OMO_RULES.get(low[i])
+        if f is None or "+" in toks[i]:
+            continue
+        prev = low[idx[n - 1]] if n > 0 and not _OMO_PUNCT.search("".join(toks[idx[n - 1] + 1:i])) else ""
+        gap = "".join(toks[i + 1:idx[n + 1]]) if n + 1 < len(idx) else "."
+        nxt = low[idx[n + 1]] if (not _OMO_PUNCT.search(gap) or (low[i] == "уже" and gap.strip() == ",")) else ""   # «уже, чем»
+        e = f(prev, nxt, " ".join(low[j] for j in idx[max(0, n - 4):n]))
+        if e is None:
+            continue
+        k, t2 = -1, ""
+        for c in toks[i]:
+            if c in VOW:
+                k += 1
+                if k == e:
+                    t2 += "+"
+            t2 += c
+        toks[i] = t2
+    return "".join(toks)
+
+
+# ---------- Стык: короткое слово перед ударным слогом (25.11.2026) ----------
+# Михаил 24.11: «„кот Барсик“ — „кот“ плохо почти все говорят». Короткое знаменательное слово прямо перед ударным слогом
+# следующего слова у всех голосов Silero длится 0,7–0,9 среднего слога (0,12–0,15 с) и слипается с соседом («котбарсик»).
+# Помогает отдельный кусок SSML с темпом slow (0,18–0,22 с, распознаватель слышит два слова); x-slow — перебор («коат»).
+# Местоимения и указательные слова не вытягиваем — получается нажим («ТЫ видел»).
+BOT_CLASH = os.environ.get("BOT_CLASH", "1") == "1"
+_PRON = set("я ты он мы вы им их мой твой наш ваш свой тот та те вот вон там тут так как где кто чей сам весь все всё вся "
+            "был есть да нет раз лишь ведь хоть чем чтоб пусть уж ну здесь".split())
+_CL_TOK = re.compile(r"<[^>]+>|[А-Яа-яЁё+]+(?:-[А-Яа-яЁё+]+)*|[^А-Яа-яЁё+<]+")
+
+
+def _nv(w):
+    return sum(c in VOW for c in w)
+
+
+def _cmono(t):
+    """Односложное знаменательное слово: в разметке бота у него стоит «+» (у служебных — нет)."""
+    return _nv(t) == 1 and "+" in t and "-" not in t
+
+
+def _clash(s):
+    """Размеченный текст -> [(кусок, медленно?)]. Медленный кусок — слово на стыке вместе с пробелом после него."""
+    toks = _CL_TOK.findall(s)
+    words = [i for i, t in enumerate(toks) if t[0] == "+" or t[0].isalpha()]
+    slow = set()
+    if BOT_CLASH:
+        for i, j in zip(words, words[1:]):
+            t, t2 = toks[i], toks[j]
+            if j != i + 2 or toks[i + 1] != " " or not _cmono(t) or t.replace("+", "").lower() in _PRON:
+                continue
+            k = t2.find("+")
+            if (k >= 0 and _nv(t2[:k]) == 0) or (_cmono(t2) and t2.replace("+", "").lower() not in _PRON):
+                slow.add(i)
+    out, cur, i = [], "", 0
+    while i < len(toks):
+        if i in slow:
+            if cur:
+                out.append((cur, False)); cur = ""
+            out.append((toks[i] + " ", True)); i += 2
+            continue
+        cur += toks[i]; i += 1
+    if cur:
+        out.append((cur, False))
+    return out
+
+
+def _sib(parts, rate, pitch):
+    """Куски -> SSML: каждый кусок со своим <prosody> рядом друг с другом (вложенные теги темпа модель читает ненадёжно)."""
+    plain = rate == "medium" and pitch == "medium"
+    out = []
+    for t, slow in parts:
+        if not t:
+            continue
+        t = _dash(t)
+        if slow:
+            out.append(f'<prosody rate="slow">{t}</prosody>' if plain else f'<prosody rate="slow" pitch="{pitch}">{t}</prosody>')
+        elif plain or not t.strip():
+            out.append(t)
+        else:
+            out.append(f'<prosody rate="{rate}" pitch="{pitch}">{t}</prosody>')
+    return "<speak>" + "".join(out) + "</speak>"
+
+
 def bot_marks(marked):
     return _SENT.sub(_bot_sent, marked)
 
@@ -175,16 +334,15 @@ def q_win(s0):
 def q_ssml(s0, rate="medium", pitch="medium"):
     """SSML для вопроса без вопросительного слова: последнее слово чуть медленнее."""
     ms = list(WORD.finditer(s0))
-    body = s0
-    if ms:
-        mm = ms[-1]
-        body = _dash(s0[:mm.start()]) + '<prosody rate="slow">' + mm.group(0) + "</prosody>" + s0[mm.end():]
-    if rate != "medium" or pitch != "medium":
-        body = f'<prosody rate="{rate}" pitch="{pitch}">{body}</prosody>'
-    return "<speak>" + body + "</speak>"
+    if not ms:
+        return _sib([(s0, False)], rate, pitch)
+    mm = ms[-1]
+    if rate == "medium" and pitch == "medium":      # как подобрано на слух 08.11: знак вопроса — за куском
+        return _sib(_clash(s0[:mm.start()]) + [(mm.group(0), True), (s0[mm.end():], False)], rate, pitch)
+    return _sib(_clash(s0[:mm.start()]) + [(mm.group(0) + s0[mm.end():], True)], rate, pitch)
 
 
-def q_melody(x, sr, win, low=None, high=None, pre=None):
+def q_melody(x, sr, win, low=None, high=None, pre=None, head=None):
     """Мелодия вопроса на готовом звуке (numpy float32): провал перед последним словом и взлёт до конца."""
     import numpy as np
     low = BOT_Q_LOW if low is None else low
@@ -216,6 +374,10 @@ def q_melody(x, sr, win, low=None, high=None, pre=None):
     for i in range(1, call(tier, "Get number of points") + 1):
         t = call(tier, "Get time from index", i)
         v = call(tier, "Get value at index", i)
+        if head is not None and t < a - pre:
+            cur = 12 * np.log2(max(v, 1.0) / base)
+            if cur > head:
+                v = base * 2 ** ((head + (cur - head) * 0.25) / 12)
         if t >= a - pre:
             if t < a:
                 cur = 12 * np.log2(max(v, 1.0) / base)
@@ -254,10 +416,12 @@ def bot_ssml(marked, rate="medium", pitch="medium"):
                 head = f'<prosody pitch="{BOT_Q_BASE}">' + head + "</prosody>"
             s0 = (head + " " if head else "") + f'<prosody pitch="{BOT_Q_PITCH}">' + s0[a_:b_] + "</prosody>" + s0[b_:]
         out.append(s0)
-    body = _dash(" ".join(out))
-    if rate != "medium" or pitch != "medium":
-        body = f'<prosody rate="{rate}" pitch="{pitch}">{body}</prosody>'
-    return "<speak>" + body + "</speak>"
+    if any("<prosody" in x for x in out):       # старый способ вопроса (BOT_Q_MELODY выключен) — собираем как раньше
+        body = _dash(" ".join(out))
+        if rate != "medium" or pitch != "medium":
+            body = f'<prosody rate="{rate}" pitch="{pitch}">{body}</prosody>'
+        return "<speak>" + body + "</speak>"
+    return _sib(_clash(" ".join(out)), rate, pitch)
 
 
 def synth_bot(text, speaker, rate, pitch):
@@ -286,7 +450,7 @@ def synth_bot(text, speaker, rate, pitch):
                 pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
                 buf = []
             if x is not None:
-                pieces.append(q_melody(tts(q_ssml(x, rate, pitch)), SR_SYN, q_win(x)))
+                pieces.append(q_melody(tts(q_ssml(x, rate, pitch)), SR_SYN, q_win(x), head=BOT_Q_HEAD.get(speaker)))
                 pieces.append(np.zeros(int(SR_SYN * .28), dtype="float32"))
         pieces[-1] = np.zeros(int(SR_SYN * .22), dtype="float32")
     x = np.concatenate(pieces[:-1]) if pieces else np.zeros(SR_SYN // 4, dtype="float32")
@@ -299,20 +463,31 @@ def synth_bot(text, speaker, rate, pitch):
 
 def marked_for(text, style=""):
     text = re.sub(r"\s+", " ", str(text or "")).strip()[:MAX_TEXT]
-    m = mark(text)
-    return bot_marks(m) if style == "bot" else m
+    if style == "bot":
+        return bot_marks(mark(_omo_pre(text)))
+    return mark(text)
 
 
 '''
 
 REPL = [
+    # свои голоса «ничьи» (12.11.2026): ru_nash1/2/3 — смесь мужских дикторов той же модели (nash_voices.py + voices.json рядом)
+    ('RATES = {"x-slow", "slow", "medium", "fast", "x-fast"}',
+     'SPEAKERS |= {"ru_nash1", "ru_nash2", "ru_nash3", "ru_svoy1", "ru_manera1", "ru_manera2"}\nRATES = {"x-slow", "slow", "medium", "fast", "x-fast"}'),
+    ('        m.to("cpu")\n',
+     '        m.to("cpu")\n'
+     '        try:\n'
+     '            import nash_voices\n'
+     '            nash_voices.apply(m, os.path.join(ROOT, "voices.json"))\n'
+     '        except Exception as e:\n'
+     '            print("свои голоса не подключились:", e, flush=True)\n'),
     ('def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium"):',
      'def make(text, speaker="ru_albina", soft=True, rate="medium", pitch="medium", style=""):'),
     ('    key = hashlib.sha1(f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}".encode()).hexdigest()',
      '    style = "bot" if style == "bot" else ""\n'
      '    key = hashlib.sha1((f"v1|{speaker}|{soft}|{rate}|{pitch}|{text}" + ("|bot4" if style else "")).encode()).hexdigest()'),
     ('        raw = synth(mark(text), speaker, rate, pitch)',
-     '        raw = synth_bot(bot_marks(mark(text)), speaker, rate, pitch) if style == "bot" else synth(mark(text), speaker, rate, pitch)'),
+     '        raw = synth_bot(bot_marks(mark(_omo_pre(text))), speaker, rate, pitch) if style == "bot" else synth(mark(text), speaker, rate, pitch)'),
     ('q.get("rate", "medium"), q.get("pitch", "medium"))',
      'q.get("rate", "medium"), q.get("pitch", "medium"), str(q.get("style", "")))'),
     ('        if u.path == "/tts":\n            return self.tts({k: v[0] for k, v in parse_qs(u.query).items()})',
