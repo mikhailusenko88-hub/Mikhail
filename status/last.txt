@@ -1,93 +1,93 @@
-ВЫЛОЖЕНО #60 2026-11-23 слот 3: Shorts https://youtube.com/shorts/s3iWur-00qU (public, без длинного), за 457 с
+ВЫЛОЖЕНО #61 2026-11-24 слот 1: Shorts https://youtube.com/shorts/TEIczLtjmMw (public, без длинного), за 437 с
 
 {
- "title": "Brazil vs UK vs Vietnam ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #47",
- "description": "Flagball Arena · Season 2, Race 47 of 67: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Belize ❤❤, Brazil ❤, Cambodia ❤❤, Czechia ❤, Djibouti ❤❤, Dominica ❤, Georgia ❤❤❤, Guinea-Bissau ❤❤, Jamaica ❤, Kenya ❤❤, Libya ❤❤, Marshall Islands ❤❤, Mauritius ❤, Mongolia ❤❤❤, Montenegro ❤, Nauru ❤❤, Netherlands ❤❤❤, Papua New Guinea ❤, Qatar ❤❤, Singapore ❤, Slovenia ❤, Ukraine ❤❤❤, United Kingdom ❤, Vietnam ❤❤❤.\n\nCountries still in the game before this race: 132 of 193.\nNext race: Race 48/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 60,
- "date": "2026-11-23",
- "slot": 3,
+ "title": "India vs Indonesia vs Mexico… Who Survives? 💔 8 of 24 Lose a Life | Marble Race #48",
+ "description": "Flagball Arena · Season 2, Race 48 of 67: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Austria ❤❤❤, Azerbaijan ❤❤, Bangladesh ❤, Cape Verde ❤❤, Egypt ❤❤, Equatorial Guinea ❤, Germany ❤❤, Greece ❤❤, Hungary ❤❤❤, India ❤, Indonesia ❤, Italy ❤❤, Kiribati ❤, Kuwait ❤❤, Malawi ❤❤, Mauritania ❤❤, Mexico ❤, Micronesia ❤, Nicaragua ❤, North Macedonia ❤, Norway ❤, Pakistan ❤❤❤, Senegal ❤, Trinidad and Tobago ❤.\n\nCountries still in the game before this race: 129 of 193.\nNext race: Race 49/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 61,
+ "date": "2026-11-24",
+ "slot": 1,
  "season": 2,
  "round": 1,
- "heat": 47,
+ "heat": 48,
  "heats": 67,
- "survive": 17,
+ "survive": 16,
  "final": false,
  "kind": "heat",
- "label": "RACE 47/67",
+ "label": "RACE 48/67",
  "n": 24,
  "lives_mode": true,
- "losers": 7,
+ "losers": 8,
  "mega": false,
  "codes": [
-  "mn",
-  "dj",
-  "mh",
-  "bz",
-  "nr",
-  "ly",
-  "ke",
-  "br",
-  "gw",
-  "kh",
-  "pg",
-  "dm",
-  "gb",
-  "sg",
-  "vn",
-  "qa",
-  "si",
-  "mu",
-  "ge",
-  "ua",
-  "jm",
-  "me",
-  "nl",
-  "cz"
+  "fm",
+  "ki",
+  "cv",
+  "tt",
+  "in",
+  "no",
+  "mw",
+  "it",
+  "ni",
+  "eg",
+  "sn",
+  "pk",
+  "kw",
+  "mr",
+  "gq",
+  "hu",
+  "bd",
+  "at",
+  "id",
+  "mk",
+  "de",
+  "az",
+  "gr",
+  "mx"
  ],
  "spans": [
   [
    7.800000000000001,
-   72.66666666666666,
-   76.26666666666665
+   70.96666666666667,
+   74.56666666666666
   ],
   [
-   79.86666666666665,
-   143.66666666666663,
-   147.26666666666662
+   78.16666666666666,
+   138.93333333333334,
+   142.53333333333333
   ],
   [
-   150.86666666666662,
-   218.99999999999994,
-   222.59999999999994
+   146.13333333333333,
+   206.73333333333332,
+   210.33333333333331
   ]
  ],
- "duration": 247.6,
+ "duration": 235.33333333333334,
  "heats_in_video": 1,
  "races": [
-  60
+  61
  ],
  "featured": [
-  "br",
-  "gb",
-  "vn"
+  "in",
+  "id",
+  "mx"
  ]
 }
 
 --- журнал ---
-22:30:31 режим publish, гонка #60, 2026-11-23 слот 3, событие workflow_dispatch
-22:30:31 по плану: S2 RACE 47/67
-22:30:31 канал: Flagball Arena
-22:30:31 в этом видео заездов: 1 (раунд 1, осталось в раунде 21)
-гонка #60 2026-11-23 слот 3: S2 RACE 47/67, 24→17, участники: MNG DJI MHL BLZ NRU LBY KEN BRA GNB KHM PNG DMA GBR SGP VNM QAT SVN MUS GEO UKR JAM MNE NLD CZE
-  этап 1: 24→22, блоков 11 ['pendulums', 'drum', 'twin_rings', 'trapdoors', 'zigzag', 'tunnels', 'stairs', 'pegs', 'comb', 'pushers', 'bumpers'], Q-финиш 62.3 c, кадров 1946
-  этап 2: 22→19, блоков 13 ['ring_gate', 'pegs', 'pendulums', 'tunnels', 'pushers', 'glass', 'rotor', 'split', 'stairs', 'trapdoors', 'comb', 'bumpers', 'sliders'], Q-финиш 61.2 c, кадров 1914
-  этап 3: 19→17, блоков 12 ['trapdoors', 'drum', 'ring_gate', 'twin_rings', 'bumpers', 'comb', 'pushers', 'glass', 'windmills', 'split', 'sliders', 'stairs'], Q-финиш 65.6 c, кадров 2044
-длительность ролика ≈ 4.1 мин
-готово: 7428 кадров за 434 с
-кадров 7428, 4.13 мин, рендер 436 с
-выжили: NLD NRU GNB DMA CZE UKR MUS GEO SGP QAT VNM MHL KHM BRA LBY GBR PNG
-22:37:47 заезд 1/1 готов: 131 МБ, 436 с
-22:37:48 видео готово: 131 МБ, 4.1 мин, 437 с с начала; название: Brazil vs UK vs Vietnam ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #47
-22:38:06 Shorts готов: 26 с — Brazil on its LAST life ❤️ Brazil vs UK vs Vietnam — Who Survives? #shorts
-22:38:06 длинное видео в этом слоте: нет (только Shorts)
-22:38:08 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+06:30:39 режим publish, гонка #61, 2026-11-24 слот 1, событие workflow_dispatch
+06:30:39 по плану: S2 RACE 48/67
+06:30:40 канал: Flagball Arena
+06:30:40 в этом видео заездов: 1 (раунд 1, осталось в раунде 20)
+гонка #61 2026-11-24 слот 1: S2 RACE 48/67, 24→16, участники: FSM KIR CPV TTO IND NOR MWI ITA NIC EGY SEN PAK KWT MRT GNQ HUN BGD AUT IDN MKD DEU AZE GRC MEX
+  этап 1: 24→21, блоков 12 ['drum', 'trapdoors', 'comb', 'windmills', 'sliders', 'tunnels', 'bumpers', 'rotor', 'zigzag', 'pegs', 'twin_rings', 'pushers'], Q-финиш 60.6 c, кадров 1895
+  этап 2: 21→19, блоков 12 ['pendulums', 'rotor', 'windmills', 'ring_gate', 'twin_rings', 'stairs', 'glass', 'trapdoors', 'sliders', 'split', 'comb', 'drum'], Q-финиш 58.2 c, кадров 1823
+  этап 3: 19→16, блоков 11 ['zigzag', 'pegs', 'tunnels', 'glass', 'bumpers', 'rotor', 'twin_rings', 'windmills', 'split', 'ring_gate', 'stairs'], Q-финиш 58.0 c, кадров 1818
+длительность ролика ≈ 3.9 мин
+готово: 7060 кадров за 414 с
+кадров 7060, 3.92 мин, рендер 416 с
+выжили: DEU EGY NIC FSM TTO KWT MWI GRC AUT MKD HUN CPV MEX GNQ AZE NOR
+06:37:36 заезд 1/1 готов: 126 МБ, 417 с
+06:37:37 видео готово: 126 МБ, 3.9 мин, 417 с с начала; название: India vs Indonesia vs Mexico… Who Survives? 💔 8 of 24 Lose a Life | Marble Race #48
+06:37:55 Shorts готов: 26 с — Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts
+06:37:55 длинное видео в этом слоте: нет (только Shorts)
+06:37:57 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
