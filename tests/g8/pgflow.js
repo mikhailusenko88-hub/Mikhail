@@ -52,6 +52,16 @@ fs.mkdirSync(OUT, { recursive: true });
     ok(!errs.length, name + ': ошибок нет ' + (errs.length ? JSON.stringify(errs.slice(0, 3)) : ''));
     await ctx.close();
   }
+  // восстановление из облака площадки: браузерного сохранения нет, в облаке — звёзды, монеты и режим «один палец»
+  {
+    const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: true, isMobile: true });
+    const cloud = JSON.stringify({ stars: [3, 2, 1], best: [], duo: false, ctl: 'auto', coins: 777, own: [0], ownW: [0, 1], ownC: [0, 1], truck: 0, wheels: 1, color: 1, up: { eng: 2, winch: 0 }, tut: [1, 1], ts: Date.now() });
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') + ';window.__pg.store.hooktruck_v1=' + JSON.stringify(cloud) + ';' }));
+    const p = await ctx.newPage(); await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500);
+    const r = await p.evaluate(() => ({ coins: window.__hook.save().coins, stars: window.__hook.save().stars.join(''), ctl: window.__hook.ctl, wheels: window.__hook.save().wheels }));
+    ok(r.coins === 777 && r.stars === '321' && r.ctl === 'auto' && r.wheels === 1, 'облако площадки: прогресс, монеты, колёса и режим управления восстановлены ' + JSON.stringify(r));
+    await ctx.close();
+  }
   // вдвоём: кнопка «тяни» есть и тянет лебёдку
   {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: true, isMobile: true });

@@ -81,7 +81,7 @@
       B.advertisement.on('interstitial_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'inter') return; if (st === 'opened') PG.ad = true; else if (st === 'closed' || st === 'failed') pgDone(true); });
       B.advertisement.on('rewarded_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'rew') return; if (st === 'opened') PG.ad = true; else if (st === 'rewarded') PG.got = true; else if (st === 'closed' || st === 'failed') { PG.lastRew = pgNow(); pgDone(PG.got); } });
       // облачное сохранение площадки: берём его, если оно свежее браузерного и игрок ещё не начал заезд
-      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } }).catch(() => {});
+      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); duo = !!save.duo; ctl = save.ctl === 'auto' ? 'auto' : 'manual'; ser = H.levels[firstOpen()].ser; applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } }).catch(() => {});
     }).catch(() => { PG.on = false; });
   }
   addEventListener('contextmenu', (e) => e.preventDefault()); // долгое нажатие и правый клик не открывают меню браузера
