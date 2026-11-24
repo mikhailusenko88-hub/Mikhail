@@ -1,15 +1,15 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-23 23:58 UTC
+Проверено: 2026-11-24 06:54 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 237 подписчиков · 149 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-23 18:43 · 1436 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
+- 2026-11-23 18:43 · 2103 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
 - 2026-11-22 17:31 · 1324 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
 - 2026-11-21 20:22 · 1202 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
-- 2026-11-20 18:12 · 2630 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
-- 2026-11-19 14:11 · 5856 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
+- 2026-11-20 18:12 · 2691 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
+- 2026-11-19 14:11 · 5857 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
 - 2026-11-18 19:19 · 2403 просм. · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
 - 2026-11-17 22:08 · 1271 просм. · Every bounce = +1 ball 🐻 Can they fill the bear? 🔊 #satisfying #physics #simulation · 5vVhZ-Aus_A
 - 2026-11-16 19:02 · 1676 просм. · Every bounce = +1 ball 🐸 Can they fill the frog? #satisfying #physics #simulation · 7h5ICq0Civ8
@@ -22,7 +22,7 @@
 - 2026-11-08 17:06 · 752 просм. · 1 bullet vs 5 objects — how far does it go? 😳 #shorts · viBQgmzXg88
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 1,4 тыс. просмотров · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
+- 2,1 тыс. просмотров · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
 - 1,3 тыс. просмотров · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
 - 1,2 тыс. просмотров · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
 - 2,6 тыс. просмотров · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
