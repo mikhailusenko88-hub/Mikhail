@@ -1,12 +1,2 @@
-# 23.11 10:08 МСК кадры топа ниш и наших новых, Білесің бе? 10:00
-@bilesin_be_kz
-info:ztoN4NZrHiQ
-info:O4jSBki3mdM
-info:0HJ7Q6HyM6A
-info:6YtZCUODT_4
-info:pauSfyP8_EI
-info:QGUnVac9rbs
-info:ko1NB7Hx32Q
-info:jAv94j7s7Ws
-info:QxAl5X8AERw
-info:2MuAY3ktACg
+# 24.11 09:54 МСК all — обход 24.11
+all
