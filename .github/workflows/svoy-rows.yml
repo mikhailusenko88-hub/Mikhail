@@ -1,0 +1,49 @@
+name: svoy-rows
+# Строки отпечатков свободных смесей в формате фермы бота (cast9/voices_svoy.json)
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['svoy-rows-request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: svoy-rows
+  cancel-in-progress: false
+jobs:
+  proba:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: svoy-free-cache-v1
+          restore-keys: svoy2-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng fonts-dejavu-core
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib edge-tts
+      - run: python svoy_rows.py
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          cp cast9/voices_svoy.json /tmp/vs.json
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && git checkout -q -f -B res FETCH_HEAD && cp /tmp/vs.json cast9/voices_svoy.json
+            git add cast9/voices_svoy.json; git commit -q -m "svoy-rows result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
