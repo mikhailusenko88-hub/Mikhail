@@ -54,3 +54,4 @@
 | 2026-11-23 | 1 | mass_cars №4 | Damas | https://youtube.com/shorts/sx2-fIMblqU | public |
 | 2026-11-23 | 2 | mass_cities №2 | Termiz | https://youtube.com/shorts/H4IDj7FhTkE | public |
 | 2026-11-23 | 3 | mass_cars №5 | Nexia | https://youtube.com/shorts/aTpbo_zDb3g | public |
+| 2026-11-24 | 1 | mass_cars №6 | Chery Tiggo | https://youtube.com/shorts/G3WD46oGL0I | public |

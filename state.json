@@ -1556,6 +1556,16 @@
    "link": "https://youtube.com/shorts/aTpbo_zDb3g",
    "title": "1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-24",
+   "slot": 1,
+   "league": "mass_cars",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/G3WD46oGL0I",
+   "title": "1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1566,26 +1576,26 @@
  ],
  "mass": {
   "cars": {
-   "no": 5,
+   "no": 6,
    "cnt": {
     "Malibu": 2,
     "Damas": 2,
     "Onix": 2,
     "Kia K5": 2,
-    "Gentra": 5,
-    "Nexia": 5,
-    "BYD Song": 2,
-    "Cobalt": 5,
+    "Gentra": 6,
+    "Nexia": 6,
+    "BYD Song": 3,
+    "Cobalt": 6,
     "Matiz": 3,
-    "Lacetti": 2,
+    "Lacetti": 3,
     "Equinox": 2,
-    "Labo": 2,
-    "Spark": 2,
-    "Tahoe": 2,
+    "Labo": 3,
+    "Spark": 3,
+    "Tahoe": 3,
     "Jiguli": 2,
     "Captiva": 2,
-    "Chery Tiggo": 2,
-    "Epica": 2,
+    "Chery Tiggo": 3,
+    "Epica": 3,
     "Tracker": 2,
     "Tico": 2
    },
@@ -1654,6 +1664,19 @@
      ],
      "in_cup": 335,
      "link": "https://youtube.com/shorts/aTpbo_zDb3g"
+    },
+    {
+     "no": 6,
+     "date": "2026-11-24",
+     "slot": 1,
+     "winner": "Chery Tiggo",
+     "top3": [
+      "Chery Tiggo",
+      "Labo",
+      "Nexia"
+     ],
+     "in_cup": 339,
+     "link": "https://youtube.com/shorts/G3WD46oGL0I"
     }
    ]
   },
