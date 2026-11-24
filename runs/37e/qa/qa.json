@@ -1,0 +1,225 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 234.2,
+  "dur": 338.65,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 338.15,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 338,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 175.7
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.9,
+  "peak_db": -1.1,
+  "silences": []
+ },
+ "words_second_pass": 1,
+ "words": {
+  "pct": 97.1,
+  "lines": 91,
+  "by_hero": {
+   "Рон": 97.2,
+   "Барсик": 100.0,
+   "Топа": 95.7,
+   "Филя": 98.7,
+   "Пик": 92.9
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 215.0,
+   "range_st": 5.1,
+   "hnr": 14.0,
+   "jitter": 2.1,
+   "shimmer": 8.9,
+   "F1": 529.0,
+   "F2": 1960.0,
+   "F3": 3303.0,
+   "bright": -18.6,
+   "air": -14.5,
+   "cog": 565.0,
+   "rate": 4.5,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 376.0,
+   "range_st": 6.9,
+   "hnr": 21.6,
+   "jitter": 0.8,
+   "shimmer": 5.0,
+   "F1": 483.0,
+   "F2": 1711.0,
+   "F3": 3583.0,
+   "bright": -19.7,
+   "air": -22.5,
+   "cog": 542.0,
+   "rate": 6.1,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 92.9
+  },
+  "Рон": {
+   "f0": 266.0,
+   "range_st": 8.2,
+   "hnr": 13.6,
+   "jitter": 1.7,
+   "shimmer": 6.5,
+   "F1": 505.0,
+   "F2": 1972.0,
+   "F3": 3605.0,
+   "bright": -15.7,
+   "air": -12.7,
+   "cog": 862.0,
+   "rate": 3.0,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.2
+  },
+  "Топа": {
+   "f0": 148.0,
+   "range_st": 4.1,
+   "hnr": 12.5,
+   "jitter": 2.6,
+   "shimmer": 10.8,
+   "F1": 434.0,
+   "F2": 1815.0,
+   "F3": 3351.0,
+   "bright": -17.6,
+   "air": -26.6,
+   "cog": 478.0,
+   "rate": 3.1,
+   "voiced": 0.4,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 95.7
+  },
+  "Филя": {
+   "f0": 297.0,
+   "range_st": 5.9,
+   "hnr": 16.6,
+   "jitter": 1.8,
+   "shimmer": 7.8,
+   "F1": 451.0,
+   "F2": 2139.0,
+   "F3": 3309.0,
+   "bright": -14.4,
+   "air": -23.7,
+   "cog": 672.0,
+   "rate": 3.9,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.7
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 42,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 150,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2152,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 338.14681818181816,
+   "video": "video/Кот Барсик - 37. Лужа стала льдом!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "696f713",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 49,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 124,
+    "b": 3,
+    "w": 1,
+    "n": 8450,
+    "at": 8450,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 15,
+   "ttsFail": 0,
+   "voice": 96,
+   "voiceFail": 0,
+   "voiceSec": 32,
+   "ttsSec": 7,
+   "frames": 9109,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -23.4,
+   "lufs_out": -15.2,
+   "gain_db": 9
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 37,
+   "title": "Лужа стала льдом?!",
+   "scenes": 9,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}
