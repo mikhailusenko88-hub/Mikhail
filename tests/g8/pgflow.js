@@ -46,6 +46,13 @@ fs.mkdirSync(OUT, { recursive: true });
     const t2 = await p.evaluate(() => window.__hook.S.t); await p.evaluate(() => window.__pgEmit('pause_state_changed', false)); await p.waitForTimeout(400);
     const t3 = await p.evaluate(() => window.__hook.S.t); await p.keyboard.up('ArrowRight');
     ok(Math.abs(t2 - t1) < 0.05 && t3 > t2, name + `: пауза площадки останавливает мир (${t1.toFixed(2)} → ${t2.toFixed(2)} → ${t3.toFixed(2)})`);
+    // гараж: «+100 монет за ролик» — даёт монеты и прячется на три минуты
+    await p.evaluate(() => { window.__hook.pg.lastRew = -1e9; window.__hook.garage(); }); await p.waitForTimeout(500);
+    const g0 = (await st()).coins; await p.screenshot({ path: path.join(OUT, name + '-garage-adbtn.png') }); ok(await tap('g:ad'), name + ': в гараже есть кнопка «+100 за ролик»'); await p.waitForTimeout(1500);
+    s = await st(); ok(s.coins === g0 + 100 && /rew:garage_coins/.test(s.ads), name + `: гараж — +100 монет за ролик (${g0} → ${s.coins})`);
+    ok(await p.evaluate(() => !window.__hook.btns.find((q) => q.id === 'g:ad')), name + ': кнопка ролика в гараже спрятана после просмотра');
+    await p.screenshot({ path: path.join(OUT, name + '-garage-ad.png') });
+    await tap('g:back');
     // облачное сохранение пишется
     ok(await p.evaluate(() => !!window.__pg.store.hooktruck_v1), name + ': сохранение ушло в облако площадки');
     s = await st(); ok(/level_started/.test(s.msgs) && /level_completed/.test(s.msgs) && /gameplay_started/.test(s.msgs), name + ': события уровней отправлены');

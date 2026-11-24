@@ -49,7 +49,7 @@
 
   // ---------- площадка (Playgama Bridge): язык, пауза, звук, реклама, облачное сохранение ----------
   // Без моста (страница проверки) всё это выключено: рекламных кнопок нет, межстраничной нет.
-  const PG = { on: false, rew: false, inter: false, ad: false, paused: false, mutedP: false, ready: false, t0: performance.now(), lastInter: -1e9, lastRew: -1e9, pend: null, got: false };
+  const PG = { on: false, rew: false, inter: false, ad: false, paused: false, mutedP: false, ready: false, t0: performance.now(), lastInter: -1e9, lastRew: -1e9, lastFree: -1e9, pend: null, got: false };
   const pgNow = () => performance.now() / 1000;
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
@@ -311,6 +311,8 @@
     }
     else if (a[1] === 'up') { const lv = save.up[a[2]]; if (lv >= UPC.length) return; if (save.coins < UPC[lv]) return no(); save.coins -= UPC[lv]; save.up[a[2]] = lv + 1; store(); sfx.cp(); }
     else if (a[1] === 'test') { save.coins += 500; store(); sfx.cp(); }
+    // монеты за ролик: по желанию игрока, не чаще раза в три минуты; всё в гараже покупается и без роликов
+    else if (a[1] === 'ad') pgRewarded('garage_coins', (ok) => { if (ok) { save.coins += 100; PG.lastFree = pgNow(); store(); sfx.star(); } else PG.lastFree = pgNow() - 120; });
   }
 
   // ---------- камера ----------
@@ -710,7 +712,12 @@
     const bb = { id: 'g:back', x: 10, y: 10, w: 46, h: 46 }; menuBtns.push(bb);
     ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(bb.x, bb.y, bb.w, bb.h, 12); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 30px system-ui, sans-serif'; ctx.fillText('‹', bb.x + bb.w / 2, bb.y + bb.h / 2 - 3);
-    const wl = W - 10 - wallet(W - 10, 17);
+    let wl = W - 10 - wallet(W - 10, 17);
+    if (PG.on && PG.rew && !PG.pend && pgNow() - PG.lastFree > 180) { // «+100 монет за ролик»: на телефоне под кошельком, на широком экране — слева от него
+      const aw = 128, ab = port ? { id: 'g:ad', x: W - 10 - aw, y: 56, w: aw, h: 36 } : { id: 'g:ad', x: wl - 8 - aw, y: 15, w: aw, h: 36 }; menuBtns.push(ab); if (!port) wl = ab.x;
+      ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(ab.x, ab.y + 3, ab.w, ab.h, 14); ctx.fill(); ctx.fillStyle = '#7e57c2'; rr(ab.x, ab.y, ab.w, ab.h, 14); ctx.fill();
+      rich([{ t: '🎬 +100' }, { coin: 1 }], ab.x + ab.w / 2, ab.y + ab.h / 2, 16);
+    }
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.font = '900 24px system-ui, sans-serif'; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,0.4)';
     if (68 + ctx.measureText(T.garage).width + 10 < wl) { ctx.strokeText(T.garage, 68, 34); ctx.fillStyle = '#fff'; ctx.fillText(T.garage, 68, 34); }
     if (window.HOOK_TEST) { const tb = { id: 'g:test', x: W - 132, y: 56, w: 122, h: 30 }; menuBtns.push(tb); ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(tb.x, tb.y, tb.w, tb.h, 15); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '800 14px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(T.test, tb.x + tb.w / 2, tb.y + tb.h / 2 + 1); }
