@@ -34,7 +34,21 @@ jobs:
           echo "сводка дизайнеров: HTTP $dzc, $(wc -c < dz.json 2>/dev/null || echo 0) байт"
           stc=$(curl -sS -o site.json -w '%{http_code}' --max-time 120 https://crm.nashdekor.ru/api/site/export || echo 000)
           echo "статистика сайта: HTTP $stc, $(wc -c < site.json 2>/dev/null || echo 0) байт"
-          printf '%s\nHTTP %s\ndz HTTP %s\nsite HTTP %s\n' "$(date -u +%FT%TZ)" "$code" "$dzc" "$stc" > fetched.txt
+          # 24.11: свои ключи работ Claude (readers/*.pub в ветке outbox) — строки «key <первые 8+ знаков>» в pages/replies.txt;
+          # для каждого: replies-<ключ>.json и dz-<ключ>.json (знаки + и / в имени файла заменены на - и _)
+          extra=""
+          curl -sS -H "Authorization: Bearer ${{ github.token }}" -H "Accept: application/vnd.github.raw" \
+            "https://api.github.com/repos/${{ github.repository }}/contents/pages/replies.txt?ref=${{ github.sha }}" -o /tmp/list.txt || true
+          for k in $(grep -oE '^key [A-Za-z0-9+/=]{8,44}' /tmp/list.txt | awk '{print $2}' | tail -n 20 | awk '!s[$0]++' | tail -n 5); do
+            q=$(python3 -c "import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=''))" "$k")
+            f=$(printf '%s' "$k" | tr '+/' '-_')
+            c1=$(curl -sS -o "replies-$f.json" -w '%{http_code}' --max-time 180 "https://crm.nashdekor.ru/api/outbox/replies?k=$q" || echo 000)
+            c2=$(curl -sS -o "dz-$f.json" -w '%{http_code}' --max-time 120 "https://crm.nashdekor.ru/api/dz/export?k=$q" || echo 000)
+            echo "ключ $f: ответы HTTP $c1, сводка HTTP $c2"
+            extra="$extra\nkey $f replies HTTP $c1 dz HTTP $c2"
+          done
+          printf '%s\nHTTP %s\ndz HTTP %s\nsite HTTP %s' "$(date -u +%FT%TZ)" "$code" "$dzc" "$stc" > fetched.txt
+          printf "$extra\n" >> fetched.txt
           git init -q -b replies .
           git add -A
           git -c user.name=replies-fetch -c user.email=replies-fetch@users.noreply.github.com commit -qm "replies $(date -u +%F_%H:%M)"
