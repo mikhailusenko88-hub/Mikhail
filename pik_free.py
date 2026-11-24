@@ -118,6 +118,7 @@ def J(r, T):
 
 def evaluate(C):
     import torch, gen, svoy_free, svoy_omo, svoy2, voice_check as vc
+    torch.hub._validate_not_a_forked_repo = lambda *a, **k: True   # проверка через api.github.com без токена падает (KeyError 'Authorization')
     os.makedirs("pack", exist_ok=True); os.makedirs("tmp", exist_ok=True)
     svoy_omo.ruacc(); svoy2.patch_ruaccent()
     T = target(); json.dump(T, open("pack/target.json", "w"))

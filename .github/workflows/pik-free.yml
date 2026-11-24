@@ -31,7 +31,7 @@ jobs:
             ~/.cache/whisper
             ~/.cache/torch
             models
-          key: pik-free-cache-v1
+          key: pik-free-cache-v2
           restore-keys: svoy-free-cache-v1
       - name: Install
         run: |
@@ -39,6 +39,8 @@ jobs:
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld
       - run: python pik_free.py r1 ${{ matrix.part }} 8
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
