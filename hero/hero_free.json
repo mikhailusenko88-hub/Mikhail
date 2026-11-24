@@ -1,0 +1,38 @@
+{
+ "made": "2026-11-25",
+ "model": "v5_cis_base (MIT)",
+ "voices": {
+  "barsik": [
+   {
+    "id": "kermen_239_1.0_1.07",
+    "golos": "girl:speaker=ru_kermen:P=1.092:F=1.0:T=1.07:R=1.15",
+    "J": 7.367,
+    "sim": 0.8054,
+    "f0": 238.91,
+    "utmos": 3.055,
+    "match": 0.969,
+    "gop": 0.7173
+   },
+   {
+    "id": "zhadyra_239_1.0_1.22",
+    "golos": "girl:speaker=ru_zhadyra:P=1.233:F=1.0:T=1.22:R=1.15",
+    "J": 7.318,
+    "sim": 0.779,
+    "f0": 239.83,
+    "utmos": 2.938,
+    "match": 0.969,
+    "gop": 0.7357
+   },
+   {
+    "id": "aigul_239_1.0_1.31",
+    "golos": "girl:speaker=ru_aigul:P=1.177:F=1.0:T=1.31:R=1.15",
+    "J": 7.071,
+    "sim": 0.7824,
+    "f0": 239.26,
+    "utmos": 3.047,
+    "match": 0.901,
+    "gop": 0.7245
+   }
+  ]
+ }
+}
