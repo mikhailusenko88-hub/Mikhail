@@ -10,7 +10,7 @@ const H = globalThis.HookSim;
   const [vw, vh, touch] = process.argv[2] === 'phone' ? [390, 844, true] : [1280, 720, false];
   const ctx = await b.newContext({ viewport: { width: vw, height: vh }, hasTouch: touch, isMobile: touch, locale: 'ru-RU' });
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
-  await p.addInitScript(() => { localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], best: [], duo: false })); }); // уровни «уже пройдены»: без обучения
+  await p.addInitScript(() => { localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], best: [], duo: false, tut: [1, 1] })); }); // уровни «уже пройдены»: без обучения
   await p.goto('file://' + path.resolve(__dirname, '../../g8-hook3d/index.html') + '?flat'); await p.waitForTimeout(500);
   let bad = 0;
   for (const li of only) {

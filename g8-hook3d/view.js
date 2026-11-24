@@ -159,7 +159,7 @@
     // монеты: 20 за финиш, по 10 за каждую звезду заезда и по 30 за каждую звезду, взятую на этом уровне впервые
     const fresh = Math.max(0, n - (save.stars[lvl] || 0)), earn = 20 + 10 * n + 30 * fresh;
     res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt), earn };
-    save.coins += earn;
+    save.coins += earn; (save.tut = save.tut || [])[lvl] = 1;
     save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
   }
 
@@ -181,7 +181,7 @@
   // Возвращает скорость времени (1 — обычная, 0 — пауза); inp.hook гасит, если цепляться ещё рано.
   function tutor(inp) {
     tut = null;
-    const G = H.levels[lvl].guide; if (!G || save.stars[lvl] || S.state !== 'play') return 1;
+    const G = H.levels[lvl].guide; if (!G || (save.tut && save.tut[lvl]) || S.state !== 'play') return 1; // обучение — пока уровень не пройден с ним хоть раз (у старых сохранений покажется заново)
     const tr = S.truck, slow = lvl === 0 && !save.up.eng && !save.up.winch;
     if (!S.rope) {
       const a = S.target, g = a && G[a.i]; if (!g) return 1;
