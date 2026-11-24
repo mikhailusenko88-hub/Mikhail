@@ -1,6 +1,6 @@
-# 2026-11-24 22:05 — стеклянный мишка (банка-зверь №2, формат «кот крупно»): проба вида и 4 пробы физики (размер × положение ведра)
-bearlook py=vessel.py vessel=bear nosim=1 lx=0.10 frames=1 end=330 res=720x1280 samples=48 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-bs1 py=vessel.py vessel=bear lx=0.10 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-bs2 py=vessel.py vessel=bear lx=0.12 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-bs3 py=vessel.py vessel=bears lx=0.10 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
-bs4 py=vessel.py vessel=bears lx=0.12 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+# 2026-11-24 22:32 — мишка: ведро ближе к горлу (lx 0.06–0.08; при 0.12 в мишку попало только 626). Ведро задевает ухо только пока стоит прямо — в ролике этого нет
+bt1 py=vessel.py vessel=bear lx=0.07 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+bt2 py=vessel.py vessel=bear lx=0.08 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+bt3 py=vessel.py vessel=bears lx=0.07 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+bt4 py=vessel.py vessel=bears lx=0.08 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
+bt5 py=vessel.py vessel=bear lx=0.06 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 adamp=0.92 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40
