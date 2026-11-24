@@ -1,0 +1,208 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 121.3,
+  "dur": 97.06,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 96.56,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 3,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 97,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 118.2
+ },
+ "kadry": 10,
+ "audio": {
+  "lufs": -15.1,
+  "lra": 3.1,
+  "peak_db": -1.0,
+  "silences": []
+ },
+ "words_second_pass": 2,
+ "words": {
+  "pct": 98.9,
+  "lines": 28,
+  "by_hero": {
+   "Рассказчик": 100.0,
+   "Пик": 97.1,
+   "Пикса": 100.0,
+   "Пиня": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Пик": {
+   "f0": 374.0,
+   "range_st": 7.0,
+   "hnr": 20.8,
+   "jitter": 0.8,
+   "shimmer": 5.0,
+   "F1": 470.0,
+   "F2": 1758.0,
+   "F3": 3381.0,
+   "bright": -18.1,
+   "air": -22.7,
+   "cog": 560.0,
+   "rate": 6.2,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.1
+  },
+  "Пикса": {
+   "f0": 326.0,
+   "range_st": 6.3,
+   "hnr": 14.9,
+   "jitter": 1.7,
+   "shimmer": 7.2,
+   "F1": 406.0,
+   "F2": 2110.0,
+   "F3": 3547.0,
+   "bright": -16.5,
+   "air": -14.9,
+   "cog": 814.0,
+   "rate": 4.1,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пиня": {
+   "f0": 292.0,
+   "range_st": 6.6,
+   "hnr": 15.0,
+   "jitter": 1.8,
+   "shimmer": 7.3,
+   "F1": 388.0,
+   "F2": 2064.0,
+   "F3": 3411.0,
+   "bright": -16.0,
+   "air": -14.3,
+   "cog": 751.0,
+   "rate": 3.9,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рассказчик": {
+   "f0": 174.0,
+   "range_st": 7.3,
+   "hnr": 13.0,
+   "jitter": 2.4,
+   "shimmer": 10.1,
+   "F1": 402.0,
+   "F2": 1971.0,
+   "F3": 3534.0,
+   "bright": -16.3,
+   "air": -16.7,
+   "cog": 539.0,
+   "rate": 2.8,
+   "voiced": 0.5,
+   "n": 3,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 6,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 38,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 267,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 96.55799999999999,
+   "video": "video/Кот Барсик - 99. Голос Пика — проба нейроголоса вместо голоса iPhone.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "696f713",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 24.1,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 11,
+    "e": 62,
+    "b": 8,
+    "w": 1,
+    "n": 2410,
+    "at": 2410,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 9,
+   "ttsFail": 0,
+   "voice": 19,
+   "voiceFail": 0,
+   "voiceSec": 12,
+   "ttsSec": 9,
+   "frames": 2414,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -18.4,
+   "lufs_out": -15.1,
+   "gain_db": 3.4
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 99,
+   "title": "Голос Пика — проба нейроголоса вместо голоса iPhone",
+   "scenes": 3,
+   "errors": [],
+   "unknownWords": [
+    {
+     "word": "голос",
+     "sentence": "Пик, голос три"
+    }
+   ],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Пикса: {\"speaker\":\"baya\",\"F\":1.12,\"P\":1.3,\"R\":1.15,\"model\":\"xenia\",\"vend\":1.7,\"qrise\":3}",
+    "Пиня: {\"speaker\":\"baya\",\"F\":1.06,\"P\":1.18,\"R\":1.2,\"model\":\"xenia\",\"T\":0.95,\"vend\":1.7,\"qrise\":3}",
+    "Филя: НЕ ПРИМЕНЁН (нет героя)",
+    "Топа: НЕ ПРИМЕНЁН (нет героя)"
+   ]
+  }
+ }
+}
