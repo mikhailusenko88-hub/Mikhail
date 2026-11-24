@@ -1,0 +1,79 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Голос Пика — ближе к первому (iPhone): выше, быстрее, мягче",
+  "scenes": 4,
+  "errors": [],
+  "unknownWords": [
+   {
+    "word": "голос",
+    "sentence": "Пик, голос четыре"
+   }
+  ],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Пикса: {\"speaker\":\"baya\",\"F\":1.05,\"P\":1.5,\"R\":1.2,\"model\":\"xenia\",\"T\":1.25,\"vend\":1.7,\"qrise\":3}",
+   "Пиня: {\"speaker\":\"baya\",\"F\":1.12,\"P\":1.5,\"R\":1.2,\"model\":\"xenia\",\"T\":1.15,\"vend\":1.7,\"qrise\":3}",
+   "Пуся: {\"speaker\":\"baya\",\"F\":1,\"P\":1.45,\"R\":1.25,\"model\":\"xenia\",\"T\":1.3,\"vend\":1.7,\"qrise\":3}",
+   "Филя: НЕ ПРИМЕНЁН (нет героя)",
+   "Топа: НЕ ПРИМЕНЁН (нет героя)"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Голос Пика — ближе к первому (iPhone) выше, быстрее, мягче",
+  "path": "video/Кот Барсик - 99. Голос Пика — ближе к первому (iPhone) выше, быстрее, мягче.mp4",
+  "frames": 2906,
+  "sec": 242,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 116.22,
+  "video": "video/Кот Барсик - 99. Голос Пика — ближе к первому (iPhone) выше, быстрее, мягче.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "696f713",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 24.1,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 11,
+   "e": 63,
+   "b": 8,
+   "w": 1,
+   "n": 2900,
+   "at": 2900,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 9,
+  "ttsFail": 0,
+  "voice": 28,
+  "voiceFail": 0,
+  "voiceSec": 19,
+  "ttsSec": 8,
+  "frames": 2906,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -19.3,
+  "lufs_out": -15.2,
+  "gain_db": 4.3
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 344,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
