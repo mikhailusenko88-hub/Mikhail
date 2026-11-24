@@ -1566,6 +1566,16 @@
    "link": "https://youtube.com/shorts/G3WD46oGL0I",
    "title": "1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-24",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 3,
+   "final": false,
+   "link": "https://youtube.com/shorts/JuM5D0hY5tM",
+   "title": "1000 ta shar! Toshkent, Fargʻona, Nukus… Qaysi shahar yutadi? Какой город победит? №3 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1681,26 +1691,30 @@
    ]
   },
   "cities": {
-   "no": 2,
+   "no": 3,
    "cnt": {
     "Asaka": 1,
-    "Nukus": 1,
+    "Nukus": 2,
     "Namangan": 1,
     "Shahrisabz": 1,
     "Angren": 1,
     "Qoʻqon": 1,
     "Xiva": 1,
-    "Fargʻona": 1,
-    "Samarqand": 2,
-    "Toshkent": 2,
-    "Andijon": 1,
-    "Jizzax": 1,
+    "Fargʻona": 2,
+    "Samarqand": 3,
+    "Toshkent": 3,
+    "Andijon": 2,
+    "Jizzax": 2,
     "Buxoro": 1,
     "Olmaliq": 1,
     "Guliston": 1,
     "Chirchiq": 1,
     "Qarshi": 1,
-    "Termiz": 1
+    "Termiz": 1,
+    "Urganch": 1,
+    "Navoiy": 1,
+    "Zarafshon": 1,
+    "Margʻilon": 1
    },
    "results": [
     {
@@ -1728,6 +1742,19 @@
      ],
      "in_cup": 399,
      "link": "https://youtube.com/shorts/H4IDj7FhTkE"
+    },
+    {
+     "no": 3,
+     "date": "2026-11-24",
+     "slot": 2,
+     "winner": "Toshkent",
+     "top3": [
+      "Toshkent",
+      "Andijon",
+      "Fargʻona"
+     ],
+     "in_cup": 340,
+     "link": "https://youtube.com/shorts/JuM5D0hY5tM"
     }
    ]
   }
