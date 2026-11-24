@@ -163,6 +163,8 @@
         '<div class="plat rt"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="rt">Описание</button><button class="btn all" data-copy="frt">Всё сразу</button></div><div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc)+'</pre></div></div>'+
         '<div class="row"><label class="chk"><input type="checkbox" data-k="pub" '+(s.pub?'checked':'')+'> выложено на Rutube</label></div>';
       c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){copy(M[b.getAttribute('data-copy')]||'',b)})});
+      // видео лежит на этом же сервере (как Shorts); если его там ещё нет — ссылка на GitHub
+      (function(a){if(!it.video2||!a)return;fetch(it.video,{method:'HEAD',cache:'no-store'}).then(function(r){if(!r.ok)throw 0}).catch(function(){a.href=it.video2;a.textContent='⬇︎ Скачать видео (GitHub)'})})(c.querySelector('a.btn.dl'));
       c.querySelectorAll('.chk input').forEach(function(x){x.addEventListener('change',function(){var o=st[it.name]||(st[it.name]={});o[x.getAttribute('data-k')]=x.checked?1:0;save();c.classList.toggle('past',!!o.pub);
         document.getElementById('nSb').textContent=items.filter(function(q){return !(st[q.name]&&st[q.name].pub)}).length||''})});
       box.appendChild(c);
