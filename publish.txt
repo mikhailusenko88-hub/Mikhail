@@ -1,2 +1,2 @@
-# 24.11 20:20 — Shorts 35 заново (формат сервера, проба H28) из сборки 35d; потом cancel старого Shorts _CKTe5ULnwk
-short 35d 35 2026-11-25T16:30 --again --file=shorts/35d-server.mp4
+# 24.11 20:27 — 35: старый Shorts (из 35b) снять с таймера — на 16:30 теперь nCJHU-PLZK8 (из 35d, формат сервера)
+cancel _CKTe5ULnwk
