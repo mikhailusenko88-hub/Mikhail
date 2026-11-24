@@ -1,7 +1,7 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "33",
- "videos": "51",
+ "subs": "34",
+ "videos": "60",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
@@ -15,6 +15,42 @@
   }
  ],
  "last": [
+  {
+   "id": "fJ8ZJ2N9cx4",
+   "title": "Жёлудь проснулся?! 🐱 Кот Барсик | 34 серия #shorts",
+   "published": "2026-11-24T13:30:32Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT28S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "dxSzLbcBfRA",
+   "title": "🌱 ЖЁЛУДЬ ПРОСНУЛСЯ?! Первый росточек | Кот Барсик | Новая серия 34",
+   "published": "2026-11-24T12:30:21Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M49S",
+   "views": 1,
+   "likes": 1
+  },
+  {
+   "id": "jRqaJMKiCNU",
+   "title": "🐱 КОТ БАРСИК — 5 серий подряд! Компас, шишка, жёлудь, росток и снеговик | Мультики для детей",
+   "published": "2026-11-24T07:58:22Z",
+   "privacy": "private",
+   "publishAt": "2026-11-29T08:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT28M3S",
+   "views": 0,
+   "likes": 0
+  },
   {
    "id": "B86QuwSDoB8",
    "title": "Кто рисует на окне?! 🐱 Кот Барсик | 38 серия #shorts",
@@ -96,7 +132,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT25S",
-   "views": 4,
+   "views": 5,
    "likes": 1
   },
   {
@@ -108,7 +144,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M48S",
-   "views": 127,
+   "views": 207,
    "likes": 0
   },
   {
@@ -216,42 +252,6 @@
    "kids": true,
    "category": "1",
    "dur": "PT27S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "NvOygN3DtrA",
-   "title": "🧊 ЛУЖА СТАЛА ЛЬДОМ?! Секрет мороза | Кот Барсик | Новая серия 37",
-   "published": "2026-11-23T08:35:50Z",
-   "privacy": "private",
-   "publishAt": "2026-11-27T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M17S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "WayXGuk4vUY",
-   "title": "Куда ушёл снеговик?! 🐱 Кот Барсик | 36 серия #shorts",
-   "published": "2026-11-22T16:59:36Z",
-   "privacy": "private",
-   "publishAt": "2026-11-26T13:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT23S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "coak4sqAfdw",
-   "title": "⛄ КУДА УШЁЛ СНЕГОВИК?! Тайна оттепели | Кот Барсик | Новая серия 36",
-   "published": "2026-11-22T16:58:48Z",
-   "privacy": "private",
-   "publishAt": "2026-11-26T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M19S",
    "views": 0,
    "likes": 0
   }
