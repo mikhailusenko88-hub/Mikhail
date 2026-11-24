@@ -4,7 +4,10 @@
 (function (global) {
 'use strict';
 const MKB = global.MKBarsik = { ready: false, error: null, base: 'barsik/', D: null, shellK: 1, shellU: { value: 1 }, desatU: { value: 0.22 }, tintU: { value: null }, trimU: { value: .82 }, softU: { value: .6 }, glossU: { value: 1 }, tailU: { value: 1.1 }, /* tailU — хвост опущен назад дугой, а не стоит «обручем» до плеча (0 — как в данных) */ /* вариант «Б»: подстрижен, гладкий блеск (просьба Михаила 4.11) */ K: { key: 1.4, expo: 0.74 } };   // сверено с кадром Blender: лоб (152,126,84)   // shellU — сила налёта (0 — выключен)
-MKB.BROW = { happy: [-.010, .012, .009, .1], smile: [-.008, .010, .007, .09], love: [-.008, .010, .007, .09], laugh: [-.008, .010, .007, .1], surprised: [.008, .028, .008, .22] };   // брови по эмоции, метры модели: [у переносицы, у виска, дуга посередине (вниз — только надбровье); тень века на глазу выше]
+MKB.BROW = { happy: [0, .010, .010, .1], smile: [0, .009, .009, .09], love: [0, .009, .009, .09], laugh: [0, .010, .010, .1], surprised: [.008, .028, .008, .22] };   // брови по эмоции, метры модели: [у переносицы, у виска, дуга посередине (вниз — только надбровье); тень века на глазу выше]
+MKB.TILT = { sad: -.24, cry: -.3, shy: -.12, frown: .3, angry: .3, happy: 0, smile: 0, love: 0, laugh: 0, surprised: .1 };   // наклон века: + ниже у переносицы (хмурится), − ниже у виска (грустит)
+MKB.SMILE_Y = 0.010;   // улыбка: насколько уголки рта выходят вперёд из шерсти (м модели); рот открыт — меньше (24.11, проба ul/br4–5)
+MKB.LAUGH_LID = 1; MKB.LAUGH_FLIP = false; MKB.LAUGH_LIDC = 1.7;   // смех с открытыми глазами (24.11): закрытое веко Барсика — тёмный диск, прищур — сонный вид; «^^» веком снизу (LAUGH_FLIP) пока тоже диск — нужна лепка века   // смеётся — глаза прищурены, а не закрыты: закрытое веко Барсика — тёмный круг вместо глаза (24.11)
 MKB.isBarsik = spec => !!spec && spec.kind === 'cat' && /^\s*барсик(?![а-яё])/i.test(String(spec.name || ''));
 
 // ---------- константы модели (метры, z вверх, мордочка к −y) ----------
@@ -93,7 +96,7 @@ function decode(H, ab) {
 // ---------- шейдеры (как в пробной сцене, свет — от места мультика) ----------
 const COMMON = `precision highp float; precision highp int; precision highp sampler2D;
 uniform mat4 modelMatrix, viewMatrix, projectionMatrix; uniform vec3 cameraPosition;
-uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile; uniform vec4 uBrow; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailU, uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
+uniform mat3 uHead, uEar0, uEar1, uLeg0, uLeg1, uArm0, uArm1, uFore0, uFore1, uJawM; uniform float uSmile, uSmY; uniform vec4 uBrow; uniform vec4 uArmQ0, uArmQ1; uniform vec2 uLift; uniform float uTailU, uTailA, uTailPh, uBreath, uScale, uPix, uExpo, uDesat, uTrim, uSoft, uGloss; uniform vec3 uTint;
 uniform vec3 uSunDir, uSunCol, uRimDir, uRimCol, uFillDir, uFillCol, uSky, uGnd, uUp, uFogCol; uniform vec2 uFog;
 const float PI = 3.14159265;
 vec3 sane(vec3 c) { bvec3 bad = equal(floatBitsToUint(c) & uvec3(0x7f800000u), uvec3(0x7f800000u)); vec3 r = min(max(c, vec3(0.0)), vec3(300.0)); return any(bad) ? vec3(0.0) : r; }
@@ -103,7 +106,7 @@ const vec3 HIP0 = vec3(-0.088, -0.005, 0.17), HIP1 = vec3(0.088, -0.005, 0.17), 
 mat3 rotAxis(vec3 a, float g) { a = normalize(a); float c = cos(g), s = sin(g), t = 1.0 - c;
   return mat3(t*a.x*a.x+c, t*a.x*a.y+s*a.z, t*a.x*a.z-s*a.y, t*a.x*a.y-s*a.z, t*a.y*a.y+c, t*a.y*a.z+s*a.x, t*a.x*a.z+s*a.y, t*a.y*a.z-s*a.x, t*a.z*a.z+c); }
 vec3 smileD(vec3 q) { float ax = abs(q.x), w = smoothstep(0.006, 0.033, ax), up = uSmile > 0.0 ? 0.017 : 0.012;   // 24.11: улыбка выше (на обложке и в общем плане было не видно)
-  q.z += uSmile * up * w; return q; }
+  q.z += uSmile * up * w; if (uSmile > 0.0) q.y -= uSmile * uSmY * w; return q; }   // улыбка: уголки рта вперёд — иначе внешние половинки «ω» уходят под шерсть мордочки и рот читается как «人» (хмурый)
 vec3 browD(vec3 p, float wh) {   // мимика: надбровье и край века над каждым глазом поднимаются (x — у переносицы, y — у виска, z — дугой посередине)
   if (wh <= 0.0 || (uBrow.x == 0.0 && uBrow.y == 0.0 && uBrow.z == 0.0)) return p;
   float u = (abs(p.x) - 0.081) / 0.061, v = (p.z - 0.768) / 0.061;   // u: −1 у переносицы … +1 у виска; v: 0 — центр глаза, 1 — его верх
@@ -325,13 +328,13 @@ const VS_MOUTH = COMMON + `
 in vec3 position; in vec2 aUV; out vec3 vP; out vec2 vUV;
 void main() { vUV = aUV; vec3 P = toW(poseP(position, 1.0, -1.0, 0.0, 0.0, vec4(0.0, 0.0, aUV.y, 0.0))); vP = P; gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0); }`;
 const FS_MOUTH = COMMON + `
-in vec3 vP; in vec2 vUV; uniform float uOpen; out vec4 o;
+in vec3 vP; in vec2 vUV; uniform float uOpen, uSm; out vec4 o;
 void main() {
   float x = vUV.x, v = vUV.y; float W = 0.62 + 0.38 * uOpen; if (uOpen < 0.03 || abs(x) > W) discard;
   float edge = 1.0 - smoothstep(W - 0.12, W, abs(x));
   vec3 c = mix(vec3(0.16, 0.035, 0.035), vec3(0.06, 0.01, 0.012), smoothstep(0.0, 0.5, v) * (1.0 - abs(x)));
   float tongue = smoothstep(0.5, 0.75, v) * smoothstep(0.55, 0.3, abs(x)); c = mix(c, vec3(0.8, 0.33, 0.37), tongue * 0.95);
-  float fh = 0.22 * smoothstep(0.3, 0.8, uOpen); float fx = abs(abs(x) - 0.36); float fang = (1.0 - smoothstep(0.02, 0.045, fx + 0.06 * v / max(fh, 0.01))) * step(v, fh) * step(0.3, uOpen); c = mix(c, vec3(0.93, 0.91, 0.87), fang);
+  float fh = 0.22 * smoothstep(0.3, 0.8, uOpen); float fx = abs(abs(x) - 0.36); float fang = (1.0 - smoothstep(0.02, 0.045, fx + 0.06 * v / max(fh, 0.01))) * step(v, fh) * step(0.3, uOpen) * (1.0 - uSm); c = mix(c, vec3(0.93, 0.91, 0.87), fang);   // радуется/смеётся — без клыков (иначе рот «два зуба», читается как испуг)
   c = mix(c, vec3(0.3, 0.09, 0.08), (1.0 - edge) * 0.5);
   vec3 L, E; lightAt(2, vP, L, E); c *= (uSky * PI * 0.55 + E * 0.5 + uSunCol * 0.15) / PI;
   o = outC(c, length(vP - cameraPosition));
@@ -359,7 +362,7 @@ const M3 = () => new THREE.Matrix3();
 function uniformsNew() {
   const v3 = (x, y, z) => ({ value: new THREE.Vector3(x || 0, y || 0, z || 0) });
   return { uHead: { value: M3() }, uEar0: { value: M3() }, uEar1: { value: M3() }, uLeg0: { value: M3() }, uLeg1: { value: M3() }, uArm0: { value: M3() }, uArm1: { value: M3() }, uArmQ0: { value: new THREE.Vector4(1, 0, 0, 0) }, uArmQ1: { value: new THREE.Vector4(1, 0, 0, 0) }, uFore0: { value: M3() }, uFore1: { value: M3() }, uJawM: { value: M3() },
-    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uBrow: { value: new THREE.Vector4() }, uDecC: { value: 1 }, uTailU: MKB.tailU, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
+    uLift: { value: new THREE.Vector2() }, uSmile: { value: 0 }, uSmY: { value: 0 }, uBrow: { value: new THREE.Vector4() }, uDecC: { value: 1 }, uTailU: MKB.tailU, uTailA: { value: 0.25 }, uTailPh: { value: 0 }, uBreath: { value: 0 }, uScale: { value: 1 }, uPix: { value: 0.001 }, uExpo: { value: 1 }, uDesat: MKB.desatU, uTint: MKB.tintU, uTrim: MKB.trimU, uSoft: MKB.softU, uGloss: MKB.glossU,
     uSunDir: v3(0, 1, 0), uSunCol: v3(2, 2, 2), uRimDir: v3(0, 0.5, -1), uRimCol: v3(0, 0, 0), uFillDir: v3(0, 0.3, 1), uFillCol: v3(0.2, 0.2, 0.2), uSky: v3(0.4, 0.45, 0.5), uGnd: v3(0.15, 0.15, 0.12), uUp: v3(0, 1, 0), uFogCol: v3(1, 1, 1), uFog: { value: new THREE.Vector2(0, 0) },
     uPos: { value: null }, uBake: { value: null }, uAttr: { value: null } };
 }
@@ -374,7 +377,7 @@ MKB.attach = function (T, rig) {
   const add = (geo, m, order) => { const o = new THREE.Mesh(geo, m); o.frustumCulled = false; o.castShadow = false; o.receiveShadow = false; o.userData.barsik = true; if (order != null) o.renderOrder = order; bg.add(o); return o; };
   const skin = add(s.skinGeo, mat(U, VS_SKIN, FS_SKIN));
   const fur = add(s.furGeo, mat(U, VS_FUR, FS_FUR));
-  const mouth = add(s.mouthGeo, mat(U, VS_MOUTH, FS_MOUTH, { uOpen: { value: 0 } }, { polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
+  const mouth = add(s.mouthGeo, mat(U, VS_MOUTH, FS_MOUTH, { uOpen: { value: 0 }, uSm: { value: 0 } }, { polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
   const eyes = [], lids = [];
   for (let i = 0; i < 2; i++) {
     const eu = { uE: { value: new THREE.Vector3() }, uR: { value: D.RE }, uF: { value: new THREE.Vector3(0, 0, 1) }, uLidN: { value: new THREE.Vector3(0, 1, 0) }, uEyeL: { value: new THREE.Vector3() }, uEyeLC: { value: new THREE.Vector3() }, uSide: { value: i }, uUnd: { value: 0 } };
@@ -430,11 +433,11 @@ MKB.frame = function (rig, st, T, L) {
   open = Math.max(0, Math.min(1, open)); B.open = open; B.mouth.material.uniforms.uOpen.value = open; conj(eulerM(0.3 * open, 0, 0, _m4), U.uJawM.value);
   // веки: моргание и настроение — из глаз скелета
   const e0 = rig.eyes && rig.eyes[0]; let lid = 1; if (e0 && e0.g) { const sx = e0.g.scale.x || 1, sy = e0.g.scale.y; const cl = Math.min(1, Math.max(0, (1 - sy / sx) / 0.92)); lid = 1 - cl; }
-  const emo = st.emo || 'neutral', ek = st.emoK != null ? st.emoK : 1; if (emo === 'sleepy') lid *= 0.45; else if (emo === 'angry' || emo === 'cry') lid *= 0.78; else if (emo === 'sad') lid *= 0.88; else if (emo === 'frown') lid *= 0.86; else if (emo === 'shy') lid *= 0.9;
-  { const sm = { smile: 1, happy: 1, love: 1, laugh: 1, shy: .6, sad: -1, cry: -1, scared: -.6, frown: -.3, angry: -.5 }[emo] || 0; U.uSmile.value = sm * ek;   // мимика: рот и наклон век (брови у Барсика — край века)
+  const emo = st.emo || 'neutral', ek = st.emoK != null ? st.emoK : 1; if (emo === 'laugh') lid = MKB.LAUGH_FLIP ? MKB.LAUGH_LID : Math.max(lid, MKB.LAUGH_LID); if (emo === 'sleepy') lid *= 0.45; else if (emo === 'angry' || emo === 'cry') lid *= 0.78; else if (emo === 'sad') lid *= 0.88; else if (emo === 'frown') lid *= 0.86; else if (emo === 'shy') lid *= 0.9;
+  { const sm = { smile: 1, happy: 1, love: 1, laugh: 1, shy: .6, sad: -1, cry: -1, scared: -.6, frown: -.3, angry: -.5 }[emo] || 0; U.uSmile.value = sm * ek; B.mouth.material.uniforms.uSm.value = Math.max(0, Math.min(1, sm * ek)); U.uSmY.value = MKB.SMILE_Y * Math.max(0, 1 - 2.5 * open);   // мимика: рот и наклон век (брови у Барсика — край века)
     const bw = MKB.BROW[emo], bk = ek * (0.25 + 0.75 * Math.max(0, Math.min(1, lid))); U.uBrow.value.set(bw ? bw[0] * bk : 0, bw ? bw[1] * bk : 0, bw ? bw[2] * bk : 0, 0); B.eyes.forEach(m => m.material.uniforms.uUnd.value = bw ? bw[3] * bk : 0);   /* моргает — брови опускаются, иначе над закрытым веком щель */   // радуется — брови ровно, удивляется — подняты целиком (у модели край века у виска ниже — без этого лицо «озабоченное»)
-    const tl = ({ sad: -.24, cry: -.3, shy: -.12, frown: .3, angry: .3, happy: .1, smile: .08, love: .08, laugh: .1, surprised: .1 }[emo] || 0) * ek; if (B._tl !== tl) { B._tl = tl; const LF = B.lidFur.material.uniforms; B.lidN = [];
-      for (let i = 0; i < 2; i++) { const n0 = new THREE.Vector3(...D.LIDN0[i]), inn = new THREE.Vector3(-Math.sign(D.E0[i][0]) || 1, 0, 0), n1 = n0.clone().addScaledVector(inn, tl).normalize(), q = new THREE.Quaternion().setFromUnitVectors(n0, n1);
+    const tl = (MKB.TILT[emo] || 0) * ek, fl = emo === 'laugh' && MKB.LAUGH_FLIP ? 1 : 0, tk = tl + fl * 10; if (B._tl !== tk) { B._tl = tk; const LF = B.lidFur.material.uniforms; B.lidN = []; { const kc = fl ? MKB.LAUGH_LIDC : 1; B.lids.forEach(l => l.material.uniforms.uLidCol.value.set(...D.LIDCOL.map(v => v * kc))); LF.uLidCol.value.set(...D.LIDCOL.map(v => v * kc)); }
+      for (let i = 0; i < 2; i++) { const n0 = new THREE.Vector3(...D.LIDN0[i]), inn = new THREE.Vector3(-Math.sign(D.E0[i][0]) || 1, 0, 0), n1 = fl ? new THREE.Vector3(n0.x, n0.y, -n0.z).normalize() : n0.clone().addScaledVector(inn, tl).normalize(), q = new THREE.Quaternion().setFromUnitVectors(n0, n1);   // смех: веко снизу — глаза дугами «^^»
         B.lidN.push([n1.x, n1.y, n1.z]); LF.uLA.value[i].copy(n1); LF.uLB1.value[i].set(...D.LB1[i]).applyQuaternion(q); LF.uLB2.value[i].set(...D.LB2[i]).applyQuaternion(q); } }   // хмурится — веко ниже у переносицы, грустит — у виска
     if (tl && !bw && lid > .9) lid = .9; }
   B.lid = lid; B.lidFur.material.uniforms.uLid.value.set(lid, lid); B.lidFur.visible = lid < 0.999; B.lids.forEach(l => l.visible = lid < 0.999);
