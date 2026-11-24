@@ -266,18 +266,19 @@
     lvlG = new T.Group(); scene.add(lvlG); builtKey = key; warm = true; rings = []; cps = []; boostM = []; clouds = [];
     const L = S.L; let seed = 4321 + key * 977; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const G = Acc(), D = Acc();
-    const [gA, gB, rA, rB, rock, rock2, lip, e1, e2, e3] = P.g.map(C);
+    const [gA, gB, rA, rB, rock, rock2, lip, e1, e2, e3] = P.g.map(C), mudA = C('#5b3d27'), mudB = C('#4c321f');
     let lowY = 1e9, hiY = -1e9, n = 0;
     for (const p of L.polys) for (const q of p) { lowY = Math.min(lowY, -q[1]); hiY = Math.max(hiY, -q[1]); }
     const yb = lowY - DEEP, x0L = L.polys[0][0][0], lastP = L.polys[L.polys.length - 1], x1L = lastP[lastP.length - 1][0];
     const inCave = (x) => L.ceils.some((c) => x > c.x0 - 60 && x < c.x1 + 60);
     function piece(xa, ya, xb, yb1, steep, deco) {
-      const alt = n++ & 1;
+      const alt = n++ & 1, md = L.mudAt ? L.mudAt((xa + xb) / 2) : 0; // md — мягкость грязи 0..1 (игра про бездорожье)
+      const mix = (c, k) => (md > 0.01 ? c.clone().lerp(alt ? mudA : mudB, Math.min(1, md * k)) : c);
       if (steep) quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1, ZB], [xa, ya, ZB], alt ? rock : rock2);
       else {
-        quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1, ROAD], [xa, ya, ROAD], alt ? gA : gB);
-        quad(G, [xa, ya, ROAD], [xb, yb1, ROAD], [xb, yb1, -ROAD], [xa, ya, -ROAD], alt ? rA : rB);
-        quad(G, [xa, ya, -ROAD], [xb, yb1, -ROAD], [xb, yb1, ZB], [xa, ya, ZB], alt ? gB : gA);
+        quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1, ROAD], [xa, ya, ROAD], mix(alt ? gA : gB, 0.75));
+        quad(G, [xa, ya, ROAD], [xb, yb1, ROAD], [xb, yb1, -ROAD], [xa, ya, -ROAD], mix(alt ? rA : rB, 1.5));
+        quad(G, [xa, ya, -ROAD], [xb, yb1, -ROAD], [xb, yb1, ZB], [xa, ya, ZB], mix(alt ? gB : gA, 0.35));
       }
       const l = steep ? 0 : 18;
       if (l) quad(G, [xa, ya, ZF], [xb, yb1, ZF], [xb, yb1 - l, ZF], [xa, ya - l, ZF], lip);
@@ -377,6 +378,7 @@
     ridge(-5600, gb - 300, 500, 1400, C(P.ridge[1][0]), C(P.ridge[1][1]), 720);
     ridge(ZB - 500, gb - 500, 150, 640, C(P.ridge[2][0]), C(P.ridge[2][1]), 520);
     for (let i = 0; i < 16; i++) { const c = cloud(lvlG, x0L - 2500 + rnd() * (x1L - x0L + 5000), hiY + 500 + rnd() * 1000, -1300 - rnd() * 3800, 2 + rnd() * 2.6, white); c.userData.v = 6 + rnd() * 10; clouds.push(c); }
+    if (R.onBuild) R.onBuild({ T, lvlG, S, L, C, lam, bas, box, cyl, ROAD, ZF, ZB, DEEP, P, tree: (x, y, z, sc) => { const A = Acc(); tree(A, x, y, z, sc, rnd, P); const m = mesh(A, new T.MeshLambertMaterial({ vertexColors: true })); m.castShadow = true; lvlG.add(m); return m; } });
   }
 
   function seg(m, x0, y0, x1, y1) { m.visible = true; m.position.set((x0 + x1) / 2, (y0 + y1) / 2, 0); m.scale.set(1, Math.hypot(x1 - x0, y1 - y0) || 0.001, 1); m.rotation.z = Math.atan2(y1 - y0, x1 - x0) - Math.PI / 2; }
@@ -448,6 +450,7 @@
       p.m.position.x += p.vx * dt; p.m.position.y += p.vy * dt; p.m.position.z += p.vz * dt;
       const k = p.life / 0.55, s = p.r * (1.6 - k * 0.6); p.m.scale.set(s, s, s); p.m.material.opacity = 0.75 * k;
     }
+    if (R.onDraw) R.onDraw(S, v, dt);
     if (warm) {
       warm = false; const st = [];
       scene.traverse((o) => { st.push(o, o.visible, o.frustumCulled); o.visible = true; o.frustumCulled = false; });
@@ -459,6 +462,8 @@
 
   // для проверки плавности: сколько вызовов отрисовки, треугольников и собранных шейдеров в кадре
   R.info = function () { const i = renderer ? renderer.info : null; return i ? { calls: i.render.calls, tris: i.render.triangles, programs: i.programs ? i.programs.length : 0 } : null; };
+
+  R.api = { get T() { return T; }, get scene() { return scene; }, get truck() { return truckG; }, C: (h) => C(h), lam: (h, o) => lam(h, o), bas: (h, o) => bas(h, o), box, cyl };
 
   root.Hook3D = R;
 })(window);
