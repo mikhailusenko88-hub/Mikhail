@@ -1,2 +1,2 @@
-# 24.11 21:58 — Shorts 36 заново из 36f; потом cancel phoh1BvtfMQ
-short 36f 36 2026-11-26T16:30 --again
+# 24.11 22:02 — 36: Shorts из 36e снять с таймера — на 16:30 теперь 7y9nKRoGU5Q (36f)
+cancel phoh1BvtfMQ
