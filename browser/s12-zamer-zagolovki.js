@@ -7,6 +7,7 @@
 (() => {
 const JOBS = [
   // ['3-7', '8402676722', 'Реечные панели под дерево дуб, рейки на стену 3 м'],
+  // 24.11 10:49 внесено: ['3-9', '8546190071', 'Реечные панели под дерево орех тёмный, рейки 3 м'] — один клик, 8 фото, проверка повторным открытием
 ];
 const CAB = true;
 const QS = ['реечные панели под дерево', 'плинтус напольный под покраску', 'стеновые панели полистирол', 'реечные панели под покраску',
@@ -17,9 +18,10 @@ const SS = sessionStorage; SS.setItem('nd_log12', ''); SS.setItem('nd_top12', ''
 const L = (...a) => { SS.setItem('nd_log12', (SS.getItem('nd_log12') || '') + new Date().toTimeString().slice(0, 8) + ' ' + a.join(' ') + '\n'); };
 const T = s => SS.setItem('nd_top12', (SS.getItem('nd_top12') || '') + s + '\n');
 // паузы без setTimeout: при скрытой панели браузера таймеры срабатывают раз в минуту
-const mc = new MessageChannel(); let wake = null;
-mc.port1.onmessage = () => { const r = wake; wake = null; if (r) r(); };
-const tick = () => new Promise(r => { wake = r; mc.port2.postMessage(0); });
+// очередь, а не одна переменная: 24.11 два параллельных ожидания с общим «wake» теряли друг друга, и скрипт зависал
+const mc = new MessageChannel(), wq = [];
+mc.port1.onmessage = () => { const r = wq.shift(); if (r) r(); };
+const tick = () => new Promise(r => { wq.push(r); mc.port2.postMessage(0); });
 const sleep = async ms => { const t = Date.now() + ms; while (Date.now() < t) await tick(); };
 const until = async (cond, ms, step = 250) => { const t = Date.now() + ms; while (Date.now() < t) { let ok = false; try { ok = cond(); } catch (e) {} if (ok) return true; await sleep(step); } return false; };
 function mk(url, hidden) {
@@ -33,11 +35,17 @@ const blocked = d => { try { const t = (d.title || '') + ' ' + ((d.body && d.bod
 const nPh = d => d.querySelectorAll('[data-marker^="preview("][data-marker$="/image"]').length;
 const titleInp = d => d.querySelector('input[name=title]') || d.querySelector('[data-marker*="title"] input');
 const ta = d => d.querySelector('textarea[name=description]');
+const addr = d => (d.querySelector('input[name=address]') || {}).value || '';
+// 24.11: при скрытой панели браузера форма правки минуту и дольше остаётся в readyState «interactive» — ожидание «complete»
+// трижды сорвало правку (60 с и 2×25 с), хотя поля готовы через 2–3 с. Ждём сами поля: описание, заголовок, фото, адрес, кнопку.
 async function edit(id) {
-  const fr = mk('/items/edit/' + id, false);
-  const ok = await until(() => fr.contentDocument && ta(fr.contentDocument) && fr.contentDocument.readyState === 'complete', 60000);
-  if (!ok) return null;
-  await sleep(1800); return fr;
+  for (let n = 1; n <= 5; n++) {
+    const fr = mk('/items/edit/' + id, false), t0 = Date.now();
+    const ok = await until(() => { const d = fr.contentDocument; return d && ta(d) && ta(d).value.length > 200 && titleInp(d) && titleInp(d).value && nPh(d) >= 1 && addr(d) && d.querySelector('[data-marker="item-edit/button-next"]'); }, 30000);
+    if (ok) { await sleep(3000); L('форма открылась с попытки', n, 'за', Date.now() - t0 - 3000, 'мс | readyState', fr.contentDocument.readyState, '| фото', nPh(fr.contentDocument)); return fr; }
+    L('форма не открылась, попытка', n);
+  }
+  return null;
 }
 async function job(art, id, title) {
   const fr = await edit(id);
