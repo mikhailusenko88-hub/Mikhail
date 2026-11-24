@@ -1,2 +1,2 @@
-# 2026-11-24 22:30 МСК — элементы обложек с улыбкой (движок ulybka-eng: губы «ω»), все пятеро в зимнем дне; новые кадры элементов ulyb / ulybm
-oblozhki1 --eng=ulybka-eng --golos=Рон:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:qrise=3:laugh=F16
+# 2026-11-24 23:50 МСК — Пик: свободные голоса (Silero v5_cis, MIT; Михаил: некоммерческие не ставим), ближе к нынешнему iPhone — 3 лучших из поиска golos-pik (pik/itog.md): 1 — как сейчас; 2 — nurgul, 3 — kermen, 4 — zara
+golosa22 --golos=Пикса:girl:speaker=ru_nurgul:P=1.96:F=1.25:T=1.35:R=1.2:pause=0.6:qrise=3,Пиня:girl:speaker=ru_kermen:P=1.76:F=1.25:T=1.15:R=1.2:qrise=3,Пуся:girl:speaker=ru_zara:P=1.62:F=1.25:T=1.35:R=1.2:qrise=3
