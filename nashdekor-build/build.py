@@ -222,6 +222,25 @@ def slug(a): return a.lower().replace("/", "-").replace(" ", "")
 def esc(s): return html.escape(str(s), quote=True)
 def fmt(n): return "{:,}".format(int(round(n))).replace(",", " ")
 PHOTO_V = "14"   # версия фото товаров (16.11.2026 — фото живых образцов, карусель): менять, когда фото перерисованы (11.11.2026 — фон «Антрацит»); то же — PHOTO_V в index.html
+# ---------- наличие (с 24.11.2026) ----------
+# Свободный остаток из CRM раз в час ставит в 0f7s1eez/yml.xml GitHub Actions «Авито — фид из CRM» (yml_prices.py, ветка avito),
+# и тем же разом stock_pages.py правит наличие на уже собранных страницах. При сборке берём его из того же yml.xml, чтобы фид,
+# разметка schema.org (availability) и текст «Под заказ / В наличии» на страницах совпадали: Яндекс Товары сверяют фид с сайтом
+# и товар, который «на сайте нет в наличии», могут не показать в Поиске. Нет файла или товара в нём — «под заказ», как раньше.
+# Точный остаток покупателю показывает p.js из CRM при заходе; в HTML для роботов — только «В наличии», без числа.
+def stock_id(a): return re.sub(r"[^A-Za-z0-9-]", "", a.replace("/", "-").replace(" ", ""))   # = id предложения в yml.xml
+STOCK = {}
+try:
+    for _m in re.finditer(r'<offer id="([^"]+)" available="(true|false)">(.*?)</offer>',
+                          open(os.path.join(SITE, "yml.xml"), encoding="utf-8").read(), re.S):
+        _q = re.search(r"<count>(\d+)</count>", _m.group(3))
+        STOCK[_m.group(1)] = (int(_q.group(1)) if _q else 1) if _m.group(2) == "true" else 0
+except OSError:
+    pass
+def in_stock(a): return STOCK.get(stock_id(a), 0) > 0
+def stock_cls(a): return "stock ok" if in_stock(a) else "stock"
+def stock_txt(a): return "В наличии" if in_stock(a) else "Под заказ, 3–4 недели"
+def stock_ld(a): return "https://schema.org/InStock" if in_stock(a) else "https://schema.org/BackOrder"
 def photo(a): return "img/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 # фото в 2 раза крупнее (нейросеть Real-ESRGAN, ветка img-upscale, 11.11.2026) — для чётких экранов, og:image, Яндекс Товаров
 def photo2x(a): return ("img/2x/" + PHOTO[a] + "?v=" + PHOTO_V) if PHOTO.get(a) and os.path.exists(os.path.join(SITE, "img", "2x", PHOTO[a])) else photo(a)
@@ -371,8 +390,9 @@ def card(x, root):
             % (esc(x["a"]), esc(KIND[x["c"]]), esc(color), "декор" if x["c"] == "color" else "цвет", x.get("r") or 0, x["b"], slug(x["a"]),
                ("/" + esc(ph)) if ph else "", root, slug(x["a"])))
     return ('<div class="card" data-p="%s"><a class="cl" href="%sp/%s/"><div class="sw" data-c="%s">%s</div><div class="in"><div class="eyebrow">%s</div><div class="art">%s</div><div class="d">%s</div>'
-            '<div class="price">%s<small>%s</small><small class="stock">Под заказ, 3–4 недели</small></div></div></a>%s</div>'
-            % (esc(x["a"]), root, slug(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per, cadd))
+            '<div class="price">%s<small>%s</small><small class="%s">%s</small></div></div></a>%s</div>'
+            % (esc(x["a"]), root, slug(x["a"]), x["c"], img, esc(KIND[x["c"]]), esc(x["a"]), esc(x["d"]), price, per,
+               stock_cls(x["a"]), stock_txt(x["a"]), cadd))
 
 # ---------- тексты «о товаре» ----------
 def about_custom(x):
@@ -429,7 +449,7 @@ def product_page(x):
                                       {"@type": "PropertyValue", "name": "Длина", "value": x["l"], "unitText": "мм"}, {"@type": "PropertyValue", "name": "В коробке", "value": x["b"], "unitText": "шт"}]}
     if c in GPC: ld_prod["category"] = {"@type": "CategoryCode", "codeValue": GPC[c], "inCodeSet": GPC_SET}
     if ph: ld_prod["image"] = [og_img] + [BASE + "/img/2x/" + f for f in GALLERY.get(a, [])]
-    if x.get("r"): ld_prod["offers"] = {"@type": "Offer", "url": url, "priceCurrency": "RUB", "price": x["r"], "availability": "https://schema.org/BackOrder",
+    if x.get("r"): ld_prod["offers"] = {"@type": "Offer", "url": url, "priceCurrency": "RUB", "price": x["r"], "availability": stock_ld(a),
                                         "itemCondition": "https://schema.org/NewCondition", "seller": {"@type": "Organization", "name": "Наш декор"},
                                         "hasMerchantReturnPolicy": RETURN_POLICY}
     ld = '<script type="application/ld+json">%s</script><script type="application/ld+json">%s</script>' % (
@@ -506,7 +526,7 @@ def product_page(x):
     price_b = ('<b class="num" id="price">%s ₽</b>' % fmt(x["r"])) if x.get("r") else '<b id="price">По запросу</b>'
     calc_btn = ('<a class="btn ghost" id="toCalc" href="%s?panel=%s#calc">В интерьере и расчёт на стену</a>' % (ROOT, esc(a))) if c in ("panel", "color") else ""
     per = ("за штуку · ≈ <span id=\"pm2\">%s</span> ₽/м² · %d шт в коробке" % (fmt(m2(x)), x["b"])) if m2(x) else "за штуку · %d шт в коробке" % x["b"]
-    buy = ('<aside class="buy" aria-label="Цена и заказ"><div class="price">%s<small>%s</small></div><div class="stock" id="stock">Под заказ, 3–4 недели</div>'
+    buy = ('<aside class="buy" aria-label="Цена и заказ"><div class="price">%s<small>%s</small></div><div class="%s" id="stock">%s</div>'
            '<div class="qty"><span class="qlbl">Количество</span><button type="button" id="qMinus" aria-label="Меньше">−</button><input type="number" id="qty" min="1" max="9999" value="1" inputmode="numeric" aria-label="Количество, штук">'
            '<span class="unit">шт</span><button type="button" id="qPlus" aria-label="Больше">+</button></div>'
            '<button type="button" class="btn sm ghost qbox" id="qBox">Взять коробкой — %d шт</button>'
@@ -514,7 +534,7 @@ def product_page(x):
            '<div class="btns"><button class="btn wide" type="button" id="toCart">В корзину</button><button class="btn ghost" type="button" id="toBuy">Купить сразу</button><button class="btn ghost" type="button" id="toOrder">Запросить расчёт</button></div><p class="ndk-note" data-cart-note="%s" hidden></p>%s'
            '<p class="fine">Цена без НДС. Точную стоимость, наличие и доставку подтвердим в ответ на заявку.</p>'
            '<p class="fine ship"><a href="%sdostavka/">Отправляем в Москву и любой регион транспортной компанией</a> · самовывоз в СПб бесплатно</p>'
-           '<div data-ship="item" data-a="%s" hidden></div></aside>' % (price_b, per, x["b"], esc(a), calc_btn, ROOT, esc(a)))
+           '<div data-ship="item" data-a="%s" hidden></div></aside>' % (price_b, per, stock_cls(a), stock_txt(a), x["b"], esc(a), calc_btn, ROOT, esc(a)))
 
     with_it = buy_with(x)
     rel = [y for y in CAT if y["c"] == c and y["a"] != a]
@@ -639,7 +659,7 @@ def wall_hub_blocks():
             '<section><h2>Как рассчитать и сколько стоит</h2><p>Ширина стены ÷ ширина панели = число панелей в ряд, плюс 10 %% на подрезку. Цена за м² — от %s ₽ у белых панелей и от %s ₽ у панелей с декором. '
             'На странице каждой панели есть <b>«3D · моя стена»</b>: введите ширину и высоту, окна и двери — стена построится в 3D и тут же посчитаются штуки, коробки и сумма. '
             'Расчёт стены целиком — с плинтусом, потолочным плинтусом и уголками — на <a href="%s#calc">главной странице</a>.</p></section>'
-            '<section><h2>Доставка и самовывоз</h2><p>Самовывоз со склада в Санкт-Петербурге — бесплатно. Доставка по Петербургу 1–2 дня, по Ленобласти 1–3 дня после оплаты, по тарифу перевозчика — ПЭК или грузовое такси, что выгоднее и удобнее вам; '
+            '<section><h2>Доставка и самовывоз</h2><p>Самовывоз со склада в Санкт-Петербурге — бесплатно. Доставка по Петербургу 1–2 дня, по Ленобласти 1–3 дня после оплаты, по тарифу перевозчика — ПЭК, грузовое такси или для небольших заказов курьер СДЭК, что выгоднее и удобнее вам; '
             'в другие города — транспортной компанией, доставку получатель оплачивает перевозчику по его тарифу. Панели 3 м едут в машине с кузовом от 3 м. Продаём поштучно и коробками; цены без НДС, компаниям и ИП — по счёту с закрывающими документами.</p></section>'
             '</div>') % (fmt(min(m2(x) for x in CAT if x["c"] == "panel" and m2(x))), fmt(min(m2(x) for x in CAT if x["c"] == "color" and m2(x))), ROOT)
 
@@ -766,7 +786,7 @@ def delivery_page():
             '<h2>Получение</h2>'
             '<p>При приёмке пересчитайте места по накладной и осмотрите упаковку. Повреждённую коробку вскройте при сотруднике перевозчика и составьте акт — по нему перевозчик возмещает ущерб, а мы заменяем изделия. Неподошедший товар можно вернуть в течение 7 дней после получения, если он не распилен, не окрашен и не монтировался (подробнее — в <a href="%soferta.html">оферте</a>).</p>'
             '<h2>По Санкт-Петербургу и Ленобласти</h2>'
-            '<p>Самовывоз со склада — бесплатно. Доставка по Петербургу 1–2 дня, по Ленобласти 1–3 дня после оплаты, по тарифу перевозчика: ПЭК (забирает со склада и везёт до двери) или грузовое такси — что выгоднее и удобнее вам; стоимость называем до оплаты.</p>'
+            '<p>Самовывоз со склада — бесплатно. Доставка по Петербургу 1–2 дня, по Ленобласти 1–3 дня после оплаты, по тарифу перевозчика: ПЭК (забирает со склада и везёт до двери), грузовое такси или, для небольших заказов (молдинги, уголки, клей), курьер СДЭК — что выгоднее и удобнее вам; стоимость называем до оплаты.</p>'
             '%s<p class="shipline">Вопрос по доставке в ваш город — напишите в форме ниже или в мессенджер, подскажем вес, объём и перевозчика.</p></article></div>' % (root, faq_html) +
             lead_form(None) + "</main>" + footer(root) +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": root, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), root, VER))
@@ -947,7 +967,8 @@ open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(s
 
 # ---------- товарный фид YML для Яндекс Товаров: https://nashdekor.ru/yml.xml (с 11.11.2026) ----------
 # Цены — как на сайте (index.html CAT); раз в час их и наличие обновляет из CRM GitHub Actions «Авито — фид из CRM» (yml_prices.py).
-# available="false" — «под заказ, 3–4 недели» (свободного остатка нет), "true" — есть на складе. Бренд поставщика в фид не пишем.
+# available="false" — «под заказ, 3–4 недели» (свободного остатка нет), "true" — есть на складе (с 24.11.2026 берём из прежнего yml.xml — STOCK).
+# Бренд поставщика в фид не пишем.
 YML_CATS = [(1, None, "Стеновые панели"), (11, 1, "Реечные панели под покраску"), (12, 1, "Реечные панели под дерево и бетон"),
             (2, None, "Плинтусы напольные"), (3, None, "Потолочные плинтусы"), (4, None, "Молдинги"), (5, None, "Уголки декоративные")]
 YML_CAT_OF = {"panel": 11, "color": 12, "plinth": 2, "cornice": 3, "mold": 4, "corner": 5}
@@ -959,11 +980,12 @@ def yml_offer(x):
     p = [("Материал", "", mat)] if mat else []
     p += [("Ширина", "мм", x["w"]), ("Толщина", "мм", x["t"]),
          ("Длина", "мм", x["l"]), ("В коробке", "шт", x["b"])]
-    return ('    <offer id="%s" available="false">\n      <url>%s/p/%s/</url>\n      <price>%d</price>\n      <currencyId>RUR</currencyId>\n'
+    q = STOCK.get(yml_id(x["a"]), 0)
+    return ('    <offer id="%s" available="%s">\n      <url>%s/p/%s/</url>\n      <price>%d</price>\n      <currencyId>RUR</currencyId>\n%s'
             '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'
             '      <description><![CDATA[%s]]></description>\n      <sales_notes>Поштучно и коробками, предоплата</sales_notes>\n'
             '      <pickup>true</pickup>\n      <delivery>true</delivery>\n%s\n    </offer>') % (
-        yml_id(x["a"]), BASE, slug(x["a"]), int(round(x["r"])), YML_CAT_OF[x["c"]], BASE, photo2x(x["a"]), esc(x["n"]), esc(x["a"]),
+        yml_id(x["a"]), "true" if q > 0 else "false", BASE, slug(x["a"]), int(round(x["r"])), ("      <count>%d</count>\n" % q) if q > 0 else "", YML_CAT_OF[x["c"]], BASE, photo2x(x["a"]), esc(x["n"]), esc(x["a"]),
         description(x).replace("]]>", ""), "\n".join('      <param name="%s"%s>%s</param>' % (n, (' unit="%s"' % u) if u else "", esc(v)) for n, u, v in p))
 yml_items = [x for x in CAT if x.get("r") and photo(x["a"]) and x["c"] in YML_CAT_OF]
 YML = ['<?xml version="1.0" encoding="UTF-8"?>', '<yml_catalog date="%s">' % datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+03:00"), '  <shop>',
