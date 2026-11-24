@@ -3136,7 +3136,7 @@ function camFor(c, S, seg, lib) {
       if (x + w > F.mid - hw && x - w < F.mid + hw && (x - w < F.mid - hw || x + w > F.mid + hw)) { list.push(id); ch = true; } } return ch; };
   if (c.mode === 'group') { const list = (c.ids || ids).filter(id => S[id] && S[id].vis !== false); let F = frameFit(list, .85, 3.3, 8.4, c.px);   /* поля по краям — 0,85 м на двоих: раз кадр подобран точно, герои могут быть крупнее */
     for (let it = 0; it < 2 && F.ok && edgeIn(F, list); it++) F = frameFit(list, .85, 3.3, 8.4, c.px);
-    if (F.ok) { const hh = Math.max(.9, ...list.map(h)), d = F.d, tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); return { pos: new THREE.Vector3(F.mid, ly + .08 * hh + d * .095, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; } }
+    if (F.ok) { const hh = Math.max(.9, ...list.map(h)), d = F.d, tp = Math.max(...list.map(topOf)), ly = Math.max(.52 * hh + d * .035, tp - .28 * d); { const r0 = { pos: new THREE.Vector3(F.mid, ly + .08 * hh + d * .095, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; return list.length >= 4 ? yawCam(r0, seg, 1.08) : r0; } } }
   if (c.mode === 'two') { const pair = Array.isArray(c.on) ? c.on : ids.slice(0, 2); const inc = [pair[0]].concat(pair[1] != null && pair[1] !== pair[0] ? [pair[1]] : []), hh = Math.max(h(pair[0]), h(pair[1] || pair[0]));
     let F = frameFit(inc, .9, 2.9, 7); for (let it = 0; it < 2 && edgeIn(F, inc); it++) F = frameFit(inc, .9, 2.9, 8.4);
     const d = F.d, tp = Math.max(...inc.map(topOf)), ly = Math.max(.55 * hh + d * .03, tp - .28 * d); return { pos: new THREE.Vector3(F.mid, ly + .05 * hh + d * .09, F.z0 + d), look: new THREE.Vector3(F.mid, ly, F.z0) }; }
@@ -3144,8 +3144,11 @@ function camFor(c, S, seg, lib) {
     const id = c.on || ids[0], x = px(id), z = pz(id), mp = (seg.props || []).find(q => q.type === 'moon'), mx = mp ? X(mp._x != null ? mp._x : mp.x0) : x + 1.5, cx = x * .62 + mx * .38;
     return { pos: new THREE.Vector3(cx, .55, z + 4.3), look: new THREE.Vector3(cx, 2.2, z - 2) }; }
   if (c.mode === 'pan') { const x = X(c.on != null ? +c.on : .5); return { pos: new THREE.Vector3(x, 1.5, 6 / (c.zoom || 1.3) * 1.3), look: new THREE.Vector3(x, .8, 0) }; }
-  return { pos: new THREE.Vector3(0, 1.75, 8.4), look: new THREE.Vector3(0, .85, 0) };
+  return yawCam({ pos: new THREE.Vector3(0, 1.75, 8.4), look: new THREE.Vector3(0, .85, 0) }, seg, 1.04);
 }
+/** Общий план не «в лоб» (25.11): камера повёрнута вокруг точки взгляда на MK3D.WIDE_YAW градусов, сторона — от сцены к сцене; ряд героев идёт по диагонали — видна глубина. */
+function yawCam(r, seg, dk) { const W = MK3D.WIDE_YAW != null ? MK3D.WIDE_YAW : 14; if (!W || !r) return r; const sd = (Math.floor(((seg && seg.t0) || 0) * 3.7) % 2) ? 1 : -1, a = sd * W * Math.PI / 180;
+  const dx = r.pos.x - r.look.x, dz = r.pos.z - r.look.z; r.pos.x = r.look.x + (dx * Math.cos(a) + dz * Math.sin(a)) * (dk || 1); r.pos.z = r.look.z + (-dx * Math.sin(a) + dz * Math.cos(a)) * (dk || 1); return r; }
 
 // ---------- кадр ----------
 let curLoc = null;
