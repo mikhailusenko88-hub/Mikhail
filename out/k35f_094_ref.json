@@ -1,0 +1,58 @@
+{
+ "name": "k35f_094_ref",
+ "voice": "edge:ru-RU-SvetlanaNeural",
+ "text": "Кто?",
+ "dur": 1.87,
+ "accent_source": "дано в тексте",
+ "heard": "Кто?",
+ "match": 1.0,
+ "diff": [],
+ "f0_range": 4.2,
+ "f0_median_hz": 193,
+ "intonation": [],
+ "pauses": [],
+ "rate": 5.5,
+ "words": [
+  {
+   "w": "кто",
+   "exp": 0,
+   "det": 0,
+   "margin": null,
+   "auto": null,
+   "map_ok": true,
+   "ph": "k t o",
+   "S": null,
+   "t0": 0.2214193548387097,
+   "t1": 0.40258064516129033
+  }
+ ],
+ "vowels": [
+  {
+   "w": 0,
+   "k": 0,
+   "t0": 0.382,
+   "t1": 0.403,
+   "c": 0.393,
+   "Dn": 0.15,
+   "pt": {
+    "o": 0.6961,
+    "ɔ": 0.1323,
+    "ɑ": 0.0489,
+    "oː": 0.0479,
+    "a": 0.0164,
+    "u": 0.0121,
+    "uː": 0.0051,
+    "e": 0.0034
+   },
+   "L": "о",
+   "ph": "o",
+   "I": 80.31,
+   "F": 11.773,
+   "D": 0.07,
+   "dF": 4.121
+  }
+ ],
+ "stress_errors": 0,
+ "stress_maybe": 0,
+ "hash": "cd4edf6a0102b47a24b9adae56b13619"
+}
