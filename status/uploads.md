@@ -56,3 +56,4 @@
 | 2026-11-23 | 3 | mass_cars №5 | Nexia | https://youtube.com/shorts/aTpbo_zDb3g | public |
 | 2026-11-24 | 1 | mass_cars №6 | Chery Tiggo | https://youtube.com/shorts/G3WD46oGL0I | public |
 | 2026-11-24 | 2 | mass_cities №3 | Toshkent | https://youtube.com/shorts/JuM5D0hY5tM | public |
+| 2026-11-24 | 3 | mass_cars №7 | Malibu | https://youtube.com/shorts/GrVGwQWIMTg | public |

@@ -1576,6 +1576,16 @@
    "link": "https://youtube.com/shorts/JuM5D0hY5tM",
    "title": "1000 ta shar! Toshkent, Fargʻona, Nukus… Qaysi shahar yutadi? Какой город победит? №3 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-24",
+   "slot": 3,
+   "league": "mass_cars",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/GrVGwQWIMTg",
+   "title": "1000 ta shar! Nexia, Gentra, Captiva… Qaysi mashina yutadi? Какая машина победит? №7 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1586,24 +1596,24 @@
  ],
  "mass": {
   "cars": {
-   "no": 6,
+   "no": 7,
    "cnt": {
-    "Malibu": 2,
-    "Damas": 2,
-    "Onix": 2,
-    "Kia K5": 2,
-    "Gentra": 6,
-    "Nexia": 6,
+    "Malibu": 3,
+    "Damas": 3,
+    "Onix": 3,
+    "Kia K5": 3,
+    "Gentra": 7,
+    "Nexia": 7,
     "BYD Song": 3,
-    "Cobalt": 6,
+    "Cobalt": 7,
     "Matiz": 3,
     "Lacetti": 3,
-    "Equinox": 2,
+    "Equinox": 3,
     "Labo": 3,
     "Spark": 3,
     "Tahoe": 3,
-    "Jiguli": 2,
-    "Captiva": 2,
+    "Jiguli": 3,
+    "Captiva": 3,
     "Chery Tiggo": 3,
     "Epica": 3,
     "Tracker": 2,
@@ -1687,6 +1697,19 @@
      ],
      "in_cup": 339,
      "link": "https://youtube.com/shorts/G3WD46oGL0I"
+    },
+    {
+     "no": 7,
+     "date": "2026-11-24",
+     "slot": 3,
+     "winner": "Malibu",
+     "top3": [
+      "Malibu",
+      "Nexia",
+      "Onix"
+     ],
+     "in_cup": 388,
+     "link": "https://youtube.com/shorts/GrVGwQWIMTg"
     }
    ]
   },
