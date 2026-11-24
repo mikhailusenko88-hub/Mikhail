@@ -1,2 +1,2 @@
-# 24.11 20:06 — 37: старый ролик (37d, Рон голосом iPhone) снять с таймера — на слоте теперь AvGNLuWuMBQ (37f)
-cancel NvOygN3DtrA
+# 24.11 20:10 — 35 заново: сборка 35d (Рон новым голосом, ударения по voice-check, без букв в кадре) на тот же слот; потом cancel c6vT6oqU1Ss, Shorts из shorts/35d-server.mp4, cancel _CKTe5ULnwk
+plan 35d 35 2026-11-25T15:30 --again
