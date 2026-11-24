@@ -72,7 +72,7 @@
   <h1>Кот Барсик</h1>
   <small id="upd"></small>
 </header>
-<div class="tabs"><button class="tab" data-tab="shorts">✂️ Shorts</button><button class="tab" data-tab="serii">🎬 Новые серии<span class="n" id="nSerii"></span></button></div>
+<div class="tabs"><button class="tab" data-tab="shorts">✂️ Shorts</button><button class="tab" data-tab="serii">🎬 Новые серии<span class="n" id="nSerii"></span></button><button class="tab" data-tab="sb">📦 Сборники<span class="n" id="nSb"></span></button></div>
 <div id="paneShorts">
 <div class="wrap">
   <p class="hint">Каждое утро в 07:00 тут появляются новые ролики (хранятся 2 недели). <b>«Скачать»</b> — iPhone спросит «Загрузить», ролик ляжет в Файлы → Загрузки (значок ⬇︎ в строке адреса), страница остаётся на месте. <b>«Открыть»</b> — ролик в отдельном окне, оттуда «Поделиться»; потом закрой окно, и вернёшься к этому же ролику в списке (он отмечен красной рамкой).</p>
@@ -85,11 +85,17 @@
   <div id="serii"><div class="empty">Загружаю…</div></div>
 </div>
 </div>
+<div id="paneSb" hidden>
+<div class="wrap">
+  <p class="hint">Сборники «серии подряд» — только для <b>Rutube</b> (на YouTube их выкладывает студия). Длинные ролики на Rutube смотрят больше всего. <b>«⬇︎ Скачать видео»</b> — файл ляжет в Файлы → Загрузки, большой лучше качать по Wi-Fi. Категория — <b>«Детям»</b>, плейлист — «Кот Барсик — все серии подряд». В описании уже стоят таймкоды серий.</p>
+  <div id="sb"><div class="empty">Загружаю…</div></div>
+</div>
+</div>
 <div class="toast" id="toast">Скопировано</div>
 <script>
 (function(){
   var TL='barsik_tab';
-  function show(t){document.getElementById('paneShorts').hidden=(t!=='shorts');document.getElementById('paneSerii').hidden=(t!=='serii');
+  function show(t){document.getElementById('paneShorts').hidden=(t!=='shorts');document.getElementById('paneSerii').hidden=(t!=='serii');document.getElementById('paneSb').hidden=(t!=='sb');
     document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t)});try{localStorage.setItem(TL,t)}catch(e){}}
   document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-tab'));window.scrollTo(0,0)})});
   var t0='shorts';try{t0=localStorage.getItem(TL)||'shorts'}catch(e){} if(/^#s\d+/.test(location.hash))t0='serii'; show(t0);
@@ -130,6 +136,39 @@
     if(first&&!document.getElementById('paneSerii').hidden){var el=document.getElementById('s'+first.num);if(el)setTimeout(function(){el.scrollIntoView({block:'start'})},50)}
   }
   fetch('serii.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('serii').innerHTML='<div class="empty">Пока пусто.</div>'});
+})();
+</script>
+<script>
+(function(){
+  var LS='barsik_sb'; var st={}; try{st=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){}
+  function save(){try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function toast(t){var el=document.getElementById('toast');el.textContent=t||'Скопировано';el.classList.add('show');setTimeout(function(){el.classList.remove('show')},1200)}
+  function fallback(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+  function copy(txt,btn){var ok=function(){toast();if(btn){btn.classList.add('copied');setTimeout(function(){btn.classList.remove('copied')},1200)}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){fallback(txt);ok()})}else{fallback(txt);ok()}}
+  function render(d){
+    var box=document.getElementById('sb');box.innerHTML='';
+    var items=d.items||[];
+    document.getElementById('nSb').textContent=items.filter(function(it){return !(st[it.name]&&st[it.name].pub)}).length||'';
+    if(!items.length){box.innerHTML='<div class="empty">Пока пусто.</div>';return}
+    items.forEach(function(it){
+      var s=st[it.name]||{};
+      var c=document.createElement('div');c.className='card sc'+(s.pub?' past':'');c.id='sb'+it.name;
+      var M={title:it.title,rt:it.desc,frt:it.title+'\n\n'+it.desc};
+      c.innerHTML='<div class="head"><span>Сборник '+esc(it.name)+' · выложить <b>'+esc(it.when)+'</b></span><span>'+esc(it.dur)+' · '+it.mb+' МБ</span></div>'+
+        '<div class="t">'+esc(it.title)+'</div><div class="note">'+esc(it.note||'')+'</div>'+
+        '<img class="cov" loading="lazy" src="'+esc(it.cover)+'" alt="">'+
+        '<div class="btns"><a class="btn dl" href="'+esc(it.video)+'" download="Кот_Барсик_сборник_'+esc(it.name)+'.mp4">⬇︎ Скачать видео</a><a class="btn" href="'+esc(it.cover)+'" download="Обложка_сборник_'+esc(it.name)+'.jpg">⬇︎ Обложка</a></div>'+
+        '<div class="plat rt"><div class="ph">RUTUBE</div><div class="btns"><button class="btn" data-copy="title">Название</button><button class="btn" data-copy="rt">Описание</button><button class="btn all" data-copy="frt">Всё сразу</button></div><div class="field"><label>Описание для Rutube</label><pre>'+esc(it.desc)+'</pre></div></div>'+
+        '<div class="row"><label class="chk"><input type="checkbox" data-k="pub" '+(s.pub?'checked':'')+'> выложено на Rutube</label></div>';
+      c.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){copy(M[b.getAttribute('data-copy')]||'',b)})});
+      c.querySelectorAll('.chk input').forEach(function(x){x.addEventListener('change',function(){var o=st[it.name]||(st[it.name]={});o[x.getAttribute('data-k')]=x.checked?1:0;save();c.classList.toggle('past',!!o.pub);
+        document.getElementById('nSb').textContent=items.filter(function(q){return !(st[q.name]&&st[q.name].pub)}).length||''})});
+      box.appendChild(c);
+    });
+  }
+  fetch('sborniki.json?t='+Date.now()).then(function(r){return r.json()}).then(render).catch(function(){document.getElementById('sb').innerHTML='<div class="empty">Пока пусто.</div>'});
 })();
 </script>
 <script>
