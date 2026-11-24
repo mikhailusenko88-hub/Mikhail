@@ -9,21 +9,23 @@ require('fs').mkdirSync(OUT, { recursive: true });
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: w < 900, isMobile: w < 900 });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 200)));
     await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(900);
-    await p.evaluate((lvl) => window.__hook.start(false, lvl), lvl); await p.waitForTimeout(700);
+    const MAN = process.env.HOOK_CTL === 'manual';
+    await p.evaluate(([lvl, m]) => { window.__hook.setCtl(m ? 'manual' : 'auto'); window.__hook.start(false, lvl); }, [lvl, MAN]); await p.waitForTimeout(700);
     const st = () => p.evaluate(() => { const H = window.__hook, S = H.S; return { mode: H.mode, wait: H.wait, tut: H.tut, ts: +H.ts.toFixed(2), rope: !!S.rope, x: Math.round(S.truck.x), state: S.state, t: +S.t.toFixed(2), att: S.attempts }; });
     const log = []; let shots = 0, down = false;
     const shot = async (n) => { await p.screenshot({ path: path.join(OUT, `${name}-${++shots}${n}.png`) }); };
     let q = await st(); log.push('старт: ' + JSON.stringify(q)); await shot('go');
-    await p.mouse.move(w / 2, h * 0.6); await p.mouse.down(); await p.waitForTimeout(120); await p.mouse.up(); // «нажми — поехали»: короткое нажатие
+    if (MAN) await p.keyboard.down('ArrowRight'); // ручной режим: газ держим всё время
+    await p.keyboard.down('Space'); await p.waitForTimeout(120); await p.keyboard.up('Space'); // «нажми — поехали»: короткое нажатие
     const seen = {}; const t0 = Date.now();
     let lastLog = 0;
     while (Date.now() - t0 < 40000) {
       if (Date.now() - lastLog > 4000) { lastLog = Date.now(); console.error(name, JSON.stringify(await st())); }
       q = await st(); if (q.mode === 'win') break;
-      if (q.state !== 'play') { if (!seen['d' + q.att]) { seen['d' + q.att] = 1; console.error('  упал при x=' + q.x + ' попытка ' + q.att); } if (down) { await p.mouse.up(); down = false; } await p.waitForTimeout(60); continue; }
-      if (q.wait) { await p.mouse.down(); await p.waitForTimeout(80); await p.mouse.up(); continue; }
-      if (q.tut === 'hold' && !down) { const first = !seen['hold' + q.rope]; seen['hold' + q.rope] = 1; await p.waitForTimeout(lvl ? 300 : first ? 350 : 0); /* реакция человека */ if (first && !lvl) { log.push('просит держать: ' + JSON.stringify(await st())); await shot('hold'); } await p.mouse.down(); down = true; if (first && lvl) await shot('hold'); }
-      else if (q.tut === 'rel' && down && (lvl > 0 || q.ts <= 0.45)) { if (!seen.rel) { seen.rel = 1; await p.waitForTimeout(lvl ? 300 : 450); if (!lvl) { log.push('просит отпустить: ' + JSON.stringify(await st())); await shot('rel'); } } else await p.waitForTimeout(lvl ? 300 : 350); /* как человек: треть секунды на реакцию */ if (lvl && !seen['r' + q.x]) { seen['r' + q.x] = 1; console.error('  отпускает при x=' + q.x + ' попытка ' + q.att); } await p.mouse.up(); down = false; }
+      if (q.state !== 'play') { if (!seen['d' + q.att]) { seen['d' + q.att] = 1; console.error('  упал при x=' + q.x + ' попытка ' + q.att); } if (down) { await p.keyboard.up('Space'); down = false; } await p.waitForTimeout(60); continue; }
+      if (q.wait) { await p.keyboard.down('Space'); await p.waitForTimeout(80); await p.keyboard.up('Space'); continue; }
+      if (q.tut === 'hold' && !down) { const first = !seen['hold' + q.rope]; seen['hold' + q.rope] = 1; await p.waitForTimeout(lvl ? 300 : first ? 350 : 0); /* реакция человека */ if (first && !lvl) { log.push('просит держать: ' + JSON.stringify(await st())); await shot('hold'); } await p.keyboard.down('Space'); down = true; if (first && lvl) await shot('hold'); }
+      else if (q.tut === 'rel' && down && (lvl > 0 || q.ts <= 0.45)) { if (!seen.rel) { seen.rel = 1; await p.waitForTimeout(lvl ? 300 : 450); if (!lvl) { log.push('просит отпустить: ' + JSON.stringify(await st())); await shot('rel'); } } else await p.waitForTimeout(lvl ? 300 : 350); /* как человек: треть секунды на реакцию */ if (lvl && !seen['r' + q.x]) { seen['r' + q.x] = 1; console.error('  отпускает при x=' + q.x + ' попытка ' + q.att); } await p.keyboard.up('Space'); down = false; }
       await p.waitForTimeout(25);
     }
     await p.waitForTimeout(1500); await shot('end');

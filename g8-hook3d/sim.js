@@ -14,7 +14,7 @@
 
   // ---------- построитель трассы (как в Ball Truck) ----------
   function Track() {
-    const S = { polys: [], anchors: [], pits: [], ceils: [], boosts: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9 };
+    const S = { polys: [], anchors: [], pits: [], ceils: [], boosts: [], springs: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9 };
     let x = 0, y = 600, cur = null;
     const push = (px, py) => { cur.push([px, py]); S.minY = Math.min(S.minY, py); S.maxY = Math.max(S.maxY, py); };
     const B = {
@@ -34,6 +34,8 @@
       // потолок пещеры от dx0 до dx1 на высоте h над текущей дорогой
       ceil(dx0, dx1, h) { S.ceils.push({ x0: x + dx0, x1: x + dx1, y: y - h }); S.minY = Math.min(S.minY, y - h - 200); return B; },
       boost(dx, len = 300) { S.boosts.push({ x0: x + dx, x1: x + dx + len }); return B; },
+      // батут: наехал — подбросило вверх со скоростью v (1000 ≈ на 290 вверх)
+      spring(dx, len = 140, v = 1000) { S.springs.push({ x0: x + dx, x1: x + dx + len, v }); return B; },
       star(dx, h) { S.star = { x: x + dx, y: y - h, got: false }; return B; },
       cp(dx = 0) { S.cps.push({ x: x + dx, y }); return B; },
       fin(dx = 150) { S.fin = x + dx; return B; },
@@ -193,11 +195,16 @@
         else { j.speed = 0; j.maxT = 3500; }
       }
       // ускорители на дороге
+      S.springT = Math.max(0, (S.springT || 0) - dt);
+      if (play && S.grounded && !S.rope && !S.springT) for (const z of L.springs) if (T.x > z.x0 && T.x < z.x1) { for (const b of [T, ...S.wheels]) b.vy = Math.min(b.vy, -z.v); T.w = 0; S.springT = 0.6; S.events.push({ e: 'spring', z }); }
       if (play && S.grounded) for (const z of L.boosts) if (T.x > z.x0 && T.x < z.x1) { const sp = T.vx * fx + T.vy * fy; if (sp < 1400) for (const b of [T, ...S.wheels]) { b.vx += fx * 2600 * dt; b.vy += fy * 2600 * dt; } }
       if (!S.grounded && play && !S.rope) {
-        const k = g ? -1 : br ? 1 : 0;
-        if (k) { T.w += k * 4.2 * dt; T.w = Math.max(-3.2, Math.min(3.2, T.w)); }
-        else { const an = Math.atan2(Math.sin(T.a), Math.cos(T.a)); T.w *= 1 - 2.2 * dt; T.w -= an * 2.4 * dt; } // без кнопок в воздухе грузовик сам понемногу выравнивается — легче приземлиться
+        // в воздухе газ поднимает нос, тормоз опускает — но не дальше ~25°: зажатый газ больше не опрокидывает грузовик на спину.
+        // Без кнопок грузовик сам понемногу выравнивается — легче приземлиться на колёса.
+        const an = Math.atan2(Math.sin(T.a), Math.cos(T.a)), k = g ? -1 : br ? 1 : 0;
+        const f = k < 0 ? Math.max(0, Math.min(1, (an + 0.5) / 0.3)) : k > 0 ? Math.max(0, Math.min(1, (0.5 - an) / 0.3)) : 0;
+        if (f > 0) { T.w += k * 4.2 * f * dt; T.w = Math.max(-3.2, Math.min(3.2, T.w)); }
+        if (f < 1) { T.w *= 1 - 2.2 * (1 - f) * dt; T.w -= an * 2.4 * (1 - f) * dt; }
       }
       P.step(S.W);
       after();

@@ -13,6 +13,18 @@
   const lam = (h, o) => new T.MeshLambertMaterial(Object.assign({ color: C(h) }, o || {}));
   const bas = (h, o) => new T.MeshBasicMaterial(Object.assign({ color: C(h) }, o || {}));
 
+  // вид серии: 0 — луг, 1 — каньон (песок, красные скалы, тёплое небо)
+  const TH = [
+    { g: ['#86cf52', '#7ac448', '#e8c896', '#dfbc87', '#a8794a', '#96693d', '#58a332', '#b8824c', '#7a4e2a', '#3d2817'], tree: [['#4caf50', '#69c06d'], ['#2f8f57', '#3da56a'], '#8d5a2b'], treeP: 0.72, rocks: ['#9aa0a6', '#84898f'], tuft: '#4f9a2e', flw: ['#ffffff', '#ffeb3b', '#ff80ab'],
+      ridge: [['#9cc0dc', '#bcd8ea'], ['#86b99a', '#acd3b8'], ['#69ab63', '#86c079']], sky: ['#3ea6f4', '#9fdafc', '#e9f8ff'], fog: '#d3ecfb' },
+    { g: ['#e3a85c', '#d99b4f', '#f4e2bd', '#ecd6a8', '#b9683a', '#a65a30', '#c47f3d', '#c2703c', '#8e4a26', '#4a2414'], tree: [['#9aa33f', '#b6bb52'], ['#5f9148', '#77a85a'], '#7a5230'], treeP: 0.34, rocks: ['#c98a5a', '#b3744a'], tuft: '#b9a44a', flw: ['#fff3c4', '#ffb74d', '#ff8a65'],
+      ridge: [['#e2a67c', '#f0c6a2'], ['#d18658', '#e3a57d'], ['#c06f41', '#d68d5f']], sky: ['#4aa3e8', '#ffd9a8', '#ffeede'], fog: '#f7dfc6' },
+  ], skyC = {};
+  function skyTex(k) {
+    if (!skyC[k]) { const sk = document.createElement('canvas'); sk.width = 4; sk.height = 256; const g = sk.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256), c = TH[k].sky; gr.addColorStop(0, c[0]); gr.addColorStop(0.55, c[1]); gr.addColorStop(1, c[2]); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); skyC[k] = new T.CanvasTexture(sk); skyC[k].encoding = T.sRGBEncoding; }
+    return skyC[k];
+  }
+
   // ---------- сборка геометрии из треугольников с цветом в вершинах ----------
   const Acc = () => ({ p: [], c: [] });
   function tri(A, a, b, c, ca, cb, cc) { A.p.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]); A.c.push(ca.r, ca.g, ca.b, cb.r, cb.g, cb.b, cc.r, cc.g, cc.b); }
@@ -239,21 +251,22 @@
     for (const [dx, dy, r] of [[-40, 0, 34], [0, 16, 46], [42, 0, 34], [10, -8, 36]]) { const m = new T.Mesh(GEO('puff', () => new T.IcosahedronGeometry(1, 1)), mat); m.position.set(dx, dy, 0); m.scale.setScalar(r); g.add(m); }
     par.add(g); return g;
   }
-  function tree(A, x, y, z, s, rnd) {
-    const round = rnd() < 0.42, g1 = C(round ? '#4caf50' : '#2f8f57'), g2 = C(round ? '#69c06d' : '#3da56a');
-    addGeo(A, GEO('trunk', () => new T.CylinderGeometry(7, 9, 50, 6)), x, y + 25 * s, z, s, s, s, C('#8d5a2b'));
+  function tree(A, x, y, z, s, rnd, P) {
+    const round = rnd() < 0.42, tc = P.tree[round ? 0 : 1], g1 = C(tc[0]), g2 = C(tc[1]);
+    addGeo(A, GEO('trunk', () => new T.CylinderGeometry(7, 9, 50, 6)), x, y + 25 * s, z, s, s, s, C(P.tree[2]));
     if (round) { const ico = GEO('ico', () => new T.IcosahedronGeometry(40, 0)); addGeo(A, ico, x, y + 82 * s, z, s, s, s, g1); addGeo(A, ico, x + 24 * s, y + 62 * s, z + 14 * s, s * 0.6, s * 0.6, s * 0.6, g2); }
     else { const cone = GEO('cone', () => new T.ConeGeometry(44, 84, 7)); addGeo(A, cone, x, y + 80 * s, z, s, s, s, g1); addGeo(A, cone, x, y + 124 * s, z, s * 0.72, s * 0.72, s * 0.72, g2); }
   }
 
   // ---------- уровень: земля, пропасти, пещеры, кольца, флаги, фон ----------
-  function build(S, key) {
+  function build(S, key, theme) {
+    const P = TH[theme] || TH[0]; scene.background = skyTex(TH[theme] ? theme : 0); scene.fog.color.copy(C(P.fog));
     for (const k in geoC) geoC[k].userData.keep = true;
     if (lvlG) { scene.remove(lvlG); lvlG.traverse((o) => { if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose(); }); }
     lvlG = new T.Group(); scene.add(lvlG); builtKey = key; rings = []; cps = []; boostM = []; clouds = [];
     const L = S.L; let seed = 4321 + key * 977; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const G = Acc(), D = Acc();
-    const gA = C('#86cf52'), gB = C('#7ac448'), rA = C('#e8c896'), rB = C('#dfbc87'), rock = C('#a8794a'), rock2 = C('#96693d'), lip = C('#58a332'), e1 = C('#b8824c'), e2 = C('#7a4e2a'), e3 = C('#3d2817');
+    const [gA, gB, rA, rB, rock, rock2, lip, e1, e2, e3] = P.g.map(C);
     let lowY = 1e9, hiY = -1e9, n = 0;
     for (const p of L.polys) for (const q of p) { lowY = Math.min(lowY, -q[1]); hiY = Math.max(hiY, -q[1]); }
     const yb = lowY - DEEP, x0L = L.polys[0][0][0], lastP = L.polys[L.polys.length - 1], x1L = lastP[lastP.length - 1][0];
@@ -274,9 +287,9 @@
         const cnt = rnd() < 0.6 ? 1 + (rnd() < 0.35 ? 1 : 0) : 0;
         for (let q = 0; q < cnt; q++) {
           const t = rnd(), x = xa + (xb - xa) * t, y = ya + (yb1 - ya) * t, z = -170 - rnd() * rnd() * 2000, s = 0.85 + rnd() * 0.8 + (-z / 2600) * 0.9;
-          if (rnd() < 0.72) tree(D, x, y, z, s, rnd); else addGeo(D, GEO('rock', () => new T.DodecahedronGeometry(22, 0)), x, y + 8 * s, z, s * 1.3, s * 0.8, s, C(rnd() < 0.5 ? '#9aa0a6' : '#84898f'));
+          if (rnd() < P.treeP) tree(D, x, y, z, s, rnd, P); else addGeo(D, GEO('rock', () => new T.DodecahedronGeometry(22, 0)), x, y + 8 * s, z, s * 1.3, s * 0.8, s, C(P.rocks[rnd() < 0.5 ? 0 : 1]));
         }
-        if (rnd() < 0.55) { const t = rnd(), x = xa + (xb - xa) * t, y = ya + (yb1 - ya) * t, z = ROAD + 14 + rnd() * (ZF - ROAD - 22); addGeo(D, GEO('tuft', () => new T.ConeGeometry(7, 16, 5)), x, y + 8, z, 1, 1, 1, C('#4f9a2e')); if (rnd() < 0.6) addGeo(D, GEO('flw', () => new T.IcosahedronGeometry(4, 0)), x + 5, y + 15, z + 3, 1, 1, 1, C(['#ffffff', '#ffeb3b', '#ff80ab'][Math.floor(rnd() * 3)])); }
+        if (rnd() < 0.55) { const t = rnd(), x = xa + (xb - xa) * t, y = ya + (yb1 - ya) * t, z = ROAD + 14 + rnd() * (ZF - ROAD - 22); addGeo(D, GEO('tuft', () => new T.ConeGeometry(7, 16, 5)), x, y + 8, z, 1, 1, 1, C(P.tuft)); if (rnd() < 0.6) addGeo(D, GEO('flw', () => new T.IcosahedronGeometry(4, 0)), x + 5, y + 15, z + 3, 1, 1, 1, C(P.flw[Math.floor(rnd() * 3)])); }
       }
     }
     const dk = C('#0e0906');
@@ -311,6 +324,11 @@
         quad(G, [x, ya, ROAD], [x + 60, yb1, ROAD], [x + 60, yb1, -ROAD], [x, ya, -ROAD], C(i & 1 ? '#ff9800' : '#ffb74d'));
         const m = new T.Mesh(chev, new T.MeshBasicMaterial({ color: C('#ff6d00'), transparent: true, side: T.DoubleSide })); m.position.set(x + 8, (ya + yb1) / 2 + 40, -ROAD - 26); lvlG.add(m); boostM.push({ m, i });
       }
+    }
+    for (const z of L.springs || []) {
+      const xm = (z.x0 + z.x1) / 2, w = z.x1 - z.x0, gy = -S.groundAt(xm);
+      box(w, 9, ROAD * 2 - 14, lam('#d81b60'), xm, gy + 4.5, 0, lvlG).castShadow = false; box(w - 18, 3, ROAD * 2 - 30, lam('#f8bbd0'), xm, gy + 10.5, 0, lvlG).castShadow = false;
+      for (let k = 0; k < 2; k++) { const m = new T.Mesh(chev, new T.MeshBasicMaterial({ color: C('#ec407a'), transparent: true, side: T.DoubleSide })); m.rotation.z = Math.PI / 2; m.position.set(xm, gy + 70 + k * 52, -ROAD - 26); lvlG.add(m); boostM.push({ m, i: -k }); }
     }
     const gm = mesh(G, new T.MeshLambertMaterial({ vertexColors: true, side: T.DoubleSide })); gm.receiveShadow = true; lvlG.add(gm);
     if (D.p.length) { const dm = mesh(D, new T.MeshLambertMaterial({ vertexColors: true })); dm.castShadow = true; lvlG.add(dm); }
@@ -355,9 +373,9 @@
       lvlG.add(mesh(A, new T.MeshBasicMaterial({ vertexColors: true, side: T.DoubleSide })));
     };
     const gb = (lowY + hiY) / 2;
-    ridge(-8200, gb - 200, 900, 2300, C('#9cc0dc'), C('#bcd8ea'), 950);
-    ridge(-5600, gb - 300, 500, 1400, C('#86b99a'), C('#acd3b8'), 720);
-    ridge(ZB - 500, gb - 500, 150, 640, C('#69ab63'), C('#86c079'), 520);
+    ridge(-8200, gb - 200, 900, 2300, C(P.ridge[0][0]), C(P.ridge[0][1]), 950);
+    ridge(-5600, gb - 300, 500, 1400, C(P.ridge[1][0]), C(P.ridge[1][1]), 720);
+    ridge(ZB - 500, gb - 500, 150, 640, C(P.ridge[2][0]), C(P.ridge[2][1]), 520);
     for (let i = 0; i < 16; i++) { const c = cloud(lvlG, x0L - 2500 + rnd() * (x1L - x0L + 5000), hiY + 500 + rnd() * 1000, -1300 - rnd() * 3800, 2 + rnd() * 2.6, white); c.userData.v = 6 + rnd() * 10; clouds.push(c); }
   }
 
@@ -367,7 +385,7 @@
   R.draw = function (S, v) {
     if (!R.ok) return;
     if (v.W !== vw || v.H !== vh || v.DPR !== vdpr) { vw = v.W; vh = v.H; vdpr = v.DPR; renderer.setPixelRatio(v.DPR); renderer.setSize(vw, vh, false); cam.aspect = vw / vh; }
-    if (builtKey !== v.lvl || !lvlG) build(S, v.lvl);
+    if (builtKey !== v.lvl || !lvlG) build(S, v.lvl, v.theme | 0);
     const L = S.L, t = v.t, dt = Math.min(0.05, Math.max(0, t - lastT)); lastT = t;
     // камера: тот же кадр, что у плоского вида (точка взгляда и масштаб), но с глубиной и небольшим наклоном сверху
     const d = v.H / v.Z / (2 * Math.tan((cam.fov * Math.PI) / 360)), sh = v.shake > 0 ? v.shake * 40 : 0;

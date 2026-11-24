@@ -9,7 +9,7 @@
     soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)'],
     duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк'],
     one: 'Один палец', hand: 'Газ и крюк', two: 'Вдвоём', touchAuto: 'Газ сам. Держи палец — крюк, отпусти — летишь', keyAuto: 'Газ сам. Пробел или мышь: держи — крюк, отпусти — летишь',
-    legendAuto: 'Пробел или мышь: держи — крюк, отпусти — летишь', hold: 'ДЕРЖИ', rel: 'ОТПУСТИ!', go: 'Нажми — поехали!', keyHint: 'мышь или Пробел',
+    legendAuto: 'Пробел или мышь: держи — крюк, отпусти — летишь', hold: 'ДЕРЖИ', rel: 'ОТПУСТИ!', go: 'Нажми — поехали!', keyHint: 'мышь или Пробел', gasW: 'ГАЗ', space: 'Пробел', series: 'Серия', opens: 'Откроется за', boing: 'Батут!',
     phone: 'На телефоне: справа газ и тормоз, слева крюк (вся левая половина экрана)',
     legend: '→ газ   ← тормоз   ·   Пробел / W — крюк', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
@@ -23,7 +23,7 @@
     soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook'],
     duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook'],
     one: 'One finger', hand: 'Gas & hook', two: '2 players', touchAuto: 'Auto gas. Hold to hook, let go to fly', keyAuto: 'Auto gas. Space or mouse: hold to hook, let go to fly',
-    legendAuto: 'Space or mouse: hold to hook, let go to fly', hold: 'HOLD', rel: 'LET GO!', go: 'Tap to go!', keyHint: 'mouse or Space',
+    legendAuto: 'Space or mouse: hold to hook, let go to fly', hold: 'HOLD', rel: 'LET GO!', go: 'Tap to go!', keyHint: 'mouse or Space', gasW: 'GAS', space: 'Space', series: 'World', opens: 'Opens at', boing: 'Boing!',
     phone: 'On phones: gas and brake on the right, hook on the left (whole left half)',
     legend: '→ gas   ← brake   ·   Space / W — hook', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
@@ -105,12 +105,18 @@
   let gar = null, gcam = null;
   let lvl = 0, res = null; const dbg = { freeze: false, clean: false };
   let hangT = 0;
-  // управление: 'auto' — газ сам, палец только на крюке (по умолчанию); 'manual' — газ, тормоз и крюк; вдвоём — всегда ручное
-  let ctl = save.ctl === 'manual' ? 'manual' : 'auto', wait = false, ts = 1, tut = null, hookT0 = 0;
+  // управление: 'manual' — газ, тормоз и крюк (по умолчанию: Михаилу так интереснее); 'auto' — газ сам, палец только на крюке; вдвоём — всегда ручное
+  let ctl = save.ctl === 'auto' ? 'auto' : 'manual', wait = false, ts = 1, tut = null, hookT0 = 0;
   const isAuto = () => ctl === 'auto' && !duo;
+  const SER = [{ n: ['Meadow', 'Луг'], need: 0 }, { n: ['Canyon', 'Каньон'], need: 16 }], NS = Math.ceil(NL / 12);
+  let ser = 0;
+  const serOpen = (k) => !!window.HOOK_TEST || starsTotal() >= (SER[k] ? SER[k].need : 999);
+  const canNext = () => lvl < NL - 1 && serOpen(H.levels[lvl + 1].ser);
+  function firstOpen() { for (let i = 0; i < NL; i++) if (!save.stars[i] && serOpen(H.levels[i].ser)) return i; return 0; }
+  ser = H.levels[firstOpen()].ser;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
-  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
+  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; } else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; ptrs.clear(); });
 
@@ -152,7 +158,7 @@
     return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: false };
   }
 
-  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
@@ -171,8 +177,9 @@
     else if (b.id === 'garage') openGarage();
     else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); }
     else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
-    else if (b.id === 'play') { let k = save.stars.findIndex((q, i) => !q && i < NL); if (k < 0) k = save.stars.length < NL ? save.stars.length : 0; startGame(duo, k); }
-    else if (b.id === 'again') restart(); else if (b.id === 'next') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (b.id === 'menu') mode = 'menu';
+    else if (b.id === 'play') startGame(duo, firstOpen());
+    else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); tone(700, 0.05, 'triangle', 0.08); }
+    else if (b.id === 'again') restart(); else if (b.id === 'next') { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; } else if (b.id === 'menu') mode = 'menu';
   }
 
   // ---------- обучение рукой ----------
@@ -183,6 +190,7 @@
     tut = null;
     const G = H.levels[lvl].guide; if (!G || (save.tut && save.tut[lvl]) || S.state !== 'play') return 1; // обучение — пока уровень не пройден с ним хоть раз (у старых сохранений покажется заново)
     const tr = S.truck, slow = lvl === 0 && !save.up.eng && !save.up.winch;
+    if (!isAuto() && !inp.gas && S.grounded && !S.rope && Math.abs(tr.vx) < 140) { tut = 'gas'; return 1; } // ручное управление: стоит — покажи, где газ
     if (!S.rope) {
       const a = S.target, g = a && G[a.i]; if (!g) return 1;
       if (g.climb) { if (S.wallTouch || tr.x > a.x - 300) tut = 'hold'; return 1; }
@@ -210,9 +218,14 @@
   }
   // подсказка: рука и короткое слово. kind: 'go' — нажми, 'hold' — держи, 'rel' — отпусти
   function prompt(kind) {
-    const port = W < H2, hk = !isAuto() && buttons.find((b) => b.id === 'hook'), big = Math.min(1.25, Math.max(0.8, Math.min(W, H2) / 420));
+    const port = W < H2, hk = !isAuto() && buttons.find((b) => b.id === (kind === 'gas' ? 'gas' : 'hook')), big = Math.min(1.25, Math.max(0.8, Math.min(W, H2) / 420));
     const x = hk ? hk.x + hk.w * 0.55 : W / 2, y = hk ? hk.y + hk.h * 0.45 : H2 * (port ? 0.85 : 0.76), ph = (realT * 1.6) % 1;
-    const col = kind === 'rel' ? '#43a047' : '#ff9800', txt = kind === 'go' ? T.go : kind === 'hold' ? T.hold : T.rel;
+    const col = kind === 'rel' || kind === 'gas' ? '#43a047' : '#ff9800', keys2 = !isAuto() && !matchMedia('(pointer: coarse)').matches && !ptrs.size;
+    const txt = kind === 'go' ? T.go : keys2 ? (kind === 'gas' ? '→  ' + T.gasW : kind === 'hold' ? T.space + ' — ' + T.hold : T.rel) : kind === 'hold' ? T.hold : kind === 'gas' ? T.gasW : T.rel;
+    if (keys2) { // клавиатура: рука не нужна, пишем клавишу
+      const fs = 34, pul = 1 + 0.05 * Math.sin(realT * 10); ctx.save(); ctx.translate(W / 2, H2 * 0.8); ctx.scale(pul, pul); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+      ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0); ctx.fillStyle = col; ctx.fillText(txt, 0, 0); ctx.restore(); return;
+    }
     let lift = 0;
     if (kind === 'go') lift = 26 * Math.abs(Math.sin(realT * 4.2)); else if (kind === 'rel') lift = 18 + 30 * ((realT * 1.8) % 1);
     { // круги от нажатия (для «отпусти» — расходятся шире: палец ушёл)
@@ -224,7 +237,7 @@
     ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0);
     ctx.restore();
-    if (kind !== 'rel' && !matchMedia('(pointer: coarse)').matches) { ctx.font = '800 16px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(T.keyHint, tx, ty + fs * 0.85); ctx.fillStyle = '#fff'; ctx.fillText(T.keyHint, tx, ty + fs * 0.85); }
+    if ((kind === 'go' || kind === 'hold') && isAuto() && !matchMedia('(pointer: coarse)').matches) { ctx.font = '800 16px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(T.keyHint, tx, ty + fs * 0.85); ctx.fillStyle = '#fff'; ctx.fillText(T.keyHint, tx, ty + fs * 0.85); }
   }
 
   // ---------- гараж ----------
@@ -315,6 +328,7 @@
       for (let x = c.x0 + 30; x < c.x1 - 30; x += 90) { const h = 26 + 22 * Math.abs(Math.sin(x * 0.013)); ctx.beginPath(); ctx.moveTo(sx(x - 18), sy(c.y)); ctx.lineTo(sx(x), sy(c.y + h)); ctx.lineTo(sx(x + 18), sy(c.y)); ctx.closePath(); ctx.fill(); }
       ctx.strokeStyle = '#3e2723'; ctx.lineWidth = 6 * Z; ctx.beginPath(); ctx.moveTo(sx(c.x0), sy(c.y)); ctx.lineTo(sx(c.x1), sy(c.y)); ctx.stroke();
     }
+    for (const z of L.springs || []) { if (z.x1 < vx0 || z.x0 > vx1) continue; const gy = S.groundAt((z.x0 + z.x1) / 2); ctx.fillStyle = '#d81b60'; rr(sx(z.x0), sy(gy - 12), (z.x1 - z.x0) * Z, 12 * Z, 4 * Z); ctx.fill(); } // батуты
     // ускорители: бегущие оранжевые стрелки
     for (const z of L.boosts) {
       if (z.x1 < vx0 || z.x0 > vx1) continue;
@@ -709,17 +723,26 @@
     ctx.font = '700 14px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.92)';
     const coarse = matchMedia('(pointer: coarse)').matches, help = isAuto() ? (coarse ? T.touchAuto : T.keyAuto) : coarse ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
     const cl = lines(help, W - 40); cl.forEach((q, i) => ctx.fillText(q, W / 2, my + mh + 18 + i * 18));
-    // сетка уровней
-    const cols = port ? 3 : 6, rows = Math.ceil(NL / cols), gy0 = my + mh + 22 + cl.length * 18 + 8;
+    // серия: стрелки и название; вторая открывается за звёзды
+    const sy0 = my + mh + 22 + cl.length * 18 + 2, open = serOpen(ser), sw2 = Math.min(W - 40, 360), sx0 = W / 2 - sw2 / 2;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; rr(sx0, sy0, sw2, 36, 18); ctx.fill();
+    for (const [id, ch, x, on] of [['s:prev', '‹', sx0, ser > 0], ['s:next', '›', sx0 + sw2 - 44, ser < NS - 1]]) { if (on) menuBtns.push({ id, x, y: sy0 - 4, w: 44, h: 44 }); ctx.fillStyle = on ? '#fff' : 'rgba(255,255,255,0.3)'; ctx.font = '900 26px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ch, x + 22, sy0 + 16); }
+    if (open) { ctx.fillStyle = '#fff'; ctx.font = '900 17px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${T.series} ${ser + 1} · ${SER[ser].n[LANG]}`, W / 2, sy0 + 19, sw2 - 96); }
+    else rich([{ t: `${SER[ser].n[LANG]} · ${T.opens}` }, { star: 1 }, { t: String(SER[ser].need) }], W / 2, sy0 + 18, 15);
+    // сетка уровней этой серии
+    const i0 = ser * 12, cnt = Math.min(12, NL - i0), cols = port ? 3 : 6, rows = Math.ceil(cnt / cols), gy0 = sy0 + 36 + 8;
     const footer = 70, cell = Math.min((Math.min(W, 900) - 40) / cols, (H2 - gy0 - footer) / rows, 130), gw = cell * cols, gx0 = W / 2 - gw / 2;
-    for (let i = 0; i < NL; i++) {
-      const c = i % cols, r = Math.floor(i / cols), x = gx0 + c * cell + 6, y = gy0 + r * cell + 6, w = cell - 12, st = save.stars[i] || 0;
-      menuBtns.push({ id: 'L' + i, x, y, w, h: w });
+    for (let q = 0; q < cnt; q++) {
+      const i = i0 + q, c = q % cols, r = Math.floor(q / cols), x = gx0 + c * cell + 6, y = gy0 + r * cell + 6, w = cell - 12, st = save.stars[i] || 0;
+      if (open) menuBtns.push({ id: 'L' + i, x, y, w, h: w });
+      ctx.globalAlpha = open ? 1 : 0.45;
       ctx.fillStyle = 'rgba(0,0,0,0.25)'; rr(x, y + 5, w, w, 16); ctx.fill();
-      ctx.fillStyle = st ? '#fffdf7' : '#e3f2fd'; rr(x, y, w, w, 16); ctx.fill();
-      ctx.fillStyle = '#263238'; ctx.font = `900 ${Math.round(w * 0.34)}px system-ui, sans-serif`; ctx.fillText(String(i + 1), x + w / 2, y + w * 0.38);
+      ctx.fillStyle = st ? '#fffdf7' : ser ? '#fff3e0' : '#e3f2fd'; rr(x, y, w, w, 16); ctx.fill();
+      ctx.fillStyle = '#263238'; ctx.font = `900 ${Math.round(w * 0.34)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), x + w / 2, y + w * 0.38);
       for (let k = 0; k < 3; k++) star5(x + w / 2 + (k - 1) * w * 0.24, y + w * 0.76, w * 0.1, k < st ? '#ffd54f' : '#cfd8dc');
+      ctx.globalAlpha = 1;
     }
+    if (!open) { const have = starsTotal(), cy = gy0 + rows * cell / 2; ctx.fillStyle = 'rgba(0,0,0,0.6)'; rr(W / 2 - 150, cy - 30, 300, 60, 18); ctx.fill(); rich([{ t: '🔒 ' + T.needStars }, { star: 1 }, { t: SER[ser].need + ' · ' + T.have + ' ' + have }], W / 2, cy, 18); }
     const by = Math.min(H2 - 60, gy0 + rows * cell + 10);
     const bw = Math.min(172, (W - 46) / 2);
     bigBtn('garage', W / 2 - bw - 6, by, bw, 50, '🔧 ' + T.garage, '#fb8c00'); bigBtn('play', W / 2 + 6, by, bw, 50, '▶ ' + T.play, '#43a047');
@@ -746,7 +769,7 @@
     const bh = 54, bw = (w - 48 - 20) / 3, b0 = x + 24, byy = y + h - bh - 22;
     bigBtn('menu', b0, byy, bw, bh, '☰', '#78909c');
     bigBtn('again', b0 + bw + 10, byy, bw, bh, '↻', '#fb8c00');
-    if (lvl < NL - 1) bigBtn('next', b0 + 2 * (bw + 10), byy, bw, bh, T.next + ' ▶', '#43a047'); else bigBtn('menu', b0 + 2 * (bw + 10), byy, bw, bh, T.levels, '#43a047');
+    if (canNext()) bigBtn('next', b0 + 2 * (bw + 10), byy, bw, bh, T.next + ' ▶', '#43a047'); else bigBtn('menu', b0 + 2 * (bw + 10), byy, bw, bh, T.levels, '#43a047');
   }
 
   // ---------- главный цикл ----------
@@ -771,6 +794,7 @@
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
           else if (e.e === 'respawn') { wait = auto; ts = 1; }
+          else if (e.e === 'spring') { tone(260, 0.28, 'sine', 0.2, 880); shake = 0.12; toasts.push({ t: 0, text: T.boing, col: '#f48fb1' }); }
           else if (e.e === 'snap') { sfx.snap(); shake = 0.25; toasts.push({ t: 0, text: T.snap, col: '#ffab91' }); }
         }
         S.events.length = 0;
@@ -781,7 +805,7 @@
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
-    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam, oy: oy() }); }
+    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam, oy: oy(), theme: mode === 'garage' ? 0 : H.levels[lvl].ser }); }
     else {
       ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
       drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
