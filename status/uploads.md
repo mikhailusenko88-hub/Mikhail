@@ -84,3 +84,4 @@
 | shorts | 2026-11-23 | 2 | Türkiye vs Bangladesh vs Iraq | https://youtube.com/shorts/A4AGd2-sRUQ | public (только Shorts) |
 | shorts | 2026-11-23 | 3 | Brazil vs UK vs Vietnam | https://youtube.com/shorts/s3iWur-00qU | public (только Shorts) |
 | shorts | 2026-11-24 | 1 | India vs Indonesia vs Mexico | https://youtube.com/shorts/TEIczLtjmMw | public (только Shorts) |
+| shorts | 2026-11-24 | 2 | Philippines vs Thailand vs Colombia | https://youtube.com/shorts/KsgnzXH1L2o | public (только Shorts) |
