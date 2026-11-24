@@ -3011,7 +3011,7 @@ function kitchenHQ(g, spec, r) { const time = spec.time || 'day', night = time =
     for (const [x, y, c] of [[5.75, 1.05, '#e8344e'], [5.9, .82, '#ffd23f'], [5.55, .7, '#3d8fe0']]) { const mg = new THREE.Mesh(G.cyl(.035, .035, .02, 16), stdM(c, null, .4)); mg.rotation.x = Math.PI / 2; mg.position.set(x, y, -2.76); g.add(mg); }
     const dr = new THREE.Mesh(new THREE.PlaneGeometry(.3, .38), stdM(null, ctex('kdraw', 128, 160, (q) => { q.fillStyle = '#fbfaf6'; q.fillRect(0, 0, 128, 160); q.lineWidth = 4; q.strokeStyle = '#ffb21a'; q.beginPath(); q.arc(98, 28, 14, 0, 7); q.stroke(); q.strokeStyle = '#e8344e'; q.strokeRect(26, 76, 60, 50); q.beginPath(); q.moveTo(20, 78); q.lineTo(56, 46); q.lineTo(92, 78); q.stroke(); q.strokeStyle = '#4fae5a'; q.beginPath(); q.moveTo(0, 140); q.lineTo(128, 140); q.stroke(); q.strokeStyle = '#3d8fe0'; q.strokeRect(46, 98, 18, 28); }), .9)); dr.position.set(5.72, 1.0, -2.765); dr.rotation.z = -.06; g.add(dr); }
   // стол со стульями (еду кладут на стол), лампа над столом, часы
-  const tb = new THREE.Group(); tb.position.set(4, 0, -1.4); tb.userData.tag = 'table'; g.add(tb); furnitureHQ(g, true);
+  const tb = new THREE.Group(); tb.position.set(4, 0, -1.4); tb.userData.tag = 'table'; g.add(tb); furnitureHQ(g, true); g.userData.obst = [{ x: 4, z: -1.4, r: .95 }];   // круглый стол — героям не стоять в нём (obstZ)
   for (const [x, z] of [[2.8, -1.4], [5.2, -1.4]]) { const w = '#c88a55', pr = [rb(0, .48, 0, .25, .035, .25, .02, w), rb(0, .78, .22, .25, .27, .03, .025, w, .02)]; for (const [lx, lz] of [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]]) pr.push(cy(lx, .23, lz, .022, .028, .46, .01, w, .02)); const m = sculptStatic(pr, 56, .3); if (m) { m.position.set(x, 0, z - .2); m.rotation.y = x < 4 ? -Math.PI / 2 : Math.PI / 2; g.add(m); } }
   const cloth = new THREE.Mesh(G.cyl(.95, .98, .04, 40), stdM(null, plaidT('#e8344e'), .9)); cloth.position.set(4, .81, -1.4); cloth.receiveShadow = true; g.add(cloth);
   { const v = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(.001, 0), new THREE.Vector2(.07, 0), new THREE.Vector2(.09, .08), new THREE.Vector2(.05, .18), new THREE.Vector2(.045, .22)], 24), new THREE.MeshPhysicalMaterial({ color: '#7fb8e8', roughness: .1, clearcoat: 1 })); v.position.set(4.1, .83, -1.95); v.castShadow = true; g.add(v); flowerBush(g, 4.1, -1.95, .3, '#4a8a3a', ['#ff4d6d', '#ffd23f', '#ffffff'], r); const fb = g.children[g.children.length - 1], lb = g.children[g.children.length - 2]; fb.position.y += 1.0; lb.position.y += 1.0; }
@@ -3073,6 +3073,10 @@ function arcOf(S, lib, hugF) { let n = 0, a = 9, b = -9;
     n += w; const pen = (1 - w) * .45; a = Math.min(a, st.x + pen); b = Math.max(b, st.x - pen); }
   const kd = MK3D.ARC_DEPTH != null ? MK3D.ARC_DEPTH : 1, k = kd * (n <= 2 ? 0 : n <= 3 ? .55 * (n - 2) : n <= 4 ? .55 + .15 * (n - 3) : n <= 5 ? .7 + .15 * (n - 4) : .85) * clamp((b - a - .2) / .1, 0, 1);   /* трое — 0,55 м, четверо — 0,7, пятеро и больше — 0,85: глубже — середина мельчит */
   return k > 0 ? { mid: (a + b) / 2, half: (b - a) / 2, k } : null; }
+/** Герой не встаёт внутрь мебели (25.11: в 38-й на кухне Рон стоял в столе — полукруг отодвинул середину компании на 0,85 м назад, прямо в круглый стол).
+    Место кладёт препятствия в g.userData.obst = [{x, z, r}] (круг на полу); героя, попавшего в круг (с запасом на его толщину), ставим перед ним. */
+function obstZ(x, z) { const O = curLoc && curLoc.userData.obst; if (!O) return z;
+  for (const o of O) if (Math.abs(x - o.x) < o.r + .35 && z < o.z + o.r + .3 && z > o.z - o.r - .6) z = o.z + o.r + .3; return z; }
 function arcDz(A, st) { if (!A || !st) return 0; const u = Math.min(1, Math.abs(st.x - A.mid) / A.half); return -A.k * (1 - u * u); }   /* глубина героя на полукруге, м: 0 у крайних, −k в середине */
 // средний план «по промежуткам»: края кадра ставим между героями — сдвигом вбок и расстоянием камеры (0,8…1,24 от обычного), чтобы сосед был либо целиком в кадре,
 // либо целиком за ним, а не половиной у края. Решение одно на весь план (по его началу, середине и концу), поэтому камера внутри плана не дёргается.
@@ -3085,7 +3089,7 @@ function mediumFit(c, id, seg, lib, zk) {
   const sMin = Math.max(.8, Math.min(1, Math.max(hy * .4 + hr * 1.75 + .05, hy * .6 + .02) / T / D0));   // ближе нельзя: герой во весь рост, с ушками и лапами
   const wOf = o => { const l = lib.characters[o], r = l && rigFor(l); return r && r.headR ? r.headR * 1.8 + .04 : .7; };   // полуширина героя с ушами и лапами ≈ 1,8 радиуса головы
   const fr = []; let side = null; for (const t of times.length > 1 ? [times[1], times[0], times[2]] : times) { let S; try { S = global.MK._sceneState({ audio: {} }, seg, t, 0); } catch (e) { return fit; } const st = S[id]; if (!st || !st.vis) continue;
-    const A = arcOf(S, lib), zOf = q => -(q.z || 0) * 1.5 + arcDz(A, q), x = X(st.x), z = zOf(st); if (side == null) fit.side = side = st.face < 0 ? -1 : 1;   // с какой стороны камера — по середине плана и на весь план (герой повернул голову — камера не прыгает)
+    const A = arcOf(S, lib), zOf = q => obstZ(X(q.x), -(q.z || 0) * 1.5 + arcDz(A, q)), x = X(st.x), z = zOf(st); if (side == null) fit.side = side = st.face < 0 ? -1 : 1;   // с какой стороны камера — по середине плана и на весь план (герой повернул голову — камера не прыгает)
     fr.push({ look: x + side * hr * .4, off: side * hr * 1.2, hx: x, nb: Object.keys(S).filter(o => o !== id && S[o].vis && lib.characters[o] && !(S[o].walk && S[o].walk.on) && S[o].x > -.05 && S[o].x < 1.05).map(o => ({ o, x: X(S[o].x), dz: z - zOf(S[o]), w: wOf(o), wt: 1 })) }); }
   for (const f of fr.slice(1)) for (const n of f.nb) { const m = fr[0].nb.find(q => q.o === n.o); if (!m || Math.abs(m.x - n.x) > .3) n.wt = .5; }   // кто за время плана перешёл на другое место — в начале и в конце плана считается вполовину (главное — середина)
   if (!fr.some(f => f.nb.length)) return fit;
@@ -3103,7 +3107,7 @@ function mediumFit(c, id, seg, lib, zk) {
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const ARCc = arcOf(S, lib);   /* камера знает настоящую глубину героя на полукруге: крупный и средний план не «наезжают» и не мельчат */
-  const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id]) : 0;
+  const px = id => S[id] ? X(S[id].x) : 0, pz = id => S[id] ? obstZ(X(S[id].x), -(S[id].z || 0) * 1.5 + arcDz(ARCc, S[id])) : 0;
   const ids = Object.keys(seg.C);
   const topOf = id => { const lc = lib.characters[id], rg = lc && rigFor(lc); return rg && rg.headH ? rg.headH + rg.headR * 1.75 : 1.1 * h(id); }; // макушка с ушками — всегда в кадре
   if (c.mode === 'prop') {   // 21.11.2026: вещь на весь кадр (главный предмет серии, «КАМЕРА: крупно компас»): в лапе или лежит; плоскую — чуть сверху, зеркальце — спереди
@@ -3251,7 +3255,7 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
-    const rx = hf ? hf.x : X(st.x), rz = -(st.z || 0) * 1.5 + (hf ? 0 : arcDz(ARC, st)); rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
+    const rx = hf ? hf.x : X(st.x), rz = hf ? -(st.z || 0) * 1.5 : obstZ(rx, -(st.z || 0) * 1.5 + arcDz(ARC, st)); rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
     const wkOn = st.walk && st.walk.on && !st.walk.side;   /* шаг в сторону (уступает место) — боком не поворачивается */ let yw = hf ? lerp(st.face * .5, hf.dir * .3, hf.k) : st.face * (wkOn ? 1.35 : .5);   // стоит и смотрит на друга — вполоборота (~30°), лицо к зрителю; боком — только когда идёт
     if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = wkOn ? 1.45 : .6; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~35° от зрителя, идёт — не спиной
     rig.yaw.rotation.y = yw;
