@@ -1,0 +1,66 @@
+{
+ "made": "2026-11-24",
+ "model": "v5_cis_base (MIT)",
+ "how": "доли дикторов в dp/pp/spe + SSML prosody",
+ "voices": {
+  "ru_svoy1": {
+   "w": {
+    "dp": {
+     "ru_oksana": 1.0
+    },
+    "pp": {
+     "ru_oksana": 0.361,
+     "ru_zinaida": 0.165,
+     "ru_kermen": 0.474
+    },
+    "spe": {
+     "ru_kejilgan": 0.178,
+     "ru_nash2": 0.822
+    }
+   },
+   "pitch": "low",
+   "rate_ssml": "fast",
+   "J": 6.245,
+   "sim": 0.8467
+  },
+  "ru_svoy2": {
+   "w": {
+    "dp": {
+     "ru_kejilgan": 1.0
+    },
+    "pp": {
+     "ru_oksana": 0.12,
+     "ru_aigul": 0.67,
+     "ru_zhadyra": 0.21
+    },
+    "spe": {
+     "ru_miyau": 0.659,
+     "ru_nash2": 0.341
+    }
+   },
+   "pitch": "low",
+   "rate_ssml": "fast",
+   "J": 6.105,
+   "sim": 0.8224
+  },
+  "ru_svoy3": {
+   "w": {
+    "dp": {
+     "ru_kermen": 0.291,
+     "ru_zhadyra": 0.65,
+     "ru_aigul": 0.059
+    },
+    "pp": {
+     "ru_oksana": 1.0
+    },
+    "spe": {
+     "ru_nash1": 1.0
+    }
+   },
+   "pitch": "x-low",
+   "rate_ssml": "fast",
+   "J": 6.08,
+   "sim": 0.8552
+  }
+ }
+}
