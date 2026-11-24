@@ -64,7 +64,9 @@
       const words = (T.slice(s0, i).join('').replace(/\+/g, '').toLowerCase().match(/[а-яё]+/g) || []);
       if (words.length && !words.some(w => QW.has(w)) && !words.includes('ли')) { let k = -1; for (let j = i - 1; j > s0; j--) if (T[j - 1] === '+' && VOW.includes(T[j])) { k = j; break; }
         if (k > 0) { let a = k; while (a > s0 && T[a - 1] !== ' ' && !VOW.includes(T[a - 1])) a--;   // слог: согласные перед ударной гласной
-          for (let j = s0; j < i; j++) if (voiced(j)) { let v = p2st(P[j], c.coef); if (j >= a && j <= k) v += st; else if (j > k) v -= st * .35; P[j] = st2p(v, c.coef); } } }
+          // как в живой речи (ИК-3): до ударного слога ровнее (размах ×0,6), ударный слог — выше всего, что было раньше, на st полутонов, после — вниз
+          let top = -99; for (let j = s0; j < a; j++) if (voiced(j)) top = Math.max(top, .6 * p2st(P[j], c.coef));
+          for (let j = s0; j < i; j++) if (voiced(j)) { let v = p2st(P[j], c.coef); if (j < a) v *= .6; else if (j <= k) v = Math.max(v, top) + st; else v -= st * .4; P[j] = st2p(v, c.coef); } } }
       s0 = i + 1; } };
   G.pauseShape = (sec, F) => c => { const cap = Math.max(4, Math.round(sec * (F || 1) / c.frame)), cap2 = Math.round(cap * 1.5);
     for (let i = 1; i < c.N - 3; i++) { const t = c.toks[i]; if (',;:—–-'.includes(t)) { if (c.d[i] > cap) c.d[i] = cap; } else if ('.!?…'.includes(t)) { if (c.d[i] > cap2) c.d[i] = cap2; } } };
