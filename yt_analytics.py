@@ -313,11 +313,15 @@ SEARCH_SP = {"": "", "week": "EgIIAw%3D%3D", "shorts": "EgIQCQ%3D%3D", "views": 
 
 
 def scan_url(kind, q):
+    gl = ""
+    m = re.search(r"\s@([A-Z]{2})$", q)              # «запрос @SE» — выдача для страны (параметр gl)
+    if m:
+        q, gl = q[:m.start()], m.group(1)
     qq = urllib.parse.quote(q)
     if kind == "hashtag":
-        return f"https://www.youtube.com/hashtag/{urllib.parse.quote(q.lstrip('#'))}/shorts"
+        return f"https://www.youtube.com/hashtag/{urllib.parse.quote(q.lstrip('#'))}/shorts" + (f"?gl={gl}" if gl else "")
     sp = SEARCH_SP.get(kind.split("-", 1)[1] if "-" in kind else "", "")
-    return f"https://www.youtube.com/results?search_query={qq}" + (f"&sp={sp}" if sp else "")
+    return f"https://www.youtube.com/results?search_query={qq}" + (f"&sp={sp}" if sp else "") + (f"&gl={gl}" if gl else "")
 
 
 def slugify(s):
