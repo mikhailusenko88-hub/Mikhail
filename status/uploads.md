@@ -85,3 +85,4 @@
 | shorts | 2026-11-23 | 3 | Brazil vs UK vs Vietnam | https://youtube.com/shorts/s3iWur-00qU | public (только Shorts) |
 | shorts | 2026-11-24 | 1 | India vs Indonesia vs Mexico | https://youtube.com/shorts/TEIczLtjmMw | public (только Shorts) |
 | shorts | 2026-11-24 | 2 | Philippines vs Thailand vs Colombia | https://youtube.com/shorts/KsgnzXH1L2o | public (только Shorts) |
+| shorts | 2026-11-24 | 3 | Russia vs France vs Korea | https://youtube.com/shorts/OaxkESiOdNA | public (только Shorts) |

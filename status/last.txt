@@ -1,93 +1,93 @@
-ВЫЛОЖЕНО #62 2026-11-24 слот 2: Shorts https://youtube.com/shorts/KsgnzXH1L2o (public, без длинного), за 443 с
+ВЫЛОЖЕНО #63 2026-11-24 слот 3: Shorts https://youtube.com/shorts/OaxkESiOdNA (public, без длинного), за 366 с
 
 {
- "title": "24 Countries, 3 Lives ❤️ Philippines vs Thailand vs Colombia | Country Marble Survival #49",
- "description": "Flagball Arena · Season 2, Race 49 of 67: 24 countries, 3 stages — the last 7 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Belgium ❤❤, Bhutan ❤❤, Chad ❤❤, Colombia ❤, Costa Rica ❤, Cuba ❤❤, Dominican Republic ❤❤, Ecuador ❤, El Salvador ❤❤, Ethiopia ❤❤, Iran ❤❤, Jordan ❤, Latvia ❤❤, Liechtenstein ❤, Mali ❤❤, Moldova ❤, Nepal ❤, Philippines ❤❤, San Marino ❤❤, Seychelles ❤❤❤, Tanzania ❤❤, Thailand ❤❤, Tonga ❤❤, Uruguay ❤❤.\n\nCountries still in the game before this race: 124 of 193.\nNext race: Race 50/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
- "race_no": 62,
+ "title": "Russia vs France vs Korea ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #50",
+ "description": "Flagball Arena · Season 2, Race 50 of 67: 24 countries, 3 stages — the last 8 lose a life ❤️. No lives left = out of the season.\n\nCountries in this race (lives before the race): Armenia ❤❤❤, Australia ❤, Barbados ❤, Belarus ❤, Brunei ❤, Burundi ❤, Canada ❤❤, Chile ❤❤❤, China ❤, Congo ❤❤, France ❤, Haiti ❤, Honduras ❤❤, Ireland ❤, Liberia ❤❤, Paraguay ❤❤, Russia ❤, Saint Lucia ❤, Somalia ❤, South Korea ❤, Uganda ❤, Vanuatu ❤, Yemen ❤❤, Zimbabwe ❤❤.\n\nCountries still in the game before this race: 122 of 193.\nNext race: Race 51/67. Grand Final: Nov 30.\n\nHow it works: every country has 3 lives ❤️❤️❤️. Each race the slowest lose one. On Nov 30 the top 32 countries race the Grand Final. 3 races every day — find your country!\n\nLast champion: Season 1 — Somalia 🏆\n\nLike 👍 if your country survived and write in the comments who you're cheering for!\n\n#marblerace #countryballs #marblerun #survival #elimination #countries",
+ "race_no": 63,
  "date": "2026-11-24",
- "slot": 2,
+ "slot": 3,
  "season": 2,
  "round": 1,
- "heat": 49,
+ "heat": 50,
  "heats": 67,
- "survive": 17,
+ "survive": 16,
  "final": false,
  "kind": "heat",
- "label": "RACE 49/67",
+ "label": "RACE 50/67",
  "n": 24,
  "lives_mode": true,
- "losers": 7,
+ "losers": 8,
  "mega": false,
  "codes": [
-  "tz",
-  "td",
-  "ec",
-  "be",
-  "li",
-  "co",
-  "th",
-  "ml",
-  "jo",
-  "sv",
-  "np",
-  "lv",
-  "bt",
-  "uy",
-  "cu",
-  "et",
-  "ir",
-  "do",
-  "cr",
-  "md",
-  "sm",
-  "to",
-  "sc",
-  "ph"
+  "by",
+  "vu",
+  "cg",
+  "so",
+  "ru",
+  "cn",
+  "au",
+  "ht",
+  "fr",
+  "hn",
+  "lr",
+  "bb",
+  "lc",
+  "ie",
+  "bn",
+  "ca",
+  "kr",
+  "bi",
+  "ug",
+  "zw",
+  "cl",
+  "am",
+  "py",
+  "ye"
  ],
  "spans": [
   [
    7.800000000000001,
-   70.73333333333333,
-   74.33333333333333
+   75.26666666666667,
+   78.86666666666666
   ],
   [
-   77.93333333333332,
-   141.86666666666665,
-   145.46666666666664
+   82.46666666666665,
+   146.33333333333331,
+   149.9333333333333
   ],
   [
-   149.06666666666663,
-   215.76666666666665,
-   219.36666666666665
+   153.5333333333333,
+   219.76666666666665,
+   223.36666666666665
   ]
  ],
- "duration": 244.36666666666667,
+ "duration": 248.36666666666667,
  "heats_in_video": 1,
  "races": [
-  62
+  63
  ],
  "featured": [
-  "ph",
-  "th",
-  "co"
+  "ru",
+  "fr",
+  "kr"
  ]
 }
 
 --- журнал ---
-14:30:29 режим publish, гонка #62, 2026-11-24 слот 2, событие workflow_dispatch
-14:30:29 по плану: S2 RACE 49/67
-14:30:29 канал: Flagball Arena
-14:30:29 в этом видео заездов: 1 (раунд 1, осталось в раунде 19)
-гонка #62 2026-11-24 слот 2: S2 RACE 49/67, 24→17, участники: TZA TCD ECU BEL LIE COL THA MLI JOR SLV NPL LVA BTN URY CUB ETH IRN DOM CRI MDA SMR TON SYC PHL
-  этап 1: 24→22, блоков 11 ['split', 'trapdoors', 'pegs', 'sliders', 'drum', 'tunnels', 'pendulums', 'pushers', 'ring_gate', 'glass', 'stairs'], Q-финиш 60.4 c, кадров 1888
-  этап 2: 22→19, блоков 13 ['tunnels', 'drum', 'bumpers', 'windmills', 'ring_gate', 'stairs', 'sliders', 'rotor', 'pushers', 'twin_rings', 'glass', 'zigzag', 'pegs'], Q-финиш 61.4 c, кадров 1918
-  этап 3: 19→17, блоков 12 ['comb', 'zigzag', 'trapdoors', 'split', 'stairs', 'glass', 'pushers', 'tunnels', 'drum', 'rotor', 'sliders', 'pegs'], Q-финиш 64.2 c, кадров 2001
+22:33:38 режим publish, гонка #63, 2026-11-24 слот 3, событие workflow_dispatch
+22:33:38 по плану: S2 RACE 50/67
+22:33:39 канал: Flagball Arena
+22:33:39 в этом видео заездов: 1 (раунд 1, осталось в раунде 18)
+гонка #63 2026-11-24 слот 3: S2 RACE 50/67, 24→16, участники: BLR VUT COG SOM RUS CHN AUS HTI FRA HND LBR BRB LCA IRL BRN CAN KOR BDI UGA ZWE CHL ARM PRY YEM
+  этап 1: 24→21, блоков 11 ['bumpers', 'drum', 'pushers', 'comb', 'pegs', 'glass', 'trapdoors', 'stairs', 'twin_rings', 'ring_gate', 'zigzag'], Q-финиш 64.9 c, кадров 2024
+  этап 2: 21→19, блоков 12 ['zigzag', 'pegs', 'trapdoors', 'comb', 'tunnels', 'twin_rings', 'rotor', 'drum', 'pushers', 'stairs', 'sliders', 'bumpers'], Q-финиш 61.3 c, кадров 1916
+  этап 3: 19→16, блоков 11 ['glass', 'windmills', 'zigzag', 'twin_rings', 'ring_gate', 'rotor', 'split', 'pegs', 'bumpers', 'pushers', 'tunnels'], Q-финиш 63.7 c, кадров 1987
 длительность ролика ≈ 4.1 мин
-готово: 7331 кадров за 419 с
-кадров 7331, 4.07 мин, рендер 421 с
-выжили: SLV IRN LVA SYC MDA PHL SMR CUB JOR ETH COL TCD LIE BTN MLI THA ECU
-14:37:31 заезд 1/1 готов: 132 МБ, 422 с
-14:37:31 видео готово: 132 МБ, 4.1 мин, 422 с с начала; название: 24 Countries, 3 Lives ❤️ Philippines vs Thailand vs Colombia | Country Marble Survival #49
-14:37:50 Shorts готов: 26 с — Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts
-14:37:50 длинное видео в этом слоте: нет (только Shorts)
-14:37:52 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
+готово: 7451 кадров за 345 с
+кадров 7451, 4.14 мин, рендер 346 с
+выжили: SOM VUT HND COG IRL AUS HTI RUS BDI ZWE BLR PRY BRB YEM BRN CHL
+22:39:24 заезд 1/1 готов: 134 МБ, 346 с
+22:39:25 видео готово: 134 МБ, 4.1 мин, 347 с с начала; название: Russia vs France vs Korea ❤️ 3 Lives – Who Loses a Life? | Country Marble Race #50
+22:39:41 Shorts готов: 26 с — Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts
+22:39:41 длинное видео в этом слоте: нет (только Shorts)
+22:39:44 Shorts на YouTube: {'uploadStatus': 'uploaded', 'privacyStatus': 'public', 'license': 'youtube', 'embeddable': True, 'publicStatsViewable': True, 'selfDeclaredMadeForKids': False}
