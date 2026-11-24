@@ -13,6 +13,8 @@
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
     pump: 'Жми ГАЗ — раскачайся!', levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
+    garage: 'Гараж', tabs: ['Грузовик', 'Колёса', 'Цвет', 'Прокачка'], buy: 'Купить', take: 'Забрать', chosen: 'Выбрано', need: 'Не хватает', needStars: 'Нужно', have: 'у тебя',
+    eng: 'Мотор', engD: 'Быстрее разгон', winch: 'Лебёдка', winchD: 'Тянет быстрее', max: 'МАКС', total: 'всего', test: 'проба: +500',
   } : {
     title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
     touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook on the left',
@@ -23,6 +25,8 @@
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
     pump: 'Hold GAS to swing!', levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
+    garage: 'Garage', tabs: ['Truck', 'Wheels', 'Color', 'Upgrades'], buy: 'Buy', take: 'Unlock', chosen: 'Selected', need: 'Need', needStars: 'Need', have: 'you have',
+    eng: 'Engine', engD: 'Faster start', winch: 'Winch', winchD: 'Pulls faster', max: 'MAX', total: 'total', test: 'test: +500',
   };
 
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -74,14 +78,32 @@
 
   // ---------- состояние ----------
   const LANG = RU ? 1 : 0, NL = H.levels.length;
-  let save = { stars: [], best: [], duo: false };
-  try { const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null'); if (q && Array.isArray(q.stars)) save = Object.assign(save, q); } catch (e) { /* без сохранения */ }
+  // гараж: монеты дают за финиш и звёзды; на них — колёса, цвета, грузовик и прокачка. Звёзды не тратятся: за них открывается джип
+  // три последних — дорогие, с блеском: хром, золото и «радуга» (переливается на ходу)
+  const PAINT = [['#ff5a36', '#c63b1f'], ['#2f7df6', '#1c55b8'], ['#3fbf5a', '#2a8a3f'], ['#ffc928', '#d99a00'], ['#ff6fb1', '#d1437f'], ['#3a4047', '#22272c'], ['#bcc9d0', '#8496a0', 'chrome'], ['#f5b400', '#b97c00', 'gold'], ['#b36bff', '#7a3fd0', 'rainbow']];
+  const SHOP = {
+    truck: [{ n: ['Pickup', 'Пикап'] }, { n: ['Jeep', 'Джип'], stars: 12 }, { n: ['Big Rig', 'Тягач'], cost: 900 }],
+    wheels: [{ n: ['Classic', 'Обычные'] }, { n: ['Monster', 'Монстр'], cost: 200 }, { n: ['Gold', 'Золотые'], cost: 350 }, { n: ['Spikes', 'Шипы'], cost: 500 }],
+    color: [0, 80, 80, 80, 120, 150, 400, 600, 900].map((cost) => ({ cost })),
+  };
+  const TABS = ['truck', 'wheels', 'color', 'up'], OWN = { truck: 'own', wheels: 'ownW', color: 'ownC' }, UPC = [100, 150, 220, 300, 400];
+  let save = { stars: [], best: [], duo: false, coins: 0, own: [0], ownW: [0], ownC: [0], truck: 0, wheels: 0, color: 0, up: { eng: 0, winch: 0 } };
+  try {
+    const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null');
+    if (q && Array.isArray(q.stars)) { const old = q.coins === undefined; save = Object.assign(save, q); if (old) save.coins = save.stars.reduce((a, n) => a + (n ? 20 + 40 * n : 0), 0); } // прошлые звёзды — в монеты
+  } catch (e) { /* без сохранения */ }
+  save.up = Object.assign({ eng: 0, winch: 0 }, save.up); save.coins = Math.max(0, save.coins | 0);
+  for (const k in OWN) { if (!Array.isArray(save[OWN[k]]) || !save[OWN[k]].includes(0)) save[OWN[k]] = [0]; if (!save[OWN[k]].includes(save[k]) || !SHOP[k][save[k]]) save[k] = 0; }
   const store = () => { try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* без сохранения */ } };
+  const starsTotal = () => save.stars.reduce((a, n) => a + (n || 0), 0);
+  const curLook = () => ({ truck: save.truck, wheels: save.wheels, color: save.color });
+  function applyLook(l) { TR.main = PAINT[l.color][0]; TR.dark = PAINT[l.color][1]; if (use3d) R3.setLook({ truck: l.truck, wheels: l.wheels, paint: PAINT[l.color] }); }
+  let gar = null, gcam = null;
   let lvl = 0, res = null; const dbg = { freeze: false, clean: false };
   let hangT = 0;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
-  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); });
+  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; ptrs.clear(); });
 
@@ -124,11 +146,14 @@
     return { gas, brake, hook, pull };
   }
 
-  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
-    res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt) };
+    // монеты: 20 за финиш, по 10 за каждую звезду заезда и по 30 за каждую звезду, взятую на этом уровне впервые
+    const fresh = Math.max(0, n - (save.stars[lvl] || 0)), earn = 20 + 10 * n + 30 * fresh;
+    res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt), earn };
+    save.coins += earn;
     save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
   }
 
@@ -136,16 +161,47 @@
   let menuBtns = [];
   function menuClick(x, y) {
     const b = menuBtns.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (!b) return;
-    if (b.id === 'solo' || b.id === 'duo') { duo = b.id === 'duo'; save.duo = duo; store(); }
+    if (b.id.slice(0, 2) === 'g:') garClick(b.id);
+    else if (b.id === 'garage') openGarage();
+    else if (b.id === 'solo' || b.id === 'duo') { duo = b.id === 'duo'; save.duo = duo; store(); }
     else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
     else if (b.id === 'play') { let k = save.stars.findIndex((q, i) => !q && i < NL); if (k < 0) k = save.stars.length < NL ? save.stars.length : 0; startGame(duo, k); }
     else if (b.id === 'again') restart(); else if (b.id === 'next') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (b.id === 'menu') mode = 'menu';
+  }
+
+  // ---------- гараж ----------
+  // раскладка: на телефоне панель снизу (ровно под два ряда плиток), на широком экране — справа
+  function garLayout() {
+    const port = W < H2, px = port ? 8 : Math.round(W * 0.5), pw = port ? W - 16 : W - px - 10;
+    const ph = port ? Math.min(Math.round(H2 * 0.56), 134 + 2 * Math.min(124, (pw - 20) / 2, (pw - 20) / 3 + 6)) : H2 - 74, py = H2 - 8 - ph;
+    return { port, px, py, pw, ph };
+  }
+  function openGarage() { gar = { tab: gar ? gar.tab : 0, pick: curLook(), deny: -9 }; lvl = 0; S = H.create(0, { up: save.up }); acc = 0; mode = 'garage'; toasts = []; ptrs.clear(); }
+  function garClick(id) {
+    const a = id.split(':'), kind = TABS[gar.tab], no = () => { gar.deny = realT; gar.denyK = a[1] === 'up' ? a[2] : ''; tone(160, 0.18, 'square', 0.08); };
+    if (a[1] === 'back') { applyLook(curLook()); mode = 'menu'; tone(500, 0.06, 'triangle', 0.1); }
+    else if (a[1] === 'tab') { if (kind !== 'up') gar.pick[kind] = save[kind]; gar.tab = +a[2]; applyLook(gar.pick); tone(700, 0.05, 'triangle', 0.08); }
+    else if (a[1] === 'item') { const i = +a[2]; gar.pick[kind] = i; if (save[OWN[kind]].includes(i)) { save[kind] = i; store(); } applyLook(gar.pick); tone(880, 0.06, 'triangle', 0.1); } // тап — примерка; своё сразу надевается
+    else if (a[1] === 'act') {
+      const i = gar.pick[kind], it = SHOP[kind][i];
+      if (it.stars ? starsTotal() < it.stars : save.coins < it.cost) return no();
+      if (!it.stars) save.coins -= it.cost;
+      save[OWN[kind]].push(i); save[kind] = i; store(); sfx.star();
+    }
+    else if (a[1] === 'up') { const lv = save.up[a[2]]; if (lv >= UPC.length) return; if (save.coins < UPC[lv]) return no(); save.coins -= UPC[lv]; save.up[a[2]] = lv + 1; store(); sfx.cp(); }
+    else if (a[1] === 'test') { save.coins += 500; store(); sfx.cp(); }
   }
 
   // ---------- камера ----------
   const sx = (x) => (x - camX) * Z + W * 0.42, sy = (y) => (y - camY) * Z + H2 * 0.55;
   function camera(dt) {
     const port = W < H2;
+    gcam = null;
+    if (mode === 'garage') { // грузовик крупно: на телефоне сверху, на широком экране слева; панель гаража — рядом
+      const g = garLayout(), free = g.py - 60; // место над панелью
+      Z = port ? Math.min(W / 430, free / 330) : Math.min((W * 0.5) / 430, H2 / 400); gcam = { px: port ? W / 2 : W * 0.25, py: port ? 60 + free * 0.5 : H2 * 0.56, yaw: 0.55 + 0.3 * Math.sin(realT * 0.5), tilt: 0.24 };
+      camX = S.truck.x - (gcam.px - W * 0.42) / Z; camY = S.truck.y - 30 - (gcam.py - H2 * 0.55) / Z; return;
+    }
     const zt = dbg.zoom || (port ? W / 1050 : Math.min(W / 1650, H2 / 980));
     Z += (zt - Z) * Math.min(1, dt * 3);
     const T = S.truck, look = clamp(T.vx * 0.35, -250, 420);
@@ -412,19 +468,19 @@
     ctx.fillText(W < 600 ? `${lvl + 1}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.lvl} ${lvl + 1}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par} ${T.sec}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
     // название уровня и подсказка уровня — первые секунды; после возрождения подсказка снова
     const l = H.levels[lvl], hint = l.hint[LANG];
-    if (S.t < 2.5) {
-      ctx.globalAlpha = clamp(2.5 - S.t, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${W < 600 ? 30 : 40}px system-ui, sans-serif`;
-      const ty = H2 * 0.3; ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${l.name[LANG]}`; ctx.strokeText(tt, W / 2, ty); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty); ctx.globalAlpha = 1;
-    }
     if (hintShown._att !== S.attempts) { hintShown._att = S.attempts; hintShown.t0 = realT; }
-    const hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0;
+    const hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0; let hintB = 0;
     if (hint && hAl > 0 && S.state === 'play' && S.t > 0.4) {
       ctx.globalAlpha = hAl;
       const fs = W < 600 ? 17 : 22; ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center';
       const ls = lines(hint, W - 60), tw = Math.max(...ls.map((q) => ctx.measureText(q).width)) + 36, lh = fs * 1.3, hh = ls.length * lh + 18, hx = W / 2 - tw / 2, hy = W < H2 ? 96 : 70;
       ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(hx, hy, tw, hh, 20); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle';
       ls.forEach((q, i) => ctx.fillText(q, W / 2, hy + 9 + lh * (i + 0.5)));
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = 1; hintB = hy + hh;
+    }
+    if (S.t < 2.5) { // название уровня: ниже подсказки, чтобы надписи не ложились друг на друга
+      const fs = W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp(2.5 - S.t, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
+      const ty = Math.max(H2 * 0.3, hintB + fs * 0.9); ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${l.name[LANG]}`; ctx.strokeText(tt, W / 2, ty, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty, W - 24); ctx.globalAlpha = 1;
     }
     // всплывающие надписи
     toasts.forEach((t, i) => {
@@ -435,7 +491,139 @@
     toasts = toasts.filter((t) => t.t < 1.6);
   }
   function panel(x, y, w, h) { ctx.fillStyle = 'rgba(0,0,0,0.25)'; rr(x, y + 8, w, h, 26); ctx.fill(); ctx.fillStyle = '#fffdf7'; rr(x, y, w, h, 26); ctx.fill(); }
-  function bigBtn(id, x, y, w, h, label, col) { menuBtns.push({ id, x, y, w, h }); ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, y + 5, w, h, 18); ctx.fill(); ctx.fillStyle = col; rr(x, y, w, h, 18); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(h * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, x + w / 2, y + h / 2 + 1); }
+  function bigBtn(id, x, y, w, h, label, col) { menuBtns.push({ id, x, y, w, h }); ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, y + 5, w, h, 18); ctx.fill(); ctx.fillStyle = col; rr(x, y, w, h, 18); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(h * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, x + w / 2, y + h / 2 + 1, w - 14); }
+  function coinIcon(x, y, r) {
+    ctx.fillStyle = '#f39c12'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ffd54f'; ctx.beginPath(); ctx.arc(x, y, r * 0.74, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.beginPath(); ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.22, 0, 7); ctx.fill();
+  }
+  // строка из кусков — текст, монета, звезда: по центру точки x, слева или справа от неё; dry — только посчитать ширину
+  function rich(parts, x, y, fs, align, dry) {
+    const gap = fs * 0.28, ws = parts.map((q) => { if (q.coin || q.star) return fs; ctx.font = `${q.b || 900} ${fs}px system-ui, sans-serif`; return ctx.measureText(q.t).width; });
+    const tot = ws.reduce((a, b) => a + b, 0) + gap * (parts.length - 1); if (dry) return tot;
+    let cx = align === 'left' ? x : align === 'right' ? x - tot : x - tot / 2;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    parts.forEach((q, i) => {
+      if (q.coin) coinIcon(cx + ws[i] / 2, y, fs * 0.48); else if (q.star) star5(cx + ws[i] / 2, y - 1, fs * 0.5, '#ffd54f');
+      else { ctx.font = `${q.b || 900} ${fs}px system-ui, sans-serif`; ctx.fillStyle = q.c || '#fff'; ctx.fillText(q.t, cx, y + 1); }
+      cx += ws[i] + gap;
+    });
+    return tot;
+  }
+  // кошелёк: монеты и звёзды, прижат к правому краю xr
+  function wallet(xr, y) {
+    const parts = [{ coin: 1 }, { t: String(save.coins) }, { t: ' ' }, { star: 1 }, { t: starsTotal() + '/' + NL * 3 }], w = rich(parts, 0, 0, 16, 'left', true) + 24;
+    ctx.fillStyle = 'rgba(0,0,0,0.4)'; rr(xr - w, y, w, 32, 16); ctx.fill(); rich(parts, xr - 12, y + 16, 16, 'right'); return w;
+  }
+  // кружок краски; у дорогих — блеск: хром и золото с бликом и искрой, «радуга» — из цветных долек
+  function swatch(cx, cy, r, i) {
+    const pc = PAINT[i], sp = pc[2];
+    ctx.fillStyle = pc[1]; ctx.beginPath(); ctx.arc(cx, cy + 2, r, 0, 7); ctx.fill();
+    if (sp === 'rainbow') { for (let k = 0; k < 12; k++) { ctx.fillStyle = `hsl(${k * 30 + realT * 40},90%,58%)`; ctx.beginPath(); ctx.moveTo(cx, cy - 1); ctx.arc(cx, cy - 1, r * 0.94, (k / 12) * 6.2832 - 0.02, ((k + 1) / 12) * 6.2832 + 0.02); ctx.closePath(); ctx.fill(); } }
+    else if (sp) { const g = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.45, r * 0.05, cx, cy, r); g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, sp === 'gold' ? '#ffe27a' : '#eef3f5'); g.addColorStop(1, sp === 'gold' ? '#e89b00' : '#8fa1ab'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy - 1, r * 0.94, 0, 7); ctx.fill(); }
+    else { ctx.fillStyle = pc[0]; ctx.beginPath(); ctx.arc(cx, cy - 1, r * 0.94, 0, 7); ctx.fill(); }
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.beginPath(); ctx.arc(cx - r * 0.32, cy - r * 0.38, r * 0.24, 0, 7); ctx.fill();
+    if (sp) { const q = r * (0.3 + 0.08 * Math.sin(realT * 5 + i)), sx0 = cx + r * 0.62, sy0 = cy - r * 0.62; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(sx0, sy0 - q); ctx.quadraticCurveTo(sx0, sy0, sx0 + q, sy0); ctx.quadraticCurveTo(sx0, sy0, sx0, sy0 + q); ctx.quadraticCurveTo(sx0, sy0, sx0 - q, sy0); ctx.quadraticCurveTo(sx0, sy0, sx0, sy0 - q); ctx.fill(); }
+  }
+  function wheelIcon(cx, cy, r, k) {
+    ctx.save(); ctx.translate(cx, cy);
+    const disc = (q, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, r * q, 0, 7); ctx.fill(); };
+    if (k === 3) { ctx.fillStyle = '#90a4ae'; for (let i = 0; i < 12; i++) { ctx.save(); ctx.rotate((i / 12) * 6.283); ctx.beginPath(); ctx.moveTo(r * 0.9, -r * 0.14); ctx.lineTo(r * 1.3, 0); ctx.lineTo(r * 0.9, r * 0.14); ctx.closePath(); ctx.fill(); ctx.restore(); } }
+    if (k === 1) { ctx.fillStyle = '#212121'; for (let i = 0; i < 8; i++) { ctx.save(); ctx.rotate((i / 8) * 6.283); ctx.fillRect(r * 0.82, -r * 0.21, r * 0.36, r * 0.42); ctx.restore(); } }
+    disc(1, '#212121');
+    if (k === 1) { disc(0.6, '#fdd835'); disc(0.5, '#e53935'); disc(0.14, '#212121'); }
+    else if (k === 2) { disc(0.74, '#ffc107'); disc(0.6, '#263238'); ctx.strokeStyle = '#ffc107'; ctx.lineWidth = r * 0.16; for (let i = 0; i < 3; i++) { const a = (i / 3) * Math.PI; ctx.beginPath(); ctx.moveTo(-Math.cos(a) * r * 0.66, -Math.sin(a) * r * 0.66); ctx.lineTo(Math.cos(a) * r * 0.66, Math.sin(a) * r * 0.66); ctx.stroke(); } disc(0.24, '#ffd54f'); }
+    else if (k === 3) { disc(0.56, '#455a64'); disc(0.22, '#e53935'); }
+    else { ctx.strokeStyle = '#424242'; ctx.lineWidth = Math.max(1.5, r * 0.12); for (let i = 0; i < 12; i++) { const a = (i / 12) * 6.283; ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * 0.8, Math.sin(a) * r * 0.8); ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); ctx.stroke(); } disc(0.54, '#cfd8dc'); ctx.fillStyle = '#78909c'; for (let i = 0; i < 5; i++) { const a = (i / 5) * 6.283; ctx.beginPath(); ctx.arc(Math.cos(a) * r * 0.32, Math.sin(a) * r * 0.32, r * 0.09, 0, 7); ctx.fill(); } }
+    ctx.restore();
+  }
+  // значок грузовика сбоку: 0 пикап, 1 джип, 2 тягач
+  function truckIcon(cx, cy, sc, k, pc) {
+    ctx.save(); ctx.translate(cx + 3 * sc, cy + 25 * sc); ctx.scale(sc, sc);
+    const poly = (pts, col) => { ctx.fillStyle = col; ctx.beginPath(); pts.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]))); ctx.closePath(); ctx.fill(); };
+    ctx.fillStyle = '#37474f'; rr(-114, -6, 230, 24, 8); ctx.fill();
+    if (k === 0) {
+      ctx.fillStyle = pc[1]; rr(-112, -44, 128, 40, 6); ctx.fill(); ctx.fillStyle = pc[0]; rr(-114, -28, 132, 26, 6); ctx.fill();
+      poly([[14, -2], [14, -74], [20, -78], [64, -78], [90, -38], [112, -34], [120, -26], [120, -2]], pc[0]); poly([[24, -70], [60, -70], [80, -40], [24, -40]], '#b3e5fc');
+    } else if (k === 1) {
+      poly([[-116, -2], [-116, -34], [-110, -42], [60, -42], [66, -46], [108, -43], [119, -34], [119, -2]], pc[0]);
+      ctx.strokeStyle = '#37474f'; ctx.lineWidth = 7; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(-100, -43); ctx.lineTo(-18, -82); ctx.lineTo(66, -82); ctx.lineTo(77, -45); ctx.moveTo(-18, -82); ctx.lineTo(-18, -42); ctx.stroke();
+      ctx.fillStyle = '#212121'; rr(-130, -56, 12, 48, 5); ctx.fill(); ctx.fillStyle = '#fff59d'; ctx.beginPath(); ctx.arc(70, -92, 7, 0, 7); ctx.fill();
+    } else {
+      poly([[62, -2], [62, -46], [104, -42], [117, -36], [119, -2]], pc[0]); ctx.fillStyle = pc[0]; rr(12, -92, 58, 90, 8); ctx.fill(); ctx.fillStyle = '#b3e5fc'; rr(30, -80, 34, 32, 4); ctx.fill();
+      ctx.fillStyle = pc[1]; rr(-37, -76, 48, 74, 6); ctx.fill(); ctx.fillStyle = pc[0]; ctx.fillRect(-37, -26, 48, 10);
+      ctx.fillStyle = '#cfd8dc'; rr(-49, -92, 9, 70, 4); ctx.fill(); ctx.fillRect(117, -38, 6, 34); ctx.fillStyle = '#20262a'; ctx.fillRect(-115, -15, 78, 9);
+    }
+    ctx.fillStyle = '#ffb300'; ctx.beginPath(); ctx.arc(30, -104, 11, 0, 7); ctx.fill();
+    for (const wx of [-72, 72]) { ctx.fillStyle = '#212121'; ctx.beginPath(); ctx.arc(wx, 38, 28, 0, 7); ctx.fill(); ctx.fillStyle = '#cfd8dc'; ctx.beginPath(); ctx.arc(wx, 38, 13, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
+  function drawUps(x, y, w, h) {
+    const rh = Math.min(96, (h - 8) / 2);
+    [['eng', '⚙', T.eng, T.engD, '#fb8c00'], ['winch', '⚓', T.winch, T.winchD, '#5c6bc0']].forEach(([k, ic, name, desc, col], r) => {
+      const ry = y + r * (rh + 8), lv = save.up[k], max = lv >= UPC.length, cost = UPC[lv], ir = Math.min(24, rh * 0.28);
+      ctx.fillStyle = '#f1f4f6'; rr(x, ry, w, rh, 14); ctx.fill();
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + 14 + ir, ry + rh / 2, ir, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(ir * 1.1)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ic, x + 14 + ir, ry + rh / 2 + 1);
+      const tx = x + 14 + ir * 2 + 12, bw = 104, bh = Math.min(46, rh - 20), deny = k === gar.denyK ? Math.max(0, 0.3 - (realT - gar.deny)) : 0, bx = x + w - bw - 10 + Math.sin(deny * 60) * deny * 24, by = ry + (rh - bh) / 2, tw = x + w - bw - 20 - tx;
+      ctx.textAlign = 'left'; ctx.fillStyle = '#263238'; ctx.font = '900 17px system-ui, sans-serif'; ctx.fillText(name, tx, ry + rh * 0.26, tw);
+      ctx.fillStyle = '#78909c'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(desc, tx, ry + rh * 0.5, tw);
+      const pw = Math.min(22, (tw - 16) / 5); for (let q = 0; q < UPC.length; q++) { ctx.fillStyle = q < lv ? '#43a047' : '#cfd8dc'; rr(tx + q * (pw + 4), ry + rh * 0.68, pw, 9, 4); ctx.fill(); }
+      if (!max) menuBtns.push({ id: 'g:up:' + k, x: x + w - bw - 10, y: by, w: bw, h: bh });
+      ctx.fillStyle = 'rgba(0,0,0,0.18)'; rr(bx, by + 4, bw, bh, 14); ctx.fill(); ctx.fillStyle = max ? '#a5d6a7' : save.coins >= cost ? '#43a047' : '#b0bec5'; rr(bx, by, bw, bh, 14); ctx.fill();
+      if (max) rich([{ t: T.max }], bx + bw / 2, by + bh / 2, 17); else rich([{ t: '+' }, { coin: 1 }, { t: String(cost) }], bx + bw / 2, by + bh / 2, 17);
+    });
+  }
+  function drawGarage() {
+    menuBtns = [];
+    const port = W < H2, kind = TABS[gar.tab];
+    // верх: назад, название, кошелёк
+    const bb = { id: 'g:back', x: 10, y: 10, w: 46, h: 46 }; menuBtns.push(bb);
+    ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(bb.x, bb.y, bb.w, bb.h, 12); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 30px system-ui, sans-serif'; ctx.fillText('‹', bb.x + bb.w / 2, bb.y + bb.h / 2 - 3);
+    const wl = W - 10 - wallet(W - 10, 17);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.font = '900 24px system-ui, sans-serif'; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+    if (68 + ctx.measureText(T.garage).width + 10 < wl) { ctx.strokeText(T.garage, 68, 34); ctx.fillStyle = '#fff'; ctx.fillText(T.garage, 68, 34); }
+    if (window.HOOK_TEST) { const tb = { id: 'g:test', x: W - 132, y: 56, w: 122, h: 30 }; menuBtns.push(tb); ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(tb.x, tb.y, tb.w, tb.h, 15); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '800 14px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(T.test, tb.x + tb.w / 2, tb.y + tb.h / 2 + 1); }
+    // панель: вкладки, плитки, кнопка
+    const { px, py, pw, ph } = garLayout();
+    panel(px, py, pw, ph);
+    const tw = (pw - 20) / 4, th = 40, tx0 = px + 10, ty0 = py + 10, tfs = clamp(Math.floor(tw / 5.6), 12, 16);
+    TABS.forEach((k, i) => {
+      const x = tx0 + i * tw; menuBtns.push({ id: 'g:tab:' + i, x, y: ty0, w: tw, h: th });
+      ctx.fillStyle = gar.tab === i ? '#ffca28' : '#eceff1'; rr(x + 2, ty0, tw - 4, th, 12); ctx.fill();
+      ctx.fillStyle = gar.tab === i ? '#3e2723' : '#546e7a'; ctx.font = `900 ${tfs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(T.tabs[i], x + tw / 2, ty0 + th / 2 + 1);
+    });
+    const cy0 = ty0 + th + 10, ah = 52, ay = py + ph - 12 - ah;
+    if (kind === 'up') { drawUps(px + 12, cy0, pw - 24, py + ph - 12 - cy0); return; }
+    const items = SHOP[kind], n = items.length, cH = ay - 10 - cy0, cap = port ? 124 : 170;
+    let cols = n, cell = 0; for (let c = n; c >= 2; c--) { if (n % c) continue; const q = Math.min((pw - 20) / c, (cH * c) / n, cap); if (q > cell + 0.5) { cell = q; cols = c; } } // только ровные сетки: 3, 4 или 2×2, 6 или 3×2
+    const rows = Math.ceil(n / cols), gx0 = px + (pw - cols * cell) / 2, gy0 = cy0 + Math.max(0, (cH - rows * cell) / 2), owned = save[OWN[kind]];
+    items.forEach((it, i) => {
+      const x = gx0 + (i % cols) * cell + 4, y = gy0 + Math.floor(i / cols) * cell + 4, w = cell - 8, pick = gar.pick[kind] === i, has = owned.includes(i), fs = clamp(Math.round(w * 0.15), 12, 15);
+      menuBtns.push({ id: 'g:item:' + i, x, y, w, h: w });
+      ctx.fillStyle = pick ? '#fff3c4' : '#f1f4f6'; rr(x, y, w, w, 14); ctx.fill();
+      if (pick) { ctx.lineWidth = 3; ctx.strokeStyle = '#ffb300'; rr(x + 1.5, y + 1.5, w - 3, w - 3, 13); ctx.stroke(); }
+      const icy = y + w * (kind === 'color' ? (has ? 0.5 : 0.42) : 0.35);
+      if (kind === 'color') swatch(x + w / 2, icy, w * 0.26, i);
+      else if (kind === 'wheels') wheelIcon(x + w / 2, icy, w * 0.2, i);
+      else truckIcon(x + w / 2, icy, Math.min((w * 0.84) / 252, (w * 0.46) / 180), i, PAINT[gar.pick.color]);
+      if (it.n) { ctx.fillStyle = '#37474f'; ctx.font = `800 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.n[LANG], x + w / 2, y + w * 0.71, w - 8); }
+      const ly = y + w * (it.n ? 0.88 : 0.82);
+      if (!has) rich([it.stars ? { star: 1 } : { coin: 1 }, { t: String(it.stars || it.cost), c: '#8d6e00' }], x + w / 2, ly, fs);
+      else if (save[kind] === i) { ctx.fillStyle = '#43a047'; ctx.beginPath(); ctx.arc(x + w - 14, y + 14, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '900 13px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('✓', x + w - 14, y + 15); }
+    });
+    // кнопка: своё — «выбрано», чужое — купить за монеты или забрать за звёзды
+    const i = gar.pick[kind], it = items[i], has = owned.includes(i), deny = gar.denyK ? 0 : Math.max(0, 0.3 - (realT - gar.deny)), ax = px + 12 + Math.sin(deny * 60) * deny * 30, aw = pw - 24;
+    let col = '#b0bec5', parts;
+    if (has) { parts = [{ t: '✓ ' + T.chosen }]; col = '#a5d6a7'; }
+    else if (it.stars) { const have = starsTotal(); if (have >= it.stars) { parts = [{ t: T.take + '  ·' }, { star: 1 }, { t: String(it.stars) }]; col = '#43a047'; } else parts = [{ t: T.needStars }, { star: 1 }, { t: it.stars + '  ·  ' + T.have + ' ' + have }]; }
+    else if (save.coins >= it.cost) { parts = [{ t: T.buy + '  ·' }, { coin: 1 }, { t: String(it.cost) }]; col = '#43a047'; }
+    else parts = [{ t: T.need }, { coin: 1 }, { t: String(it.cost - save.coins) }];
+    if (!has) menuBtns.push({ id: 'g:act', x: px + 12, y: ay, w: aw, h: ah });
+    ctx.fillStyle = 'rgba(0,0,0,0.18)'; rr(ax, ay + 4, aw, ah, 16); ctx.fill(); ctx.fillStyle = col; rr(ax, ay, aw, ah, 16); ctx.fill();
+    rich(parts, ax + aw / 2, ay + ah / 2, 19);
+  }
   function drawMenu() {
     menuBtns = [];
     ctx.fillStyle = 'rgba(10,40,70,0.5)'; ctx.fillRect(0, 0, W, H2);
@@ -468,12 +656,14 @@
       for (let k = 0; k < 3; k++) star5(x + w / 2 + (k - 1) * w * 0.24, y + w * 0.76, w * 0.1, k < st ? '#ffd54f' : '#cfd8dc');
     }
     const by = Math.min(H2 - 60, gy0 + rows * cell + 10);
-    bigBtn('play', W / 2 - 110, by, 220, 50, '▶ ' + T.play, '#43a047');
+    const bw = Math.min(172, (W - 46) / 2);
+    bigBtn('garage', W / 2 - bw - 6, by, bw, 50, '🔧 ' + T.garage, '#fb8c00'); bigBtn('play', W / 2 + 6, by, bw, 50, '▶ ' + T.play, '#43a047');
+    wallet(W - 10, 8);
   }
   function drawWin() {
     menuBtns = [];
     ctx.fillStyle = 'rgba(10,40,70,0.4)'; ctx.fillRect(0, 0, W, H2);
-    const w = Math.min(W - 32, 460), h = Math.min(H2 - 24, 340), x = W / 2 - w / 2, y = H2 / 2 - h / 2;
+    const w = Math.min(W - 32, 460), h = Math.min(H2 - 24, 374), x = W / 2 - w / 2, y = H2 / 2 - h / 2, tight = h < 352;
     panel(x, y, w, h);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 28px system-ui, sans-serif';
     ctx.fillText(T.win, W / 2, y + 40); ctx.fillStyle = '#78909c'; ctx.font = '800 16px system-ui, sans-serif'; ctx.fillText(`${T.lvl} ${lvl + 1} · ${H.levels[lvl].name[LANG]}`, W / 2, y + 70);
@@ -483,8 +673,11 @@
       star5(cx, cy, big * (on[k] ? 0.6 + 0.4 * pop : 1), on[k] && pop > 0 ? '#ffd54f' : '#cfd8dc');
       ctx.fillStyle = on[k] ? '#37474f' : '#90a4ae'; ctx.font = '800 15px system-ui, sans-serif'; ctx.fillText(labs[k], cx, cy + 52);
     }
-    ctx.fillStyle = '#37474f'; ctx.font = '800 18px system-ui, sans-serif';
-    ctx.fillText(`${T.time}: ${res.t.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${res.tries}`, W / 2, y + 226);
+    ctx.fillStyle = '#37474f'; ctx.font = '800 18px system-ui, sans-serif'; ctx.textAlign = 'center';
+    if (!tight) ctx.fillText(`${T.time}: ${res.t.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${res.tries}`, W / 2, y + 222);
+    // монеты за заезд: счётчик набегает после звёзд
+    const shown = Math.round(res.earn * clamp((realT - res.t0 - 0.9) * 1.6, 0, 1));
+    rich([{ t: '+' + shown, c: '#ef6c00' }, { coin: 1 }, { t: ' ' }, { t: `${T.total} ${save.coins - res.earn + shown}`, c: '#90a4ae', b: 800 }], W / 2, y + (tight ? 224 : 256), 21);
     const bh = 54, bw = (w - 48 - 20) / 3, b0 = x + 24, byy = y + h - bh - 22;
     bigBtn('menu', b0, byy, bw, bh, '☰', '#78909c');
     bigBtn('again', b0 + bw + 10, byy, bw, bh, '↻', '#fb8c00');
@@ -514,10 +707,11 @@
       }
       if (S.state === 'win' && S.wonT > 0.9) { finish(); mode = 'win'; }
     }
+    if (mode === 'garage') { acc += dt; let n = 0; while (acc >= P.DT && n < 10) { S.step(inp); acc -= P.DT; n++; } S.events.length = 0; } // в гараже грузовик просто стоит на подвеске
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
-    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas }); }
+    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam }); }
     else {
       ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
       drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
@@ -530,9 +724,10 @@
       const tw = ctx.measureText(T.pump).width + 44, bx = W / 2, by = H2 * (W < H2 ? 0.52 : 0.62);
       ctx.save(); ctx.translate(bx, by); ctx.scale(pul, pul); ctx.fillStyle = 'rgba(46,125,50,0.92)'; rr(-tw / 2, -fs, tw, fs * 2, fs); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillText(T.pump, 0, 1); ctx.restore();
     }
-    if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); }
+    if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); else if (mode === 'garage') drawGarage(); }
     requestAnimationFrame(frame);
   }
-  window.__hook = { dbg, use3d, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, use3d, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  applyLook(curLook());
   requestAnimationFrame(frame);
 })();

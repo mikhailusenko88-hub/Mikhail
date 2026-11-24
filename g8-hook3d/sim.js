@@ -54,11 +54,14 @@
     return b.S;
   }
 
-  function create(levelFn) {
+  // o.up — прокачка из гаража: eng (мотор) и winch (лебёдка), ступени 0..5. Без прокачки цифры прежние: все уровни проходятся и так
+  function create(levelFn, o) {
+    const up = Object.assign({ eng: 0, winch: 0 }, o && o.up);
+    const CFG = { speed: 37 + 0.8 * up.eng, torque: 1 + 0.07 * up.eng, reelG: REEL_GROUND + 20 * up.winch, reelF: REEL_FAST + 24 * up.winch };
     const S = {
       L: null, W: null, truck: null, wheels: [], wj: [], rope: null, ropeA: null, target: null,
       state: 'play', t: 0, deadT: 0, why: '', grounded: false, wallTouch: false, crashT: 0, flipT: 0,
-      cp: null, attempts: 1, hooks: 0, events: [], wonT: 0, pullOn: false,
+      cp: null, attempts: 1, hooks: 0, events: [], wonT: 0, pullOn: false, cfg: CFG,
     };
     S.L = (typeof levelFn === 'number' ? root.HookSim.levels[levelFn].build : levelFn || level1)();
     const L = S.L;
@@ -173,8 +176,8 @@
           if (dir) { S.pump = dir; for (const b of [T, ...S.wheels]) { b.vx += tx * dir * PUMP * dt; b.vy += ty * dir * PUMP * dt; } }
         }
         let reel = 0;
-        if (inp.pull) reel = REEL_FAST;
-        else if (tight && (S.grounded || S.wallTouch || (!S.pump && !inp.gas && Math.hypot(S.truck.vx, S.truck.vy) < 220))) reel = REEL_GROUND;
+        if (inp.pull) reel = CFG.reelF;
+        else if (tight && (S.grounded || S.wallTouch || (!S.pump && !inp.gas && Math.hypot(S.truck.vx, S.truck.vy) < 220))) reel = CFG.reelG;
         if (reel) { S.rope.len = Math.max(MIN_ROPE, S.rope.len - reel * dt); S.pullOn = true; }
       }
       // газ / тормоз — как в Ball Truck
@@ -183,7 +186,7 @@
       for (const j of S.wj) {
         j.brake = 0;
         if (!play) { j.brake = S.state === 'win' ? 160000 : 0; j.maxT = 0; continue; }
-        if (g) { j.speed = 37; j.maxT = S.grounded ? 225000 : 45000; }
+        if (g) { j.speed = CFG.speed; j.maxT = (S.grounded ? 225000 : 45000) * CFG.torque; }
         else if (br) { if (fwd > 70) { j.brake = 230000; j.maxT = 0; } else { j.speed = -16; j.maxT = 110000; } }
         else { j.speed = 0; j.maxT = 3500; }
       }

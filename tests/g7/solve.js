@@ -4,9 +4,11 @@ globalThis.window = globalThis;
 const DIR = '../../' + (process.env.HOOK_DIR || 'g8-hook3d') + '/';
 require(DIR + 'physics.js'); require(DIR + 'sim.js'); require(DIR + 'levels.js');
 const H = globalThis.HookSim;
+// HOOK_UP=5,5 — проверка с прокачкой (мотор, лебёдка)
+const UPO = process.env.HOOK_UP ? { up: { eng: +process.env.HOOK_UP.split(',')[0], winch: +process.env.HOOK_UP.split(',')[1] } } : undefined;
 
 function play(li, params, upto, maxT = 70) {
-  const S = H.create(li); const R = S.L.anchors.slice().sort((a, b) => a.x0 - b.x0); let idx = 0, okRing = -1, gT = 0, relAt = -1;
+  const S = H.create(li, UPO); const R = S.L.anchors.slice().sort((a, b) => a.x0 - b.x0); let idx = 0, okRing = -1, gT = 0, relAt = -1;
   while (S.t < maxT) {
     const T = S.truck; let a = R[idx]; let hook = false;
     if (a && !S.rope && !a.broken && T.x > a.x + 500) { idx++; a = R[idx]; }
@@ -53,7 +55,7 @@ function cands(li, params, k, climb) {
   return out;
 }
 function solve(li) {
-  const R = H.create(li).L.anchors.slice().sort((a, b) => a.x0 - b.x0);
+  const R = H.create(li, UPO).L.anchors.slice().sort((a, b) => a.x0 - b.x0);
   const params = [], windows = []; let budget = 40, deepest = 0;
   function dfs(k) {
     if (k === R.length) return play(li, params).win;

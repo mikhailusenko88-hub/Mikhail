@@ -5,6 +5,7 @@
   const R = { ok: false };
   let T = null, renderer, scene, cam, sun, lvlG = null, builtKey = null, vw = 0, vh = 0, vdpr = 0, lastT = 0, mob = false;
   let truckG, catG, cat2G, drumM, idleHook, starM, hookM, tgtM, dustI = 0, dustAcc = 0;
+  let look = { truck: 0, wheels: 0, paint: ['#ff5a36', '#c63b1f'] }, podium = null, viewOff = false, shine = null, sparks = [];
   const wheelG = [], ropeSeg = [], aimDots = [], dust = [];
   let rings = [], cps = [], boostM = [], clouds = [];
   const ZF = 130, ZB = -2600, ROAD = 78, DEEP = 1700, NROPE = 7;
@@ -23,6 +24,9 @@
   function box(w, h, d, mat, x, y, z, par) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z || 0); m.castShadow = true; par.add(m); return m; }
   function prof(pts, depth, mat, par) { const s = new T.Shape(); pts.forEach((p, i) => (i ? s.lineTo(p[0], p[1]) : s.moveTo(p[0], p[1]))); const g = new T.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); const m = new T.Mesh(g, mat); m.castShadow = true; par.add(m); return m; }
   function cyl(r, h, seg, mat, x, y, z, par, alongZ) { const m = new T.Mesh(new T.CylinderGeometry(r, r, h, seg), mat); if (alongZ) m.rotation.x = Math.PI / 2; m.position.set(x, y, z || 0); m.castShadow = true; par.add(m); return m; }
+
+  function cylX(r0, r1, h, seg, mat, x, y, z, par) { const m = new T.Mesh(new T.CylinderGeometry(r0, r1, h, seg), mat); m.rotation.z = Math.PI / 2; m.position.set(x, y, z || 0); m.castShadow = true; par.add(m); return m; }
+  function drop(g) { if (!g) return; if (g.parent) g.parent.remove(g); g.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); }
 
   R.init = function (canvas) {
     try {
@@ -71,40 +75,143 @@
     return g;
   }
 
-  // ---------- грузовик (размеры — как у плоского: рама, кузов, кабина, лебёдка на крыше) ----------
-  function buildTruck() {
-    truckG = new T.Group(); scene.add(truckG);
-    const main = lam('#ff5a36'), dark = lam('#c63b1f'), frame = lam('#37474f'), blk = lam('#20262a'), grey = lam('#90a4ae');
-    box(230, 26, 84, frame, 1, -5, 0, truckG);
-    box(132, 28, 100, main, -48, 16, 0, truckG);
-    box(124, 14, 100, dark, -49, 37, 0, truckG);
-    box(110, 3, 86, blk, -49, 44.5, 0, truckG);
-    for (const z of [-50.5, 50.5]) { const st = box(118, 5, 1, bas('#ffd9cf'), -48, 22, z, truckG); st.castShadow = false; }
-    prof([[14, 2], [14, 40], [88, 40], [91, 37], [113, 33], [119, 20], [119, 2]], 96, main, truckG);
-    box(8, 36, 96, main, 18, 57, 0, truckG);
-    box(54, 7, 96, main, 41, 77, 0, truckG);
-    for (const z of [-45.5, 45.5]) { const p = box(5, 44, 5, main, 77.5, 57.5, z, truckG); p.rotation.z = 0.58; }
-    const ws = box(2, 42, 84, new T.MeshLambertMaterial({ color: C('#b3e5fc'), transparent: true, opacity: 0.36 }), 77.5, 57.5, 0, truckG); ws.rotation.z = 0.58; ws.castShadow = false;
-    box(20, 18, 104, blk, 114, -4, 0, truckG);
-    for (const z of [-34, 34]) { const l = box(4, 10, 16, bas('#fff59d'), 120.5, 24, z, truckG); l.castShadow = false; }
-    cyl(4, 56, 8, grey, 6, 62, -40, truckG);
-    box(32, 6, 40, frame, 30, 83.5, 0, truckG); box(8, 20, 8, grey, 30, 94, 0, truckG);
-    drumM = new T.Group(); drumM.position.set(30, 104, 0); truckG.add(drumM);
-    cyl(12, 26, 14, lam('#ffb300'), 0, 0, 0, drumM, true); box(26, 5, 28, lam('#5d4037'), 0, 0, 0, drumM);
-    idleHook = new T.Mesh(new T.TorusGeometry(7, 2.2, 6, 14, 4.4), grey); idleHook.position.set(43, 92, 0); truckG.add(idleHook);
-    catG = makeCat('#e8892f', '#1e5fd6'); catG.position.set(47, 55, 0); truckG.add(catG);
-    cat2G = makeCat('#a7adb3', '#e53935'); cat2G.position.set(-52, 60, 0); truckG.add(cat2G);
-    const tire = lam('#1d1d1d'), hub = lam('#d5dde2'), nut = lam('#607d8b');
+  // ---------- грузовик: рама, один из трёх кузовов, лебёдка на крыше, колёса ----------
+  // Физика у всех одна (те же точки касания), поэтому кузова разные только на вид. Лебёдка всегда в точке (30, 104).
+  // выбор из гаража: { truck: 0 пикап | 1 джип | 2 тягач, wheels: 0..3, paint: [цвет, тёмный цвет] }
+  R.setLook = function (l) {
+    if (!R.ok || !l) return;
+    if (l.truck === look.truck && l.wheels === look.wheels && l.paint[0] === look.paint[0]) return;
+    look = { truck: l.truck | 0, wheels: l.wheels | 0, paint: l.paint.slice() };
+    buildTruck();
+  };
+  function bodyPickup(g, m) {
+    box(132, 28, 100, m.main, -48, 16, 0, g);
+    box(124, 14, 100, m.dark, -49, 37, 0, g);
+    box(110, 3, 86, m.blk, -49, 44.5, 0, g);
+    for (const z of [-50.5, 50.5]) box(118, 5, 1, m.stripe, -48, 22, z, g).castShadow = false;
+    prof([[14, 2], [14, 40], [88, 40], [91, 37], [113, 33], [119, 20], [119, 2]], 96, m.main, g);
+    box(8, 36, 96, m.main, 18, 57, 0, g);
+    box(54, 7, 96, m.main, 41, 77, 0, g);
+    for (const z of [-45.5, 45.5]) box(5, 44, 5, m.main, 77.5, 57.5, z, g).rotation.z = 0.58;
+    const ws = box(2, 42, 84, m.glass, 77.5, 57.5, 0, g); ws.rotation.z = 0.58; ws.castShadow = false;
+    box(20, 18, 104, m.blk, 114, -4, 0, g);
+    for (const z of [-34, 34]) box(4, 10, 16, m.lamp, 120.5, 24, z, g).castShadow = false;
+    cyl(4, 56, 8, m.grey, 6, 62, -40, g);
+    return { roof: 80.5, cat: [47, 55], cat2: [-52, 60] };
+  }
+  // джип: открытый верх, дуги, запаска сзади, «кенгурятник» и прожекторы
+  function bodyJeep(g, m) {
+    prof([[-116, 2], [-116, 34], [-110, 42], [60, 42], [66, 46], [108, 43], [119, 34], [119, 2]], 96, m.main, g);
+    box(150, 3, 80, m.blk, -36, 42.5, 0, g);
+    for (const z of [-48.6, 48.6]) box(170, 5, 1, m.stripe, -28, 24, z, g).castShadow = false;
+    box(8, 26, 76, m.dark, 29, 57, 0, g); box(8, 22, 80, m.dark, -58, 54, 0, g);
+    for (const z of [-45.5, 45.5]) {
+      box(5, 40, 5, m.frame, 72, 63, z, g).rotation.z = 0.26;
+      box(6, 40, 6, m.frame, -18, 62, z, g);
+      box(88, 5, 5, m.frame, 24, 81, z, g);
+      box(92, 5, 5, m.frame, -60, 62, z, g).rotation.z = 0.46;
+    }
+    const ws = box(2, 36, 86, m.glass, 72, 63, 0, g); ws.rotation.z = 0.26; ws.castShadow = false;
+    box(6, 6, 96, m.frame, 66.5, 82, 0, g); box(6, 6, 96, m.frame, -18, 81, 0, g);
+    box(50, 4, 66, m.frame, 36, 82, 0, g);
+    cylX(24, 24, 11, 18, m.tire, -121.5, 32, 0, g); cylX(11, 11, 13, 12, m.grey, -122, 32, 0, g);
+    box(20, 18, 104, m.blk, 114, -4, 0, g);
+    for (const z of [-28, 28]) box(4, 30, 4, m.chrome, 127, 13, z, g);
+    for (const y of [9, 26]) box(4, 4, 62, m.chrome, 127, y, 0, g);
+    for (const z of [-34, 34]) cylX(7, 7, 4, 12, m.lamp, 120.5, 30, z, g).castShadow = false;
+    for (const z of [-30, -10, 10, 30]) { cylX(5.5, 5.5, 7, 10, m.blk, 68, 89, z, g); cylX(4.4, 4.4, 2, 10, m.lamp, 72, 89, z, g).castShadow = false; }
+    box(16, 24, 7, lam('#2e7d32'), -94, 24, 51.5, g);
+    for (const z of [-50, 50]) box(72, 4, 8, m.blk, 8, -2, z, g);
+    return { roof: 84, cat: [47, 56], cat2: [-34, 58] };
+  }
+  // тягач: длинный капот, высокая кабина со спальником, хромированные трубы и баки
+  function bodyRig(g, m) {
+    prof([[62, 2], [62, 46], [104, 42], [117, 36], [119, 2]], 78, m.main, g);
+    box(4, 30, 56, m.chrome, 120, 20, 0, g);
+    for (const y of [10, 17, 24, 31]) box(5, 2, 50, m.blk, 120.4, y, 0, g).castShadow = false;
+    for (const z of [-47, 47]) { box(58, 8, 14, m.dark, 90, 7, z, g); box(4, 9, 12, m.lamp, 120.5, 8, z, g).castShadow = false; }
+    box(52, 42, 96, m.main, 38, 23, 0, g);
+    box(8, 40, 96, m.main, 16, 64, 0, g);
+    box(60, 8, 98, m.main, 41, 88, 0, g);
+    for (const z of [-45.5, 45.5]) box(5, 42, 5, m.main, 66, 64, z, g).rotation.z = 0.1;
+    const ws = box(2, 40, 84, m.glass, 66.5, 64, 0, g); ws.rotation.z = 0.1; ws.castShadow = false;
+    box(16, 4, 98, m.dark, 76, 82, 0, g).rotation.z = -0.3;
+    for (const z of [-36, -18, 0, 18, 36]) box(4, 4, 7, bas('#ffb300'), 70, 93.5, z, g).castShadow = false;
+    box(48, 74, 98, m.dark, -13, 39, 0, g);
+    box(48.6, 9, 98.6, m.main, -13, 20, 0, g);
+    box(20, 14, 99.4, m.blk, -13, 56, 0, g);
+    for (const z of [-40, 40]) { cyl(4.5, 66, 10, m.chrome, -44, 57, z, g); cyl(5.6, 5, 10, m.blk, -44, 91, z, g); }
+    box(76, 6, 90, m.blk, -77, 11, 0, g);
+    cyl(24, 5, 18, m.grey, -76, 16.5, 0, g);
+    for (const z of [-38, 38]) { box(4, 7, 12, bas('#ff5252'), -116, 4, z, g).castShadow = false; box(3, 22, 22, m.blk, -112, -14, z, g); }
+    for (const z of [-50, 50]) { cylX(10, 10, 44, 12, m.chrome, -8, -4, z, g); box(34, 4, 9, m.chrome, 38, -8, z, g); }
+    box(14, 20, 108, m.chrome, 119, -6, 0, g);
+    for (const z of [-22, 22]) cylX(4.6, 3, 24, 8, m.chrome, 52, 95, z, g);
+    return { roof: 92, cat: [44, 58], cat2: [-76, 46] };
+  }
+  // колёса: 0 обычные, 1 «монстр» (широкие, крупный протектор), 2 золотые диски, 3 шипы
+  function buildWheels(m) {
+    const k = look.wheels, gold = new T.MeshPhongMaterial({ color: C('#ffc107'), specular: C('#fff8e1'), shininess: 90, emissive: C('#3d2a00') });
     for (let i = 0; i < 2; i++) {
       const g = new T.Group(); scene.add(g); wheelG.push(g);
-      cyl(5, 104, 8, frame, 0, 0, 0, g, true);
+      cyl(5, 104, 8, m.frame, 0, 0, 0, g, true);
       for (const z of [-56, 56]) {
-        cyl(27, 26, 20, tire, 0, 0, z, g, true);
-        for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI * 2, b = box(6, 9, 27, tire, Math.cos(a) * 27.5, Math.sin(a) * 27.5, z, g); b.rotation.z = a; }
-        cyl(14, 28, 14, hub, 0, 0, z, g, true);
-        for (let k = 0; k < 5; k++) { const a = (k / 5) * Math.PI * 2; cyl(2.5, 30, 6, nut, Math.cos(a) * 8, Math.sin(a) * 8, z, g, true); }
+        if (k === 1) {
+          cyl(26.5, 36, 20, m.tire, 0, 0, z, g, true);
+          for (let q = 0; q < 8; q++) { const a = (q / 8) * Math.PI * 2; box(8, 13, 38, m.tire, Math.cos(a) * 27.5, Math.sin(a) * 27.5, z, g).rotation.z = a; }
+          cyl(17, 37, 16, lam('#fdd835'), 0, 0, z, g, true); cyl(14.5, 38, 16, lam('#e53935'), 0, 0, z, g, true);
+          for (let q = 0; q < 6; q++) { const a = (q / 6) * Math.PI * 2; cyl(2.6, 40, 6, m.blk, Math.cos(a) * 9, Math.sin(a) * 9, z, g, true); }
+        } else if (k === 2) {
+          cyl(27.5, 22, 24, m.tire, 0, 0, z, g, true);
+          cyl(20, 24, 20, gold, 0, 0, z, g, true); cyl(16, 25, 18, m.blk, 0, 0, z, g, true);
+          for (let q = 0; q < 3; q++) box(36, 5, 26.5, gold, 0, 0, z, g).rotation.z = (q / 3) * Math.PI;
+          cyl(6.5, 28.5, 12, gold, 0, 0, z, g, true);
+        } else if (k === 3) {
+          cyl(26.5, 26, 20, m.tire, 0, 0, z, g, true);
+          for (let q = 0; q < 12; q++) { const a = (q / 12) * Math.PI * 2, c = new T.Mesh(new T.ConeGeometry(4.6, 10, 6), m.chrome); c.position.set(Math.cos(a) * 30, Math.sin(a) * 30, z); c.rotation.z = a - Math.PI / 2; c.castShadow = true; g.add(c); }
+          cyl(15, 28, 14, lam('#455a64'), 0, 0, z, g, true); cyl(6, 31, 10, lam('#e53935'), 0, 0, z, g, true);
+          for (let q = 0; q < 6; q++) { const a = (q / 6) * Math.PI * 2; cyl(2.2, 30, 6, m.chrome, Math.cos(a) * 10.5, Math.sin(a) * 10.5, z, g, true); }
+        } else {
+          cyl(27, 26, 20, m.tire, 0, 0, z, g, true);
+          for (let q = 0; q < 10; q++) { const a = (q / 10) * Math.PI * 2; box(6, 9, 27, m.tire, Math.cos(a) * 27.5, Math.sin(a) * 27.5, z, g).rotation.z = a; }
+          cyl(14, 28, 14, lam('#d5dde2'), 0, 0, z, g, true);
+          for (let q = 0; q < 5; q++) { const a = (q / 5) * Math.PI * 2; cyl(2.5, 30, 6, lam('#607d8b'), Math.cos(a) * 8, Math.sin(a) * 8, z, g, true); }
+        }
       }
     }
+  }
+  function buildTruck() {
+    drop(truckG); wheelG.forEach(drop); wheelG.length = 0;
+    truckG = new T.Group(); scene.add(truckG);
+    // краска: обычная матовая; хром и золото — с бликом от солнца; «радуга» меняет цвет на ходу (см. R.draw)
+    const sp = look.paint[2], paint = (h) => sp === 'gold' ? new T.MeshPhongMaterial({ color: C(h), specular: C('#fff1a8'), shininess: 60, emissive: C('#4a2e00') })
+      : sp === 'chrome' ? new T.MeshPhongMaterial({ color: C(h), specular: C('#ffffff'), shininess: 120, emissive: C('#1d2327') })
+      : sp === 'rainbow' ? new T.MeshPhongMaterial({ color: C(h), specular: C('#ffffff'), shininess: 50 }) : lam(h);
+    const m = {
+      main: paint(look.paint[0]), dark: paint(look.paint[1]), frame: lam('#37474f'), blk: lam('#20262a'), grey: lam('#90a4ae'), tire: lam('#1d1d1d'),
+      chrome: new T.MeshPhongMaterial({ color: C('#dfe6ea'), specular: C('#ffffff'), shininess: 110 }),
+      glass: new T.MeshLambertMaterial({ color: C('#b3e5fc'), transparent: true, opacity: 0.36 }),
+      lamp: bas('#fff59d'), stripe: bas('#ffffff', { transparent: true, opacity: 0.6 }),
+    };
+    shine = sp === 'rainbow' ? [m.main, m.dark] : null;
+    box(230, 26, 84, m.frame, 1, -5, 0, truckG);
+    const b = [bodyPickup, bodyJeep, bodyRig][look.truck](truckG, m);
+    // лебёдка на крыше: барабан всегда в одной точке — оттуда идёт трос
+    box(32, 6, 40, m.frame, 30, b.roof + 3, 0, truckG);
+    if (b.roof + 6 < 98) box(8, 98 - b.roof - 6, 8, m.grey, 30, (b.roof + 6 + 98) / 2, 0, truckG);
+    drumM = new T.Group(); drumM.position.set(30, 104, 0); truckG.add(drumM);
+    cyl(12, 26, 14, lam('#ffb300'), 0, 0, 0, drumM, true); box(26, 5, 28, lam('#5d4037'), 0, 0, 0, drumM);
+    idleHook = new T.Mesh(new T.TorusGeometry(7, 2.2, 6, 14, 4.4), m.grey); idleHook.position.set(43, 92, 0); truckG.add(idleHook);
+    // искры на дорогой краске: звёздочки вспыхивают на борту и крыше
+    sparks = [];
+    if (sp) {
+      const sh = new T.Shape(); [[0, 10], [1.7, 1.7], [10, 0], [1.7, -1.7], [0, -10], [-1.7, -1.7], [-10, 0], [-1.7, 1.7]].forEach((q, i) => (i ? sh.lineTo(q[0], q[1]) : sh.moveTo(q[0], q[1])));
+      const sg = new T.ShapeGeometry(sh), sm = new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, depthWrite: false, side: T.DoubleSide, fog: false });
+      for (const q of [[-84, 30, 53], [-22, 18, 53], [44, 30, 52], [104, 22, 51], [38, b.roof + 2, 30], [-58, 46, 40], [84, 42, 30]]) { const s2 = new T.Mesh(sg, sm); s2.position.set(q[0], q[1], q[2]); s2.renderOrder = 6; truckG.add(s2); sparks.push(s2); }
+    }
+    catG = makeCat('#e8892f', '#1e5fd6'); catG.position.set(b.cat[0], b.cat[1], 0); truckG.add(catG);
+    cat2G = makeCat('#a7adb3', '#e53935'); cat2G.position.set(b.cat2[0], b.cat2[1], 0); truckG.add(cat2G);
+    buildWheels(m);
   }
 
   // ---------- то, что двигается: трос, прицел, пыль, звезда ----------
@@ -120,6 +227,11 @@
     for (let i = 0; i < 10; i++) { const r = i % 2 ? 20 : 46, a = (i / 10) * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * r, y = Math.sin(a) * r; if (i) sh.lineTo(x, y); else sh.moveTo(x, y); }
     const sg = new T.ExtrudeGeometry(sh, { depth: 14, bevelEnabled: true, bevelSize: 3, bevelThickness: 3, bevelSegments: 1 }); sg.translate(0, 0, -7);
     starM = new T.Mesh(sg, new T.MeshPhongMaterial({ color: C('#ffd54f'), emissive: C('#6b4a00'), shininess: 60 })); starM.castShadow = true; starM.visible = false; scene.add(starM);
+    // подиум гаража: круглая площадка под грузовиком
+    podium = new T.Group(); podium.visible = false; scene.add(podium);
+    for (const [r, top, c] of [[182, 0, '#455a64'], [168, 0.7, '#78909c'], [118, 1.4, '#8fa1ab']]) { const q = cyl(r, 8, 48, lam(c), 0, top - 4, 0, podium); q.castShadow = false; q.receiveShadow = true; }
+    const rim = new T.Mesh(new T.TorusGeometry(175, 3, 6, 56), bas('#ffca28')); rim.rotation.x = Math.PI / 2; rim.position.y = 1.2; podium.add(rim);
+    podium.scale.z = 0.69; // овал: чтобы площадка не свисала с переднего края земли
   }
 
   function cloud(par, x, y, z, s, mat) {
@@ -258,13 +370,23 @@
     if (builtKey !== v.lvl || !lvlG) build(S, v.lvl);
     const L = S.L, t = v.t, dt = Math.min(0.05, Math.max(0, t - lastT)); lastT = t;
     // камера: тот же кадр, что у плоского вида (точка взгляда и масштаб), но с глубиной и небольшим наклоном сверху
-    const d = v.H / v.Z / (2 * Math.tan((cam.fov * Math.PI) / 360)), tilt = 0.15, sh = v.shake > 0 ? v.shake * 40 : 0;
-    const cx = v.camX + (0.08 * v.W) / v.Z + (Math.random() - 0.5) * sh, cy = -(v.camY - (0.05 * v.H) / v.Z) + (Math.random() - 0.5) * sh;
-    cam.position.set(cx, cy + d * Math.sin(tilt), d * Math.cos(tilt)); cam.lookAt(cx, cy, 0);
+    const d = v.H / v.Z / (2 * Math.tan((cam.fov * Math.PI) / 360)), sh = v.shake > 0 ? v.shake * 40 : 0;
+    let tilt = 0.15, yaw = 0, cx, cy;
+    if (v.g) { // гараж: смотрим на грузовик сбоку-спереди, сам он стоит в точке экрана (px, py)
+      tilt = v.g.tilt; yaw = v.g.yaw; cx = S.truck.x; cy = -S.truck.y + 18;
+      cam.setViewOffset(vw, vh, vw / 2 - v.g.px, vh / 2 - v.g.py, vw, vh); viewOff = true;
+    } else {
+      if (viewOff) { cam.clearViewOffset(); viewOff = false; }
+      cx = v.camX + (0.08 * v.W) / v.Z + (Math.random() - 0.5) * sh; cy = -(v.camY - (0.05 * v.H) / v.Z) + (Math.random() - 0.5) * sh;
+    }
+    cam.position.set(cx + d * Math.sin(yaw) * Math.cos(tilt), cy + d * Math.sin(tilt), d * Math.cos(yaw) * Math.cos(tilt)); cam.lookAt(cx, cy, 0);
+    podium.visible = !!v.g; if (v.g) podium.position.set(S.truck.x, -S.groundAt(S.truck.x) + 1, 0);
     cam.near = Math.max(40, d - 1000); cam.far = d + 16000; cam.updateProjectionMatrix();
     scene.fog.near = d + 1500; scene.fog.far = d + 11500;
     // грузовик и колёса
     const tr = S.truck; truckG.position.set(tr.x, -tr.y, 0); truckG.rotation.z = -tr.a;
+    sparks.forEach((q, i) => { const k = Math.sin(t * 2.6 + i * 1.9), s2 = k > 0 ? k * k * 1.25 : 0; q.visible = s2 > 0.03; if (q.visible) { q.scale.set(s2, s2, s2); q.rotation.z = t * 0.8 + i; } });
+    if (shine) { const h = (t * 0.12) % 1; shine[0].color.setHSL(h, 0.9, 0.56).convertSRGBToLinear(); shine[1].color.setHSL((h + 0.07) % 1, 0.9, 0.4).convertSRGBToLinear(); }
     S.wheels.forEach((w, i) => { wheelG[i].position.set(w.x, -w.y, 0); wheelG[i].rotation.z = -w.a; });
     sun.target.position.set(tr.x, -tr.y, 0); sun.position.set(tr.x - 430, -tr.y + 1050, 640); sun.target.updateMatrixWorld();
     const scared = S.state === 'dead' || (!S.grounded && Math.abs(tr.vy) > 500), happy = S.state === 'win';
