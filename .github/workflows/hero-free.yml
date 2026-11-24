@@ -1,0 +1,90 @@
+name: hero-free
+# Свободные голоса Барсику и Рону (v5_cis, MIT): мерка — их нынешние реплики из сборок студии
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['hero-free-request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: hero-free
+  cancel-in-progress: false
+jobs:
+  r1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        hero: [barsik, ron]
+        part: [0, 1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: pik-free-cache-v2
+          restore-keys: svoy-free-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng unzip
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld
+      - name: Мерка — реплики героев из сборок студии
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for b in 38g 39f; do
+            mkdir -p dubz/$b
+            gh release download studio-$b -R ${{ github.repository }} -p dub.zip -D dubz/$b
+            (cd dubz/$b && unzip -q -o dub.zip 'dub/lines/*' 'dub/lines.json' && rm dub.zip)
+          done
+          ls dubz/*/dub | head
+      - run: python hero_free.py r1 ${{ matrix.hero }} ${{ matrix.part }} 5
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: H-${{ matrix.hero }}-${{ matrix.part }}
+          path: pack/
+          retention-days: 7
+  final:
+    needs: [r1]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'H-*'
+          merge-multiple: true
+          path: pack/
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          python hero_free.py final
+          ls -la hero
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git add -A hero
+          git commit -m "hero-free result" || echo nothing
+          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
