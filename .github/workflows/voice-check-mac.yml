@@ -29,6 +29,8 @@ jobs:
         if: hashFiles('gen.txt') != ''
         run: python gen.py
       - name: Analyze
+        env:
+          WHISPER: base
         run: python voice_check.py
       - name: Commit result
         if: always()
