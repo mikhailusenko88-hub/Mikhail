@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+Server: nginx/1.24.0 (Ubuntu)
+Date: Tue, 24 Nov 2026 21:01:36 GMT
+Content-Type: application/json
+Content-Length: 48675
+Last-Modified: Tue, 24 Nov 2026 16:00:02 GMT
+Connection: keep-alive
+ETag: "6b05b482-be23"
+Accept-Ranges: bytes
+
