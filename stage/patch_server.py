@@ -163,10 +163,19 @@ _OMO_PUNCT = re.compile(r"[.!?…,;:—–]")
 _OMO_TOK = re.compile(r"[А-Яа-яЁё+]+(?:-[А-Яа-яЁё+]+)*|[^А-Яа-яЁё+]+")
 
 
+_OMO_PL = ("эти", "все", "наши", "ваши", "свои", "такие", "где")
+
+
 def _o_sg_gen(sg_gen, plural, extra=()):
-    """леса / слова / окна / берега: после предлога родительного падежа или прилагательного на -ого/-его — ед. ч.; иначе мн. ч."""
+    """леса / слова / окна / берега: после предлога родительного падежа, «нет» или прилагательного на -ого/-его — ед. ч.;
+    после прилагательного во мн. ч. («густые леса», «эти слова») — мн. ч.; иначе решает ruaccent (None).
+    25.11.2026: раньше без признаков ставилось мн. ч. — и «десять квадратных километров ле́са» стало «леса́»."""
     def f(prev, nxt, left):
-        return sg_gen if (prev in _GEN_PREP or prev == "нет" or prev in extra or prev.endswith(("ого", "его"))) else plural
+        if prev in _GEN_PREP or prev == "нет" or prev in extra or prev.endswith(("ого", "его")):
+            return sg_gen
+        if prev.endswith(("ые", "ие")) or prev in _OMO_PL:
+            return plural
+        return None
     return f
 
 
@@ -175,7 +184,12 @@ def _o_voda(prev, nxt, left):
 
 
 def _o_ruki(prev, nxt, left):
-    return 1 if (re.search(r"(попроси|проси)\w*(\s+\S+){0,3}$", left) or prev in _GEN_PREP) else 0
+    if re.search(r"(попроси|проси)\w*(\s+\S+){0,3}$", left) or prev in _GEN_PREP or prev == "нет":
+        return 1                             # руки́ (попросил руки, из руки, нет руки)
+    if prev.endswith(("ые", "ие")) or prev in ("свои", "мои", "твои", "наши", "ваши", "обе", "эти", "все", "вымой", "мой", "мыть",
+                                                "помой", "моем", "моют", "поднял", "подняли", "поднимите", "пожали", "пожать"):
+        return 0                             # ру́ки
+    return None
 
 
 def _o_uzhe(prev, nxt, left):
