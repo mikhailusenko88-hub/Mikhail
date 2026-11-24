@@ -5,16 +5,16 @@
   const H = root.HookSim, Tr = () => H.Track().start(-300, 600);
   const L = [
     { // 1 — первый мах
-      name: ['First Swing', 'Первый мах'], hint: ['Hold HOOK at the pit. Let go on the way up! Hanging still? Hold GAS to swing', 'Держи КРЮК у ямы. Отпусти на взлёте! Повис — жми ГАЗ, раскачайся'],
+      name: ['First Swing', 'Первый мах'], hint: ['', ''], // первый уровень учит рукой: «держи» у ямы, «отпусти» на взлёте (см. GUIDE)
       build: () => Tr().flat(1100).ring(240, 380).gap(450, 30).flat(700).ring(250, 400).star(420, 340).gap(480, 30).flat(300).fin().end().S,
     },
     { // 2 — на стену
-      name: ['Up the Wall', 'На стену'], hint: ['Drive into the wall and hook on — the winch pulls you up', 'Упрись в стену и цепляйся — лебёдка затянет наверх'],
+      name: ['Up the Wall', 'На стену'], hint: ['At the wall: hold — the winch pulls you up', 'У стены держи — лебёдка затянет наверх'],
       build: () => Tr().flat(1000).ring(240, 380).gap(440, 30).flat(500).cp(-300).flat(300)
         .gap(0, -340).ring(140, 360, { climb: 1 }).flat(600).ring(250, 400).star(300, 470).gap(460, 40).flat(300).fin().end().S,
     },
     { // 3 — два кольца
-      name: ['Double Swing', 'Два кольца'], hint: ['Let go of the first ring, then hold HOOK again — it grabs the next one', 'Отпусти первое кольцо и снова держи КРЮК — он сам поймает второе'],
+      name: ['Double Swing', 'Два кольца'], hint: ['Let go, then hold again — the hook grabs the next ring', 'Отпусти и снова держи — крюк поймает второе кольцо'],
       build: () => Tr().flat(1000).ring(250, 410).gap(500, 30).flat(500).cp(-300).flat(500)
         .ring(290, 440).ring(660, 440).star(740, 360).gap(940, 40).flat(300).fin().end().S,
     },
@@ -30,7 +30,7 @@
     { // 6 — кольца едут
       name: ['Moving Rings', 'Кольца едут'], hint: ['The rings move — time your hook', 'Кольца ездят — лови момент'],
       build: () => Tr().flat(1000).ring(260, 420, { mv: { dx: 200, T: 3 } }).gap(560).flat(600).cp(-400).flat(300)
-        .ring(300, 450, { mv: { dx: 180, T: 2.6 } }).ring(720, 450, { mv: { dy: 120, T: 2.2, ph: 1.5 } }).star(760, 360).gap(1050).flat(300).fin().end().S,
+        .ring(300, 450, { mv: { dx: 180, T: 2.6 } }).ring(720, 450, { mv: { dy: 120, T: 2.2, ph: 4 } }).star(760, 360).gap(1050).flat(300).fin().end().S,
     },
     { // 7 — пещера
       name: ['Cave', 'Пещера'], hint: ["Cave! Don't fly into the ceiling", 'Пещера! Не влети в потолок'],
@@ -47,7 +47,7 @@
       build: () => Tr().flat(1200).ring(300, 450).ring(700, 470).ring(1100, 470, { mv: { dy: 90, T: 2.4 } }).ring(1500, 450).star(1300, 420).gap(1830, 20).flat(500).fin().end().S,
     },
     { // 10 — башня: стены с треснутыми кольцами (тянуть быстрее!) и ямы между ними
-      name: ['Tower', 'Башня'], hint: ['Cracked ring on the wall — pull fast!', 'Треснутое кольцо на стене — тяни быстрее!'],
+      name: ['Tower', 'Башня'], hint: ['Cracked ring on the wall — the winch hurries, hold on!', 'Треснутое кольцо на стене — лебёдка спешит, держись!'],
       build: () => Tr().flat(1000).gap(0, -300).ring(140, 360, { climb: 1, snap: 2.6 }).flat(650).ring(250, 420).gap(480).flat(400)
         .gap(0, -300).ring(140, 360, { climb: 1, snap: 2.6 }).flat(600).cp(-300).ring(260, 440).gap(500).flat(400)
         .gap(0, -300).ring(140, 360, { climb: 1 }).flat(500).fin().end().S,
@@ -55,7 +55,7 @@
     { // 11 — вниз по каньону
       name: ['Canyon', 'Каньон'], hint: ['', ''],
       build: () => Tr().flat(1000).ring(300, 460).gap(720, 170).flat(500).cp(-300).flat(300)
-        .ring(300, 460, { mv: { dx: 200, T: 2.2 } }).gap(820, 130).flat(500).ring(280, 440, { snap: 1.1 }).gap(680, 90).flat(300).fin().end().S,
+        .ring(300, 460, { mv: { dx: 200, T: 2.2, ph: 2.4 } }).gap(820, 130).flat(500).ring(280, 440, { snap: 1.1 }).gap(680, 90).flat(300).fin().end().S,
     },
     { // 12 — финал
       name: ['Grand Finale', 'Финал'], hint: ['', ''],
@@ -67,7 +67,10 @@
   // звёзды (куда долетает ~треть удачных прохождений автопилота) и время на третью звезду — tests/g7/stars.js
   const STARS = {"0": [2610, 240], "1": [3080, -50], "2": [3300, 290], "3": [2300, 260], "4": [5520, -397], "5": [1200, 20], "6": [2640, 260], "7": [3340, 312], "8": [2880, 200], "9": [3370, -340], "10": [2920, 360], "11": [2460, 67]};
   const BEST = {"0": 3.6, "1": 7.2, "2": 4.5, "3": 10.5, "4": 9.9, "5": 5.1, "6": 6.5, "7": 4.6, "8": 3.9, "9": 11.2, "10": 6, "11": 10.1};
+  // обучение на первых уровнях (tests/g7/tutor.js): att — за сколько до кольца держать (у края ямы), lo..hi — где отпускать, правее кольца
+  const GUIDE = {"0":[{"att":300,"lo":75,"hi":325},{"att":310,"lo":150,"hi":350}],"1":[{"att":300,"lo":75,"hi":325},{"climb":1},{"att":310,"lo":50,"hi":350}]};
   L.forEach((l, i) => {
+    l.guide = GUIDE[i] || null;
     const b0 = l.build, st = STARS[i];
     l.build = () => { const S = b0(); if (st) S.star = { x: st[0], y: st[1], got: false }; return S; };
     l.par = Math.ceil((BEST[i] || 10) * 1.7 + 4);

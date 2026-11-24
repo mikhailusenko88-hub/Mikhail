@@ -61,10 +61,11 @@
     const S = {
       L: null, W: null, truck: null, wheels: [], wj: [], rope: null, ropeA: null, target: null,
       state: 'play', t: 0, deadT: 0, why: '', grounded: false, wallTouch: false, crashT: 0, flipT: 0,
-      cp: null, attempts: 1, hooks: 0, events: [], wonT: 0, pullOn: false, cfg: CFG,
+      cp: null, attempts: 1, hooks: 0, events: [], wonT: 0, pullOn: false, cfg: CFG, at: 0,
     };
     S.L = (typeof levelFn === 'number' ? root.HookSim.levels[levelFn].build : levelFn || level1)();
     const L = S.L;
+    L.anchors.slice().sort((a, b) => a.x0 - b.x0).forEach((a, i) => { a.i = i; }); // номер кольца по порядку вдоль трассы
 
     function buildWorld() {
       const W = (S.W = P.world());
@@ -79,7 +80,7 @@
     }
     // кольца: где они сейчас (ездящие — по синусу от времени), сброс рваных при возрождении
     function moveAnchors() {
-      for (const a of L.anchors) if (a.mv) { const k = Math.sin((S.t * 2 * Math.PI) / (a.mv.T || 3) + (a.mv.ph || 0)); a.x = a.x0 + (a.mv.dx || 0) * k; a.y = a.y0 + (a.mv.dy || 0) * k; }
+      for (const a of L.anchors) if (a.mv) { const k = Math.sin((S.at * 2 * Math.PI) / (a.mv.T || 3) + (a.mv.ph || 0)); a.x = a.x0 + (a.mv.dx || 0) * k; a.y = a.y0 + (a.mv.dy || 0) * k; }
       if (S.rope && S.ropeA) { S.rope.px = S.ropeA.x; S.rope.py = S.ropeA.y; }
     }
     function resetAnchors() { for (const a of L.anchors) { a.broken = false; a.hang = 0; } }
@@ -106,6 +107,7 @@
         S.wheels.push(w);
         S.wj.push(P.wheelJoint(W, S.truck, w, { lx, ly: 18, rest: 34, k: 1150, c: 70, lo: 10, hi: 44 }));
       }
+      S.at = 0; // часы ездящих колец: с начала уровня и после каждого возврата — с нуля, попытки одинаковые
       S.rope = null; S.ropeA = null; S.lastA = null; S.lastT = -9; S.pump = 0; S.hangSlow = false; S.state = 'play'; S.deadT = 0; S.crashT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false;
       resetAnchors();
     };
@@ -161,7 +163,7 @@
         // катушка выбирает слабину: трос не провисает, пока едешь к кольцу
         const [mx, my] = S.mast(), dNow = Math.hypot(mx - S.rope.px, my - S.rope.py);
         if (dNow < S.rope.len) S.rope.len = Math.max(MIN_ROPE, dNow);
-        const tight = S.rope.d > S.rope.len - 6;
+        const tight = S.rope.d > S.rope.len - 6, pull = inp.pull || !!(S.ropeA && S.ropeA.climb && S.ropeA.snap);
         // раскачка: висим в воздухе на натянутом тросе — газ усиливает мах, тормоз гасит
         S.pump = 0; S.hangSlow = false;
         if (play && tight && !S.grounded && !S.wallTouch && dNow > 1) {
@@ -170,13 +172,13 @@
           S.hangSlow = Math.abs(vt) < 260;
           // газ толкает вперёд, пока летишь вперёд (или висишь); тормоз — назад, пока летишь назад: держишь газ — мах растёт с каждым качанием
           let dir = 0;
-          if (inp.pull) dir = 0;
+          if (pull) dir = 0;
           else if (inp.gas) dir = vt > -60 && vt < PUMP_VMAX ? 1 : 0;
           else if (inp.brake) dir = vt < 60 && vt > -PUMP_VMAX ? -1 : 0;
           if (dir) { S.pump = dir; for (const b of [T, ...S.wheels]) { b.vx += tx * dir * PUMP * dt; b.vy += ty * dir * PUMP * dt; } }
         }
         let reel = 0;
-        if (inp.pull) reel = CFG.reelF;
+        if (pull) reel = CFG.reelF;
         else if (tight && (S.grounded || S.wallTouch || (!S.pump && !inp.gas && Math.hypot(S.truck.vx, S.truck.vy) < 220))) reel = CFG.reelG;
         if (reel) { S.rope.len = Math.max(MIN_ROPE, S.rope.len - reel * dt); S.pullOn = true; }
       }
@@ -199,7 +201,7 @@
       }
       P.step(S.W);
       after();
-      S.t += dt;
+      S.t += dt; S.at += dt;
     };
 
     function after() {
@@ -229,5 +231,13 @@
     return S;
   }
 
-  root.HookSim = { create, level1, Track, RANGE, MAST, levels: [] };
+  // «Газ сам»: как ведёт грузовик водитель-помощник — газ всегда; в воздухе выравнивает нос; на «свечке» отпускает газ.
+  // Этим же правилом ездит автопилот в тестах, поэтому игроку остаётся одно решение: когда держать и когда отпускать крюк.
+  function assist(S) {
+    const T = S.truck, an = Math.atan2(Math.sin(T.a), Math.cos(T.a)); let gas = true, brake = false;
+    if (!S.grounded && !S.rope) { gas = an > 0.25; brake = an < -0.25; } else if (S.grounded && an < -0.55) { gas = false; brake = an < -0.85; }
+    return { gas, brake };
+  }
+
+  root.HookSim = { create, assist, level1, Track, RANGE, MAST, levels: [] };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -6,10 +6,12 @@
   const T = RU ? {
     title: 'HOOK TRUCK', sub: 'Барсик и грузовик на тросе', solo: '1 игрок', duo: '2 игрока',
     touchSolo: 'Правый палец: газ и тормоз · Левый палец: держи КРЮК', touchDuo: 'Игрок 1 — газ справа · Игрок 2 — крюк слева',
-    soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)', 'S — лебёдка тянет быстрее'],
-    duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк', 'Игрок 2: S — лебёдка тянет'],
+    soloTxt: ['Правая рука: → газ, ← тормоз', 'Левая рука: Пробел или W — крюк (держать)'],
+    duoTxt: ['Игрок 1 (справа): → газ, ← тормоз', 'Игрок 2 (слева): W или Пробел — крюк'],
+    one: 'Один палец', hand: 'Газ и крюк', two: 'Вдвоём', touchAuto: 'Газ сам. Держи палец — крюк, отпусти — летишь', keyAuto: 'Газ сам. Пробел или мышь: держи — крюк, отпусти — летишь',
+    legendAuto: 'Пробел или мышь: держи — крюк, отпусти — летишь', hold: 'ДЕРЖИ', rel: 'ОТПУСТИ!', go: 'Нажми — поехали!', keyHint: 'мышь или Пробел',
     phone: 'На телефоне: справа газ и тормоз, слева крюк (вся левая половина экрана)',
-    legend: '→ газ   ← тормоз   ·   Пробел / W — крюк   ·   S — тянуть', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
+    legend: '→ газ   ← тормоз   ·   Пробел / W — крюк', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
     pump: 'Жми ГАЗ — раскачайся!', levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
@@ -18,10 +20,12 @@
   } : {
     title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
     touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook on the left',
-    soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook', 'S — the winch pulls faster'],
-    duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook', 'Player 2: S — winch pull'],
+    soloTxt: ['Right hand: → gas, ← brake', 'Left hand: hold Space or W to hook'],
+    duoTxt: ['Player 1 (right): → gas, ← brake', 'Player 2 (left): W or Space — hook'],
+    one: 'One finger', hand: 'Gas & hook', two: '2 players', touchAuto: 'Auto gas. Hold to hook, let go to fly', keyAuto: 'Auto gas. Space or mouse: hold to hook, let go to fly',
+    legendAuto: 'Space or mouse: hold to hook, let go to fly', hold: 'HOLD', rel: 'LET GO!', go: 'Tap to go!', keyHint: 'mouse or Space',
     phone: 'On phones: gas and brake on the right, hook on the left (whole left half)',
-    legend: '→ gas   ← brake   ·   Space / W — hook   ·   S — pull', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
+    legend: '→ gas   ← brake   ·   Space / W — hook', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
     pump: 'Hold GAS to swing!', levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
@@ -101,6 +105,9 @@
   let gar = null, gcam = null;
   let lvl = 0, res = null; const dbg = { freeze: false, clean: false };
   let hangT = 0;
+  // управление: 'auto' — газ сам, палец только на крюке (по умолчанию); 'manual' — газ, тормоз и крюк; вдвоём — всегда ручное
+  let ctl = save.ctl === 'manual' ? 'manual' : 'auto', wait = false, ts = 1, tut = null, hookT0 = 0;
+  const isAuto = () => ctl === 'auto' && !duo;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
   addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
@@ -113,15 +120,15 @@
   function layout() {
     const s = Math.min(W, H2), b = clamp(s * 0.2, 74, 120), m = clamp(s * 0.04, 14, 30), y = H2 - b - m - (W < H2 ? 10 : 0);
     const gw = b * 1.15;
-    buttons = [
+    buttons = (isAuto() ? [] : [ // «один палец»: кнопок нет, крюк — касание в любом месте
       { id: 'gas', x: W - gw - m, y: y - b * 0.15, w: gw, h: b * 1.15 },
       { id: 'brake', x: W - gw - m - b - m * 0.6, y: y + b * 0.05, w: b * 0.95, h: b * 0.95 },
       { id: 'hook', x: m, y: y - b * 0.35, w: b * 1.35, h: b * 1.35 },
-      { id: 'pull', x: m + b * 0.25, y: y - b * 0.35 - b * 0.75 - m * 0.6, w: b * 0.85, h: b * 0.75 }, // «тяни» — над крюком
+    ]).concat([
       { id: 'restart', x: W - 58, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'menu', x: W - 112, y: 12, w: 46, h: 46, ui: 1 },
       { id: 'mute', x: W - 166, y: 12, w: 46, h: 46, ui: 1 },
-    ];
+    ]);
   }
   const hit = (x, y) => buttons.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
   const held = (id) => { for (const p of ptrs.values()) if (p.btn === id) return true; return false; };
@@ -131,7 +138,7 @@
     if (mode !== 'play') { menuClick(x, y); return; }
     const b = hit(x, y);
     if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; } else if (b.id === 'mute') muted = !muted; return; }
-    ptrs.set(e.pointerId, { x, y, btn: b ? b.id : e.pointerType !== 'mouse' && x < W / 2 ? 'hook' : null });
+    ptrs.set(e.pointerId, { x, y, btn: b ? b.id : isAuto() || (e.pointerType !== 'mouse' && x < W / 2) ? 'hook' : null });
   });
   const up = (e) => ptrs.delete(e.pointerId);
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
@@ -141,12 +148,11 @@
     const k = keys;
     const gas = !!(k.ArrowRight || k.ArrowUp) || held('gas');
     const brake = !!(k.ArrowLeft || k.ArrowDown) || held('brake');
-    const hook = !!(k.Space || k.KeyW || k.ShiftLeft) || held('hook');
-    const pull = !!k.KeyS || held('pull');
-    return { gas, brake, hook, pull };
+    const hook = !!(k.Space || k.KeyW || k.ShiftLeft || (isAuto() && k.ArrowUp)) || held('hook');
+    return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: false };
   }
 
-  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { duo = d; if (li !== undefined) lvl = li; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
@@ -163,10 +169,62 @@
     const b = menuBtns.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (!b) return;
     if (b.id.slice(0, 2) === 'g:') garClick(b.id);
     else if (b.id === 'garage') openGarage();
-    else if (b.id === 'solo' || b.id === 'duo') { duo = b.id === 'duo'; save.duo = duo; store(); }
+    else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); }
     else if (b.id[0] === 'L') startGame(duo, +b.id.slice(1));
     else if (b.id === 'play') { let k = save.stars.findIndex((q, i) => !q && i < NL); if (k < 0) k = save.stars.length < NL ? save.stars.length : 0; startGame(duo, k); }
     else if (b.id === 'again') restart(); else if (b.id === 'next') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (b.id === 'menu') mode = 'menu';
+  }
+
+  // ---------- обучение рукой ----------
+  // Пока уровень 1 или 2 не пройден, игра показывает рукой «держи» и «отпусти» (моменты посчитал решатель, levels.js GUIDE).
+  // На первом уровне она ещё и ждёт: замирает у ямы, пока не нажмёшь, и в точке отпускания, пока не отпустишь.
+  // Возвращает скорость времени (1 — обычная, 0 — пауза); inp.hook гасит, если цепляться ещё рано.
+  function tutor(inp) {
+    tut = null;
+    const G = H.levels[lvl].guide; if (!G || save.stars[lvl] || S.state !== 'play') return 1;
+    const tr = S.truck, slow = lvl === 0 && !save.up.eng && !save.up.winch;
+    if (!S.rope) {
+      const a = S.target, g = a && G[a.i]; if (!g) return 1;
+      if (g.climb) { if (S.wallTouch || tr.x > a.x - 300) tut = 'hold'; return 1; }
+      if (tr.x > a.x + 40) return 1; // кольцо уже позади — после отпускания «держи» не показываем
+      if (tr.x > a.x - g.att - (slow ? 170 : 340)) tut = 'hold'; // рука появляется заранее: нажать можно сразу, крюк сам выстрелит у края
+      if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
+      return slow && !inp.hook ? 0 : 1;
+    }
+    const a = S.ropeA, g = G[a.i]; if (!g) return 1;
+    if (g.climb) { if (S.grounded && tr.y < a.y + 300 && (tr.x > a.x - 80 || S.rope.len <= 160)) tut = 'rel'; return 1; }
+    const rel = tr.x - a.x;
+    if (tr.vx > 0 && rel >= g.lo && rel <= g.hi) { tut = 'rel'; if (!inp.hook) return 1; if (!slow) return 0.5; return a.i === 0 && rel >= (g.lo + g.hi) / 2 - 40 ? 0 : 0.22; } // первое кольцо — пауза в середине окна; дальше — сильное замедление, чтобы успеть отпустить
+    if (rel < g.lo) tut = 'hold';
+    return 1;
+  }
+  // рука-указатель: кончик пальца в точке (x, y); lift — насколько палец поднят над экраном
+  function hand(x, y, sc, lift) {
+    ctx.save(); ctx.translate(x, y - lift); ctx.scale(sc, sc); ctx.rotate(-0.22);
+    const parts = [[-11, 0, 22, 66, 11], [9, 34, 17, 40, 8.5], [24, 38, 17, 38, 8.5], [39, 44, 16, 34, 8], [-13, 50, 68, 54, 18]];
+    ctx.lineJoin = 'round'; ctx.strokeStyle = '#263238'; ctx.lineWidth = 7;
+    for (const q of parts) { rr(q[0], q[1], q[2], q[3], q[4]); ctx.stroke(); }
+    ctx.save(); ctx.translate(-22, 62); ctx.rotate(-0.7); rr(-9, -4, 18, 40, 9); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
+    ctx.fillStyle = '#fff'; for (const q of parts) { rr(q[0], q[1], q[2], q[3], q[4]); ctx.fill(); }
+    ctx.restore();
+  }
+  // подсказка: рука и короткое слово. kind: 'go' — нажми, 'hold' — держи, 'rel' — отпусти
+  function prompt(kind) {
+    const port = W < H2, hk = !isAuto() && buttons.find((b) => b.id === 'hook'), big = Math.min(1.25, Math.max(0.8, Math.min(W, H2) / 420));
+    const x = hk ? hk.x + hk.w * 0.55 : W / 2, y = hk ? hk.y + hk.h * 0.45 : H2 * (port ? 0.85 : 0.76), ph = (realT * 1.6) % 1;
+    const col = kind === 'rel' ? '#43a047' : '#ff9800', txt = kind === 'go' ? T.go : kind === 'hold' ? T.hold : T.rel;
+    let lift = 0;
+    if (kind === 'go') lift = 26 * Math.abs(Math.sin(realT * 4.2)); else if (kind === 'rel') lift = 18 + 30 * ((realT * 1.8) % 1);
+    { // круги от нажатия (для «отпусти» — расходятся шире: палец ушёл)
+      for (let i = 0; i < 2; i++) { const q = (ph + i * 0.5) % 1; ctx.globalAlpha = (1 - q) * (kind === 'go' && lift > 10 ? 0.15 : 0.7); ctx.strokeStyle = col; ctx.lineWidth = 5 * big; ctx.beginPath(); ctx.arc(x, y, (16 + q * (kind === 'rel' ? 52 : 34)) * big, 0, 7); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+    }
+    hand(x, y, big, lift * big);
+    const fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10), tx = clamp(x, 110 * big, W - 110 * big);
+    ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0);
+    ctx.restore();
+    if (kind !== 'rel' && !matchMedia('(pointer: coarse)').matches) { ctx.font = '800 16px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(T.keyHint, tx, ty + fs * 0.85); ctx.fillStyle = '#fff'; ctx.fillText(T.keyHint, tx, ty + fs * 0.85); }
   }
 
   // ---------- гараж ----------
@@ -193,7 +251,8 @@
   }
 
   // ---------- камера ----------
-  const sx = (x) => (x - camX) * Z + W * 0.42, sy = (y) => (y - camY) * Z + H2 * 0.55;
+  const oy = () => (mode !== 'garage' && W < H2 && isAuto() ? 0.13 : 0.05); // насколько ниже середины экрана стоит грузовик
+  const sx = (x) => (x - camX) * Z + W * 0.42, sy = (y) => (y - camY) * Z + H2 * (0.5 + oy());
   function camera(dt) {
     const port = W < H2;
     gcam = null;
@@ -204,7 +263,7 @@
     }
     const zt = dbg.zoom || (port ? W / 1050 : Math.min(W / 1650, H2 / 980));
     Z += (zt - Z) * Math.min(1, dt * 3);
-    const T = S.truck, look = clamp(T.vx * 0.35, -250, 420);
+    const T = S.truck, look = clamp(T.vx * 0.35, -250, port ? Math.min(420, (0.2 * W) / Z) : 420); // в портрете грузовик не уезжает к самому левому краю
     if (dbg.zoom) { camX = T.x + dbg.cx; camY = (T.y + (S.rope ? S.rope.py : T.y - 300)) / 2 + dbg.cy; return; }
     if (S.state === 'dead') return;
     camX += (T.x + look - camX) * Math.min(1, dt * 4);
@@ -439,10 +498,9 @@
     layout();
     const B = Object.fromEntries(buttons.map((b) => [b.id, b]));
     const touchy = matchMedia('(pointer: coarse)').matches;
-    if (touchy || ptrs.size) {
+    if (!isAuto() && (touchy || ptrs.size)) {
       button(B.brake, '◀', '#e53935', inp.brake); button(B.gas, '▶', '#43a047', inp.gas);
       button(B.hook, '⚓', S.target || S.rope ? '#ff9800' : '#8d6e63', inp.hook, T.hook);
-      button(B.pull, '⇡', '#5c6bc0', inp.pull, T.pull);
       if (duo) {
         ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.font = '900 15px system-ui, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(T.p1, B.gas.x + B.gas.w, B.gas.y - 14);
         ctx.textAlign = 'left'; ctx.fillText(T.p2, B.hook.x, B.hook.y - 14);
@@ -453,10 +511,11 @@
       ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 24px system-ui, sans-serif';
       ctx.fillText(id === 'restart' ? '↻' : id === 'menu' ? '☰' : muted ? '🔇' : '🔊', b.x + b.w / 2, b.y + b.h / 2 + 1);
     }
-    if (!(touchy || ptrs.size) && S.t < 12) {
+    const legend = isAuto() ? T.legendAuto : T.legend;
+    if (!(touchy || ptrs.size) && S.t < 12 && !tut && !(wait && isAuto())) {
       ctx.globalAlpha = clamp(12 - S.t, 0, 1); ctx.font = '800 17px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      const tw = ctx.measureText(T.legend).width + 40; ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(W / 2 - tw / 2, H2 - 58, tw, 40, 20); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.fillText(T.legend, W / 2, H2 - 38); ctx.globalAlpha = 1;
+      const tw = ctx.measureText(legend).width + 40; ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(W / 2 - tw / 2, H2 - 58, tw, 40, 20); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillText(legend, W / 2, H2 - 38); ctx.globalAlpha = 1;
     }
     // полоса пути: старт → финиш, чекпоинты
     const L = S.L, x0 = L.polys[0][0][0] + 320, x1 = L.fin, bw = Math.min(W - 200, 360), bx = 16, by = 22;
@@ -478,9 +537,14 @@
       ls.forEach((q, i) => ctx.fillText(q, W / 2, hy + 9 + lh * (i + 0.5)));
       ctx.globalAlpha = 1; hintB = hy + hh;
     }
-    if (S.t < 2.5) { // название уровня: ниже подсказки, чтобы надписи не ложились друг на друга
-      const fs = W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp(2.5 - S.t, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
+    if (S.t < 1.4) { // название уровня: ниже подсказки, чтобы надписи не ложились друг на друга
+      const fs = W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp((1.4 - S.t) * 2, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
       const ty = Math.max(H2 * 0.3, hintB + fs * 0.9); ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${l.name[LANG]}`; ctx.strokeText(tt, W / 2, ty, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty, W - 24); ctx.globalAlpha = 1;
+    }
+    // обучение: «нажми — поехали», «держи», «отпусти»
+    if (mode === 'play' && S.state === 'play') {
+      if (wait && isAuto()) prompt('go'); else if (tut) prompt(tut);
+      else if (isAuto() && S.rope && S.ropeA && !S.ropeA.climb && !S.grounded && S.t - hookT0 > 3.5) prompt('rel'); // долго висит и не отпускает — напомнить
     }
     // всплывающие надписи
     toasts.forEach((t, i) => {
@@ -636,14 +700,15 @@
     // режим: 1 игрок / 2 игрока
     const mw = Math.min(W - 40, 440), mx = W / 2 - mw / 2, my = ty + (sm ? 52 : 66), mh = 46;
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; rr(mx, my, mw, mh, 23); ctx.fill();
-    [['solo', '👤 ' + T.solo, false], ['duo', '👥 ' + T.duo, true]].forEach(([id, lab, d], i) => {
-      const x = mx + 4 + i * (mw / 2 - 4), w = mw / 2 - 4; menuBtns.push({ id, x, y: my, w, h: mh });
-      if (duo === d) { ctx.fillStyle = d ? '#1e88e5' : '#43a047'; rr(x, my + 4, w, mh - 8, 19); ctx.fill(); }
-      ctx.fillStyle = '#fff'; ctx.font = '900 18px system-ui, sans-serif'; ctx.fillText(lab, x + w / 2, my + mh / 2 + 1);
+    const cur = duo ? 'duo' : ctl, sw = (mw - 8) / 3;
+    [['auto', '👆 ' + T.one, '#43a047'], ['manual', '🎮 ' + T.hand, '#fb8c00'], ['duo', '👥 ' + T.two, '#1e88e5']].forEach(([id, lab, col], i) => {
+      const x = mx + 4 + i * sw; menuBtns.push({ id: 'm:' + id, x, y: my, w: sw, h: mh });
+      if (cur === id) { ctx.fillStyle = col; rr(x, my + 4, sw, mh - 8, 19); ctx.fill(); }
+      ctx.fillStyle = '#fff'; ctx.font = `900 ${clamp(Math.floor(sw / 7.6), 12, 17)}px system-ui, sans-serif`; ctx.fillText(lab, x + sw / 2, my + mh / 2 + 1, sw - 10);
     });
     ctx.font = '700 14px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    const ctl = matchMedia('(pointer: coarse)').matches ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
-    const cl = lines(ctl, W - 40); cl.forEach((q, i) => ctx.fillText(q, W / 2, my + mh + 18 + i * 18));
+    const coarse = matchMedia('(pointer: coarse)').matches, help = isAuto() ? (coarse ? T.touchAuto : T.keyAuto) : coarse ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
+    const cl = lines(help, W - 40); cl.forEach((q, i) => ctx.fillText(q, W / 2, my + mh + 18 + i * 18));
     // сетка уровней
     const cols = port ? 3 : 6, rows = Math.ceil(NL / cols), gy0 = my + mh + 22 + cl.length * 18 + 8;
     const footer = 70, cell = Math.min((Math.min(W, 900) - 40) / cols, (H2 - gy0 - footer) / rows, 130), gw = cell * cols, gx0 = W / 2 - gw / 2;
@@ -691,16 +756,21 @@
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
     if (mode === 'play' && !dbg.freeze) {
-      inp = input();
-      acc += dt; let n = 0;
+      inp = input(); const auto = isAuto();
+      if (auto && wait && inp.hook) wait = false; // «один палец»: уровень и каждая новая попытка начинаются с первого нажатия
+      const want = auto && wait ? 0 : tutor(inp);
+      ts = auto && wait ? 0 : want >= 1 ? Math.min(1, ts + dt * 6) : Math.max(want, ts - dt * 7);
+      acc += dt * ts; let n = 0;
       while (acc >= P.DT && n < 10) {
+        if (auto) { const q = H.assist(S); inp.gas = q.gas; inp.brake = q.brake; } // газ сам: ведёт то же правило, что и автопилот в тестах
         S.step(inp); acc -= P.DT; n++;
         for (const e of S.events) {
-          if (e.e === 'hook') sfx.hook(); else if (e.e === 'unhook') sfx.unhook();
+          if (e.e === 'hook') { sfx.hook(); hookT0 = S.t; } else if (e.e === 'unhook') sfx.unhook();
           else if (e.e === 'dead') { sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
           else if (e.e === 'cp') { sfx.cp(); toasts.push({ t: 0, text: T.cp, col: '#69f0ae' }); }
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
+          else if (e.e === 'respawn') { wait = auto; ts = 1; }
           else if (e.e === 'snap') { sfx.snap(); shake = 0.25; toasts.push({ t: 0, text: T.snap, col: '#ffab91' }); }
         }
         S.events.length = 0;
@@ -711,14 +781,14 @@
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
-    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam }); }
+    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam, oy: oy() }); }
     else {
       ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
       drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
       ctx.restore();
     }
     if (use3d && !dbg.clean && mode !== 'menu') { const tg = ctx.createLinearGradient(0, 0, 0, 96); tg.addColorStop(0, 'rgba(8,38,70,0.34)'); tg.addColorStop(1, 'rgba(8,38,70,0)'); ctx.fillStyle = tg; ctx.fillRect(0, 0, W, 96); }
-    hangT = mode === 'play' && S.state === 'play' && S.rope && S.hangSlow && !S.pump ? hangT + dt : 0;
+    hangT = mode === 'play' && S.state === 'play' && S.rope && S.hangSlow && !S.pump && !isAuto() ? hangT + dt : 0;
     if (!dbg.clean && hangT > 0.55) {
       const fs = W < 600 ? 20 : 26, pul = 1 + 0.05 * Math.sin(realT * 9); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       const tw = ctx.measureText(T.pump).width + 44, bx = W / 2, by = H2 * (W < H2 ? 0.52 : 0.62);
@@ -727,7 +797,7 @@
     if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); else if (mode === 'garage') drawGarage(); }
     requestAnimationFrame(frame);
   }
-  window.__hook = { dbg, use3d, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, use3d, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   applyLook(curLook());
   requestAnimationFrame(frame);
 })();

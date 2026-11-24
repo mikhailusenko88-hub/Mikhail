@@ -377,7 +377,7 @@
       cam.setViewOffset(vw, vh, vw / 2 - v.g.px, vh / 2 - v.g.py, vw, vh); viewOff = true;
     } else {
       if (viewOff) { cam.clearViewOffset(); viewOff = false; }
-      cx = v.camX + (0.08 * v.W) / v.Z + (Math.random() - 0.5) * sh; cy = -(v.camY - (0.05 * v.H) / v.Z) + (Math.random() - 0.5) * sh;
+      cx = v.camX + (0.08 * v.W) / v.Z + (Math.random() - 0.5) * sh; cy = -(v.camY - ((v.oy === undefined ? 0.05 : v.oy) * v.H) / v.Z) + (Math.random() - 0.5) * sh;
     }
     cam.position.set(cx + d * Math.sin(yaw) * Math.cos(tilt), cy + d * Math.sin(tilt), d * Math.cos(yaw) * Math.cos(tilt)); cam.lookAt(cx, cy, 0);
     podium.visible = !!v.g; if (v.g) podium.position.set(S.truck.x, -S.groundAt(S.truck.x) + 1, 0);

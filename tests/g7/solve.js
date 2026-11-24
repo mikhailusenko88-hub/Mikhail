@@ -7,8 +7,12 @@ const H = globalThis.HookSim;
 // HOOK_UP=5,5 — проверка с прокачкой (мотор, лебёдка)
 const UPO = process.env.HOOK_UP ? { up: { eng: +process.env.HOOK_UP.split(',')[0], winch: +process.env.HOOK_UP.split(',')[1] } } : undefined;
 
+// CP — с какого чекпоинта начинать (как после падения: грузовик стоит на флажке, кольца — с начала хода)
+let CP;
+function firstRing(li, cpi) { const S = H.create(li, UPO), c = S.L.cps[cpi], R = S.L.anchors.slice().sort((a, b) => a.x0 - b.x0); return Math.max(0, R.findIndex((q) => q.x0 > c.x - 50)); }
 function play(li, params, upto, maxT = 70) {
   const S = H.create(li, UPO); const R = S.L.anchors.slice().sort((a, b) => a.x0 - b.x0); let idx = 0, okRing = -1, gT = 0, relAt = -1;
+  if (CP !== undefined) { const c = S.L.cps[CP]; S.cp = { x: c.x, y: c.y }; S.respawn(); S.events.length = 0; idx = Math.max(0, R.findIndex((q) => q.x0 > c.x - 50)); }
   while (S.t < maxT) {
     const T = S.truck; let a = R[idx]; let hook = false;
     if (a && !S.rope && !a.broken && T.x > a.x + 500) { idx++; a = R[idx]; }
@@ -23,7 +27,7 @@ function play(li, params, upto, maxT = 70) {
     let gas = true, brake = false; const an = Math.atan2(Math.sin(T.a), Math.cos(T.a));
     if (!S.grounded && !S.rope) { gas = an > 0.25; brake = an < -0.25; }
     else if (S.grounded && an < -0.55) { gas = false; brake = an < -0.85; }
-    S.step({ gas, brake, hook, pull: !!(S.rope && a && a.climb && a.snap) }); // на треснутой стене тянем лебёдкой быстрее, как подсказывает игра
+    S.step({ gas, brake, hook, pull: false }); // на треснутой стене лебёдка спешит сама
     for (const e of S.events) { if (e.e === 'dead') return { win: false, fail: idx, x: Math.round(T.x), t: S.t, why: e.why }; if (e.e === 'snap') idx++; }
     S.events.length = 0;
     // кольцо upto пройдено: зацепились за следующее или стоим на земле дальше кольца
@@ -54,7 +58,7 @@ function cands(li, params, k, climb) {
   out.sort((a, b) => b.score - a.score || b.w - a.w);
   return out;
 }
-function solve(li) {
+function solve(li, k0 = 0) {
   const R = H.create(li, UPO).L.anchors.slice().sort((a, b) => a.x0 - b.x0);
   const params = [], windows = []; let budget = 40, deepest = 0;
   function dfs(k) {
@@ -67,11 +71,11 @@ function solve(li) {
     }
     params.length = k; return false;
   }
-  const ok = dfs(0);
+  const ok = dfs(k0);
   if (!ok) return { ok: false, k: deepest, params, windows };
   const fin = play(li, params);
   let star = !!fin.star, starP = null;
-  if (!star) for (let k = 0; k < R.length && !star; k++) if (!params[k].climb) for (let rel = -200; rel <= 500 && !star; rel += 25) for (const att of [9999, 300, 150]) { const p = params.map((q) => Object.assign({}, q)); p[k] = { att, rel }; const r = play(li, p); if (r.win && r.star) { star = true; starP = k + ':' + att + '/' + rel; break; } }
+  if (!star && !k0) for (let k = 0; k < R.length && !star; k++) if (!params[k].climb) for (let rel = -200; rel <= 500 && !star; rel += 25) for (const att of [9999, 300, 150]) { const p = params.map((q) => Object.assign({}, q)); p[k] = { att, rel }; const r = play(li, p); if (r.win && r.star) { star = true; starP = k + ':' + att + '/' + rel; break; } }
   return { ok: true, t: fin.t, star, starP, windows, params };
 }
 
@@ -83,4 +87,6 @@ if (require.main === module) {
     if (!r.ok) console.log('   застрял на кольце', r.k, JSON.stringify(r.params));
   }
 }
-module.exports = { play, solve };
+// решить остаток уровня с чекпоинта cpi
+function solveCp(li, cpi) { CP = cpi; try { const k0 = firstRing(li, cpi); const r = solve(li, k0); r.k0 = k0; return r; } finally { CP = undefined; } }
+module.exports = { play, solve, solveCp };

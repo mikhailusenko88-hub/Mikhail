@@ -9,8 +9,10 @@ const H = globalThis.HookSim;
   const [vw, vh, touch] = process.argv[2] === 'phone' ? [390, 844, true] : [1280, 720, false];
   const ctx = await b.newContext({ viewport: { width: vw, height: vh }, hasTouch: touch, isMobile: touch, locale: process.argv[3] || 'ru-RU' });
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+  await p.addInitScript(() => { if (!localStorage.getItem('hooktruck_v1')) localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], best: [], duo: false })); }); // уровни «уже пройдены»: обучение не останавливает игру
   await p.goto('file://' + path.resolve(__dirname, '../../g8-hook3d/index.html') + '?flat'); await p.waitForTimeout(500);
   await p.screenshot({ path: path.join(__dirname, 'shots', `all8_${vw}_menu.png`) });
+  await p.evaluate(() => window.__hook.setCtl('manual')); // этот прогон — ручное управление: газ, тормоз и крюк с клавиш
   for (let li = 0; li < H.levels.length; li++) {
     await p.evaluate(([li, plan]) => {
       clearInterval(window.__ap); window.__hook.start(false, li);
