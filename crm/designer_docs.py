@@ -15,7 +15,7 @@ from collections import defaultdict, deque
 from typing import Any
 from urllib.parse import quote
 
-from flask import Flask, abort, flash, redirect, request, send_file, url_for
+from flask import Flask, abort, flash, jsonify, redirect, request, send_file, url_for
 
 from docs import DESIGNER_FOLDER, INLINE_OK, Docs
 from pochta import size_h
@@ -113,6 +113,34 @@ def register(app: Flask, store: Any, docs: Docs, h: dict[str, Any]) -> None:
             dzl.after_models(email, [d["title"] for d in chosen], who())
         flash(f"Письмо отправлено на {email}: {len(chosen)} файл(ов) по ссылкам. Когда дизайнер скачает — будет видно ниже.", "ok")
         return redirect(url_for("designers_view") + "#sent")
+
+    @app.post("/api/dz/bot")
+    def designer_bot_start() -> Any:
+        """Бот «Наш декор» (MAX/Telegram): дизайнер открыл личную ссылку из письма. Подпись в метке проверяет CRM;
+        в ответ — личные ссылки на файлы раздела «Дизайнерам» (видно, скачал ли), в карточке — касание и следующий шаг."""
+        ip = request.headers.get("X-Real-IP") or request.remote_addr or "-"
+        q = recent["bot:" + ip]
+        now = time.time()
+        while q and now - q[0] > DL_WINDOW:
+            q.popleft()
+        if len(q) >= DL_MAX:
+            return jsonify(ok=False, error="limit"), 429
+        q.append(now)
+        data = request.get_json(silent=True) or {}
+        dzl = app.extensions.get("dz")
+        row = dzl.bot_lead(str(data.get("start") or "")) if dzl is not None else None
+        if row is None:
+            return jsonify(ok=False, error="unknown"), 404
+        ch = "max" if data.get("channel") == "max" else "tg"
+        to = (row["email"] or "").strip() or f"бот {row['code']}"
+        cid = store.find_client(store.c(), email=row["email"]) if row["email"] else None
+        links = []
+        for d in docs.list(DESIGNER_FOLDER):
+            t = docs.new_link(d["id"], "Бот", sent_to=to, client_id=cid)
+            links.append({"title": d["title"], "size": size_h(d["size"]), "url": link_url(t, d["filename"])})
+        dzl.after_bot(int(row["id"]), ch, [x["title"] for x in links] or ["ссылку на сайт (файлов в разделе нет)"])
+        return jsonify(ok=True, code=row["code"], name=row["name"], person=row["person"] or "", links=links,
+                       site=f"https://{dom}")
 
     @app.route("/api/f/<token>")
     @app.route("/api/f/<token>/<path:name>")

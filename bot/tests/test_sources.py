@@ -102,3 +102,69 @@ def test_stats_text_without_starts():
         shipments_open = shipped_week = 0
     t = texts.stats(S(), 0, "нет", "—", "")
     assert "Новые в боте за 7 дней: 0" in t and "Клиентов за 7 дней: 0\n" in t
+
+
+
+class _Stub:
+    """Транспорт без мессенджера: запоминает, что бот отправил (aiogram для этого не нужен)."""
+    channel = "tg"
+
+    def __init__(self):
+        self.sent = []
+
+    async def send(self, user_id, text, kb=None, reply_to=""):
+        self.sent.append((user_id, text))
+        return str(len(self.sent))
+
+    async def link(self):
+        return ""
+
+
+def test_designer_link_from_letter(tmp_path, monkeypatch):
+    """24.11.2026: дизайнер открыл бота по личной ссылке из напоминания (dz<номер>x<подпись>) — бот берёт у CRM
+    личные ссылки на модели и каталог, присылает их и сообщает менеджерам; подделка — обычное приветствие, без тревоги."""
+    from catalog import CatalogStore
+
+    calls, notes = [], []
+
+    def fake_post(url, data, timeout=15.0):
+        calls.append((url, data))
+        if data["start"] == "dz17x0123456789":
+            return {"ok": True, "code": "Д05", "name": "Студия Ольги", "person": "Ольга Мудрякова", "site": "https://nashdekor.ru",
+                    "links": [{"title": "3D FBX", "size": "12 МБ", "url": "https://crm.nashdekor.ru/api/f/tok/fbx.zip"}]}
+        if data["start"] == "dz18x0123456789":
+            return {"ok": False, "error": "404"}
+        raise OSError("нет связи")
+
+    monkeypatch.setattr(core, "_post_json", fake_post)
+
+    async def scenario():
+        cfg = Config(bot_token="", site_url="https://nashdekor.ru", db_path=str(tmp_path / "bot.db"),
+                     crm_dz_url="https://crm.example/api/dz/bot")
+        db = Database(cfg.db_path)
+        await db.init()
+        t = _Stub()
+        eng = core.Engine(cfg, db, CatalogStore("", "", "", 60), t)
+        eng.team.managers = lambda: [1]
+
+        async def fake_notify(ids, item, client_id=None, exclude=None, client_ch=""):
+            notes.append((ids, item["text"]))
+            return []
+        eng.notify = fake_notify
+        await eng.cmd_start(core.Incoming(user_id=555, text="/start dz17x0123456789"), None, "dz17x0123456789")
+        assert calls[-1] == ("https://crm.example/api/dz/bot", {"start": "dz17x0123456789", "channel": "tg"})
+        txt = t.sent[-1][1]
+        assert "Здравствуйте, Ольга!" in txt and "3D FBX (12 МБ): https://crm.nashdekor.ru/api/f/tok/fbx.zip" in txt
+        assert "плотн" not in txt
+        assert notes[-1][0] == [1] and "Д05" in notes[-1][1] and "Студия Ольги" in notes[-1][1] and "Telegram" in notes[-1][1]
+        await eng.cmd_start(core.Incoming(user_id=556), None, "dz18x0123456789")     # подпись не сошлась — как обычный вход
+        assert "Здравствуйте!" in t.sent[-1][1] and len(notes) == 1
+        await eng.cmd_start(core.Incoming(user_id=557), None, "dz19x0123456789")     # CRM не ответила — вежливо, менеджеру вручную
+        assert "пришлём сюда же" in t.sent[-1][1] and "вручную" in notes[-1][1]
+        await eng.cmd_start(core.Incoming(user_id=558), None, "dz17x01234")          # не наша метка — как раньше, без CRM
+        assert len(calls) == 3
+        st = await db.stats()
+        assert st.starts_week_by_src.get("designer") == 3
+        db.close()
+
+    run(scenario())

@@ -22,6 +22,7 @@ DEFAULT_CATALOG_URL = (
 DEFAULT_DB_PATH = "/var/lib/prostranstvo/bot.db"
 DEFAULT_CATALOG_CACHE = "/var/lib/prostranstvo/bot-catalog.json"
 DEFAULT_CRM_CATALOG_URL = "https://crm.nashdekor.ru/api/catalog"   # тот же сервер; наличие и цены как на сайте
+DEFAULT_CRM_DZ_URL = "https://crm.nashdekor.ru/api/dz/bot"          # дизайнер открыл личную ссылку из письма → модели и каталог
 DEFAULT_MAX_API_URL = "https://platform-api2.max.ru"
 DEFAULT_MAX_CA_FILE = os.path.join(APP_DIR, "certs", "russian_trusted_ca.pem")
 
@@ -91,6 +92,7 @@ class Config:
     catalog_cache: str = DEFAULT_CATALOG_CACHE
     catalog_refresh_min: int = 60
     crm_catalog_url: str = ""                           # цены и наличие из CRM (как на сайте); "" — без CRM
+    crm_dz_url: str = ""                                # дизайнеры из «Базы дизайнеров» CRM по ссылке dz…; "" — без CRM
     reserve_percent: int = 7
     log_level: str = "INFO"
     # Telegram: собирать ли контакты клиентов (заявки). По умолчанию 1: по разъяснению Роскомнадзора
@@ -160,6 +162,7 @@ def load_config(channel: str | None = None) -> Config:
         catalog_cache=_env("CATALOG_CACHE", DEFAULT_CATALOG_CACHE),
         catalog_refresh_min=_env_int("CATALOG_REFRESH_MIN", 15, 5, 24 * 60),
         crm_catalog_url="" if _env("CRM_CATALOG_URL") == "-" else _url(_env("CRM_CATALOG_URL", DEFAULT_CRM_CATALOG_URL)),
+        crm_dz_url="" if _env("CRM_DZ_URL") == "-" else _url(_env("CRM_DZ_URL", DEFAULT_CRM_DZ_URL)),
         reserve_percent=_env_int("RESERVE_PERCENT", 7, 0, 30),
         log_level=(_env("LOG_LEVEL", "INFO") or "INFO").upper(),
         telegram_collect_contacts=_env_bool("TELEGRAM_COLLECT_CONTACTS", True),

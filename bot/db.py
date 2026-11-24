@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE TABLE IF NOT EXISTS starts (
     channel    TEXT    NOT NULL,
     uhash      TEXT    NOT NULL,
-    src        TEXT    NOT NULL,           -- site | channel | link | direct
+    src        TEXT    NOT NULL,           -- site | channel | link | direct | designer
     ts         INTEGER NOT NULL,
     client_id  INTEGER,
     PRIMARY KEY (channel, uhash)
@@ -334,7 +334,7 @@ class Stats:
     starts_week_active: int = 0                                   # из новых — написали или оставили заявку
 
 
-START_SOURCES = ("site", "channel", "link", "direct")
+START_SOURCES = ("site", "channel", "link", "direct", "designer")
 STARTS_KEEP_DAYS = 400
 
 

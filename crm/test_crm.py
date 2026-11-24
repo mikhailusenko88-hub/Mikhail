@@ -3809,7 +3809,9 @@ class TestDzLeads(Base):
         kind, subj, body = self.dz.mail_draft(d01)
         self.assertEqual(kind, "m2")
         self.assertTrue(subj.startswith("Re: Рейки"))
-        self.assertIn("Канал в MAX: https://max.ru/", body)
+        self.assertIn("через наш бот в MAX", body)                       # 24.11: в напоминании — личная ссылка в бот
+        self.assertIn(f"https://max.ru/id470331302505_bot?start={self.dz.bot_start(int(d01['id']))}", body)
+        self.assertIn("Канал в MAX: https://max.ru/", self.dz.render("reply", d01))   # в ответе канал остаётся
         self.assertIn("бесплатно прислать", body)
         self.assertNotIn("{", self.dz.render("reply", d01) + self.dz.render("msg", d01) + self.dz.render("call", d01))
 
@@ -4088,6 +4090,43 @@ class TestDzChannel(TestOutbox):
         self.assertEqual(d["status"], "models")
         self.assertIn("3D FBX", self.c.get(f"/dz/{d['id']}").get_data(as_text=True))
 
+
+    def test_bot_link_in_reminder_and_bot_start(self) -> None:
+        """24.11: в напоминании — личная ссылка в бот MAX; бот по ней получает модели и каталог, в карточке — отметка."""
+        import io
+        import re as _re
+        from pathlib import Path
+        docs = self.app.extensions["docs"]; docs.dir = Path(self.tmp.name) / "docs"
+        dz = self.app.extensions["dz"]
+        dz.import_items([{"code": "Д05", "source": "zoon", "name": "Студия Ольги", "email": "olga@mudryakova.ru", "person": "Ольга"},
+                         {"code": "Д06", "source": "zoon", "name": "Другая", "email": "x@other.ru"}])
+        data = {"csrf": self.csrf(), "folder": "Дизайнерам", "back": "designers", "title": "3D FBX",
+                "file": [(io.BytesIO(b"PK\x03\x04"), "fbx.zip")]}
+        self.c.post("/docs/upload", data=data, content_type="multipart/form-data")
+        d = dz.by_code("Д05")
+        text = dz.render("m2", d)
+        m = _re.search(r"https://max\.ru/id470331302505_bot\?start=(dz\d+x[0-9a-f]{10})", text)
+        self.assertTrue(m, text)
+        self.assertEqual(text.count("https://"), 3)                         # бот + сайт дважды — не больше трёх ссылок
+        self.assertNotIn("{бот}", dz.render("m2", None))
+        start = m.group(1)
+        other = dz.bot_start(int(dz.by_code("Д06")["id"]))
+        self.assertNotEqual(start.split("x")[1], other.split("x")[1])      # у каждого своя подпись
+        forged = f"dz{dz.by_code('Д06')['id']}x{start.split('x')[1]}"      # чужой номер с этой подписью — не пустит
+        self.assertEqual(self.c.post("/api/dz/bot", json={"start": forged, "channel": "max"}).status_code, 404)
+        self.assertEqual(self.c.post("/api/dz/bot", json={"start": "dz5", "channel": "max"}).status_code, 404)
+        r = self.c.post("/api/dz/bot", json={"start": start, "channel": "max"})
+        self.assertEqual(r.status_code, 200)
+        j = r.get_json()
+        self.assertTrue(j["ok"]); self.assertEqual(j["code"], "Д05"); self.assertEqual(j["person"], "Ольга")
+        self.assertEqual([x["title"] for x in j["links"]], ["3D FBX"])
+        self.assertTrue(j["links"][0]["url"].startswith("https://crm."))
+        d = dz.by_code("Д05")
+        self.assertEqual(d["status"], "models")
+        self.assertIn("чат бота в MAX", d["next_step"])
+        t = dz.touches(int(d["id"]))
+        self.assertTrue(any(x["channel"] == "max" and x["by_name"] == "Бот" and "3D FBX" in x["text"] for x in t))
+        self.assertIn("olga@mudryakova.ru", [s["sent_to"] for s in docs.sends(10)])   # «скачал ли» — по той же почте
 
 class TestAvitoKatalog(Base):
     """«Ещё → Каталог для Авито»: листы каталога картинками для чата Авито, сверка цен на листе с ценами CRM."""

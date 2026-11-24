@@ -12,7 +12,10 @@ VK и Авито (в чат Авито не пишем — по правилам
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import re
+import secrets
 import sqlite3
 from datetime import date, datetime, timedelta
 from typing import Any, Iterable
@@ -155,8 +158,11 @@ LINK_NAMES = dict(LINKS)
 
 # Тексты по умолчанию; свои (согласованные) — в настройках CRM (dz_tpl_*), их правят на странице «Тексты».
 # Метки: {строка} — личная строка, {раздел} — «подпись: ссылка» на раздел сайта, {сайт}, {телефон}, {имя}, {тема},
-# {кому} — «вашей студии» / «вашей компании» / «вам», {макс} — канал в MAX, {домен}.
+# {кому} — «вашей студии» / «вашей компании» / «вам», {макс} — канал в MAX, {домен},
+# {бот} — личная ссылка этого дизайнера в бот «Наш декор» в MAX: открыл — бот сразу присылает модели и каталог (24.11).
 MAX_CHANNEL = "https://max.ru/id470331302505_biz"
+MAX_BOT = "https://max.ru/id470331302505_bot"
+BOT_START_RE = re.compile(r"^dz(\d{1,7})x([0-9a-f]{10})$")
 # от кого письмо дизайнеру: по логину входа (Юлия — от себя, Михаил — от себя), в карточке можно переключить.
 # {я} — имя в тексте и подписи, {условия} — про отдельные условия (каждый обсуждает сам, решение Михаила 19.11),
 # {звонок} — кому позвонить по условиям: в письме Михаила — «Михаилу» (как одобрено 16.11), у Юлии — «мне».
@@ -185,12 +191,12 @@ TEMPLATES: dict[str, tuple[str, str]] = {
 «Наш декор» (ИП Усенко Ю. В.), Санкт-Петербург
 {сайт}
 {телефон}"""),
-    "m2": ("Письмо 2 — напоминание (через 3 рабочих дня, один раз)", """Здравствуйте! Пишу ещё раз по поводу письма ниже: можем бесплатно прислать 3D-модели наших реек, молдингов и плинтусов для ваших проектов. Посмотреть профили в 3D и примерить на стену можно на сайте: {сайт}
+    "m2": ("Письмо 2 — напоминание (через 3 рабочих дня, один раз)", """Здравствуйте! Пишу ещё раз по поводу письма ниже: можем бесплатно прислать 3D-модели наших реек, молдингов и плинтусов для ваших проектов. Быстрее всего — через наш бот в MAX: откройте ссылку, и бот сразу пришлёт модели и каталог: {бот}
+Посмотреть профили в 3D и примерить на стену можно на сайте: {сайт}
 Если сейчас не нужно — ответьте «нет», больше не напишем.
 
 {я}, «Наш декор», {телефон}
-{сайт}
-Канал в MAX: {макс}"""),
+{сайт}"""),
     "reply": ("Ответ тем, кому интересно", """Спасибо за ответ! Архив 3D-моделей и каталог придут отдельным письмом с info@{домен}. Цены, наличие и 3D каждого профиля — на сайте {сайт}: на странице панели во вкладке «3D · моя стена» можно ввести размеры стены заказчика и сразу увидеть количество. Условия для студий удобнее обсудить голосом — когда {звонок} позвонить вам и по какому номеру?
 
 {я}, «Наш декор», {телефон}
@@ -635,7 +641,8 @@ class DzLeads:
                 "{раздел}": self.section(lead) if lead is not None else self.site_url(),
                 "{сайт}": self.site_url(), "{телефон}": self.phone(sender), "{имя}": (", " + nm) if nm else "", "{тема}": subj,
                 "{я}": sd["name"], "{условия}": sd["terms"], "{звонок}": sd["call"],
-                "{кому}": self.whom(lead), "{макс}": self.s.setting("dz_max", MAX_CHANNEL) or MAX_CHANNEL, "{домен}": self.domain}
+                "{кому}": self.whom(lead), "{макс}": self.s.setting("dz_max", MAX_CHANNEL) or MAX_CHANNEL, "{домен}": self.domain,
+                "{бот}": self.bot_link(int(lead["id"])) if lead is not None else self.bot_url()}
         t = self.tpl(key)
         for k, v in vals.items():
             t = t.replace(k, v)
@@ -643,6 +650,46 @@ class DzLeads:
         t = re.sub(r"(?m)^[ \t]+", "", t)
         t = re.sub(r"\n{3,}", "\n\n", t)
         return t.strip()
+
+    # ------------------------------------------------------------------ личная ссылка в бот MAX (24.11)
+    def bot_url(self) -> str:
+        return self.s.setting("dz_bot", MAX_BOT) or MAX_BOT
+
+    def _bot_sig(self, lid: int) -> str:
+        key = self.s.setting("dz_bot_secret", "")
+        if not key:
+            key = secrets.token_hex(16)
+            self.s.set_setting("dz_bot_secret", key)
+        return hmac.new(key.encode(), f"dz{lid}".encode(), hashlib.sha256).hexdigest()[:10]
+
+    def bot_start(self, lid: int) -> str:
+        """Метка ссылки: dz<номер карточки>x<подпись> — только латиница и цифры (так требуют MAX и Telegram);
+        подпись не даёт подобрать чужую карточку перебором номеров."""
+        return f"dz{lid}x{self._bot_sig(lid)}"
+
+    def bot_link(self, lid: int) -> str:
+        return f"{self.bot_url()}?start={self.bot_start(lid)}"
+
+    def bot_lead(self, start: str) -> sqlite3.Row | None:
+        m = BOT_START_RE.match((start or "").strip())
+        if not m:
+            return None
+        lid = int(m.group(1))
+        if not hmac.compare_digest(m.group(2), self._bot_sig(lid)):
+            return None
+        return self.get(lid)
+
+    def after_bot(self, lid: int, channel: str, titles: list[str]) -> None:
+        """Дизайнер сам открыл бота по личной ссылке, бот прислал ему модели и каталог."""
+        row = self.get(lid)
+        if not row:
+            return
+        ch = "max" if channel == "max" else "telegram"
+        where = "MAX" if ch == "max" else "Telegram"
+        self.touch(lid, ch, f"Сам открыл бота в {where} по ссылке из письма — бот прислал: " + ", ".join(titles), "Бот")
+        if row["status"] not in ("talk", "partner"):
+            self.set_status(lid, "models", "Бот", f"Открыл бота — написать ему в чат бота в {where} или позвонить: над каким проектом работает, посчитать",
+                            add_workdays(today(), 1))
 
     def mail_draft(self, lead: Any, sender: str = "mikhail") -> tuple[str, str, str]:
         """(вид, тема, текст) — что предложить в карточке: письмо 1, напоминание или ответ тем, кому интересно."""
@@ -758,7 +805,7 @@ class DzLeads:
     def export(self, sends: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """Сводка для Claude (уходит только шифром): карточки, касания, что отправили и скачали, тексты."""
         c = self.s.c()
-        leads = [dict(r) for r in c.execute("SELECT * FROM dz_leads ORDER BY id").fetchall()]
+        leads = [dict(r) | {"bot_link": self.bot_link(int(r["id"]))} for r in c.execute("SELECT * FROM dz_leads ORDER BY id").fetchall()]
         touches = [{"lead": r["lead_id"], "at": r["at"], "by": r["by_name"], "channel": r["channel"], "text": (r["text"] or "")[:1500]}
                    for r in c.execute("SELECT * FROM (SELECT * FROM dz_touches ORDER BY id DESC LIMIT 5000) ORDER BY id").fetchall()]
         return {"kind": "dz-export", "at": iso_now(), "today": today(), "leads": leads, "touches": touches, "docs": sends or [],

@@ -409,6 +409,24 @@ def _question_words(text: str | None) -> list[str]:
 
 # откуда пришли в бота: метка в начале ссылки ?start=… (site — с сайта, ch — из канала); дальше — как раньше
 _SOURCE_TAGS = {"site": "site", "ch": "channel"}
+# дизайнер из «Базы дизайнеров» CRM по личной ссылке из письма: dz<номер карточки>x<подпись CRM> (24.11.2026)
+_DZ_START_RE = re.compile(r"^dz\d{1,7}x[0-9a-f]{10}$")
+
+
+def _post_json(url: str, data: dict, timeout: float = 15.0) -> dict:
+    """POST JSON в CRM (тот же сервер). Ответ 404 — ссылка не наша или подделана: {'ok': False}."""
+    import json
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(url, data=json.dumps(data).encode(), method="POST",
+                                 headers={"Content-Type": "application/json", "User-Agent": "prostranstvo-bot/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310 - адрес из настроек
+            return json.loads(resp.read(200_000).decode() or "{}")
+    except urllib.error.HTTPError as exc:
+        if exc.code in (404, 429):
+            return {"ok": False, "error": str(exc.code)}
+        raise
 
 
 def split_source(payload: str) -> tuple[str, str]:
@@ -890,6 +908,9 @@ class Engine:
     async def cmd_start(self, ev: Incoming, me: Person | None, payload: str) -> None:
         uid = ev.user_id
         self.clear(uid)
+        if _DZ_START_RE.match((payload or "").strip()):
+            await self.open_designer(ev, me, payload.strip())
+            return
         src, payload = split_source(payload)
         if not me:   # откуда пришёл — только для статистики; ошибка учёта не мешает клиенту
             try:
@@ -921,6 +942,33 @@ class Engine:
         product = catalog.find(payload)
         if product:
             await self.start_product(uid, product, me)
+
+    async def open_designer(self, ev: Incoming, me: Person | None, start: str) -> None:
+        """Дизайнер открыл бота по личной ссылке из письма: CRM проверяет подпись и отдаёт личные ссылки на модели
+        и каталог (и отмечает в карточке), бот присылает их и сообщает сотрудникам. CRM недоступна — вежливо и вручную."""
+        uid = ev.user_id
+        if not me:
+            with contextlib.suppress(Exception):
+                await self.db.note_start(self.ch, uid, "designer")
+        res: dict = {}
+        if self.cfg.crm_dz_url:
+            try:
+                res = await asyncio.to_thread(_post_json, self.cfg.crm_dz_url,
+                                              {"start": start, "channel": "max" if self.ch == CH_MAX else "tg"})
+            except Exception as exc:  # noqa: BLE001 - CRM недоступна: клиенту всё равно ответить
+                log.warning("CRM не ответила на ссылку дизайнера: %s", type(exc).__name__)
+                res = {}
+        if res.get("ok"):
+            await self.say(uid, texts.designer_welcome(res, self.cfg.site_url, await self.channel_link()), self.menu(me))
+            note = texts.designer_opened(str(res.get("code") or ""), str(res.get("name") or ""), self.ch, len(res.get("links") or []))
+        elif res.get("error") == "404":     # чужая или подделанная метка — обычное приветствие, сотрудников не тревожим
+            await self.say(uid, texts.welcome(self.cfg.site_url, self.collect, await self.channel_link()), self.menu(me))
+            return
+        else:
+            await self.say(uid, texts.designer_welcome_fallback(self.cfg.site_url), self.menu(me))
+            note = texts.designer_opened("", "", self.ch, 0)
+        if not me:
+            await self.notify(self.team.managers(), {"t": "text", "text": note}, client_ch=self.ch)
 
     def role_help(self, role: str) -> str:
         return texts.help_manager(self.ch) if role == ROLE_MANAGER else texts.help_shipping(self.ch)

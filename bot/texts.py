@@ -1042,7 +1042,8 @@ def stats(s, catalog_count: int, catalog_source: str, catalog_time: str, catalog
     return text
 
 
-SOURCE_NAMES = {"site": "с сайта", "channel": "из канала", "link": "по ссылке на товар или расчёт", "direct": "сами"}
+SOURCE_NAMES = {"site": "с сайта", "channel": "из канала", "link": "по ссылке на товар или расчёт", "direct": "сами",
+                "designer": "дизайнеры по ссылке из письма"}
 
 
 def _by_channel(d: dict | None) -> str:
@@ -1079,3 +1080,35 @@ def client_deleted(name: str, client_id: int, channel: str, leads: int, kept: in
     if kept:
         text += f" Заказы на отгрузке и отгруженные ({kept}) остались — их храним по закону."
     return text + " Удалите этого клиента и из своих заметок, если он там есть."
+
+
+# ---------------------------------------------------------------- дизайнеры по личной ссылке из письма (24.11.2026)
+def designer_welcome(res: dict, site_url: str, channel: tuple[str, str] = ("MAX", CHANNEL_URL)) -> str:
+    """Дизайнер открыл бота по ссылке из письма: сразу модели и каталог личными ссылками (CRM видит, скачал ли)."""
+    who = (res.get("person") or "").strip().split(" ")[0]
+    lines = [f"Здравствуйте{', ' + who if who else ''}! Это {SHOP} — рейки, молдинги и плинтусы из дюрополимера для ваших проектов.", ""]
+    links = res.get("links") or []
+    if links:
+        lines.append("3D-модели и каталог:")
+        for x in links:
+            lines.append(f"• {x.get('title', '')}{' (' + x['size'] + ')' if x.get('size') else ''}: {x.get('url', '')}")
+    else:
+        lines.append("Модели и каталог пришлём сюда же в течение дня.")
+    lines += ["", f"3D-просмотр, цены и примерка на стену — на сайте: {res.get('site') or site_url}",
+              "Нужен расчёт по проекту — пришлите размеры стены или развёртку прямо сюда, посчитаем.",
+              f"Новинки и поступления — в нашем канале в {channel[0]}: {channel[1]}"]
+    return "\n".join(lines)
+
+
+def designer_welcome_fallback(site_url: str) -> str:
+    return (f"Здравствуйте! Это {SHOP}. 3D-модели и каталог пришлём сюда же в течение дня. "
+            f"Пока — 3D-просмотр, цены и примерка на стену на сайте: {site_url}")
+
+
+def designer_opened(code: str, name: str, channel: str, n_links: int) -> str:
+    where = "MAX" if channel == "max" else "Telegram"
+    if code:
+        return (f"Дизайнер {code} «{name}» открыл бота в {where} по ссылке из письма — бот прислал модели и каталог "
+                f"({n_links} ссыл.). В CRM отмечено. Напишите ему в этом чате: над каким проектом работает, предложите расчёт.")
+    return (f"Дизайнер открыл бота в {where} по ссылке из письма, но CRM не ответила — модели и каталог пришлите ему вручную "
+            f"(раздел «Дизайнеры → Документы для дизайнеров»).")
