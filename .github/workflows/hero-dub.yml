@@ -42,7 +42,7 @@ jobs:
       - name: Дубляж (ветка golos-en) и сборки студии
         run: |
           git clone -q --depth 1 -b golos-en --single-branch https://github.com/${{ github.repository }} ge
-          for b in $(python3 -c "import json;c=json.load(open('hero_dub.json'));print(c['old_build'],c['new_build'])"); do
+          for b in $(python3 -c "import json;c=json.load(open('hero_dub.json'));print(*sorted({c['old_build'],c['new_build']}))"); do
             mkdir -p dubz/$b && gh release download "studio-$b" -R ${{ github.repository }} -p dub.zip -D dubz/$b && (cd dubz/$b && unzip -q -o dub.zip && rm dub.zip)
           done
           ls dubz/*/dub | head -20
