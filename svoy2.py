@@ -356,7 +356,7 @@ def final():
     video(pick, "cast2/proba2.mp4", PHRASES)
 
 
-def video(pick, outp, phrases):
+def video(pick, outp, phrases, soft=True):
     """Ролик-проба: голоса подряд, на экране номер и подпись.
     Одна сплошная звуковая дорожка и одно кодирование (24.11.2026: при склейке кусков «-shortest» + «-c copy» видео каждого
     куска выходило длиннее звука, и в звуковой дорожке получались дыры по 1–2 с — на телефоне звук мог рваться)."""
@@ -387,7 +387,7 @@ def video(pick, outp, phrases):
         for f in seq:
             cmd += ["-i", f]
         fc = "".join(f"[{j}:a]aresample=48000,aformat=channel_layouts=mono[x{j}];" for j in range(len(seq)))
-        fc += "".join(f"[x{j}]" for j in range(len(seq))) + f"concat=n={len(seq)}:v=0:a=1,{svoy.SOFT}[o]"
+        fc += "".join(f"[x{j}]" for j in range(len(seq))) + f"concat=n={len(seq)}:v=0:a=1,{svoy.SOFT if soft else 'loudnorm=I=-16:TP=-1.5:LRA=11'}[o]"
         subprocess.run(cmd + ["-filter_complex", fc, "-map", "[o]", "-ar", "48000", "-ac", "1", "-c:a", "pcm_s16le",
                               f"tmp/a{i}.wav"], check=True)
         d = dur(f"tmp/a{i}.wav")

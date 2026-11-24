@@ -1,0 +1,91 @@
+name: hero-dub
+# Проверка дубляжа со свободными голосами героев на 5 языках (hero_dub.py). Запуск — правка hero-dub-request.txt.
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['hero-dub-request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: hero-dub
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        lang: [en, es, pt, hi, de]
+    env:
+      HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+          key: hero-dub-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m spacy download en_core_web_sm -q || true
+      - name: Дубляж (ветка golos-en) и сборки студии
+        run: |
+          git clone -q --depth 1 -b golos-en --single-branch https://github.com/${{ github.repository }} ge
+          for b in $(python3 -c "import json;c=json.load(open('hero_dub.json'));print(c['old_build'],c['new_build'])"); do
+            mkdir -p dubz/$b && gh release download "studio-$b" -R ${{ github.repository }} -p dub.zip -D dubz/$b && (cd dubz/$b && unzip -q -o dub.zip && rm dub.zip)
+          done
+          ls dubz/*/dub | head -20
+      - run: python hero_dub.py run ${{ matrix.lang }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HD-${{ matrix.lang }}
+          path: |
+            pack/
+            hdub/
+          retention-days: 7
+  final:
+    needs: [run]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'HD-*'
+          merge-multiple: true
+          path: .
+      - name: Итог
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q numpy
+          ls pack | head -5; ls hdub
+          python hero_dub.py final
+          ls -la hdub
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          rm -rf /tmp/res && cp -r hdub /tmp/res
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && rm -rf hdub pack && git checkout -q -f -B res FETCH_HEAD && mkdir -p hdub && cp -r /tmp/res/. hdub/
+            git add -A hdub; git commit -q -m "hero-dub result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
