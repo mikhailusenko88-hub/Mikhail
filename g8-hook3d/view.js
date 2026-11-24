@@ -74,7 +74,7 @@
       try {
         let lg = String(B.platform.language || '').toLowerCase();
         if (id === 'crazy_games') { const si = (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.user && window.CrazyGames.SDK.user.systemInfo) || {}; lg = String(si.locale || 'en').toLowerCase(); }
-        if (lg) setLang(/^(ru|uk|be|kk)/.test(lg));
+        if (lg) setLang(lg);
       } catch (e) { /* */ }
       try { PG.rew = !!B.advertisement.isRewardedSupported; PG.inter = !!B.advertisement.isInterstitialSupported; } catch (e) { /* */ }
       if (window.GAME_ADS === false) { PG.rew = false; PG.inter = false; }
@@ -123,7 +123,15 @@
 
   // ---------- состояние ----------
   let LANG = RU ? 1 : 0; const NL = H.levels.length;
-  function setLang(ru) { RU = !!ru; T = RU ? TRU : TEN; LANG = RU ? 1 : 0; }
+  // язык: код вида «es», «pt-BR»; русский и английский — здесь, остальные — в i18n.js (чего там нет, показываем по-английски)
+  const I18 = window.HOOK_I18N || {}; let XD = null;
+  function setLang(code) {
+    code = code === true ? 'ru' : String(code || 'en').toLowerCase().slice(0, 2); if (/^(uk|be|kk)$/.test(code)) code = 'ru';
+    RU = code === 'ru'; const d = RU ? null : I18[code];
+    T = RU ? TRU : d ? Object.assign({}, TEN, d.T) : TEN; XD = d ? d.X : null; LANG = RU ? 1 : 0;
+  }
+  const loc = (a) => (XD && XD[a[0]]) || a[LANG]; // название уровня, подсказка, название в гараже — на языке игрока
+  setLang(navigator.language);
   // гараж: монеты дают за финиш и звёзды; на них — колёса, цвета, грузовик и прокачка. Звёзды не тратятся: за них открывается джип
   // три последних — дорогие, с блеском: хром, золото и «радуга» (переливается на ходу)
   const PAINT = [['#ff5a36', '#c63b1f'], ['#2f7df6', '#1c55b8'], ['#3fbf5a', '#2a8a3f'], ['#ffc928', '#d99a00'], ['#ff6fb1', '#d1437f'], ['#3a4047', '#22272c'], ['#bcc9d0', '#8496a0', 'chrome'], ['#f5b400', '#b97c00', 'gold'], ['#b36bff', '#7a3fd0', 'rainbow']];
@@ -165,7 +173,7 @@
   ser = H.levels[firstOpen()].ser;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
-  addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win' && !PG.pend) pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
+  addEventListener('keydown', (e) => { keys[e.code] = true; if (e.code === 'Space' && mode === 'play' && isAuto() && wait && !PG.paused && !PG.pend) wait = false; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win' && !PG.pend) pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (e.code === 'KeyR' && mode === 'play') restart(); else if (e.code === 'Escape' && mode === 'garage') garClick('g:back'); });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
   addEventListener('blur', () => { for (const k in keys) keys[k] = false; ptrs.clear(); });
 
@@ -195,6 +203,7 @@
     const b = hit(x, y);
     if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; pgMsg('gameplay_stopped'); } else if (b.id === 'mute') muted = !muted; return; }
     ptrs.set(e.pointerId, { x, y, btn: b ? b.id : isAuto() || (e.pointerType !== 'mouse' && x < W / 2) ? 'hook' : null });
+    if (isAuto() && wait && !PG.paused) wait = false; // «нажми — поехали» срабатывает и от самого короткого касания
   });
   const up = (e) => ptrs.delete(e.pointerId);
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
@@ -284,9 +293,10 @@
       ctx.globalAlpha = 1;
     }
     hand(x, y, big, lift * big);
-    const fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10), tx = clamp(x, 110 * big, W - 110 * big);
-    ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-    ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0);
+    const fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10);
+    ctx.font = `900 ${fs}px system-ui, sans-serif`; const half = Math.min(ctx.measureText(txt).width * 1.07 + fs * 0.3, W - 16) / 2, tx = clamp(x, half + 8, W - half - 8), mw = W - 28;
+    ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0, mw); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0, mw); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0, mw);
     ctx.restore();
     if ((kind === 'go' || kind === 'hold') && isAuto() && !matchMedia('(pointer: coarse)').matches) { ctx.font = '800 16px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(T.keyHint, tx, ty + fs * 0.85); ctx.fillStyle = '#fff'; ctx.fillText(T.keyHint, tx, ty + fs * 0.85); }
   }
@@ -560,7 +570,7 @@
     ctx.fillStyle = 'rgba(255,255,255,0.22)'; rr(b.x + 8, b.y + 8 + (on ? 3 : 0), b.w - 16, b.h * 0.36, b.w * 0.2); ctx.fill();
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.font = `900 ${Math.round(b.h * (sub ? 0.24 : 0.42))}px system-ui, sans-serif`; ctx.fillText(label, b.x + b.w / 2, b.y + b.h / 2 + (on ? 3 : 0) + (sub ? -b.h * 0.12 : 0));
-    if (sub) { ctx.font = `800 ${Math.round(b.h * 0.15)}px system-ui, sans-serif`; ctx.fillText(sub, b.x + b.w / 2, b.y + b.h * 0.72 + (on ? 3 : 0)); }
+    if (sub) { ctx.font = `800 ${Math.round(b.h * 0.15)}px system-ui, sans-serif`; ctx.fillText(sub, b.x + b.w / 2, b.y + b.h * 0.72 + (on ? 3 : 0), b.w - 10); }
     ctx.restore();
   }
   function drawHud(inp) {
@@ -573,7 +583,7 @@
       if (B.pull) button(B.pull, '⇡', '#5c6bc0', inp.pull, T.pull);
       if (duo) {
         ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.font = '900 15px system-ui, sans-serif'; ctx.textAlign = 'right'; ctx.fillText(T.p1, B.gas.x + B.gas.w, B.gas.y - 14);
-        ctx.textAlign = 'left'; ctx.fillText(T.p2, B.hook.x, B.hook.y - 14);
+        ctx.textAlign = 'left'; ctx.fillText(T.p2, B.hook.x, (B.pull ? Math.min(B.pull.y, B.hook.y) : B.hook.y) - 14);
       }
     }
     for (const id of ['restart', 'menu', 'mute']) {
@@ -596,7 +606,7 @@
     ctx.fillStyle = '#fff'; ctx.font = '800 15px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
     ctx.fillText(W < 600 ? `${lvl + 1}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.lvl} ${lvl + 1}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par} ${T.sec}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
     // название уровня и подсказка уровня — первые секунды; после возрождения подсказка снова
-    const l = H.levels[lvl], hint = l.hint[LANG];
+    const l = H.levels[lvl], hint = loc(l.hint);
     if (hintShown._att !== S.attempts) { hintShown._att = S.attempts; hintShown.t0 = realT; }
     const hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0; let hintB = 0;
     if (hint && hAl > 0 && S.state === 'play' && S.t > 0.4) {
@@ -609,7 +619,7 @@
     }
     if (S.t < 1.4) { // название уровня: ниже подсказки, чтобы надписи не ложились друг на друга
       const fs = W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp((1.4 - S.t) * 2, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
-      const ty = Math.max(H2 * 0.3, hintB + fs * 0.9); ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${l.name[LANG]}`; ctx.strokeText(tt, W / 2, ty, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty, W - 24); ctx.globalAlpha = 1;
+      const ty = Math.max(H2 * 0.3, hintB + fs * 0.9); ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${loc(l.name)}`; ctx.strokeText(tt, W / 2, ty, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty, W - 24); ctx.globalAlpha = 1;
     }
     // обучение: «нажми — поехали», «держи», «отпусти»
     if (mode === 'play' && S.state === 'play') {
@@ -749,7 +759,7 @@
       if (kind === 'color') swatch(x + w / 2, icy, w * 0.26, i);
       else if (kind === 'wheels') wheelIcon(x + w / 2, icy, w * 0.2, i);
       else truckIcon(x + w / 2, icy, Math.min((w * 0.84) / 252, (w * 0.46) / 180), i, PAINT[gar.pick.color]);
-      if (it.n) { ctx.fillStyle = '#37474f'; ctx.font = `800 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.n[LANG], x + w / 2, y + w * 0.71, w - 8); }
+      if (it.n) { ctx.fillStyle = '#37474f'; ctx.font = `800 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(loc(it.n), x + w / 2, y + w * 0.71, w - 8); }
       const ly = y + w * (it.n ? 0.88 : 0.82);
       if (!has) rich([it.stars ? { star: 1 } : { coin: 1 }, { t: String(it.stars || it.cost), c: '#8d6e00' }], x + w / 2, ly, fs);
       else if (save[kind] === i) { ctx.fillStyle = '#43a047'; ctx.beginPath(); ctx.arc(x + w - 14, y + 14, 10, 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '900 13px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('✓', x + w - 14, y + 15); }
@@ -794,8 +804,8 @@
     const sy0 = my + mh + (cl.length ? 24 + cl.length * 18 : 10), open = serOpen(ser), sw2 = Math.min(W - 40, 360), sx0 = W / 2 - sw2 / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; rr(sx0, sy0, sw2, 36, 18); ctx.fill();
     for (const [id, ch, x, on] of [['s:prev', '‹', sx0, ser > 0], ['s:next', '›', sx0 + sw2 - 44, ser < NS - 1]]) { if (on) menuBtns.push({ id, x, y: sy0 - 4, w: 44, h: 44 }); ctx.fillStyle = on ? '#fff' : 'rgba(255,255,255,0.3)'; ctx.font = '900 26px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ch, x + 22, sy0 + 16); }
-    if (open) { ctx.fillStyle = '#fff'; ctx.font = '900 17px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${T.series} ${ser + 1} · ${SER[ser].n[LANG]}`, W / 2, sy0 + 19, sw2 - 96); }
-    else rich([{ t: `${SER[ser].n[LANG]} · ${T.opens}` }, { star: 1 }, { t: String(SER[ser].need) }], W / 2, sy0 + 18, 15);
+    if (open) { ctx.fillStyle = '#fff'; ctx.font = '900 17px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(`${T.series} ${ser + 1} · ${loc(SER[ser].n)}`, W / 2, sy0 + 19, sw2 - 96); }
+    else rich([{ t: `${loc(SER[ser].n)} · ${T.opens}` }, { star: 1 }, { t: String(SER[ser].need) }], W / 2, sy0 + 18, 15);
     // сетка уровней этой серии
     const i0 = ser * 12, cnt = Math.min(12, NL - i0), gy0 = sy0 + 36 + 8, footer = ws ? 10 : 70;
     let cols = port ? 3 : 6, cell = 0; // стоя: 3 в ряд, а на коротком экране — 4 в ряд, если так плитки крупнее
@@ -826,7 +836,7 @@
     const w = Math.min(W - 32, 460), h = Math.min(H2 - 24, 374), x = W / 2 - w / 2, y = H2 / 2 - h / 2, tight = h < 352;
     panel(x, y, w, h);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 28px system-ui, sans-serif';
-    ctx.fillText(T.win, W / 2, y + 40); ctx.fillStyle = '#78909c'; ctx.font = '800 16px system-ui, sans-serif'; ctx.fillText(`${T.lvl} ${lvl + 1} · ${H.levels[lvl].name[LANG]}`, W / 2, y + 70);
+    ctx.fillText(T.win, W / 2, y + 40); ctx.fillStyle = '#78909c'; ctx.font = '800 16px system-ui, sans-serif'; ctx.fillText(`${T.lvl} ${lvl + 1} · ${loc(H.levels[lvl].name)}`, W / 2, y + 70);
     const labs = [T.fin, T.starW, `≤ ${res.par} ${T.sec}`], on = [true, res.got, res.fast];
     for (let k = 0; k < 3; k++) {
       const cx = W / 2 + (k - 1) * Math.min(120, w * 0.28), cy = y + 132, big = k === 1 ? 38 : 32, pop = clamp((realT - (res.t0 || (res.t0 = realT)) - k * 0.25) * 4, 0, 1);

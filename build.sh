@@ -51,7 +51,7 @@ echo ball-truck-poki: $(du -sh zips/ball-truck-poki.zip | cut -f1)
 hk_build() {
   local D=dist/hook-truck-pg Z=zips/hook-truck-playgama.zip
   rm -rf $D; mkdir -p $D zips
-  cp g8-hook3d/physics.js g8-hook3d/sim.js g8-hook3d/levels.js g8-hook3d/r3d.js g8-hook3d/view.js vendor/three.min.js $D/
+  cp g8-hook3d/physics.js g8-hook3d/sim.js g8-hook3d/levels.js g8-hook3d/r3d.js g8-hook3d/i18n.js g8-hook3d/view.js vendor/three.min.js $D/
   sed 's/Promise.all(\[e\]).finally(/Promise.allSettled([e]).finally(/' vendor/playgama-bridge.js > $D/playgama-bridge.js
   grep -q 'Promise.allSettled(\[e\]).finally(' $D/playgama-bridge.js || { echo 'bridge patch failed'; exit 1; }
   echo '{}' > $D/playgama-bridge-config.json
