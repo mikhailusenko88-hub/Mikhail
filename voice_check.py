@@ -414,6 +414,8 @@ def analyze(name, apath, tpath):
     except Exception:
         log("whisper FAIL", traceback.format_exc())
     try:
+        if os.environ.get("NOUTMOS"):
+            raise RuntimeError("UTMOS выключен (NOUTMOS)")
         import torch
         with torch.no_grad():
             rep["utmos"] = round(float(utmos_model()(torch.from_numpy(audio)[None], SR)), 2)
@@ -504,6 +506,10 @@ def main():
             except Exception:
                 pass
         items.append((name, aud[0], t, h))
+    sh = os.environ.get("SHARD")   # «i/N»: обрабатывать только свою долю файлов (параллельные задания)
+    if sh:
+        i, n = map(int, sh.split("/"))
+        items = [x for x in items if int(hashlib.md5(x[0].encode()).hexdigest(), 16) % n == i]
     log("к проверке:", [i[0] for i in items])
     for name, a, t, h in items:
         try:
@@ -513,6 +519,8 @@ def main():
             log("готово", name)
         except Exception:
             log("FAIL", name, traceback.format_exc())
+    if os.environ.get("SHARD") and not os.environ["SHARD"].startswith("0/"):
+        return
     rows = ["| файл | голос | UTMOS | слова | ошибки ударений (+возможные) | интонация |", "|---|---|---|---|---|---|"]
     for jp in sorted(glob.glob(f"{OUT}/*.json")):
         try:

@@ -157,6 +157,9 @@ def main():
         if len(parts) < 3:
             print("пропуск (мало полей):", line); continue
         name, voice, text = parts[:3]
+        sh = os.environ.get("SHARD")   # «i/N»: только своя доля (как в voice_check.py)
+        if sh and int(hashlib.md5(name.encode()).hexdigest(), 16) % int(sh.split("/")[1]) != int(sh.split("/")[0]):
+            continue
         ref = parts[3] if len(parts) > 3 and parts[3] else text
         h = hashlib.md5(line.encode()).hexdigest()
         if os.path.exists(f"in/{name}.gen") and open(f"in/{name}.gen").read().strip() == h:

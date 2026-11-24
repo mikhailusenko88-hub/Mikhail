@@ -1,5 +1,5 @@
 name: voice-check-mac
-# То же, что voice-check, но на Mac GitHub (когда очередь ubuntu занята дубляжом). Запуск — изменение request-mac.txt.
+# То же, что voice-check, но на Mac GitHub и в 4 параллельных задания (SHARD i/4). Запуск — изменение request-mac.txt.
 on:
   push:
     branches: [voice-check]
@@ -13,7 +13,11 @@ concurrency:
 jobs:
   check:
     runs-on: macos-15
-    timeout-minutes: 90
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,10 +31,14 @@ jobs:
           echo "PHONEMIZER_ESPEAK_LIBRARY=$(brew --prefix espeak-ng)/lib/libespeak-ng.dylib" >> $GITHUB_ENV
       - name: Generate audio from gen.txt
         if: hashFiles('gen.txt') != ''
+        env:
+          SHARD: ${{ matrix.shard }}/4
         run: python gen.py
       - name: Analyze
         env:
           WHISPER: base
+          NOUTMOS: '1'
+          SHARD: ${{ matrix.shard }}/4
         run: python voice_check.py
       - name: Commit result
         if: always()
@@ -38,5 +46,5 @@ jobs:
           git config user.name voice-check
           git config user.email voice-check@users.noreply.github.com
           git add in out 2>/dev/null || true
-          git commit -qm "voice-check (mac) result" || echo nothing
-          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+          git commit -qm "voice-check (mac ${{ matrix.shard }}/4) result" || echo nothing
+          for i in 1 2 3 4 5 6 7 8; do git pull --rebase -q -X theirs && git push && break; sleep $((RANDOM % 10 + 5)); done
