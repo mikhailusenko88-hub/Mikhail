@@ -10,7 +10,7 @@
   retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>  — перенести таймер выхода закрытого ролика (время московское)
   stats                                  — последние ролики канала: просмотры, статус
   lang [сколько] [от скольки секунд]     — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
-  thumb <id ролика> <серия>              — заменить обложку ролика на serii/<серия>/cover.jpg со страницы; только закрытому (ещё не вышедшему) ролику
+  thumb <id ролика> <серия> [--file=путь]  — заменить обложку ролика на serii/<серия>/cover.jpg со страницы (или файл ветки); только закрытому (ещё не вышедшему) ролику
   kanal [--go]                           — главная канала по kanal.json (описание, трейлер для неподписанных); без --go только показать «было/станет»
   sbornik <имя> <ГГГГ-ММ-ДДTЧЧ:ММ>       — сборник серий подряд по sborniki/<имя>.json (склейка ep-<релиз>.mp4 без пересжатия, главы в описании), закрытым с таймером
 <релиз> — имя сборки студии (релиз studio-<релиз>, файл ep-<релиз>.mp4); название, описание и обложка — со страницы
@@ -23,6 +23,7 @@ import datetime as dt
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -175,10 +176,14 @@ def main():
         if st.get("privacyStatus") != "private" and "--public" not in a:
             return finish([f"ОБЛОЖКА НЕ ЗАМЕНЕНА: https://youtu.be/{vid} уже {st.get('privacyStatus')} — вышедшее меняю только с --public (после «да» Михаила)"])
         os.makedirs("tmp", exist_ok=True)
-        n = fetch(f"{RAW}/mebel/s9kbars/{it.get('cover') or f'serii/{num}/cover.jpg'}", "tmp/cover.jpg", 20_000)
+        own = next((x.split("=", 1)[1] for x in a if x.startswith("--file=")), None)   # --file=covers/38/cover_radost.jpg — файл из этой ветки (Михаил 24.11: обложка «радость» на 38)
+        if own:
+            shutil.copy(own, "tmp/cover.jpg"); n = os.path.getsize("tmp/cover.jpg")
+        else:
+            n = fetch(f"{RAW}/mebel/s9kbars/{it.get('cover') or f'serii/{num}/cover.jpg'}", "tmp/cover.jpg", 20_000)
         th = yt.thumbnail(vid, "tmp/cover.jpg")
         return finish([("ОБЛОЖКА ЗАМЕНЕНА" if th == "обложка поставлена" else "ОБЛОЖКА НЕ ЗАМЕНЕНА") + f": серия {num} — https://youtu.be/{vid} ({st.get('privacyStatus')}, выход {st.get('publishAt')})",
-                       f"{th}; файл со страницы {n} байт"])
+                       f"{th}; файл {own or 'со страницы'} {n} байт"])
     if mode == "lang":                                         # старым полным сериям — русский язык и категория «Фильмы и анимация» (разрешил Михаил 17.11.2026)
         done, skip, shorts, errs = yt.set_lang(limit=int(a[1]) if len(a) > 1 and a[1].isdigit() else 30,      # «lang 1» — сначала одна серия на пробу
                                                min_sec=int(a[2]) if len(a) > 2 and a[2].isdigit() else 180)   # «lang 5 60» — и короткие серии-части (не Shorts)
