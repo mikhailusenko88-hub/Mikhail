@@ -1,12 +1,12 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-24 06:54 UTC
+Проверено: 2026-11-24 07:03 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 10 подписчиков · 57 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-24 06:36 · 0 просм. · 1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts · G3WD46oGL0I
-- 2026-11-23 14:36 · 437 просм. · 1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts · aTpbo_zDb3g
+- 2026-11-24 06:36 · 4 просм. · 1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts · G3WD46oGL0I
+- 2026-11-23 14:36 · 456 просм. · 1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts · aTpbo_zDb3g
 - 2026-11-23 10:38 · 733 просм. · 1000 ta shar! Toshkent, Buxoro, Olmaliq… Qaysi shahar yutadi? Какой город победит? №2 #shorts · H4IDj7FhTkE
 - 2026-11-23 06:36 · 937 просм. · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
 - 2026-11-22 14:36 · 825 просм. · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
@@ -22,11 +22,11 @@
 - 2026-11-19 10:43 · 496 просм. · Qaysi mashina yutadi? Какая машина победит? 🚗 №19 #shorts · NdB6r0N5XqQ
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 0 просмотров · 1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts · G3WD46oGL0I
-- 449 просмотров · 1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts · aTpbo_zDb3g
-- 748 просмотров · 1000 ta shar! Toshkent, Buxoro, Olmaliq… Qaysi shahar yutadi? Какой город победит? №2 #shorts · H4IDj7FhTkE
+- 4 просмотра · 1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts · G3WD46oGL0I
+- 456 просмотров · 1000 ta shar! Nexia, Captiva, Matiz… Qaysi mashina yutadi? Какая машина победит? №5 #shorts · aTpbo_zDb3g
+- 755 просмотров · 1000 ta shar! Toshkent, Buxoro, Olmaliq… Qaysi shahar yutadi? Какой город победит? №2 #shorts · H4IDj7FhTkE
 - 940 просмотров · 1000 ta shar! Gentra, Labo, Epica… Qaysi mashina yutadi? Какая машина победит? №4 #shorts · sx2-fIMblqU
-- 811 просмотров · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
+- 826 просмотров · 1000 ta shar! Nexia, Equinox, Epica… Qaysi mashina yutadi? Какая машина победит? №3 #shorts · 6CCntXS89D4
 - 959 просмотров · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
 - 928 просмотров · 1000 ta shar! Cobalt, Nexia, Jiguli… Qaysi mashina yutadi? Какая машина победит? №2 #shorts · uLEjsasDCLQ
 - 699 просмотров · 1000 ta shar! Cobalt, Malibu, Kia K5… Qaysi mashina yutadi? Какая машина победит? №1 #shorts · xp3QgXkT4rM
