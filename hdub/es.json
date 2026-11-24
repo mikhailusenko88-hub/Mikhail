@@ -1,0 +1,559 @@
+{
+ "lang": "es",
+ "rows": [
+  {
+   "hero": "Барсик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "es",
+   "n": 6,
+   "clear": 89.4,
+   "min": 80.0,
+   "weak": 2,
+   "sim": 0.754,
+   "other": 0.182,
+   "nearest": "ron_old",
+   "sim_old": 0.754,
+   "f0": 243.2,
+   "f0_ref": 245.9,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Veamos otro. ¡Miren cuántos caen!",
+     "heard": "Veamos otro, miren cuántos caen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+     "heard": "Porque todos los copos tienen seis puntitas, qué misterio.",
+     "clear": 80.0,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "De una nube. Muy, muy alto.",
+     "heard": "de una nuve muy, muy alto.",
+     "clear": 83.3,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+     "heard": "Miren, sale vapor de la taza, es agua en el aire.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+     "heard": "Crece hacia 6 lados, así salen las puntitas.",
+     "clear": 87.5,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+     "heard": "que fácil, tres líneas y seis puntitas.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "es",
+   "n": 6,
+   "clear": 95.5,
+   "min": 85.7,
+   "weak": 0,
+   "sim": 0.741,
+   "other": 0.156,
+   "nearest": "ron_new1",
+   "sim_old": 0.203,
+   "f0": 229.3,
+   "f0_ref": 237.8,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Veamos otro. ¡Miren cuántos caen!",
+     "heard": "Veamos otro, miren cuántos caen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+     "heard": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "De una nube. Muy, muy alto.",
+     "heard": "de una nube muy, muy alto.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.1
+    },
+    {
+     "i": "31",
+     "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+     "heard": "Miren sale vapor de la taza, es agua en el aire.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+     "heard": "Crece hacia 6 lados, así salen las puntitas.",
+     "clear": 87.5,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+     "heard": "que fácil tres líneas y seis puntitas.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "es",
+   "n": 6,
+   "clear": 97.9,
+   "min": 87.5,
+   "weak": 0,
+   "sim": 0.692,
+   "other": 0.265,
+   "nearest": "pik_new1",
+   "sim_old": 0.25,
+   "f0": 234.0,
+   "f0_ref": 241.0,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Veamos otro. ¡Miren cuántos caen!",
+     "heard": "Veamos otro, miren cuántos caen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+     "heard": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "De una nube. Muy, muy alto.",
+     "heard": "de una nube muy, muy alto.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+     "heard": "Miren, sale vapor de la taza, es agua en el aire.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "37",
+     "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+     "heard": "Crece hacia 6 lados, así salen las puntitas.",
+     "clear": 87.5,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+     "heard": "¡Qué fácil! Tres líneas y seis puntitas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "es",
+   "n": 6,
+   "clear": 91.0,
+   "min": 71.4,
+   "weak": 1,
+   "sim": 0.762,
+   "other": 0.501,
+   "nearest": "filya_old",
+   "sim_old": 0.762,
+   "f0": 248.4,
+   "f0_ref": 249.6,
+   "lines": [
+    {
+     "i": "2",
+     "text": "¡Parece una estrellita! ¡Blanquita!",
+     "heard": "Parece una estrellita blanquita.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.4
+    },
+    {
+     "i": "5",
+     "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+     "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 2.0
+    },
+    {
+     "i": "14",
+     "text": "¡Voy a buscar el copo más grande!",
+     "heard": "Voy a buscar el copo más grande.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "El grande se fue. Y yo aterricé.",
+     "heard": "El grande se fue y yo aterrizé.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 2.7
+    },
+    {
+     "i": "22",
+     "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+     "heard": "Alguien los recorta allá arriba con tijeras.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "38",
+     "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+     "heard": "El agua cuenta hasta 6 que lista.",
+     "clear": 71.4,
+     "extra": 2,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "es",
+   "n": 6,
+   "clear": 93.4,
+   "min": 71.4,
+   "weak": 1,
+   "sim": 0.851,
+   "other": 0.652,
+   "nearest": "filya_old",
+   "sim_old": 0.496,
+   "f0": 285.2,
+   "f0_ref": 285.5,
+   "lines": [
+    {
+     "i": "2",
+     "text": "¡Parece una estrellita! ¡Blanquita!",
+     "heard": "Parece una estrellita blanquita.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.5
+    },
+    {
+     "i": "5",
+     "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+     "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "14",
+     "text": "¡Voy a buscar el copo más grande!",
+     "heard": "Voy a buscar el copo más grande.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.2
+    },
+    {
+     "i": "17",
+     "text": "El grande se fue. Y yo aterricé.",
+     "heard": "El grande se fue y yo aterricé.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.3
+    },
+    {
+     "i": "22",
+     "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+     "heard": "Alguien los recorta allá arriba con tijeras.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.0
+    },
+    {
+     "i": "38",
+     "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+     "heard": "El agua cuenta hasta 6 que lista.",
+     "clear": 71.4,
+     "extra": 2,
+     "shift": 1.9
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "es",
+   "n": 6,
+   "clear": 93.4,
+   "min": 71.4,
+   "weak": 1,
+   "sim": 0.72,
+   "other": 0.41,
+   "nearest": "pik_new1",
+   "sim_old": 0.3,
+   "f0": 283.2,
+   "f0_ref": 290.4,
+   "lines": [
+    {
+     "i": "2",
+     "text": "¡Parece una estrellita! ¡Blanquita!",
+     "heard": "Parece una estrellita blanquita.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    },
+    {
+     "i": "5",
+     "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+     "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "14",
+     "text": "¡Voy a buscar el copo más grande!",
+     "heard": "Voy a buscar el copo más grande.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.8
+    },
+    {
+     "i": "17",
+     "text": "El grande se fue. Y yo aterricé.",
+     "heard": "El grande se fue y yo aterricé.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "22",
+     "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+     "heard": "Alguien los recorta allá arriba con tijeras.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.8
+    },
+    {
+     "i": "38",
+     "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+     "heard": "El agua cuenta hasta 6 que lista.",
+     "clear": 71.4,
+     "extra": 2,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "es",
+   "n": 6,
+   "clear": 83.3,
+   "min": 25.0,
+   "weak": 1,
+   "sim": 0.821,
+   "other": 0.497,
+   "nearest": "filya_old",
+   "sim_old": 0.821,
+   "f0": 353.7,
+   "f0_ref": 371.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "¡Guau! ¡Puntitas! ¡Uno, dos, tres, cuatro, cinco, seis!",
+     "heard": "Guau puntitas, 1, 2, 3, 4, 5, 6.",
+     "clear": 25.0,
+     "extra": 6,
+     "shift": 1.9
+    },
+    {
+     "i": "19",
+     "text": "El copo es livianito. El viento se lo lleva.",
+     "heard": "El copo es livianito, el viento se lo lleva.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "La nube también tiene agua. Muchas gotitas.",
+     "heard": "La nube también tiene agua, muchas gotitas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Mucho frío. La gotita se congela. Y se hace hielito.",
+     "heard": "Mucho frío, la gotita se congela y se hace hielito.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Sí. Luego se le pegan más. Y va creciendo.",
+     "heard": "Si luego se le pegan más y va creciendo.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "Así es el hielo. ¡Siempre seis puntitas!",
+     "heard": "Así es el hielo, siempre 6 puntitas.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "new1",
+   "note": "новый",
+   "lang": "es",
+   "n": 6,
+   "clear": 83.3,
+   "min": 25.0,
+   "weak": 1,
+   "sim": 0.855,
+   "other": 0.575,
+   "nearest": "filya_old",
+   "sim_old": 0.455,
+   "f0": 354.9,
+   "f0_ref": 350.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "¡Guau! ¡Puntitas! ¡Uno, dos, tres, cuatro, cinco, seis!",
+     "heard": "Guau puntitas, 1, 2, 3, 4, 5, 6",
+     "clear": 25.0,
+     "extra": 6,
+     "shift": 0.0
+    },
+    {
+     "i": "19",
+     "text": "El copo es livianito. El viento se lo lleva.",
+     "heard": "El copo es livianito, el viento se lo lleva.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "La nube también tiene agua. Muchas gotitas.",
+     "heard": "La nube también tiene agua, muchas gotitas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Mucho frío. La gotita se congela. Y se hace hielito.",
+     "heard": "Mucho frío, la gotita se congela y se hace hielito.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Sí. Luego se le pegan más. Y va creciendo.",
+     "heard": "Si luego se le pegan más y va creciendo.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "Así es el hielo. ¡Siempre seis puntitas!",
+     "heard": "Así es el hielo, siempre 6 puntitas.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  }
+ ],
+ "ids": {
+  "Барсик": [
+   "3",
+   "13",
+   "21",
+   "31",
+   "37",
+   "64"
+  ],
+  "Рон": [
+   "2",
+   "5",
+   "14",
+   "17",
+   "22",
+   "38"
+  ],
+  "Пик": [
+   "1",
+   "19",
+   "32",
+   "34",
+   "36",
+   "44"
+  ]
+ }
+}

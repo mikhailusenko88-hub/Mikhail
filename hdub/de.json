@@ -1,0 +1,559 @@
+{
+ "lang": "de",
+ "rows": [
+  {
+   "hero": "Барсик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "de",
+   "n": 6,
+   "clear": 95.1,
+   "min": 80.0,
+   "weak": 1,
+   "sim": 0.67,
+   "other": 0.269,
+   "nearest": "filya_old",
+   "sim_old": 0.67,
+   "f0": 236.0,
+   "f0_ref": 245.9,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Schauen wir noch eine an. Da fliegen so viele!",
+     "heard": "Schauen wir noch eine an. Da fliegen so viele.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.5
+    },
+    {
+     "i": "13",
+     "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+     "heard": "Warum haben alle Schneeflocken 6 Zerken? Was für ein Rätsel?",
+     "clear": 80.0,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "Aus der Wolke. Ganz hoch oben.",
+     "heard": "Aus der Wolke, ganz hoch oben.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.5
+    },
+    {
+     "i": "31",
+     "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+     "heard": "Schaut, dampf bei der Tasse. Das ist Wasser in der Luft.",
+     "clear": 90.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+     "heard": "Es wächst in sechs Richtungen. So entstehen die Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Wie einfach! Drei Striche, sechs Zacken.",
+     "heard": "Wie einfach. Drei Striche, sechs Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "de",
+   "n": 6,
+   "clear": 96.6,
+   "min": 88.9,
+   "weak": 0,
+   "sim": 0.619,
+   "other": 0.214,
+   "nearest": "ron_new1",
+   "sim_old": 0.227,
+   "f0": 235.7,
+   "f0_ref": 237.8,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Schauen wir noch eine an. Da fliegen so viele!",
+     "heard": "Schauen wir noch eine an, da fliegen so viele.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.1
+    },
+    {
+     "i": "13",
+     "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+     "heard": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.7
+    },
+    {
+     "i": "21",
+     "text": "Aus der Wolke. Ganz hoch oben.",
+     "heard": "Aus der Wolke, ganz hoch oben.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.9
+    },
+    {
+     "i": "31",
+     "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+     "heard": "Schaut, langs über der Tasse, das ist Wasser in der Luft.",
+     "clear": 90.9,
+     "extra": 1,
+     "shift": 2.7
+    },
+    {
+     "i": "37",
+     "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+     "heard": "Es wächst in 6 Richtungen. So entstehen die Zacken.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Wie einfach! Drei Striche, sechs Zacken.",
+     "heard": "Wie einfach. Drei Striche sechs Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "de",
+   "n": 6,
+   "clear": 91.8,
+   "min": 72.7,
+   "weak": 1,
+   "sim": 0.576,
+   "other": 0.276,
+   "nearest": "pik_new1",
+   "sim_old": 0.251,
+   "f0": 234.1,
+   "f0_ref": 241.0,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Schauen wir noch eine an. Da fliegen so viele!",
+     "heard": "Schauen wir noch eine an, gar fliegen so viele.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+     "heard": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "21",
+     "text": "Aus der Wolke. Ganz hoch oben.",
+     "heard": "Aus der Wolke, ganz hoch oben.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+     "heard": "Schaut, ganz bei der Tasse. Das ist Tasse in der Luft.",
+     "clear": 72.7,
+     "extra": 3,
+     "shift": 2.0
+    },
+    {
+     "i": "37",
+     "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+     "heard": "Es wächst in 6 Richtungen, so entstehen die Zacken.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Wie einfach! Drei Striche, sechs Zacken.",
+     "heard": "Wie einfach. Drei Striche, sechs Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "de",
+   "n": 6,
+   "clear": 86.5,
+   "min": 50.0,
+   "weak": 2,
+   "sim": 0.562,
+   "other": 0.431,
+   "nearest": "filya_old",
+   "sim_old": 0.562,
+   "f0": 249.0,
+   "f0_ref": 249.6,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+     "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 5.1
+    },
+    {
+     "i": "5",
+     "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+     "heard": "Und mir sitzt eine auf der Nase. Wie viele Zacken?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.7
+    },
+    {
+     "i": "14",
+     "text": "Ich finde die größte Schneeflocke!",
+     "heard": "Ich finde die koste Schneeflocke.",
+     "clear": 80.0,
+     "extra": 1,
+     "shift": 1.7
+    },
+    {
+     "i": "17",
+     "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+     "heard": "Die Große ist weggeflogen und ich bin gelandet.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    },
+    {
+     "i": "22",
+     "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+     "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 2.8
+    },
+    {
+     "i": "38",
+     "text": "Wasser kennt die Sechs? So schlau!",
+     "heard": "Was erkennt die Sex? So schlau?",
+     "clear": 50.0,
+     "extra": 3,
+     "shift": 3.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "de",
+   "n": 6,
+   "clear": 81.1,
+   "min": 50.0,
+   "weak": 3,
+   "sim": 0.703,
+   "other": 0.577,
+   "nearest": "filya_old",
+   "sim_old": 0.421,
+   "f0": 286.1,
+   "f0_ref": 285.5,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+     "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 4.3
+    },
+    {
+     "i": "5",
+     "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+     "heard": "Mit mir setzt eine auf der Nase, wie viele Zacken.",
+     "clear": 80.0,
+     "extra": 2,
+     "shift": 2.9
+    },
+    {
+     "i": "14",
+     "text": "Ich finde die größte Schneeflocke!",
+     "heard": "Ich finde die größte Schmierflocke.",
+     "clear": 80.0,
+     "extra": 1,
+     "shift": 2.2
+    },
+    {
+     "i": "17",
+     "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+     "heard": "Die Große ist wieder geflogen und ich bin gelandet.",
+     "clear": 87.5,
+     "extra": 2,
+     "shift": 3.4
+    },
+    {
+     "i": "22",
+     "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+     "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 3.3
+    },
+    {
+     "i": "38",
+     "text": "Wasser kennt die Sechs? So schlau!",
+     "heard": "Was erkennt die Sex so schlau?",
+     "clear": 50.0,
+     "extra": 3,
+     "shift": 3.8
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "de",
+   "n": 6,
+   "clear": 93.7,
+   "min": 83.3,
+   "weak": 1,
+   "sim": 0.575,
+   "other": 0.409,
+   "nearest": "pik_new1",
+   "sim_old": 0.211,
+   "f0": 291.8,
+   "f0_ref": 290.4,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+     "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 4.0
+    },
+    {
+     "i": "5",
+     "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+     "heard": "Und mir sitzt einer auf der Nase. Wie viele Zacken.",
+     "clear": 90.0,
+     "extra": 1,
+     "shift": 2.1
+    },
+    {
+     "i": "14",
+     "text": "Ich finde die größte Schneeflocke!",
+     "heard": "Ich finde die größte Schneeflocke.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.3
+    },
+    {
+     "i": "17",
+     "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+     "heard": "Die Große ist weggeflogen und ich bin gelandet.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.4
+    },
+    {
+     "i": "22",
+     "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+     "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 2.2
+    },
+    {
+     "i": "38",
+     "text": "Wasser kennt die Sechs? So schlau!",
+     "heard": "Wasser kennt die Sex, so schlau.",
+     "clear": 83.3,
+     "extra": 1,
+     "shift": 2.5
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "de",
+   "n": 6,
+   "clear": 93.0,
+   "min": 80.0,
+   "weak": 1,
+   "sim": 0.746,
+   "other": 0.481,
+   "nearest": "filya_old",
+   "sim_old": 0.746,
+   "f0": 366.9,
+   "f0_ref": 371.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Oh! Zacken! Eins, zwei, drei, vier, fünf, sechs!",
+     "heard": "Oh, zacken. Eins, zwei, drei, vier, fünf, sechs.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.2
+    },
+    {
+     "i": "19",
+     "text": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+     "heard": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "32",
+     "text": "In der Wolke ist auch Wasser. Ganz viele Tröpfchen.",
+     "heard": "In der Wolke ist doch Wasser. Ganz viele Tröpfchen.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Sehr kalt. Da friert das Tröpfchen. So wird ein Eiskörnchen.",
+     "heard": "Sehr kalt, da friert das Töpfchen, so wird ein Eisgraunchen.",
+     "clear": 80.0,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Ja. Dann kleben neue dran. Und es wird größer.",
+     "heard": "Ja, dann klieben neue dran und es wird größer.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "So ist Eis eben. Immer sechs Zacken!",
+     "heard": "So ist Eis eben. Immer sechs Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "new1",
+   "note": "новый",
+   "lang": "de",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.746,
+   "other": 0.52,
+   "nearest": "filya_old",
+   "sim_old": 0.43,
+   "f0": 349.9,
+   "f0_ref": 350.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Oh! Zacken! Eins, zwei, drei, vier, fünf, sechs!",
+     "heard": "Oh, zacken, eins, zwei, drei, vier, fünf, sechs.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "19",
+     "text": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+     "heard": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "In der Wolke ist auch Wasser. Ganz viele Tröpfchen.",
+     "heard": "In der Wolke ist auch Wasser, ganz viele Tröpfchen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Sehr kalt. Da friert das Tröpfchen. So wird ein Eiskörnchen.",
+     "heard": "Sehr kalt, da friert das Tröpfchen, so wird ein Eiskörnchen.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": -1.6
+    },
+    {
+     "i": "36",
+     "text": "Ja. Dann kleben neue dran. Und es wird größer.",
+     "heard": "Ja, dann kleben neue dran und es wird größer.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "So ist Eis eben. Immer sechs Zacken!",
+     "heard": "So ist Eis eben, immer sechs Zacken.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  }
+ ],
+ "ids": {
+  "Барсик": [
+   "3",
+   "13",
+   "21",
+   "31",
+   "37",
+   "64"
+  ],
+  "Рон": [
+   "2",
+   "5",
+   "14",
+   "17",
+   "22",
+   "38"
+  ],
+  "Пик": [
+   "1",
+   "19",
+   "32",
+   "34",
+   "36",
+   "44"
+  ]
+ }
+}

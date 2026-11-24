@@ -1,0 +1,2642 @@
+[
+ {
+  "hero": "Барсик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "en",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.664,
+  "other": 0.24,
+  "nearest": "filya_old",
+  "sim_old": 0.664,
+  "f0": 243.7,
+  "f0_ref": 245.9,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Let's look at another one. So many are falling!",
+    "heard": "Let's look at another one. So many are falling.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Why do all snowflakes have six points? What a mystery!",
+    "heard": "Why do all snowflakes have six points? What a mystery!",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "From a cloud. High, high above us.",
+    "heard": "from a cloud high, high above us.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Look, steam over the cup. That's water in the air.",
+    "heard": "Look steam over the cup. That's water in the air.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "It grows six ways, evenly. That makes the points!",
+    "heard": "It grows six ways evenly. That makes the points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "So easy! Three lines, and six points.",
+    "heard": "So easy, three lines and six points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "en",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.545,
+  "other": 0.224,
+  "nearest": "ron_new1",
+  "sim_old": 0.162,
+  "f0": 228.7,
+  "f0_ref": 237.8,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Let's look at another one. So many are falling!",
+    "heard": "Let's look at another one. So many are falling.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Why do all snowflakes have six points? What a mystery!",
+    "heard": "Why do all snowflakes have six points? What a mystery!",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "From a cloud. High, high above us.",
+    "heard": "from a cloud high, high above us.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "31",
+    "text": "Look, steam over the cup. That's water in the air.",
+    "heard": "Look steam over the cup. That's water in the air.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "It grows six ways, evenly. That makes the points!",
+    "heard": "It grows six ways evenly. That makes the points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "So easy! Three lines, and six points.",
+    "heard": "So easy, three lines and six points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "en",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.513,
+  "other": 0.218,
+  "nearest": "pik_new1",
+  "sim_old": 0.17,
+  "f0": 233.9,
+  "f0_ref": 241.0,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Let's look at another one. So many are falling!",
+    "heard": "Let's look at another one. So many are falling.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Why do all snowflakes have six points? What a mystery!",
+    "heard": "Why do all snowflakes have six points? What a mystery!",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "From a cloud. High, high above us.",
+    "heard": "from a cloud high, high above us.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Look, steam over the cup. That's water in the air.",
+    "heard": "Look, steam over the cup. That's water in the air.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "It grows six ways, evenly. That makes the points!",
+    "heard": "It grows six ways evenly. That makes the points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "So easy! Three lines, and six points.",
+    "heard": "So easy, three lines and six points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "en",
+  "n": 6,
+  "clear": 97.6,
+  "min": 85.7,
+  "weak": 0,
+  "sim": 0.581,
+  "other": 0.354,
+  "nearest": "pik_old",
+  "sim_old": 0.581,
+  "f0": 248.0,
+  "f0_ref": 249.6,
+  "lines": [
+   {
+    "i": "2",
+    "text": "It's like a star! A little white star!",
+    "heard": "It's like a star, a little white star.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.6
+   },
+   {
+    "i": "5",
+    "text": "A snowflake landed on my nose! How many points?",
+    "heard": "A snowflake landed on my nose. How many points?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.7
+   },
+   {
+    "i": "14",
+    "text": "I'll find the biggest snowflake!",
+    "heard": "I'll find the biggest snowflake.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "The big one flew away. And I landed.",
+    "heard": "The big one flew away, and I landed.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.2
+   },
+   {
+    "i": "22",
+    "text": "Someone up there must cut them out. With scissors.",
+    "heard": "Someone up there must cut them out with scissors.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "Water knows the number six? How smart!",
+    "heard": "Water knows the number 6. How smart!",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 3.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "en",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.712,
+  "other": 0.524,
+  "nearest": "filya_old",
+  "sim_old": 0.367,
+  "f0": 280.4,
+  "f0_ref": 285.5,
+  "lines": [
+   {
+    "i": "2",
+    "text": "It's like a star! A little white star!",
+    "heard": "It's like a star, a little white star.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.6
+   },
+   {
+    "i": "5",
+    "text": "A snowflake landed on my nose! How many points?",
+    "heard": "A snowflake landed on my nose. How many points?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 4.2
+   },
+   {
+    "i": "14",
+    "text": "I'll find the biggest snowflake!",
+    "heard": "I'll find the biggest snowflake.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "The big one flew away. And I landed.",
+    "heard": "The big one flew away, and I landed.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.3
+   },
+   {
+    "i": "22",
+    "text": "Someone up there must cut them out. With scissors.",
+    "heard": "Someone up there must cut them out with scissors.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "Water knows the number six? How smart!",
+    "heard": "Water knows the number six. How smart.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.4
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "en",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.581,
+  "other": 0.325,
+  "nearest": "pik_new1",
+  "sim_old": 0.178,
+  "f0": 286.6,
+  "f0_ref": 290.4,
+  "lines": [
+   {
+    "i": "2",
+    "text": "It's like a star! A little white star!",
+    "heard": "It's like a star, a little white star.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.3
+   },
+   {
+    "i": "5",
+    "text": "A snowflake landed on my nose! How many points?",
+    "heard": "A snowflake landed on my nose. How many points?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.5
+   },
+   {
+    "i": "14",
+    "text": "I'll find the biggest snowflake!",
+    "heard": "I'll find the biggest snowflake.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "The big one flew away. And I landed.",
+    "heard": "The big one flew away and I landed.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.3
+   },
+   {
+    "i": "22",
+    "text": "Someone up there must cut them out. With scissors.",
+    "heard": "Someone up there must cut them out with scissors.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "Water knows the number six? How smart!",
+    "heard": "Water knows the number six. How smart.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "en",
+  "n": 6,
+  "clear": 87.5,
+  "min": 25.0,
+  "weak": 1,
+  "sim": 0.794,
+  "other": 0.424,
+  "nearest": "filya_old",
+  "sim_old": 0.794,
+  "f0": 370.1,
+  "f0_ref": 371.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Wow! Points! One, two, three, four, five, six!",
+    "heard": "Wow Points, 123456",
+    "clear": 25.0,
+    "extra": 1,
+    "shift": 2.3
+   },
+   {
+    "i": "19",
+    "text": "A snowflake is light as fluff. The wind blows it away.",
+    "heard": "A snowflake is light as fluff, the wind blows it away.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   },
+   {
+    "i": "32",
+    "text": "Clouds have water too. Lots of tiny drops.",
+    "heard": "Clouds have water too, lots of tiny drops.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.4
+   },
+   {
+    "i": "34",
+    "text": "Very cold. A drop freezes there. It turns into ice.",
+    "heard": "Very cold, a drop freezes there, it turns into ice.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.5
+   },
+   {
+    "i": "36",
+    "text": "Yes. Then more stick to it. And it gets bigger.",
+    "heard": "Yes, then more stick to it, and it gets bigger.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "That's how ice works. Always six points!",
+    "heard": "That's how ice works. Always six points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "new1",
+  "note": "новый",
+  "lang": "en",
+  "n": 6,
+  "clear": 87.5,
+  "min": 25.0,
+  "weak": 1,
+  "sim": 0.658,
+  "other": 0.453,
+  "nearest": "ron_new1",
+  "sim_old": 0.446,
+  "f0": 344.6,
+  "f0_ref": 350.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Wow! Points! One, two, three, four, five, six!",
+    "heard": "Wow Points! 1, 2, 3, 4, 5, 6.",
+    "clear": 25.0,
+    "extra": 6,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "A snowflake is light as fluff. The wind blows it away.",
+    "heard": "A snowflake is light as fluff. The wind blows it away.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "Clouds have water too. Lots of tiny drops.",
+    "heard": "Clouds have water too. Lots of tiny drops.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Very cold. A drop freezes there. It turns into ice.",
+    "heard": "Very cold, a drop freezes there, it turns into ice.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Yes. Then more stick to it. And it gets bigger.",
+    "heard": "Yes, then more stick to it, and it gets bigger.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "That's how ice works. Always six points!",
+    "heard": "That's how ice works. Always six points.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "es",
+  "n": 6,
+  "clear": 89.4,
+  "min": 80.0,
+  "weak": 2,
+  "sim": 0.754,
+  "other": 0.182,
+  "nearest": "ron_old",
+  "sim_old": 0.754,
+  "f0": 243.2,
+  "f0_ref": 245.9,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Veamos otro. ¡Miren cuántos caen!",
+    "heard": "Veamos otro, miren cuántos caen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+    "heard": "Porque todos los copos tienen seis puntitas, qué misterio.",
+    "clear": 80.0,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "De una nube. Muy, muy alto.",
+    "heard": "de una nuve muy, muy alto.",
+    "clear": 83.3,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+    "heard": "Miren, sale vapor de la taza, es agua en el aire.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+    "heard": "Crece hacia 6 lados, así salen las puntitas.",
+    "clear": 87.5,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+    "heard": "que fácil, tres líneas y seis puntitas.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "es",
+  "n": 6,
+  "clear": 95.5,
+  "min": 85.7,
+  "weak": 0,
+  "sim": 0.741,
+  "other": 0.156,
+  "nearest": "ron_new1",
+  "sim_old": 0.203,
+  "f0": 229.3,
+  "f0_ref": 237.8,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Veamos otro. ¡Miren cuántos caen!",
+    "heard": "Veamos otro, miren cuántos caen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+    "heard": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "De una nube. Muy, muy alto.",
+    "heard": "de una nube muy, muy alto.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.1
+   },
+   {
+    "i": "31",
+    "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+    "heard": "Miren sale vapor de la taza, es agua en el aire.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+    "heard": "Crece hacia 6 lados, así salen las puntitas.",
+    "clear": 87.5,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+    "heard": "que fácil tres líneas y seis puntitas.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "es",
+  "n": 6,
+  "clear": 97.9,
+  "min": 87.5,
+  "weak": 0,
+  "sim": 0.692,
+  "other": 0.265,
+  "nearest": "pik_new1",
+  "sim_old": 0.25,
+  "f0": 234.0,
+  "f0_ref": 241.0,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Veamos otro. ¡Miren cuántos caen!",
+    "heard": "Veamos otro, miren cuántos caen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+    "heard": "¿Por qué todos los copos tienen seis puntitas? ¡Qué misterio!",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "De una nube. Muy, muy alto.",
+    "heard": "de una nube muy, muy alto.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Miren, sale vapor de la taza. Es agua en el aire.",
+    "heard": "Miren, sale vapor de la taza, es agua en el aire.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "37",
+    "text": "Crece hacia seis lados. ¡Así salen las puntitas!",
+    "heard": "Crece hacia 6 lados, así salen las puntitas.",
+    "clear": 87.5,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "¡Qué fácil! Tres líneas y seis puntitas.",
+    "heard": "¡Qué fácil! Tres líneas y seis puntitas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "es",
+  "n": 6,
+  "clear": 91.0,
+  "min": 71.4,
+  "weak": 1,
+  "sim": 0.762,
+  "other": 0.501,
+  "nearest": "filya_old",
+  "sim_old": 0.762,
+  "f0": 248.4,
+  "f0_ref": 249.6,
+  "lines": [
+   {
+    "i": "2",
+    "text": "¡Parece una estrellita! ¡Blanquita!",
+    "heard": "Parece una estrellita blanquita.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.4
+   },
+   {
+    "i": "5",
+    "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+    "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 2.0
+   },
+   {
+    "i": "14",
+    "text": "¡Voy a buscar el copo más grande!",
+    "heard": "Voy a buscar el copo más grande.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "El grande se fue. Y yo aterricé.",
+    "heard": "El grande se fue y yo aterrizé.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 2.7
+   },
+   {
+    "i": "22",
+    "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+    "heard": "Alguien los recorta allá arriba con tijeras.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "38",
+    "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+    "heard": "El agua cuenta hasta 6 que lista.",
+    "clear": 71.4,
+    "extra": 2,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "es",
+  "n": 6,
+  "clear": 93.4,
+  "min": 71.4,
+  "weak": 1,
+  "sim": 0.851,
+  "other": 0.652,
+  "nearest": "filya_old",
+  "sim_old": 0.496,
+  "f0": 285.2,
+  "f0_ref": 285.5,
+  "lines": [
+   {
+    "i": "2",
+    "text": "¡Parece una estrellita! ¡Blanquita!",
+    "heard": "Parece una estrellita blanquita.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.5
+   },
+   {
+    "i": "5",
+    "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+    "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "14",
+    "text": "¡Voy a buscar el copo más grande!",
+    "heard": "Voy a buscar el copo más grande.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.2
+   },
+   {
+    "i": "17",
+    "text": "El grande se fue. Y yo aterricé.",
+    "heard": "El grande se fue y yo aterricé.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.3
+   },
+   {
+    "i": "22",
+    "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+    "heard": "Alguien los recorta allá arriba con tijeras.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.0
+   },
+   {
+    "i": "38",
+    "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+    "heard": "El agua cuenta hasta 6 que lista.",
+    "clear": 71.4,
+    "extra": 2,
+    "shift": 1.9
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "es",
+  "n": 6,
+  "clear": 93.4,
+  "min": 71.4,
+  "weak": 1,
+  "sim": 0.72,
+  "other": 0.41,
+  "nearest": "pik_new1",
+  "sim_old": 0.3,
+  "f0": 283.2,
+  "f0_ref": 290.4,
+  "lines": [
+   {
+    "i": "2",
+    "text": "¡Parece una estrellita! ¡Blanquita!",
+    "heard": "Parece una estrellita blanquita.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   },
+   {
+    "i": "5",
+    "text": "¡Un copo me cayó en la nariz! ¿Cuántas puntitas?",
+    "heard": "Un copo me cayó en la nariz cuantas puntitas.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "14",
+    "text": "¡Voy a buscar el copo más grande!",
+    "heard": "Voy a buscar el copo más grande.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.8
+   },
+   {
+    "i": "17",
+    "text": "El grande se fue. Y yo aterricé.",
+    "heard": "El grande se fue y yo aterricé.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "22",
+    "text": "Alguien los recorta allá arriba. ¡Con tijeras!",
+    "heard": "Alguien los recorta allá arriba con tijeras.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.8
+   },
+   {
+    "i": "38",
+    "text": "¿El agua cuenta hasta seis? ¡Qué lista!",
+    "heard": "El agua cuenta hasta 6 que lista.",
+    "clear": 71.4,
+    "extra": 2,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "es",
+  "n": 6,
+  "clear": 83.3,
+  "min": 25.0,
+  "weak": 1,
+  "sim": 0.821,
+  "other": 0.497,
+  "nearest": "filya_old",
+  "sim_old": 0.821,
+  "f0": 353.7,
+  "f0_ref": 371.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "¡Guau! ¡Puntitas! ¡Uno, dos, tres, cuatro, cinco, seis!",
+    "heard": "Guau puntitas, 1, 2, 3, 4, 5, 6.",
+    "clear": 25.0,
+    "extra": 6,
+    "shift": 1.9
+   },
+   {
+    "i": "19",
+    "text": "El copo es livianito. El viento se lo lleva.",
+    "heard": "El copo es livianito, el viento se lo lleva.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "La nube también tiene agua. Muchas gotitas.",
+    "heard": "La nube también tiene agua, muchas gotitas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Mucho frío. La gotita se congela. Y se hace hielito.",
+    "heard": "Mucho frío, la gotita se congela y se hace hielito.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Sí. Luego se le pegan más. Y va creciendo.",
+    "heard": "Si luego se le pegan más y va creciendo.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "Así es el hielo. ¡Siempre seis puntitas!",
+    "heard": "Así es el hielo, siempre 6 puntitas.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "new1",
+  "note": "новый",
+  "lang": "es",
+  "n": 6,
+  "clear": 83.3,
+  "min": 25.0,
+  "weak": 1,
+  "sim": 0.855,
+  "other": 0.575,
+  "nearest": "filya_old",
+  "sim_old": 0.455,
+  "f0": 354.9,
+  "f0_ref": 350.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "¡Guau! ¡Puntitas! ¡Uno, dos, tres, cuatro, cinco, seis!",
+    "heard": "Guau puntitas, 1, 2, 3, 4, 5, 6",
+    "clear": 25.0,
+    "extra": 6,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "El copo es livianito. El viento se lo lleva.",
+    "heard": "El copo es livianito, el viento se lo lleva.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "La nube también tiene agua. Muchas gotitas.",
+    "heard": "La nube también tiene agua, muchas gotitas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Mucho frío. La gotita se congela. Y se hace hielito.",
+    "heard": "Mucho frío, la gotita se congela y se hace hielito.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Sí. Luego se le pegan más. Y va creciendo.",
+    "heard": "Si luego se le pegan más y va creciendo.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "Así es el hielo. ¡Siempre seis puntitas!",
+    "heard": "Así es el hielo, siempre 6 puntitas.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "pt",
+  "n": 6,
+  "clear": 78.0,
+  "min": 37.5,
+  "weak": 4,
+  "sim": 0.848,
+  "other": 0.262,
+  "nearest": "filya_old",
+  "sim_old": 0.848,
+  "f0": 242.6,
+  "f0_ref": 245.9,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Vamos ver outro. Olhem quantos caindo!",
+    "heard": "Vamos ver outro olhem quantos caindo.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+    "heard": "Porque todo floco tem seis pontinhas, que mistério.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "De uma nuvem. Lá no alto do céu.",
+    "heard": "de manuva em Lanuel do céu.",
+    "clear": 37.5,
+    "extra": 3,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Olhem o vapor na xícara. É água no ar.",
+    "heard": "Polinho vapor na xícara é água no ar.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+    "heard": "Crece para seis lados, assim nascem as pontinhas.",
+    "clear": 75.0,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Que fácil! Três linhas e seis pontinhas.",
+    "heard": "Que fácil! Três linhas e seis pontinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "pt",
+  "n": 6,
+  "clear": 73.9,
+  "min": 12.5,
+  "weak": 4,
+  "sim": 0.806,
+  "other": 0.206,
+  "nearest": "ron_new1",
+  "sim_old": 0.305,
+  "f0": 232.3,
+  "f0_ref": 237.8,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Vamos ver outro. Olhem quantos caindo!",
+    "heard": "Vamos ver outro olhem quantos caindo.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+    "heard": "porque todo floco tem seis pontinhas, que mistério.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 1.7
+   },
+   {
+    "i": "21",
+    "text": "De uma nuvem. Lá no alto do céu.",
+    "heard": "de manuving lanoalto da cel.",
+    "clear": 12.5,
+    "extra": 4,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Olhem o vapor na xícara. É água no ar.",
+    "heard": "Polinho vapor na xícara é água no ar.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 1.8
+   },
+   {
+    "i": "37",
+    "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+    "heard": "Crece para seis lados, assim nascem as pontinhas.",
+    "clear": 75.0,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Que fácil! Três linhas e seis pontinhas.",
+    "heard": "Que fácil! Três linhas e seis pontinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "pt",
+  "n": 6,
+  "clear": 78.0,
+  "min": 37.5,
+  "weak": 4,
+  "sim": 0.823,
+  "other": 0.263,
+  "nearest": "pik_new1",
+  "sim_old": 0.324,
+  "f0": 237.7,
+  "f0_ref": 241.0,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Vamos ver outro. Olhem quantos caindo!",
+    "heard": "Vamos ver outro olhem quantos caindo.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+    "heard": "Porque todo floco tem seis pontinhas, que mistério.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "De uma nuvem. Lá no alto do céu.",
+    "heard": "de manuver Lanuel do céu.",
+    "clear": 37.5,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Olhem o vapor na xícara. É água no ar.",
+    "heard": "Polinho vapor na xícara é água no ar.",
+    "clear": 77.8,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+    "heard": "Crece para seis lados, assim nascem as pontinhas.",
+    "clear": 75.0,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Que fácil! Três linhas e seis pontinhas.",
+    "heard": "Que fácil! Três linhas e seis pontinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "pt",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.808,
+  "other": 0.487,
+  "nearest": "filya_old",
+  "sim_old": 0.808,
+  "f0": 247.0,
+  "f0_ref": 249.6,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Parece uma estrelinha! Branquinha!",
+    "heard": "Parece uma estrelinha branquinha.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.9
+   },
+   {
+    "i": "5",
+    "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+    "heard": "Um floco caiu no meu nariz. Quantas pontinhas?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   },
+   {
+    "i": "14",
+    "text": "Vou achar o maior floco!",
+    "heard": "Vou achar o maior floco.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "O grandão voou. Eu caí no chão.",
+    "heard": "O grandão voou, eu caí no chão.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.3
+   },
+   {
+    "i": "22",
+    "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+    "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "A água conta até seis? Que esperta!",
+    "heard": "A água conta até seis que esperta.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "pt",
+  "n": 6,
+  "clear": 92.9,
+  "min": 71.4,
+  "weak": 1,
+  "sim": 0.874,
+  "other": 0.667,
+  "nearest": "filya_old",
+  "sim_old": 0.539,
+  "f0": 279.9,
+  "f0_ref": 285.5,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Parece uma estrelinha! Branquinha!",
+    "heard": "Parece uma estrelinha branquinha.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.0
+   },
+   {
+    "i": "5",
+    "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+    "heard": "Um floco caiu no meu nariz, quantas pontinhas?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   },
+   {
+    "i": "14",
+    "text": "Vou achar o maior floco!",
+    "heard": "Vou achar o maior floco.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "17",
+    "text": "O grandão voou. Eu caí no chão.",
+    "heard": "O Grandão voou, eu caí na chão.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 2.3
+   },
+   {
+    "i": "22",
+    "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+    "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "A água conta até seis? Que esperta!",
+    "heard": "A água conta até 6 que desperta.",
+    "clear": 71.4,
+    "extra": 2,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "pt",
+  "n": 6,
+  "clear": 95.2,
+  "min": 85.7,
+  "weak": 0,
+  "sim": 0.816,
+  "other": 0.389,
+  "nearest": "pik_new1",
+  "sim_old": 0.39,
+  "f0": 284.3,
+  "f0_ref": 290.4,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Parece uma estrelinha! Branquinha!",
+    "heard": "Parece uma estrelinha branquinha.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.8
+   },
+   {
+    "i": "5",
+    "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+    "heard": "Um floco caiu no meu nariz, quantas pontinhas?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.1
+   },
+   {
+    "i": "14",
+    "text": "Vou achar o maior floco!",
+    "heard": "Vou achar o maior floco.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "O grandão voou. Eu caí no chão.",
+    "heard": "O grandão voar eu caí no chão.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 2.4
+   },
+   {
+    "i": "22",
+    "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+    "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "A água conta até seis? Que esperta!",
+    "heard": "A água conta até 6 que esperta.",
+    "clear": 85.7,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "pt",
+  "n": 6,
+  "clear": 74.4,
+  "min": 12.5,
+  "weak": 3,
+  "sim": 0.857,
+  "other": 0.53,
+  "nearest": "filya_old",
+  "sim_old": 0.857,
+  "f0": 359.1,
+  "f0_ref": 371.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Uau! Pontinhas! Um, dois, três, quatro, cinco, seis!",
+    "heard": "Oal pontinhas 1, 2, 3, 4, 5, 6.",
+    "clear": 12.5,
+    "extra": 7,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "O floco é levinho. O vento leva ele.",
+    "heard": "O floco alevinha, o vento leva a eles.",
+    "clear": 62.5,
+    "extra": 3,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "A nuvem também tem água. Um montão de gotinhas.",
+    "heard": "A nuvem também tem água, um montão de gotinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.7
+   },
+   {
+    "i": "34",
+    "text": "Muito frio. A gotinha congela. E vira um gelinho.",
+    "heard": "Muito frio, a gotinha congela e vira um gelinho.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Sim. Depois grudam mais nele. E ele vai crescendo.",
+    "heard": "Sim, depois grudam mais nele e ele vai crescendo.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "O gelo é assim. Sempre seis pontinhas!",
+    "heard": "Cogiamo é assim, sempre seis pontinhas.",
+    "clear": 71.4,
+    "extra": 1,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "new1",
+  "note": "новый",
+  "lang": "pt",
+  "n": 6,
+  "clear": 94.0,
+  "min": 87.5,
+  "weak": 0,
+  "sim": 0.842,
+  "other": 0.557,
+  "nearest": "filya_old",
+  "sim_old": 0.48,
+  "f0": 351.1,
+  "f0_ref": 350.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Uau! Pontinhas! Um, dois, três, quatro, cinco, seis!",
+    "heard": "Oal pontinhas, um, dois, três, quatro, cinco, seis.",
+    "clear": 87.5,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "O floco é levinho. O vento leva ele.",
+    "heard": "O floco é levinho, o vento leva a eles.",
+    "clear": 87.5,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "A nuvem também tem água. Um montão de gotinhas.",
+    "heard": "A nuvem também tem água, um montão de gotinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Muito frio. A gotinha congela. E vira um gelinho.",
+    "heard": "Muito frio, a gotinha congela e vira um gelinho.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Sim. Depois grudam mais nele. E ele vai crescendo.",
+    "heard": "Sim, depois grutam mais nele e ele vai crescendo.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "O gelo é assim. Sempre seis pontinhas!",
+    "heard": "O gelo é assim, sempre seis pontinhas.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "hi",
+  "n": 6,
+  "clear": 92.6,
+  "min": 87.5,
+  "weak": 0,
+  "sim": 0.739,
+  "other": 0.19,
+  "nearest": "filya_old",
+  "sim_old": 0.739,
+  "f0": 244.5,
+  "f0_ref": 245.9,
+  "lines": [
+   {
+    "i": "3",
+    "text": "एक और देखते हैं। देखो, कितने उड़ रहे हैं!",
+    "heard": "एक और देखते हैं देखो कितने उड़ रहे हैं।",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "सब स्नोफ़्लेक में छह किरणें क्यों? क्या पहेली है!",
+    "heard": "सब स्नोफलिक में च्छाह किरने क्यों क्या पहिली है।",
+    "clear": 95.2,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "बादल से। बहुत ऊपर।",
+    "heard": "बादल से बहुत उपरे",
+    "clear": 90.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "देखो, कप पर भाप। ये हवा में पानी है।",
+    "heard": "देखो कब पर भाप ये हवा में पानी है",
+    "clear": 93.3,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "वो छह तरफ़ बढ़ती है। ऐसे किरणें बनती हैं!",
+    "heard": "वो छेह तरफ बढ़ती है ऐसे किल्ने बनती है",
+    "clear": 89.5,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "कितना आसान! तीन लकीरें, छह किरणें।",
+    "heard": "कितना आसान तीन लकीरे च्छै किरने",
+    "clear": 87.5,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "hi",
+  "n": 6,
+  "clear": 91.6,
+  "min": 86.7,
+  "weak": 0,
+  "sim": 0.691,
+  "other": 0.226,
+  "nearest": "ron_new1",
+  "sim_old": 0.173,
+  "f0": 231.6,
+  "f0_ref": 237.8,
+  "lines": [
+   {
+    "i": "3",
+    "text": "एक और देखते हैं। देखो, कितने उड़ रहे हैं!",
+    "heard": "एक और देखते हैं देखो कितने उड़ रहे हैं।",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "सब स्नोफ़्लेक में छह किरणें क्यों? क्या पहेली है!",
+    "heard": "सब स्नोफलेक में च्छह किलने क्यों क्या पहिली है",
+    "clear": 90.5,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "बादल से। बहुत ऊपर।",
+    "heard": "बादल से बहुत उपर है",
+    "clear": 90.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "देखो, कप पर भाप। ये हवा में पानी है।",
+    "heard": "देखो कपल भाप ये हवा में पानी है.",
+    "clear": 86.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "वो छह तरफ़ बढ़ती है। ऐसे किरणें बनती हैं!",
+    "heard": "वो छह तरफ बढ़ती है ऐसे किरने बनती है",
+    "clear": 94.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "कितना आसान! तीन लकीरें, छह किरणें।",
+    "heard": "कितना आसान तीन लकीरे च्छे किरने",
+    "clear": 87.5,
+    "extra": 0,
+    "shift": 2.2
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "hi",
+  "n": 6,
+  "clear": 92.6,
+  "min": 87.5,
+  "weak": 0,
+  "sim": 0.62,
+  "other": 0.144,
+  "nearest": "ron_new1",
+  "sim_old": 0.244,
+  "f0": 239.0,
+  "f0_ref": 241.0,
+  "lines": [
+   {
+    "i": "3",
+    "text": "एक और देखते हैं। देखो, कितने उड़ रहे हैं!",
+    "heard": "एक और देखते हैं देखो कितने उड़ रहे हैं।",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "सब स्नोफ़्लेक में छह किरणें क्यों? क्या पहेली है!",
+    "heard": "सब स्नोफलेक में च्छह किरने क्यों क्या पहिली है?",
+    "clear": 95.2,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "बादल से। बहुत ऊपर।",
+    "heard": "बादल से बहुत उपर है",
+    "clear": 90.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "देखो, कप पर भाप। ये हवा में पानी है।",
+    "heard": "देखो कप्पल भाप ये हवा में पानी है.",
+    "clear": 93.3,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "वो छह तरफ़ बढ़ती है। ऐसे किरणें बनती हैं!",
+    "heard": "वो च्छाय तरफ बढ़ती है, ऐसे किर्ने बनती हैं।",
+    "clear": 89.5,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "कितना आसान! तीन लकीरें, छह किरणें।",
+    "heard": "कितना आसान तीन लकीरे च्छे किरने?",
+    "clear": 87.5,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "hi",
+  "n": 6,
+  "clear": 93.5,
+  "min": 85.7,
+  "weak": 0,
+  "sim": 0.656,
+  "other": 0.305,
+  "nearest": "filya_old",
+  "sim_old": 0.656,
+  "f0": 241.8,
+  "f0_ref": 249.6,
+  "lines": [
+   {
+    "i": "2",
+    "text": "ये तारे जैसा है! सफ़ेद तारा!",
+    "heard": "ये तारे जैसा है सफेद दारा",
+    "clear": 90.9,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "5",
+    "text": "मेरी नाक पर स्नोफ़्लेक बैठा! कितनी किरणें हैं?",
+    "heard": "मेरी नाक पर सनोफलिक बैथा कितनी किरने हैं।",
+    "clear": 90.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "14",
+    "text": "मैं सबसे बड़ा स्नोफ़्लेक ढूँढूँगा!",
+    "heard": "मैं सबसे बड़ा स्नोफलेक ठून ठूंगा",
+    "clear": 85.7,
+    "extra": 0,
+    "shift": 1.5
+   },
+   {
+    "i": "17",
+    "text": "बड़ा वाला उड़ गया। और मैं गिर गया।",
+    "heard": "बड़ा वाला उड़ गया और में गिर गया",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "22",
+    "text": "वहाँ शायद कोई इन्हें काटता है। कैंची से।",
+    "heard": "वहाँ शायद कोई इन्हें काटता है कैंठी से।",
+    "clear": 94.1,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "पानी को छह आता है? कितना होशियार!",
+    "heard": "पानी कुछ है आता है कितना होशियार।",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "hi",
+  "n": 6,
+  "clear": 91.2,
+  "min": 80.0,
+  "weak": 1,
+  "sim": 0.867,
+  "other": 0.594,
+  "nearest": "filya_old",
+  "sim_old": 0.423,
+  "f0": 272.1,
+  "f0_ref": 285.5,
+  "lines": [
+   {
+    "i": "2",
+    "text": "ये तारे जैसा है! सफ़ेद तारा!",
+    "heard": "ये तारे जैसा है सफेद तारा",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "5",
+    "text": "मेरी नाक पर स्नोफ़्लेक बैठा! कितनी किरणें हैं?",
+    "heard": "मेरी नात पर सनोफलेक बैथा कितनी किलने हैं।",
+    "clear": 80.0,
+    "extra": 0,
+    "shift": 2.5
+   },
+   {
+    "i": "14",
+    "text": "मैं सबसे बड़ा स्नोफ़्लेक ढूँढूँगा!",
+    "heard": "मैं सबसे बड़ा स्नोफलेक थूंठूंगा",
+    "clear": 85.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "17",
+    "text": "बड़ा वाला उड़ गया। और मैं गिर गया।",
+    "heard": "बड़ा वाला उड़ गया और में गिर गया",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "22",
+    "text": "वहाँ शायद कोई इन्हें काटता है। कैंची से।",
+    "heard": "वहां शायब कोई इन्हें काटता है कैंठी से",
+    "clear": 88.2,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "38",
+    "text": "पानी को छह आता है? कितना होशियार!",
+    "heard": "पानी कुछे आता है, कितना होशियार.",
+    "clear": 93.3,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "hi",
+  "n": 6,
+  "clear": 92.2,
+  "min": 80.0,
+  "weak": 1,
+  "sim": 0.742,
+  "other": 0.355,
+  "nearest": "pik_new1",
+  "sim_old": 0.253,
+  "f0": 286.2,
+  "f0_ref": 290.4,
+  "lines": [
+   {
+    "i": "2",
+    "text": "ये तारे जैसा है! सफ़ेद तारा!",
+    "heard": "ये तारे जैसा है सफीद तारा.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "5",
+    "text": "मेरी नाक पर स्नोफ़्लेक बैठा! कितनी किरणें हैं?",
+    "heard": "मेरी नात पर स्नोफलेक बैथा कितनी किलने हैं।",
+    "clear": 80.0,
+    "extra": 0,
+    "shift": 1.7
+   },
+   {
+    "i": "14",
+    "text": "मैं सबसे बड़ा स्नोफ़्लेक ढूँढूँगा!",
+    "heard": "मैं सबसे बड़ा स्नोफलेक ठूंठूंगा",
+    "clear": 85.7,
+    "extra": 0,
+    "shift": 2.0
+   },
+   {
+    "i": "17",
+    "text": "बड़ा वाला उड़ गया। और मैं गिर गया।",
+    "heard": "बड़ा वाला उड़ गया और में गिर गया",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "22",
+    "text": "वहाँ शायद कोई इन्हें काटता है। कैंची से।",
+    "heard": "वहाँ शायब कोई इन्हें काटता है कैंची से.",
+    "clear": 94.1,
+    "extra": 0,
+    "shift": 1.5
+   },
+   {
+    "i": "38",
+    "text": "पानी को छह आता है? कितना होशियार!",
+    "heard": "पानी कुछे आता है कितना होशियार।",
+    "clear": 93.3,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "hi",
+  "n": 6,
+  "clear": 93.0,
+  "min": 88.2,
+  "weak": 0,
+  "sim": 0.837,
+  "other": 0.471,
+  "nearest": "filya_old",
+  "sim_old": 0.837,
+  "f0": 360.2,
+  "f0_ref": 371.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "वाह! किरणें! एक, दो, तीन, चार, पाँच, छह!",
+    "heard": "वहां करने एक दो तीन चार पांच छह है",
+    "clear": 93.8,
+    "extra": 0,
+    "shift": 1.7
+   },
+   {
+    "i": "19",
+    "text": "स्नोफ़्लेक बहुत हल्का है। हवा उसे उड़ा ले जाती है।",
+    "heard": "स्नूफलीक बहुत हलका है, हवा उसी उडाली जाती है।",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "बादल में भी पानी है। बहुत सारी छोटी बूँदें।",
+    "heard": "बादर में भी पानी है, बहुत सारी छोटी बुंदे।",
+    "clear": 94.1,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "बहुत ठंड। वहाँ बूँद जमकर बर्फ़ बन जाती है।",
+    "heard": "बहुत ठंड वहाँ, बून्च चम कर बर्फ बन जाती है",
+    "clear": 90.5,
+    "extra": 0,
+    "shift": 1.8
+   },
+   {
+    "i": "36",
+    "text": "हाँ। फिर उस पर नई बूँदें चिपकती हैं। और वो बड़ी होती है।",
+    "heard": "हाँ फिर उस पर नई बोने चिपती है और वो बड़ी होती है।",
+    "clear": 91.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "बर्फ़ ऐसी ही होती है। हमेशा छह किरणें!",
+    "heard": "बर्फ ऐसी ही होती हैं हमेशा चाहकर ने",
+    "clear": 88.2,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "new1",
+  "note": "новый",
+  "lang": "hi",
+  "n": 6,
+  "clear": 92.2,
+  "min": 85.7,
+  "weak": 0,
+  "sim": 0.743,
+  "other": 0.531,
+  "nearest": "ron_new1",
+  "sim_old": 0.439,
+  "f0": 357.4,
+  "f0_ref": 350.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "वाह! किरणें! एक, दो, तीन, चार, पाँच, छह!",
+    "heard": "वहां के ने एक, दो, तीन, चार, पांच, छहे.",
+    "clear": 87.5,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "स्नोफ़्लेक बहुत हल्का है। हवा उसे उड़ा ले जाती है।",
+    "heard": "स्नूफलिक बहुत हलका है, हवा उसे उडाले जाती है.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "बादल में भी पानी है। बहुत सारी छोटी बूँदें।",
+    "heard": "बादल में भी पानी है, बहुत सारे छोटी पुंदे।",
+    "clear": 94.1,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "बहुत ठंड। वहाँ बूँद जमकर बर्फ़ बन जाती है।",
+    "heard": "बहुत थंड वहां बूंड चमकर बर्फ बन जाती है।",
+    "clear": 85.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "हाँ। फिर उस पर नई बूँदें चिपकती हैं। और वो बड़ी होती है।",
+    "heard": "हां फिर उस पर नई बून्री चिपत्ती है और वो बड़ी होती है।",
+    "clear": 91.7,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "बर्फ़ ऐसी ही होती है। हमेशा छह किरणें!",
+    "heard": "बर्फ ऐसे ही होती है हमेशा च्छहकिर ने।",
+    "clear": 94.1,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "de",
+  "n": 6,
+  "clear": 95.1,
+  "min": 80.0,
+  "weak": 1,
+  "sim": 0.67,
+  "other": 0.269,
+  "nearest": "filya_old",
+  "sim_old": 0.67,
+  "f0": 236.0,
+  "f0_ref": 245.9,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Schauen wir noch eine an. Da fliegen so viele!",
+    "heard": "Schauen wir noch eine an. Da fliegen so viele.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.5
+   },
+   {
+    "i": "13",
+    "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+    "heard": "Warum haben alle Schneeflocken 6 Zerken? Was für ein Rätsel?",
+    "clear": 80.0,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "21",
+    "text": "Aus der Wolke. Ganz hoch oben.",
+    "heard": "Aus der Wolke, ganz hoch oben.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.5
+   },
+   {
+    "i": "31",
+    "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+    "heard": "Schaut, dampf bei der Tasse. Das ist Wasser in der Luft.",
+    "clear": 90.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "37",
+    "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+    "heard": "Es wächst in sechs Richtungen. So entstehen die Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Wie einfach! Drei Striche, sechs Zacken.",
+    "heard": "Wie einfach. Drei Striche, sechs Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "de",
+  "n": 6,
+  "clear": 96.6,
+  "min": 88.9,
+  "weak": 0,
+  "sim": 0.619,
+  "other": 0.214,
+  "nearest": "ron_new1",
+  "sim_old": 0.227,
+  "f0": 235.7,
+  "f0_ref": 237.8,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Schauen wir noch eine an. Da fliegen so viele!",
+    "heard": "Schauen wir noch eine an, da fliegen so viele.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.1
+   },
+   {
+    "i": "13",
+    "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+    "heard": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.7
+   },
+   {
+    "i": "21",
+    "text": "Aus der Wolke. Ganz hoch oben.",
+    "heard": "Aus der Wolke, ganz hoch oben.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.9
+   },
+   {
+    "i": "31",
+    "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+    "heard": "Schaut, langs über der Tasse, das ist Wasser in der Luft.",
+    "clear": 90.9,
+    "extra": 1,
+    "shift": 2.7
+   },
+   {
+    "i": "37",
+    "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+    "heard": "Es wächst in 6 Richtungen. So entstehen die Zacken.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Wie einfach! Drei Striche, sechs Zacken.",
+    "heard": "Wie einfach. Drei Striche sechs Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 3.0
+   }
+  ]
+ },
+ {
+  "hero": "Барсик",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "de",
+  "n": 6,
+  "clear": 91.8,
+  "min": 72.7,
+  "weak": 1,
+  "sim": 0.576,
+  "other": 0.276,
+  "nearest": "pik_new1",
+  "sim_old": 0.251,
+  "f0": 234.1,
+  "f0_ref": 241.0,
+  "lines": [
+   {
+    "i": "3",
+    "text": "Schauen wir noch eine an. Da fliegen so viele!",
+    "heard": "Schauen wir noch eine an, gar fliegen so viele.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "13",
+    "text": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel!",
+    "heard": "Warum haben alle Schneeflocken sechs Zacken? Was für ein Rätsel.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "21",
+    "text": "Aus der Wolke. Ganz hoch oben.",
+    "heard": "Aus der Wolke, ganz hoch oben.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "31",
+    "text": "Schaut, Dampf über der Tasse. Das ist Wasser in der Luft.",
+    "heard": "Schaut, ganz bei der Tasse. Das ist Tasse in der Luft.",
+    "clear": 72.7,
+    "extra": 3,
+    "shift": 2.0
+   },
+   {
+    "i": "37",
+    "text": "Es wächst in sechs Richtungen. So entstehen die Zacken!",
+    "heard": "Es wächst in 6 Richtungen, so entstehen die Zacken.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "64",
+    "text": "Wie einfach! Drei Striche, sechs Zacken.",
+    "heard": "Wie einfach. Drei Striche, sechs Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "de",
+  "n": 6,
+  "clear": 86.5,
+  "min": 50.0,
+  "weak": 2,
+  "sim": 0.562,
+  "other": 0.431,
+  "nearest": "filya_old",
+  "sim_old": 0.562,
+  "f0": 249.0,
+  "f0_ref": 249.6,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+    "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 5.1
+   },
+   {
+    "i": "5",
+    "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+    "heard": "Und mir sitzt eine auf der Nase. Wie viele Zacken?",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.7
+   },
+   {
+    "i": "14",
+    "text": "Ich finde die größte Schneeflocke!",
+    "heard": "Ich finde die koste Schneeflocke.",
+    "clear": 80.0,
+    "extra": 1,
+    "shift": 1.7
+   },
+   {
+    "i": "17",
+    "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+    "heard": "Die Große ist weggeflogen und ich bin gelandet.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.6
+   },
+   {
+    "i": "22",
+    "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+    "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 2.8
+   },
+   {
+    "i": "38",
+    "text": "Wasser kennt die Sechs? So schlau!",
+    "heard": "Was erkennt die Sex? So schlau?",
+    "clear": 50.0,
+    "extra": 3,
+    "shift": 3.0
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new1",
+  "note": "новый 1",
+  "lang": "de",
+  "n": 6,
+  "clear": 81.1,
+  "min": 50.0,
+  "weak": 3,
+  "sim": 0.703,
+  "other": 0.577,
+  "nearest": "filya_old",
+  "sim_old": 0.421,
+  "f0": 286.1,
+  "f0_ref": 285.5,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+    "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 4.3
+   },
+   {
+    "i": "5",
+    "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+    "heard": "Mit mir setzt eine auf der Nase, wie viele Zacken.",
+    "clear": 80.0,
+    "extra": 2,
+    "shift": 2.9
+   },
+   {
+    "i": "14",
+    "text": "Ich finde die größte Schneeflocke!",
+    "heard": "Ich finde die größte Schmierflocke.",
+    "clear": 80.0,
+    "extra": 1,
+    "shift": 2.2
+   },
+   {
+    "i": "17",
+    "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+    "heard": "Die Große ist wieder geflogen und ich bin gelandet.",
+    "clear": 87.5,
+    "extra": 2,
+    "shift": 3.4
+   },
+   {
+    "i": "22",
+    "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+    "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 3.3
+   },
+   {
+    "i": "38",
+    "text": "Wasser kennt die Sechs? So schlau!",
+    "heard": "Was erkennt die Sex so schlau?",
+    "clear": 50.0,
+    "extra": 3,
+    "shift": 3.8
+   }
+  ]
+ },
+ {
+  "hero": "Рон",
+  "tag": "new2",
+  "note": "новый 2",
+  "lang": "de",
+  "n": 6,
+  "clear": 93.7,
+  "min": 83.3,
+  "weak": 1,
+  "sim": 0.575,
+  "other": 0.409,
+  "nearest": "pik_new1",
+  "sim_old": 0.211,
+  "f0": 291.8,
+  "f0_ref": 290.4,
+  "lines": [
+   {
+    "i": "2",
+    "text": "Wie ein Sternchen! Ein weißes Sternchen!",
+    "heard": "Wie ein Sternchen. Ein weißes Sternchen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 4.0
+   },
+   {
+    "i": "5",
+    "text": "Und mir sitzt eine auf der Nase! Wie viele Zacken?",
+    "heard": "Und mir sitzt einer auf der Nase. Wie viele Zacken.",
+    "clear": 90.0,
+    "extra": 1,
+    "shift": 2.1
+   },
+   {
+    "i": "14",
+    "text": "Ich finde die größte Schneeflocke!",
+    "heard": "Ich finde die größte Schneeflocke.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.3
+   },
+   {
+    "i": "17",
+    "text": "Die Große ist weggeflogen. Und ich bin gelandet.",
+    "heard": "Die Große ist weggeflogen und ich bin gelandet.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.4
+   },
+   {
+    "i": "22",
+    "text": "Da schneidet sie bestimmt einer aus. Mit der Schere.",
+    "heard": "Da schneidet sie bestimmt eine aus, mit der Schere.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 2.2
+   },
+   {
+    "i": "38",
+    "text": "Wasser kennt die Sechs? So schlau!",
+    "heard": "Wasser kennt die Sex, so schlau.",
+    "clear": 83.3,
+    "extra": 1,
+    "shift": 2.5
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "old",
+  "note": "как сейчас",
+  "lang": "de",
+  "n": 6,
+  "clear": 93.0,
+  "min": 80.0,
+  "weak": 1,
+  "sim": 0.746,
+  "other": 0.481,
+  "nearest": "filya_old",
+  "sim_old": 0.746,
+  "f0": 366.9,
+  "f0_ref": 371.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Oh! Zacken! Eins, zwei, drei, vier, fünf, sechs!",
+    "heard": "Oh, zacken. Eins, zwei, drei, vier, fünf, sechs.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 2.2
+   },
+   {
+    "i": "19",
+    "text": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+    "heard": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 1.6
+   },
+   {
+    "i": "32",
+    "text": "In der Wolke ist auch Wasser. Ganz viele Tröpfchen.",
+    "heard": "In der Wolke ist doch Wasser. Ganz viele Tröpfchen.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Sehr kalt. Da friert das Tröpfchen. So wird ein Eiskörnchen.",
+    "heard": "Sehr kalt, da friert das Töpfchen, so wird ein Eisgraunchen.",
+    "clear": 80.0,
+    "extra": 2,
+    "shift": 0.0
+   },
+   {
+    "i": "36",
+    "text": "Ja. Dann kleben neue dran. Und es wird größer.",
+    "heard": "Ja, dann klieben neue dran und es wird größer.",
+    "clear": 88.9,
+    "extra": 1,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "So ist Eis eben. Immer sechs Zacken!",
+    "heard": "So ist Eis eben. Immer sechs Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ },
+ {
+  "hero": "Пик",
+  "tag": "new1",
+  "note": "новый",
+  "lang": "de",
+  "n": 6,
+  "clear": 100.0,
+  "min": 100.0,
+  "weak": 0,
+  "sim": 0.746,
+  "other": 0.52,
+  "nearest": "filya_old",
+  "sim_old": 0.43,
+  "f0": 349.9,
+  "f0_ref": 350.1,
+  "lines": [
+   {
+    "i": "1",
+    "text": "Oh! Zacken! Eins, zwei, drei, vier, fünf, sechs!",
+    "heard": "Oh, zacken, eins, zwei, drei, vier, fünf, sechs.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "19",
+    "text": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+    "heard": "Eine Schneeflocke ist ganz leicht. Der Wind trägt sie weg.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "32",
+    "text": "In der Wolke ist auch Wasser. Ganz viele Tröpfchen.",
+    "heard": "In der Wolke ist auch Wasser, ganz viele Tröpfchen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "34",
+    "text": "Sehr kalt. Da friert das Tröpfchen. So wird ein Eiskörnchen.",
+    "heard": "Sehr kalt, da friert das Tröpfchen, so wird ein Eiskörnchen.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": -1.6
+   },
+   {
+    "i": "36",
+    "text": "Ja. Dann kleben neue dran. Und es wird größer.",
+    "heard": "Ja, dann kleben neue dran und es wird größer.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   },
+   {
+    "i": "44",
+    "text": "So ist Eis eben. Immer sechs Zacken!",
+    "heard": "So ist Eis eben, immer sechs Zacken.",
+    "clear": 100.0,
+    "extra": 0,
+    "shift": 0.0
+   }
+  ]
+ }
+]

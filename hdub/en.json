@@ -1,0 +1,559 @@
+{
+ "lang": "en",
+ "rows": [
+  {
+   "hero": "Барсик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "en",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.664,
+   "other": 0.24,
+   "nearest": "filya_old",
+   "sim_old": 0.664,
+   "f0": 243.7,
+   "f0_ref": 245.9,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Let's look at another one. So many are falling!",
+     "heard": "Let's look at another one. So many are falling.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Why do all snowflakes have six points? What a mystery!",
+     "heard": "Why do all snowflakes have six points? What a mystery!",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "From a cloud. High, high above us.",
+     "heard": "from a cloud high, high above us.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Look, steam over the cup. That's water in the air.",
+     "heard": "Look steam over the cup. That's water in the air.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "It grows six ways, evenly. That makes the points!",
+     "heard": "It grows six ways evenly. That makes the points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "So easy! Three lines, and six points.",
+     "heard": "So easy, three lines and six points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "en",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.545,
+   "other": 0.224,
+   "nearest": "ron_new1",
+   "sim_old": 0.162,
+   "f0": 228.7,
+   "f0_ref": 237.8,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Let's look at another one. So many are falling!",
+     "heard": "Let's look at another one. So many are falling.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Why do all snowflakes have six points? What a mystery!",
+     "heard": "Why do all snowflakes have six points? What a mystery!",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "From a cloud. High, high above us.",
+     "heard": "from a cloud high, high above us.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "31",
+     "text": "Look, steam over the cup. That's water in the air.",
+     "heard": "Look steam over the cup. That's water in the air.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "It grows six ways, evenly. That makes the points!",
+     "heard": "It grows six ways evenly. That makes the points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "So easy! Three lines, and six points.",
+     "heard": "So easy, three lines and six points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "en",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.513,
+   "other": 0.218,
+   "nearest": "pik_new1",
+   "sim_old": 0.17,
+   "f0": 233.9,
+   "f0_ref": 241.0,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Let's look at another one. So many are falling!",
+     "heard": "Let's look at another one. So many are falling.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Why do all snowflakes have six points? What a mystery!",
+     "heard": "Why do all snowflakes have six points? What a mystery!",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "From a cloud. High, high above us.",
+     "heard": "from a cloud high, high above us.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Look, steam over the cup. That's water in the air.",
+     "heard": "Look, steam over the cup. That's water in the air.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "It grows six ways, evenly. That makes the points!",
+     "heard": "It grows six ways evenly. That makes the points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "So easy! Three lines, and six points.",
+     "heard": "So easy, three lines and six points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "en",
+   "n": 6,
+   "clear": 97.6,
+   "min": 85.7,
+   "weak": 0,
+   "sim": 0.581,
+   "other": 0.354,
+   "nearest": "pik_old",
+   "sim_old": 0.581,
+   "f0": 248.0,
+   "f0_ref": 249.6,
+   "lines": [
+    {
+     "i": "2",
+     "text": "It's like a star! A little white star!",
+     "heard": "It's like a star, a little white star.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.6
+    },
+    {
+     "i": "5",
+     "text": "A snowflake landed on my nose! How many points?",
+     "heard": "A snowflake landed on my nose. How many points?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.7
+    },
+    {
+     "i": "14",
+     "text": "I'll find the biggest snowflake!",
+     "heard": "I'll find the biggest snowflake.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "The big one flew away. And I landed.",
+     "heard": "The big one flew away, and I landed.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.2
+    },
+    {
+     "i": "22",
+     "text": "Someone up there must cut them out. With scissors.",
+     "heard": "Someone up there must cut them out with scissors.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "Water knows the number six? How smart!",
+     "heard": "Water knows the number 6. How smart!",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 3.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "en",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.712,
+   "other": 0.524,
+   "nearest": "filya_old",
+   "sim_old": 0.367,
+   "f0": 280.4,
+   "f0_ref": 285.5,
+   "lines": [
+    {
+     "i": "2",
+     "text": "It's like a star! A little white star!",
+     "heard": "It's like a star, a little white star.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.6
+    },
+    {
+     "i": "5",
+     "text": "A snowflake landed on my nose! How many points?",
+     "heard": "A snowflake landed on my nose. How many points?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 4.2
+    },
+    {
+     "i": "14",
+     "text": "I'll find the biggest snowflake!",
+     "heard": "I'll find the biggest snowflake.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "The big one flew away. And I landed.",
+     "heard": "The big one flew away, and I landed.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.3
+    },
+    {
+     "i": "22",
+     "text": "Someone up there must cut them out. With scissors.",
+     "heard": "Someone up there must cut them out with scissors.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "Water knows the number six? How smart!",
+     "heard": "Water knows the number six. How smart.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.4
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "en",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.581,
+   "other": 0.325,
+   "nearest": "pik_new1",
+   "sim_old": 0.178,
+   "f0": 286.6,
+   "f0_ref": 290.4,
+   "lines": [
+    {
+     "i": "2",
+     "text": "It's like a star! A little white star!",
+     "heard": "It's like a star, a little white star.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.3
+    },
+    {
+     "i": "5",
+     "text": "A snowflake landed on my nose! How many points?",
+     "heard": "A snowflake landed on my nose. How many points?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.5
+    },
+    {
+     "i": "14",
+     "text": "I'll find the biggest snowflake!",
+     "heard": "I'll find the biggest snowflake.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "The big one flew away. And I landed.",
+     "heard": "The big one flew away and I landed.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.3
+    },
+    {
+     "i": "22",
+     "text": "Someone up there must cut them out. With scissors.",
+     "heard": "Someone up there must cut them out with scissors.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "Water knows the number six? How smart!",
+     "heard": "Water knows the number six. How smart.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "en",
+   "n": 6,
+   "clear": 87.5,
+   "min": 25.0,
+   "weak": 1,
+   "sim": 0.794,
+   "other": 0.424,
+   "nearest": "filya_old",
+   "sim_old": 0.794,
+   "f0": 370.1,
+   "f0_ref": 371.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Wow! Points! One, two, three, four, five, six!",
+     "heard": "Wow Points, 123456",
+     "clear": 25.0,
+     "extra": 1,
+     "shift": 2.3
+    },
+    {
+     "i": "19",
+     "text": "A snowflake is light as fluff. The wind blows it away.",
+     "heard": "A snowflake is light as fluff, the wind blows it away.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    },
+    {
+     "i": "32",
+     "text": "Clouds have water too. Lots of tiny drops.",
+     "heard": "Clouds have water too, lots of tiny drops.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.4
+    },
+    {
+     "i": "34",
+     "text": "Very cold. A drop freezes there. It turns into ice.",
+     "heard": "Very cold, a drop freezes there, it turns into ice.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.5
+    },
+    {
+     "i": "36",
+     "text": "Yes. Then more stick to it. And it gets bigger.",
+     "heard": "Yes, then more stick to it, and it gets bigger.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "That's how ice works. Always six points!",
+     "heard": "That's how ice works. Always six points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "new1",
+   "note": "новый",
+   "lang": "en",
+   "n": 6,
+   "clear": 87.5,
+   "min": 25.0,
+   "weak": 1,
+   "sim": 0.658,
+   "other": 0.453,
+   "nearest": "ron_new1",
+   "sim_old": 0.446,
+   "f0": 344.6,
+   "f0_ref": 350.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Wow! Points! One, two, three, four, five, six!",
+     "heard": "Wow Points! 1, 2, 3, 4, 5, 6.",
+     "clear": 25.0,
+     "extra": 6,
+     "shift": 0.0
+    },
+    {
+     "i": "19",
+     "text": "A snowflake is light as fluff. The wind blows it away.",
+     "heard": "A snowflake is light as fluff. The wind blows it away.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "Clouds have water too. Lots of tiny drops.",
+     "heard": "Clouds have water too. Lots of tiny drops.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Very cold. A drop freezes there. It turns into ice.",
+     "heard": "Very cold, a drop freezes there, it turns into ice.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Yes. Then more stick to it. And it gets bigger.",
+     "heard": "Yes, then more stick to it, and it gets bigger.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "That's how ice works. Always six points!",
+     "heard": "That's how ice works. Always six points.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  }
+ ],
+ "ids": {
+  "Барсик": [
+   "3",
+   "13",
+   "21",
+   "31",
+   "37",
+   "64"
+  ],
+  "Рон": [
+   "2",
+   "5",
+   "14",
+   "17",
+   "22",
+   "38"
+  ],
+  "Пик": [
+   "1",
+   "19",
+   "32",
+   "34",
+   "36",
+   "44"
+  ]
+ }
+}

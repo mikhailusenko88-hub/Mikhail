@@ -1,0 +1,559 @@
+{
+ "lang": "pt",
+ "rows": [
+  {
+   "hero": "Барсик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "pt",
+   "n": 6,
+   "clear": 78.0,
+   "min": 37.5,
+   "weak": 4,
+   "sim": 0.848,
+   "other": 0.262,
+   "nearest": "filya_old",
+   "sim_old": 0.848,
+   "f0": 242.6,
+   "f0_ref": 245.9,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Vamos ver outro. Olhem quantos caindo!",
+     "heard": "Vamos ver outro olhem quantos caindo.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+     "heard": "Porque todo floco tem seis pontinhas, que mistério.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "De uma nuvem. Lá no alto do céu.",
+     "heard": "de manuva em Lanuel do céu.",
+     "clear": 37.5,
+     "extra": 3,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Olhem o vapor na xícara. É água no ar.",
+     "heard": "Polinho vapor na xícara é água no ar.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+     "heard": "Crece para seis lados, assim nascem as pontinhas.",
+     "clear": 75.0,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Que fácil! Três linhas e seis pontinhas.",
+     "heard": "Que fácil! Três linhas e seis pontinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "pt",
+   "n": 6,
+   "clear": 73.9,
+   "min": 12.5,
+   "weak": 4,
+   "sim": 0.806,
+   "other": 0.206,
+   "nearest": "ron_new1",
+   "sim_old": 0.305,
+   "f0": 232.3,
+   "f0_ref": 237.8,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Vamos ver outro. Olhem quantos caindo!",
+     "heard": "Vamos ver outro olhem quantos caindo.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+     "heard": "porque todo floco tem seis pontinhas, que mistério.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 1.7
+    },
+    {
+     "i": "21",
+     "text": "De uma nuvem. Lá no alto do céu.",
+     "heard": "de manuving lanoalto da cel.",
+     "clear": 12.5,
+     "extra": 4,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Olhem o vapor na xícara. É água no ar.",
+     "heard": "Polinho vapor na xícara é água no ar.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 1.8
+    },
+    {
+     "i": "37",
+     "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+     "heard": "Crece para seis lados, assim nascem as pontinhas.",
+     "clear": 75.0,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Que fácil! Três linhas e seis pontinhas.",
+     "heard": "Que fácil! Três linhas e seis pontinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Барсик",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "pt",
+   "n": 6,
+   "clear": 78.0,
+   "min": 37.5,
+   "weak": 4,
+   "sim": 0.823,
+   "other": 0.263,
+   "nearest": "pik_new1",
+   "sim_old": 0.324,
+   "f0": 237.7,
+   "f0_ref": 241.0,
+   "lines": [
+    {
+     "i": "3",
+     "text": "Vamos ver outro. Olhem quantos caindo!",
+     "heard": "Vamos ver outro olhem quantos caindo.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "13",
+     "text": "Por que todo floco tem seis pontinhas? Que mistério!",
+     "heard": "Porque todo floco tem seis pontinhas, que mistério.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "21",
+     "text": "De uma nuvem. Lá no alto do céu.",
+     "heard": "de manuver Lanuel do céu.",
+     "clear": 37.5,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "31",
+     "text": "Olhem o vapor na xícara. É água no ar.",
+     "heard": "Polinho vapor na xícara é água no ar.",
+     "clear": 77.8,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "37",
+     "text": "Cresce pra seis lados. Assim nascem as pontinhas!",
+     "heard": "Crece para seis lados, assim nascem as pontinhas.",
+     "clear": 75.0,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "64",
+     "text": "Que fácil! Três linhas e seis pontinhas.",
+     "heard": "Que fácil! Três linhas e seis pontinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "pt",
+   "n": 6,
+   "clear": 100.0,
+   "min": 100.0,
+   "weak": 0,
+   "sim": 0.808,
+   "other": 0.487,
+   "nearest": "filya_old",
+   "sim_old": 0.808,
+   "f0": 247.0,
+   "f0_ref": 249.6,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Parece uma estrelinha! Branquinha!",
+     "heard": "Parece uma estrelinha branquinha.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.9
+    },
+    {
+     "i": "5",
+     "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+     "heard": "Um floco caiu no meu nariz. Quantas pontinhas?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    },
+    {
+     "i": "14",
+     "text": "Vou achar o maior floco!",
+     "heard": "Vou achar o maior floco.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "O grandão voou. Eu caí no chão.",
+     "heard": "O grandão voou, eu caí no chão.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.3
+    },
+    {
+     "i": "22",
+     "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+     "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "A água conta até seis? Que esperta!",
+     "heard": "A água conta até seis que esperta.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new1",
+   "note": "новый 1",
+   "lang": "pt",
+   "n": 6,
+   "clear": 92.9,
+   "min": 71.4,
+   "weak": 1,
+   "sim": 0.874,
+   "other": 0.667,
+   "nearest": "filya_old",
+   "sim_old": 0.539,
+   "f0": 279.9,
+   "f0_ref": 285.5,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Parece uma estrelinha! Branquinha!",
+     "heard": "Parece uma estrelinha branquinha.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 3.0
+    },
+    {
+     "i": "5",
+     "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+     "heard": "Um floco caiu no meu nariz, quantas pontinhas?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.6
+    },
+    {
+     "i": "14",
+     "text": "Vou achar o maior floco!",
+     "heard": "Vou achar o maior floco.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.6
+    },
+    {
+     "i": "17",
+     "text": "O grandão voou. Eu caí no chão.",
+     "heard": "O Grandão voou, eu caí na chão.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 2.3
+    },
+    {
+     "i": "22",
+     "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+     "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "A água conta até seis? Que esperta!",
+     "heard": "A água conta até 6 que desperta.",
+     "clear": 71.4,
+     "extra": 2,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Рон",
+   "tag": "new2",
+   "note": "новый 2",
+   "lang": "pt",
+   "n": 6,
+   "clear": 95.2,
+   "min": 85.7,
+   "weak": 0,
+   "sim": 0.816,
+   "other": 0.389,
+   "nearest": "pik_new1",
+   "sim_old": 0.39,
+   "f0": 284.3,
+   "f0_ref": 290.4,
+   "lines": [
+    {
+     "i": "2",
+     "text": "Parece uma estrelinha! Branquinha!",
+     "heard": "Parece uma estrelinha branquinha.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.8
+    },
+    {
+     "i": "5",
+     "text": "Um floco caiu no meu nariz! Quantas pontinhas?",
+     "heard": "Um floco caiu no meu nariz, quantas pontinhas?",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 2.1
+    },
+    {
+     "i": "14",
+     "text": "Vou achar o maior floco!",
+     "heard": "Vou achar o maior floco.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "17",
+     "text": "O grandão voou. Eu caí no chão.",
+     "heard": "O grandão voar eu caí no chão.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 2.4
+    },
+    {
+     "i": "22",
+     "text": "Deve ter alguém lá em cima recortando. Com tesoura.",
+     "heard": "Deve ter alguém lá em cima recortando com tesoura.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "38",
+     "text": "A água conta até seis? Que esperta!",
+     "heard": "A água conta até 6 que esperta.",
+     "clear": 85.7,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "old",
+   "note": "как сейчас",
+   "lang": "pt",
+   "n": 6,
+   "clear": 74.4,
+   "min": 12.5,
+   "weak": 3,
+   "sim": 0.857,
+   "other": 0.53,
+   "nearest": "filya_old",
+   "sim_old": 0.857,
+   "f0": 359.1,
+   "f0_ref": 371.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Uau! Pontinhas! Um, dois, três, quatro, cinco, seis!",
+     "heard": "Oal pontinhas 1, 2, 3, 4, 5, 6.",
+     "clear": 12.5,
+     "extra": 7,
+     "shift": 0.0
+    },
+    {
+     "i": "19",
+     "text": "O floco é levinho. O vento leva ele.",
+     "heard": "O floco alevinha, o vento leva a eles.",
+     "clear": 62.5,
+     "extra": 3,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "A nuvem também tem água. Um montão de gotinhas.",
+     "heard": "A nuvem também tem água, um montão de gotinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 1.7
+    },
+    {
+     "i": "34",
+     "text": "Muito frio. A gotinha congela. E vira um gelinho.",
+     "heard": "Muito frio, a gotinha congela e vira um gelinho.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Sim. Depois grudam mais nele. E ele vai crescendo.",
+     "heard": "Sim, depois grudam mais nele e ele vai crescendo.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "O gelo é assim. Sempre seis pontinhas!",
+     "heard": "Cogiamo é assim, sempre seis pontinhas.",
+     "clear": 71.4,
+     "extra": 1,
+     "shift": 0.0
+    }
+   ]
+  },
+  {
+   "hero": "Пик",
+   "tag": "new1",
+   "note": "новый",
+   "lang": "pt",
+   "n": 6,
+   "clear": 94.0,
+   "min": 87.5,
+   "weak": 0,
+   "sim": 0.842,
+   "other": 0.557,
+   "nearest": "filya_old",
+   "sim_old": 0.48,
+   "f0": 351.1,
+   "f0_ref": 350.1,
+   "lines": [
+    {
+     "i": "1",
+     "text": "Uau! Pontinhas! Um, dois, três, quatro, cinco, seis!",
+     "heard": "Oal pontinhas, um, dois, três, quatro, cinco, seis.",
+     "clear": 87.5,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "19",
+     "text": "O floco é levinho. O vento leva ele.",
+     "heard": "O floco é levinho, o vento leva a eles.",
+     "clear": 87.5,
+     "extra": 2,
+     "shift": 0.0
+    },
+    {
+     "i": "32",
+     "text": "A nuvem também tem água. Um montão de gotinhas.",
+     "heard": "A nuvem também tem água, um montão de gotinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "34",
+     "text": "Muito frio. A gotinha congela. E vira um gelinho.",
+     "heard": "Muito frio, a gotinha congela e vira um gelinho.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    },
+    {
+     "i": "36",
+     "text": "Sim. Depois grudam mais nele. E ele vai crescendo.",
+     "heard": "Sim, depois grutam mais nele e ele vai crescendo.",
+     "clear": 88.9,
+     "extra": 1,
+     "shift": 0.0
+    },
+    {
+     "i": "44",
+     "text": "O gelo é assim. Sempre seis pontinhas!",
+     "heard": "O gelo é assim, sempre seis pontinhas.",
+     "clear": 100.0,
+     "extra": 0,
+     "shift": 0.0
+    }
+   ]
+  }
+ ],
+ "ids": {
+  "Барсик": [
+   "3",
+   "13",
+   "21",
+   "31",
+   "37",
+   "64"
+  ],
+  "Рон": [
+   "2",
+   "5",
+   "14",
+   "17",
+   "22",
+   "38"
+  ],
+  "Пик": [
+   "1",
+   "19",
+   "32",
+   "34",
+   "36",
+   "44"
+  ]
+ }
+}
