@@ -1,0 +1,243 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 230.2,
+  "dur": 341.94,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 341.44,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 341,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 175.5
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.9,
+  "peak_db": -0.9,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 95.6,
+  "lines": 89,
+  "by_hero": {
+   "Барсик": 95.8,
+   "Рон": 97.6,
+   "Топа": 96.2,
+   "Пик": 78.3,
+   "Филя": 99.1
+  },
+  "worst": [
+   {
+    "t": 238.736,
+    "name": "Пик",
+    "text": "Тогда снова пойдёт снег. И укроет его.",
+    "ok": 1,
+    "n": 7,
+    "miss": [
+     "снова",
+     "пойдет",
+     "снег",
+     "и",
+     "укроет",
+     "его"
+    ],
+    "heard": "холодно тогда"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 222.0,
+   "range_st": 5.8,
+   "hnr": 13.6,
+   "jitter": 2.2,
+   "shimmer": 8.8,
+   "F1": 494.0,
+   "F2": 2074.0,
+   "F3": 3347.0,
+   "bright": -15.1,
+   "air": -14.2,
+   "cog": 708.0,
+   "rate": 4.0,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 95.8
+  },
+  "Пик": {
+   "f0": 375.0,
+   "range_st": 6.9,
+   "hnr": 19.9,
+   "jitter": 1.0,
+   "shimmer": 5.3,
+   "F1": 471.0,
+   "F2": 1713.0,
+   "F3": 3655.0,
+   "bright": -18.4,
+   "air": -22.9,
+   "cog": 589.0,
+   "rate": 5.8,
+   "voiced": 0.7,
+   "n": 5,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 78.3
+  },
+  "Рон": {
+   "f0": 263.0,
+   "range_st": 9.5,
+   "hnr": 14.1,
+   "jitter": 2.3,
+   "shimmer": 7.3,
+   "F1": 448.0,
+   "F2": 1925.0,
+   "F3": 3578.0,
+   "bright": -14.9,
+   "air": -12.9,
+   "cog": 832.0,
+   "rate": 3.3,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.6
+  },
+  "Топа": {
+   "f0": 156.0,
+   "range_st": 5.9,
+   "hnr": 11.8,
+   "jitter": 2.6,
+   "shimmer": 10.7,
+   "F1": 428.0,
+   "F2": 2067.0,
+   "F3": 3305.0,
+   "bright": -15.6,
+   "air": -24.6,
+   "cog": 572.0,
+   "rate": 3.7,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 96.2
+  },
+  "Филя": {
+   "f0": 291.0,
+   "range_st": 6.2,
+   "hnr": 14.5,
+   "jitter": 1.7,
+   "shimmer": 8.1,
+   "F1": 571.0,
+   "F2": 2153.0,
+   "F3": 3348.0,
+   "bright": -14.0,
+   "air": -20.0,
+   "cog": 774.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.1
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 35,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 113,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2363,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 341.443,
+   "video": "video/Кот Барсик - 36. Куда ушёл снеговик!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "696f713",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 48.9,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 10,
+    "e": 125,
+    "b": 4,
+    "w": 1,
+    "n": 8530,
+    "at": 8530,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 9,
+   "ttsFail": 0,
+   "voice": 94,
+   "voiceFail": 0,
+   "voiceSec": 47,
+   "ttsSec": 8,
+   "frames": 9159,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -22.8,
+   "lufs_out": -15.2,
+   "gain_db": 8.4
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 36,
+   "title": "Куда ушёл снеговик?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}
