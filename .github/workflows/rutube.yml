@@ -1,0 +1,47 @@
+name: rutube
+# «Кот Барсик»: сборники серий подряд для Rutube (Юля выкладывает руками). Запуск — строка в rutube.txt:
+#   sbornik <имя> [<имя> …]   — по sborniki/<имя>.json; итог — релиз rutube-<имя> (mp4, обложка, текст, лист кадров)
+on:
+  push:
+    branches: [studio]
+    paths: [rutube.txt]
+permissions:
+  contents: write
+concurrency:
+  group: barsik-rutube
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      names: ${{ steps.p.outputs.names }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: p
+        run: |
+          names=$(grep -v '^#' rutube.txt | awk '$1=="sbornik"{for(i=2;i<=NF;i++) printf "\"%s\",", $i}' | sed 's/,$//')
+          echo "names=[$names]" >> "$GITHUB_OUTPUT"
+          echo "сборники: [$names]"
+  build:
+    needs: plan
+    if: needs.plan.outputs.names != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        name: ${{ fromJSON(needs.plan.outputs.names) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - name: Сборник
+        run: python3 rutube_sbornik.py "${{ matrix.name }}"
+      - name: Релиз
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          N="${{ matrix.name }}"; TAG="rutube-$N"
+          gh release delete "$TAG" -y --cleanup-tag >/dev/null 2>&1 || true
+          gh release create "$TAG" --target studio --prerelease --title "Rutube: сборник $N" --notes-file "out/rutube-$N.txt" \
+            "out/rutube-$N.mp4" "out/rutube-$N.txt" "out/rutube-$N-kadry.jpg" $(ls "out/rutube-$N.jpg" 2>/dev/null)
