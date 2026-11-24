@@ -42,7 +42,7 @@ jobs:
           for k in $(grep -oE '^key [A-Za-z0-9+/=]{8,44}' /tmp/list.txt | awk '{print $2}' | tail -n 20 | awk '!s[$0]++' | tail -n 5); do
             q=$(python3 -c "import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=''))" "$k")
             f=$(printf '%s' "$k" | tr '+/' '-_')
-            c1=$(curl -sS -o "replies-$f.json" -w '%{http_code}' --max-time 180 "https://crm.nashdekor.ru/api/outbox/replies?k=$q" || echo 000)
+            c1=$(curl -sS -o "replies-$f.json" -w '%{http_code}' --max-time 600 "https://crm.nashdekor.ru/api/outbox/replies?k=$q&atts=0" || echo " обрыв")
             c2=$(curl -sS -o "dz-$f.json" -w '%{http_code}' --max-time 120 "https://crm.nashdekor.ru/api/dz/export?k=$q" || echo 000)
             echo "ключ $f: ответы HTTP $c1, сводка HTTP $c2"
             extra="$extra\nkey $f replies HTTP $c1 dz HTTP $c2"
