@@ -375,6 +375,10 @@ def video(pick, outp, phrases):
         fl = [f for f in fl if os.path.exists(f)]
         if not fl:
             log("нет звука для", tag); continue
+        for f in fl:          # испорченную запись в ролик не пускать (24.11: «invalid sync code» у flac — из фраз выпадали куски)
+            r = subprocess.run(["ffmpeg", "-v", "error", "-xerror", "-i", f, "-f", "null", "-"], capture_output=True, text=True)
+            if r.returncode != 0 or r.stderr.strip():
+                raise RuntimeError(f"испорчена запись {f}: {r.stderr.strip()[:200]}")
         i = len(wavs) + 1
         seq = ["tmp/sil.wav"]
         for f in fl:

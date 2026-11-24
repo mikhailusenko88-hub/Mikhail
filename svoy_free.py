@@ -131,15 +131,16 @@ def cands1():
     return C
 
 
-def evaluate(C, tag):
+def evaluate(C, tag, save_ref=False):
     import torch, voice_check as vc
     os.makedirs("pack", exist_ok=True)
     svoy_omo.ruacc()              # настоящий ruaccent (для омографов №4) — до подмены
     svoy2.patch_ruaccent()
     T, tpaths = target()
-    for k in LISTEN:
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tpaths[k], f"pack/T4__{k:02d}.flac"], check=True)
-    json.dump({x: T[x] for x in ("f0", "range", "rate")}, open("pack/target.json", "w"))
+    if save_ref:      # образец пишет только одно задание: одноимённые файлы из разных заданий портятся при слиянии артефактов
+        for k in LISTEN:
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", tpaths[k], f"pack/T4__{k:02d}.flac"], check=True)
+        json.dump({x: T[x] for x in ("f0", "range", "rate")}, open("pack/target.json", "w"))
     svoy.log("мерка №4:", {x: round(T[x], 2) for x in ("f0", "range", "rate")})
     marks = {t: mark_full(t) for t in PH}
     svoy.log("разметка:", marks[PH[10]])
@@ -233,7 +234,7 @@ def final():
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "r1":
-        p, n = int(sys.argv[2]), int(sys.argv[3]); evaluate(cands1()[p::n], "1")
+        p, n = int(sys.argv[2]), int(sys.argv[3]); evaluate(cands1()[p::n], "1", save_ref=(p == 0))
     elif cmd == "pick":
         pick()
     elif cmd == "r2":
