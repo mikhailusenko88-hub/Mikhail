@@ -40,9 +40,21 @@
   const use3d = !!(R3 && glc && R3.init(glc)); if (!use3d && glc) glc.style.display = 'none';
   let W = 0, H2 = 0, DPR = 1;
   function resize() { DPR = Math.min(2, window.devicePixelRatio || 1); W = innerWidth; H2 = innerHeight; cv.width = W * DPR; cv.height = H2 * DPR; }
+  // плавность на слабых телефонах: если в заезде кадры идут реже ~45 в секунду, объёмную картинку рисуем в меньшем разрешении (ступени 1 → 0,75 → 0,5; подписи и кнопки остаются чёткими).
+  // Не помогло (кадры режет сам телефон — например, режим энергосбережения) — возвращаем чёткость и больше не трогаем.
+  let gq = 1; const PF = { n: 0, sum: 0, base: 0, prev: 1, test: false, lock: false };
+  function perfTick(raw, live) {
+    if (PF.lock || !live || raw <= 0 || raw > 0.1) return;
+    PF.sum += raw; if (++PF.n < 90) return;
+    const avg = PF.sum / PF.n; PF.n = 0; PF.sum = 0;
+    if (PF.test) { PF.test = false; if (avg > PF.base * 0.88) { gq = PF.prev; PF.lock = true; } return; }
+    if (avg <= 0.0225) return;
+    if (DPR * gq <= 1.01) { PF.lock = true; return; }
+    PF.base = avg; PF.prev = gq; gq = Math.max(1 / DPR, gq - 0.25); PF.test = true;
+  }
   addEventListener('resize', resize); resize();
 
-  const rr = (x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
+  const rr = (x, y, w, h, r) => { ctx.beginPath(); if (!(w > 0 && h > 0)) return; r = Math.max(0, Math.min(r, w / 2, h / 2)); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   // текст по словам в несколько строк, если не влезает в ширину
   function lines(text, maxW) { const out = []; let cur = ''; for (const w of text.split(' ')) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { out.push(cur); cur = w; } else cur = t; } if (cur) out.push(cur); return out; }
@@ -262,7 +274,13 @@
     const a = S.ropeA, g = G[a.i]; if (!g) return 1;
     if (g.climb) { if (S.grounded && tr.y < a.y + 300 && (tr.x > a.x - 80 || S.rope.len <= 160)) tut = 'rel'; return 1; }
     const rel = tr.x - a.x;
-    if (tr.vx > 0 && rel >= g.lo && rel <= g.hi) { tut = 'rel'; if (!inp.hook) return 1; if (!slow) return 0.5; return a.i === 0 && rel >= (g.lo + g.hi) / 2 - 40 ? 0 : 0.22; } // первое кольцо — пауза в середине окна; дальше — сильное замедление, чтобы успеть отпустить
+    if (tr.vx > 0 && rel >= g.lo && rel <= g.hi) {
+      tut = 'rel'; if (!inp.hook) return 1;
+      // первая часть «окна» идёт на полной скорости: кто умеет — отпустит сам и никакого замедления не увидит (иначе обучение выглядит как тормоза).
+      // Замедляем только опоздавших: самое первое кольцо — пауза в середине окна, остальные — замедление в последних 40% окна
+      if (slow && a.i === 0) return rel >= (g.lo + g.hi) / 2 ? 0 : 1;
+      return rel >= g.lo + (g.hi - g.lo) * 0.6 ? (slow ? 0.22 : 0.3) : 1;
+    }
     if (rel < g.lo) tut = 'hold';
     return 1;
   }
@@ -623,6 +641,7 @@
     }
     // обучение: «нажми — поехали», «держи», «отпусти»
     if (mode === 'play' && S.state === 'play') {
+      if (tut && ts < 0.97 && !(wait && isAuto())) { const vg = ctx.createRadialGradient(W / 2, H2 / 2, Math.min(W, H2) * 0.28, W / 2, H2 / 2, Math.max(W, H2) * 0.72); vg.addColorStop(0, 'rgba(8,16,40,0)'); vg.addColorStop(1, `rgba(8,16,40,${((1 - ts) * 0.5).toFixed(3)})`); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H2); } // обучение придержало время — затемняем края: видно, что игра ждёт игрока, а не тормозит
       if (wait && isAuto()) prompt('go'); else if (tut) prompt(tut);
       else if (isAuto() && S.rope && S.ropeA && !S.ropeA.climb && !S.grounded && S.t - hookT0 > 3.5) prompt('rel'); // долго висит и не отпускает — напомнить
     }
@@ -861,10 +880,12 @@
   }
 
   // ---------- главный цикл ----------
-  function frame(now) {
+  function frame(now) { try { frame1(now); } catch (e) { if (!frame.err) { frame.err = 1; try { console.error(e); } catch (q) { /* */ } } } requestAnimationFrame(frame); } // ошибка в одном кадре не должна замораживать игру
+  function frame1(now) {
     const hold = PG.ad || PG.paused || !!PG.pend || document.hidden; // реклама, пауза площадки, скрытая вкладка — мир стоит
     if (master) master.gain.value = hold || PG.mutedP ? 0 : 0.7;
-    const dt = Math.min(0.05, (now - last) / 1000); last = now; realT += dt;
+    const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; realT += dt;
+    perfTick(raw, mode === 'play' && !hold && (!navigator.webdriver || dbg.adapt));
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
@@ -895,7 +916,7 @@
     engineSound(S, inp.gas);
     camera(dt);
     shake = Math.max(0, shake - dt);
-    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam, oy: oy(), theme: mode === 'garage' ? 0 : H.levels[lvl].ser }); }
+    if (use3d) { ctx.clearRect(0, 0, W, H2); R3.draw(S, { camX, camY, Z, W, H: H2, DPR: DPR * gq, t: realT, lvl, duo, shake, gas: inp.gas, g: gcam, oy: oy(), theme: mode === 'garage' ? 0 : H.levels[lvl].ser }); }
     else {
       ctx.save(); if (shake > 0) ctx.translate((Math.random() - 0.5) * shake * 30, (Math.random() - 0.5) * shake * 30);
       drawSky(); drawGround(); drawObjects(); drawRope(); drawTruck(); drawPits();
@@ -909,9 +930,8 @@
       ctx.save(); ctx.translate(bx, by); ctx.scale(pul, pul); ctx.fillStyle = 'rgba(46,125,50,0.92)'; rr(-tw / 2, -fs, tw, fs * 2, fs); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillText(T.pump, 0, 1); ctx.restore();
     }
     if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); else if (mode === 'garage') drawGarage(); }
-    requestAnimationFrame(frame);
   }
-  window.__hook = { dbg, use3d, pg: PG, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, use3d, pg: PG, get gq() { return gq; }, pf: PF, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   applyLook(curLook());
   requestAnimationFrame(frame);
   // «игра готова»: после первых кадров, когда мост ответил (или сразу, если моста нет)

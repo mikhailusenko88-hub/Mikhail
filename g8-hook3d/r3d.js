@@ -3,7 +3,7 @@
 (function (root) {
   'use strict';
   const R = { ok: false };
-  let T = null, renderer, scene, cam, sun, lvlG = null, builtKey = null, vw = 0, vh = 0, vdpr = 0, lastT = 0, mob = false;
+  let T = null, renderer, scene, cam, sun, lvlG = null, builtKey = null, vw = 0, vh = 0, vdpr = 0, lastT = 0, mob = false, warm = true;
   let truckG, catG, cat2G, drumM, idleHook, starM, hookM, tgtM, dustI = 0, dustAcc = 0;
   let look = { truck: 0, wheels: 0, paint: ['#ff5a36', '#c63b1f'] }, podium = null, viewOff = false, shine = null, sparks = [];
   const wheelG = [], ropeSeg = [], aimDots = [], dust = [];
@@ -94,7 +94,7 @@
     if (!R.ok || !l) return;
     if (l.truck === look.truck && l.wheels === look.wheels && l.paint[0] === look.paint[0]) return;
     look = { truck: l.truck | 0, wheels: l.wheels | 0, paint: l.paint.slice() };
-    buildTruck();
+    buildTruck(); warm = true;
   };
   function bodyPickup(g, m) {
     box(132, 28, 100, m.main, -48, 16, 0, g);
@@ -263,7 +263,7 @@
     const P = TH[theme] || TH[0]; scene.background = skyTex(TH[theme] ? theme : 0); scene.fog.color.copy(C(P.fog));
     for (const k in geoC) geoC[k].userData.keep = true;
     if (lvlG) { scene.remove(lvlG); lvlG.traverse((o) => { if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose(); }); }
-    lvlG = new T.Group(); scene.add(lvlG); builtKey = key; rings = []; cps = []; boostM = []; clouds = [];
+    lvlG = new T.Group(); scene.add(lvlG); builtKey = key; warm = true; rings = []; cps = []; boostM = []; clouds = [];
     const L = S.L; let seed = 4321 + key * 977; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const G = Acc(), D = Acc();
     const [gA, gB, rA, rB, rock, rock2, lip, e1, e2, e3] = P.g.map(C);
@@ -448,8 +448,17 @@
       p.m.position.x += p.vx * dt; p.m.position.y += p.vy * dt; p.m.position.z += p.vz * dt;
       const k = p.life / 0.55, s = p.r * (1.6 - k * 0.6); p.m.scale.set(s, s, s); p.m.material.opacity = 0.75 * k;
     }
+    if (warm) {
+      warm = false; const st = [];
+      scene.traverse((o) => { st.push(o, o.visible, o.frustumCulled); o.visible = true; o.frustumCulled = false; });
+      try { renderer.render(scene, cam); } catch (e) { /* */ }
+      for (let i = 0; i < st.length; i += 3) { st[i].visible = st[i + 1]; st[i].frustumCulled = st[i + 2]; }
+    }
     renderer.render(scene, cam);
   };
+
+  // для проверки плавности: сколько вызовов отрисовки, треугольников и собранных шейдеров в кадре
+  R.info = function () { const i = renderer ? renderer.info : null; return i ? { calls: i.render.calls, tris: i.render.triangles, programs: i.programs ? i.programs.length : 0 } : null; };
 
   root.Hook3D = R;
 })(window);
