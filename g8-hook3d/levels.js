@@ -5,18 +5,18 @@
   const H = root.HookSim, Tr = () => H.Track().start(-300, 600);
   const L = [
     { // 1 — первый мах
-      name: ['First Swing', 'Первый мах'], hint: ['Hold HOOK at the pit. Let go on the way up!', 'Держи КРЮК у ямы. Отпусти на взлёте!'],
-      build: () => Tr().flat(1100).ring(250, 380).gap(500).flat(700).ring(260, 400).star(420, 340).gap(540).flat(300).fin().end().S,
+      name: ['First Swing', 'Первый мах'], hint: ['Hold HOOK at the pit. Let go on the way up! Hanging still? Hold GAS to swing', 'Держи КРЮК у ямы. Отпусти на взлёте! Повис — жми ГАЗ, раскачайся'],
+      build: () => Tr().flat(1100).ring(240, 380).gap(450, 30).flat(700).ring(250, 400).star(420, 340).gap(480, 30).flat(300).fin().end().S,
     },
     { // 2 — на стену
       name: ['Up the Wall', 'На стену'], hint: ['Drive into the wall and hook on — the winch pulls you up', 'Упрись в стену и цепляйся — лебёдка затянет наверх'],
-      build: () => Tr().flat(1000).ring(250, 380).gap(480).flat(500).cp(-300).flat(300)
-        .gap(0, -340).ring(140, 360, { climb: 1 }).flat(600).ring(260, 400).star(300, 470).gap(520).flat(300).fin().end().S,
+      build: () => Tr().flat(1000).ring(240, 380).gap(440, 30).flat(500).cp(-300).flat(300)
+        .gap(0, -340).ring(140, 360, { climb: 1 }).flat(600).ring(250, 400).star(300, 470).gap(460, 40).flat(300).fin().end().S,
     },
     { // 3 — два кольца
-      name: ['Double Swing', 'Два кольца'], hint: ['Let go of the first ring — grab the second!', 'Отпусти первое кольцо — хватай второе!'],
-      build: () => Tr().flat(1000).ring(260, 420).gap(560).flat(500).cp(-300).flat(500)
-        .ring(300, 450).ring(700, 450).star(740, 360).gap(1000).flat(300).fin().end().S,
+      name: ['Double Swing', 'Два кольца'], hint: ['Let go of the first ring, then hold HOOK again — it grabs the next one', 'Отпусти первое кольцо и снова держи КРЮК — он сам поймает второе'],
+      build: () => Tr().flat(1000).ring(250, 410).gap(500, 30).flat(500).cp(-300).flat(500)
+        .ring(290, 440).ring(660, 440).star(740, 360).gap(940, 40).flat(300).fin().end().S,
     },
     { // 4 — пробный уровень
       name: ['Swing & Climb', 'Мах и обрыв'], hint: ['', ''],
@@ -24,7 +24,7 @@
     },
     { // 5 — трамплин и захват в воздухе
       name: ['Boost & Fly', 'Разгон и полёт'], hint: ['Fly off the ramp and hook in the air!', 'Слетай с трамплина и цепляйся в воздухе!'],
-      build: () => Tr().flat(700).boost(0, 400).flat(500).ramp(260, 70).ring(650, 520).star(950, 600).gap(1300).flat(600).cp(-400).flat(300)
+      build: () => Tr().flat(700).boost(0, 400).flat(500).ramp(260, 70).ring(620, 520).star(950, 600).gap(1220, 60).flat(600).cp(-400).flat(300)
         .gap(0, -340).ring(140, 360, { climb: 1 }).flat(700).boost(0, 300).flat(300).ramp(220, 60).ring(520, 520).gap(1100).flat(300).fin().end().S,
     },
     { // 6 — кольца едут
@@ -40,11 +40,11 @@
     { // 8 — ломкие кольца
       name: ['Snap!', 'Хрусь!'], hint: ['Cracked rings snap — don\'t hang too long!', 'Треснутые кольца рвутся — не висни долго!'],
       build: () => Tr().flat(1000).ring(260, 420, { snap: 1.4 }).gap(560).flat(600).cp(-400).flat(300)
-        .ring(300, 450, { snap: 1.2 }).ring(700, 450, { snap: 1.2 }).star(740, 360).gap(1000).flat(300).fin().end().S,
+        .ring(300, 450, { snap: 1.25 }).ring(695, 450, { snap: 1.25 }).star(740, 360).gap(1000, 12).flat(300).fin().end().S,
     },
     { // 9 — длинная цепь
       name: ['Long Chain', 'Длинная цепь'], hint: ['', ''],
-      build: () => Tr().flat(1200).ring(300, 450).ring(700, 470).ring(1100, 470).ring(1500, 450).star(1300, 420).gap(1750, 100).flat(500).fin().end().S,
+      build: () => Tr().flat(1200).ring(300, 450).ring(700, 470).ring(1100, 470, { mv: { dy: 90, T: 2.4 } }).ring(1500, 450).star(1300, 420).gap(1830, 20).flat(500).fin().end().S,
     },
     { // 10 — башня: стены с треснутыми кольцами (тянуть быстрее!) и ямы между ними
       name: ['Tower', 'Башня'], hint: ['Cracked ring on the wall — pull fast!', 'Треснутое кольцо на стене — тяни быстрее!'],
@@ -54,19 +54,19 @@
     },
     { // 11 — вниз по каньону
       name: ['Canyon', 'Каньон'], hint: ['', ''],
-      build: () => Tr().flat(1000).ring(300, 460).gap(700, 250).flat(500).cp(-300).flat(300)
-        .ring(300, 460, { mv: { dx: 200, T: 2.2 } }).gap(800, 200).flat(500).ring(280, 440, { snap: 1.2 }).gap(650, 150).flat(300).fin().end().S,
+      build: () => Tr().flat(1000).ring(300, 460).gap(720, 170).flat(500).cp(-300).flat(300)
+        .ring(300, 460, { mv: { dx: 200, T: 2.2 } }).gap(820, 130).flat(500).ring(280, 440, { snap: 1.1 }).gap(680, 90).flat(300).fin().end().S,
     },
     { // 12 — финал
       name: ['Grand Finale', 'Финал'], hint: ['', ''],
       build: () => Tr().flat(700).boost(0, 400).flat(500).ramp(260, 70).ring(650, 520).gap(1300).flat(500).cp(-300).flat(200)
         .gap(0, -340).ring(140, 360, { climb: 1 }).flat(500).cp(-300).flat(500)
-        .ring(300, 450, { mv: { dx: 150, T: 2.6 } }).ring(700, 450, { snap: 1.3 }).ring(1100, 450).star(900, 560).gap(1400).flat(400).fin().end().S,
+        .ring(300, 450, { mv: { dx: 170, T: 2.4 } }).ring(710, 450, { snap: 1.15 }).ring(1120, 450).star(900, 560).gap(1440).flat(400).fin().end().S,
     },
   ];
   // звёзды (куда долетает ~треть удачных прохождений автопилота) и время на третью звезду — tests/g7/stars.js
-  const STARS = {"0": [2500, 300], "1": [3200, -120], "2": [1360, 220], "3": [4320, 0], "4": [5560, -417], "5": [1240, -20], "6": [3700, 300], "7": [1320, 220], "8": [2760, 360], "9": [3370, -300], "10": [2940, 550], "11": [2620, 187]};
-  const BEST = {"0": 4.1, "1": 6.7, "2": 4.9, "3": 9.8, "4": 9.2, "5": 4.7, "6": 6.5, "7": 4.9, "8": 3.6, "9": 10.5, "10": 5.4, "11": 9};
+  const STARS = {"0": [2610, 240], "1": [3080, -50], "2": [3300, 290], "3": [2300, 260], "4": [5520, -397], "5": [1200, 20], "6": [2640, 260], "7": [3340, 312], "8": [2880, 200], "9": [3370, -340], "10": [2920, 360], "11": [2460, 67]};
+  const BEST = {"0": 3.6, "1": 7.2, "2": 4.5, "3": 10.5, "4": 9.9, "5": 5.1, "6": 6.5, "7": 4.6, "8": 3.9, "9": 11.2, "10": 6, "11": 10.1};
   L.forEach((l, i) => {
     const b0 = l.build, st = STARS[i];
     l.build = () => { const S = b0(); if (st) S.star = { x: st[0], y: st[1], got: false }; return S; };

@@ -9,6 +9,8 @@
   const REEL_GROUND = 260;  // лебёдка сама тянет, пока колёса упираются
   const REEL_FAST = 520;    // кнопка «тянуть» (второй игрок)
   const MIN_ROPE = 150;
+  const PUMP = 640;         // раскачка на тросе: газ толкает вперёд по дуге, тормоз — назад
+  const PUMP_VMAX = 760;    // быстрее этого газ уже не разгоняет мах
 
   // ---------- построитель трассы (как в Ball Truck) ----------
   function Track() {
@@ -101,7 +103,7 @@
         S.wheels.push(w);
         S.wj.push(P.wheelJoint(W, S.truck, w, { lx, ly: 18, rest: 34, k: 1150, c: 70, lo: 10, hi: 44 }));
       }
-      S.rope = null; S.ropeA = null; S.state = 'play'; S.deadT = 0; S.crashT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false;
+      S.rope = null; S.ropeA = null; S.lastA = null; S.lastT = -9; S.pump = 0; S.hangSlow = false; S.state = 'play'; S.deadT = 0; S.crashT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false;
       resetAnchors();
     };
     S.respawn = () => {
@@ -114,8 +116,10 @@
     // кольцо, за которое зацепится крюк, если нажать сейчас: в пределах троса, выше лебёдки; впереди — лучше
     S.findTarget = () => {
       const [mx, my] = S.mast(); let best = null, bs = 1e9;
+      // только что отпустили кольцо и летим: обратно за него не цепляемся, если впереди рядом есть следующее — так крюк ловит его сам
+      const skip = S.lastA && !S.grounded && S.t - S.lastT < 1.6 && L.anchors.some((b) => b !== S.lastA && !b.broken && b.x > mx - 60 && Math.hypot(b.x - mx, b.y - my) < RANGE + 480) ? S.lastA : null;
       for (const a of L.anchors) {
-        if (a.broken) continue;
+        if (a.broken || a === skip) continue;
         const dx = a.x - mx, dy = a.y - my, d = Math.hypot(dx, dy);
         if (d > RANGE || dy > -60) continue;
         const s = d + (dx < -60 ? 500 : 0) - (dx > 0 ? 100 : 0); // кольца впереди важнее: назад цепляемся, только если впереди ничего нет
@@ -131,6 +135,7 @@
     }
     function hookOff() {
       if (!S.rope) return;
+      S.lastA = S.ropeA; S.lastT = S.t;
       S.W.joints = S.W.joints.filter((j) => j !== S.rope); S.rope = null; S.ropeA = null; S.events.push({ e: 'unhook' });
       S.truck.w *= 0.5; // после отпускания меньше крутит — легче приземлиться на колёса
     }
@@ -148,15 +153,28 @@
       if (play && inp.hook && !S.rope && S.target && !S.needRelease) hookOn(S.target);
       if (S.rope && (!inp.hook || !play)) hookOff();
       S.needRelease = S.needRelease && inp.hook; // после разрыва кольца надо отпустить кнопку, чтобы цепляться снова
-      S.pullOn = false;
+      S.pullOn = false; if (!S.rope) { S.pump = 0; S.hangSlow = false; }
       if (S.rope) {
         // катушка выбирает слабину: трос не провисает, пока едешь к кольцу
         const [mx, my] = S.mast(), dNow = Math.hypot(mx - S.rope.px, my - S.rope.py);
         if (dNow < S.rope.len) S.rope.len = Math.max(MIN_ROPE, dNow);
         const tight = S.rope.d > S.rope.len - 6;
+        // раскачка: висим в воздухе на натянутом тросе — газ усиливает мах, тормоз гасит
+        S.pump = 0; S.hangSlow = false;
+        if (play && tight && !S.grounded && !S.wallTouch && dNow > 1) {
+          let tx = (my - S.rope.py) / dNow, ty = -(mx - S.rope.px) / dNow; if (tx < 0) { tx = -tx; ty = -ty; }
+          const vt = T.vx * tx + T.vy * ty;
+          S.hangSlow = Math.abs(vt) < 260;
+          // газ толкает вперёд, пока летишь вперёд (или висишь); тормоз — назад, пока летишь назад: держишь газ — мах растёт с каждым качанием
+          let dir = 0;
+          if (inp.pull) dir = 0;
+          else if (inp.gas) dir = vt > -60 && vt < PUMP_VMAX ? 1 : 0;
+          else if (inp.brake) dir = vt < 60 && vt > -PUMP_VMAX ? -1 : 0;
+          if (dir) { S.pump = dir; for (const b of [T, ...S.wheels]) { b.vx += tx * dir * PUMP * dt; b.vy += ty * dir * PUMP * dt; } }
+        }
         let reel = 0;
         if (inp.pull) reel = REEL_FAST;
-        else if (tight && (S.grounded || S.wallTouch || Math.hypot(S.truck.vx, S.truck.vy) < 220)) reel = REEL_GROUND;
+        else if (tight && (S.grounded || S.wallTouch || (!S.pump && !inp.gas && Math.hypot(S.truck.vx, S.truck.vy) < 220))) reel = REEL_GROUND;
         if (reel) { S.rope.len = Math.max(MIN_ROPE, S.rope.len - reel * dt); S.pullOn = true; }
       }
       // газ / тормоз — как в Ball Truck

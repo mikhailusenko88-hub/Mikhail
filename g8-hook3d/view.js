@@ -12,7 +12,7 @@
     legend: '→ газ   ← тормоз   ·   Пробел / W — крюк   ·   S — тянуть', start: 'Играть', p1: 'ИГРОК 1', p2: 'ИГРОК 2',
     hook: 'КРЮК', pull: 'ТЯНИ', fell: 'Упал!', crash: 'Авария!', cp: 'Чекпоинт!', star: 'Звезда!',
     win: 'Уровень пройден!', time: 'Время', sec: 'с', tries: 'Попыток', again: 'Ещё раз', menu: 'Меню', got: 'Звезда собрана', nostar: 'Звезда — выше между кольцами',
-    levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
+    pump: 'Жми ГАЗ — раскачайся!', levels: 'Уровни', next: 'Дальше', retry: 'Ещё раз', lvl: 'Уровень', fin: 'Финиш', starW: 'Звезда', play: 'Играть', mode: 'Режим', snap: 'Хрусь!',
   } : {
     title: 'HOOK TRUCK', sub: 'A truck, a rope and a cat', solo: '1 player', duo: '2 players',
     touchSolo: 'Right thumb: gas & brake · Left thumb: hold HOOK', touchDuo: 'Player 1: gas on the right · Player 2: hook on the left',
@@ -22,7 +22,7 @@
     legend: '→ gas   ← brake   ·   Space / W — hook   ·   S — pull', start: 'Play', p1: 'PLAYER 1', p2: 'PLAYER 2',
     hook: 'HOOK', pull: 'PULL', fell: 'Fell down!', crash: 'Crash!', cp: 'Checkpoint!', star: 'Star!',
     win: 'Level complete!', time: 'Time', sec: 's', tries: 'Tries', again: 'Play again', menu: 'Menu', got: 'Star collected', nostar: 'The star is high between the rings',
-    levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
+    pump: 'Hold GAS to swing!', levels: 'Levels', next: 'Next', retry: 'Retry', lvl: 'Level', fin: 'Finish', starW: 'Star', play: 'Play', mode: 'Mode', snap: 'Snap!',
   };
 
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
@@ -78,6 +78,7 @@
   try { const q = JSON.parse(localStorage.getItem('hooktruck_v1') || 'null'); if (q && Array.isArray(q.stars)) save = Object.assign(save, q); } catch (e) { /* без сохранения */ }
   const store = () => { try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* без сохранения */ } };
   let lvl = 0, res = null; const dbg = { freeze: false, clean: false };
+  let hangT = 0;
   let mode = 'menu', duo = !!save.duo, S = null, acc = 0, last = performance.now(), Z = 0.6, camX = 0, camY = 0, toasts = [], parts = [], shake = 0, realT = 0, hintShown = {};
   const keys = {};
   addEventListener('keydown', (e) => { keys[e.code] = true; if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); audio(); if (e.code === 'Enter' && mode === 'win') startGame(duo, Math.min(NL - 1, lvl + 1)); else if (e.code === 'KeyR' && mode === 'play') restart(); });
@@ -523,6 +524,12 @@
       ctx.restore();
     }
     if (use3d && !dbg.clean && mode !== 'menu') { const tg = ctx.createLinearGradient(0, 0, 0, 96); tg.addColorStop(0, 'rgba(8,38,70,0.34)'); tg.addColorStop(1, 'rgba(8,38,70,0)'); ctx.fillStyle = tg; ctx.fillRect(0, 0, W, 96); }
+    hangT = mode === 'play' && S.state === 'play' && S.rope && S.hangSlow && !S.pump ? hangT + dt : 0;
+    if (!dbg.clean && hangT > 0.55) {
+      const fs = W < 600 ? 20 : 26, pul = 1 + 0.05 * Math.sin(realT * 9); ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const tw = ctx.measureText(T.pump).width + 44, bx = W / 2, by = H2 * (W < H2 ? 0.52 : 0.62);
+      ctx.save(); ctx.translate(bx, by); ctx.scale(pul, pul); ctx.fillStyle = 'rgba(46,125,50,0.92)'; rr(-tw / 2, -fs, tw, fs * 2, fs); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillText(T.pump, 0, 1); ctx.restore();
+    }
     if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); }
     requestAnimationFrame(frame);
   }

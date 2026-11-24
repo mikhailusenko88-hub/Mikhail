@@ -42,4 +42,4 @@ for (const li of ONLY) {
   console.log(`${li + 1}. ${H.levels[li].name[1].padEnd(14)} вариантов ${wins.length}/161, лучшее время ${best.toFixed(1)} → звезда ${c ? `(${c.x}, ${c.y}) берут ${Math.round(c.k * 100)}%` : 'НЕ НАШЁЛ'}`);
   out['t' + li] = +best.toFixed(1);
 }
-const f = '/tmp/stars.json'; let prev = {}; try { prev = JSON.parse(require('fs').readFileSync(f, 'utf8')); } catch (e) {} require('fs').writeFileSync(f, JSON.stringify(Object.assign(prev, out)));
+const f = process.env.STARS_OUT || '/tmp/stars.json'; let prev = {}; try { prev = JSON.parse(require('fs').readFileSync(f, 'utf8')); } catch (e) {} require('fs').writeFileSync(f, JSON.stringify(Object.assign(prev, out)));

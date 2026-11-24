@@ -1,7 +1,8 @@
 // Решатель уровней Hook Truck: для каждого кольца ищет, когда цепляться и когда отпускать.
 // Ширина «окна» отпускания — мера сложности (чем уже, тем сложнее). Проверяет звезду и считает время для третьей звезды.
 globalThis.window = globalThis;
-require('../../g7-hook/physics.js'); require('../../g7-hook/sim.js'); require('../../g7-hook/levels.js');
+const DIR = '../../' + (process.env.HOOK_DIR || 'g8-hook3d') + '/';
+require(DIR + 'physics.js'); require(DIR + 'sim.js'); require(DIR + 'levels.js');
 const H = globalThis.HookSim;
 
 function play(li, params, upto, maxT = 70) {
