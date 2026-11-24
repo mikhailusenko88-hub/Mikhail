@@ -2338,6 +2338,29 @@ class TestDzClaude(TestPochta):
         self.post("/outbox", {"on": "1", "daily": "30"})                     # галочку сняли — сводки нет
         self.assertTrue(self.c.get("/api/dz/export").get_json()["off"])
 
+    def test_several_reader_keys(self) -> None:
+        """24.11: каждая работа Claude держит свой ключ в readers/*.pub — сеансы не перебивают READER.pub друг другу."""
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
+        import urllib.parse
+        sk2 = X25519PrivateKey.generate()
+        pub2 = self.outbox._b64(sk2.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw))
+        os.makedirs(os.path.join(self.work, "readers"), exist_ok=True)
+        with open(os.path.join(self.work, "readers", "dizainery.pub"), "w") as f:
+            f.write(pub2 + "\n")
+        self.git("-C", self.work, "add", "-A"); self.git("-C", self.work, "commit", "-q", "-m", "k2")
+        self.git("-C", self.work, "push", "-q", "origin", "outbox")
+        self.ob.run()
+        q = urllib.parse.quote(pub2[:8], safe="")
+        r = self.c.get(f"/api/dz/export?k={q}").get_json()
+        self.assertEqual(r["key"], pub2[:8])
+        self.assertEqual(self.outbox.unseal(sk2, r["item"], self.outbox.INFO_DZ)["kind"], "dz-export")
+        self.assertEqual(self.c.get(f"/api/outbox/replies?k={q}").get_json()["key"], pub2[:8])
+        main = self.c.get("/api/dz/export").get_json()                       # без k — по-прежнему READER.pub
+        self.assertEqual(self.outbox.unseal(self.sk, main["item"], self.outbox.INFO_DZ)["kind"], "dz-export")
+        self.assertTrue(self.c.get("/api/dz/export?k=AAAAAAAA").get_json()["nokey"])   # чужой префикс — ничего
+        self.assertTrue(self.c.get("/api/dz/export?k=<script>").get_json()["key"])      # мусор в k — как без k
+
     def test_claude_letters_and_marks(self) -> None:
         d3 = self.lead("Д03")
         # письмо 1 от Claude с отметкой дизайнера → касание, «Написали», напоминание через 3 рабочих дня

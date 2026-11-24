@@ -203,6 +203,24 @@ class Outbox:
         except Exception:  # noqa: BLE001
             return ""
 
+    def reader_keys(self) -> list[str]:
+        """Все ключи Claude для чтения: READER.pub, SITE.pub и readers/*.pub — у каждой его работы может быть свой файл,
+        чтобы сеансы не перебивали ключ друг другу (24.11 сеанс писем поставщикам сменил READER.pub — обход дизайнеров ослеп)."""
+        keys = [k for k in (self.reader_key(), self.reader_key("SITE.pub")) if k]
+        d = self.workdir / "readers"
+        if d.is_dir():
+            for f in sorted(d.glob("*.pub"))[:20]:
+                k = self.reader_key(f"readers/{f.name}")
+                if k and k not in keys:
+                    keys.append(k)
+        return keys
+
+    def key_by_prefix(self, prefix: str) -> str:
+        """Ключ, который начинается с prefix (?k= — первые 8+ знаков); нет такого — пусто."""
+        if len(prefix) < 8:
+            return ""
+        return next((k for k in self.reader_keys() if k.startswith(prefix)), "")
+
     def _check_reader(self) -> None:
         k = self.reader_key()
         if k != self.s.setting("outbox_reader", ""):
@@ -283,11 +301,11 @@ class Outbox:
                 break
         return out
 
-    def replies(self, pochta: Any) -> dict[str, Any]:
+    def replies(self, pochta: Any, prefix: str = "") -> dict[str, Any]:
         """Ответы на запросы, зашифрованные ключом Claude. Без ключа их никто не прочитает (в т.ч. по дороге)."""
         if not self.read_enabled():
             return {"v": 1, "off": True, "items": []}
-        k = self.reader_key()
+        k = self.key_by_prefix(prefix) if prefix else self.reader_key()
         if not k:
             return {"v": 1, "nokey": True, "items": []}
         items, total = [], 0
@@ -315,11 +333,15 @@ class Outbox:
             items.append(seal(k, payload, INFO_REPLIES))
         return {"v": 1, "key": k[:8], "items": items}
 
-    def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ, keyfile: str = "READER.pub") -> dict[str, Any]:
-        """Любая выгрузка для Claude (сводка базы дизайнеров, статистика сайта) — только шифром для его ключа."""
+    def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ, keyfile: str = "READER.pub", prefix: str = "") -> dict[str, Any]:
+        """Любая выгрузка для Claude (сводка базы дизайнеров, статистика сайта) — только шифром для его ключа
+        (prefix — ключ из readers/*.pub по ?k=)."""
         if not self.read_enabled():
             return {"v": 1, "off": True}
-        k = (self.reader_key(keyfile) if keyfile != "READER.pub" else "") or self.reader_key()
+        if prefix:
+            k = self.key_by_prefix(prefix)
+        else:
+            k = (self.reader_key(keyfile) if keyfile != "READER.pub" else "") or self.reader_key()
         if not k:
             return {"v": 1, "nokey": True}
         return {"v": 1, "key": k[:8], "item": seal(k, {"id": str(uuid.uuid4()), **payload}, info)}
