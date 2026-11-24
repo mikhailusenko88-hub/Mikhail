@@ -466,9 +466,13 @@ async function buildTemplate(name) {
           bcol = lum < .14 ? f.map((x, j) => Math.min(.55, x * 2.4 + [.12, .1, .08][j])) : f.map(x => x * .4); }
         const pa = pts.map(v => [v.x, v.y, v.z]); T.brows[k].push(tube(pa, BQ.r ? BQ.r[0] : .0034 * sc, BQ.r ? BQ.r[1] : .0018 * sc, BQ.col || bcol || [0.1, 0.09, 0.09], 'brow', { noOcc: true })); } }
     // рот: улыбка — уголки вверх, грусть — вниз (только линии губ; желобок как был)
-    const lip = (l, d) => { const xm = Math.max(...l.map(p => Math.abs(p[0]))) || 1; return l.map(p => { const w = Math.pow(Math.min(1, Math.max(0, (Math.abs(p[0]) / xm - .25) / .75)), 1.3); const v = snap(new THREE.Vector3(p[0], p[1] + d * RE2 * w, p[2]), .0004 * sc); return [v.x, v.y, v.z]; }); };
-    const mvar = d => info.lines.mouth_base.map((l, i) => tube(i === 0 ? l : lip(l, d), .0017 * sc, .0015 * sc, [0.12, 0.04, 0.03], 'mouth'));
-    T.mouthSm = mvar(.46); T.mouthSd = mvar(-.34);
+    // ширина: уголки улыбки ещё и расходятся в стороны (wx), чтобы улыбку было видно на обложке и в общем плане (24.11: «у всех лица удивлённые»)
+    const lip = (l, d, wx) => { const xm = Math.max(...l.map(p => Math.abs(p[0]))) || 1; return l.map(p => { const w = Math.pow(Math.min(1, Math.max(0, (Math.abs(p[0]) / xm - .25) / .75)), 1.3); const v = snap(new THREE.Vector3(p[0] * (1 + (wx || 0) * w), p[1] + d * RE2 * w, p[2]), .0004 * sc); return [v.x, v.y, v.z]; }); };
+    // улыбка «ω»: от желобка каждая губа сначала чуть провисает, потом уходит вверх к уголку, уголок разведён в сторону (как у мультяшного котика)
+    const smil = (l, o) => { let c0 = l[0]; for (const p of l) if (Math.abs(p[0]) < Math.abs(c0[0])) c0 = p; const xm = Math.max(...l.map(p => Math.abs(p[0]))) || 1;
+      return l.map(p => { const t = Math.min(1, Math.abs(p[0]) / xm); const v = snap(new THREE.Vector3(p[0] * (1 + o.wx * t), c0[1] + RE2 * (-o.sag * Math.sin(Math.PI * Math.min(1, t * 1.15)) + o.lift * t * t), p[2]), .0004 * sc); return [v.x, v.y, v.z]; }); };
+    const SMK = Object.assign({ sag: .28, lift: .62, wx: .45, r: 1.3 }, H6.K.smile || {}), mvar = (d, wx, r) => info.lines.mouth_base.map((l, i) => tube(i === 0 ? l : lip(l, d, wx), .0017 * sc * (r || 1), .0015 * sc * (r || 1), [0.12, 0.04, 0.03], 'mouth'));
+    T.mouthSm = info.lines.mouth_base.map((l, i) => tube(i === 0 ? l : smil(l, SMK), .0017 * sc * SMK.r, .0015 * sc * SMK.r, [0.12, 0.04, 0.03], 'mouth')); T.mouthSd = mvar(-.34);
     // закрытые глаза: веко цвета шерсти (а не бледный шар) и тёмная линия ресниц — спокойная «‿» и смеющаяся «∩»
     const bs = D.skins.head_blink, bIt = T.items.find(it => it.head === 'blink');
     if (bs && bIt) { const BP = bs.p, nb = bs.nv, eS = info.eyeS || [1, 1, 1], ctr = info.eyes.map(V3), dLs = info.eyes.map((e, ei) => new THREE.Vector3(...(info.eyeDirs ? info.eyeDirs[ei] : [0, 0, 1])).normalize());
@@ -719,6 +723,6 @@ function camFrame(I, R, cam) {
   U.uExpo.value = K.expo;
   H6.dbgL = { sun: sun ? [sun.intensity, sun.color.getHexString()] : null, hemi: hemi ? [hemi.intensity, hemi.color.getHexString(), hemi.groundColor.getHexString()] : null, rim: rim ? [rim.visible, rim.intensity] : null, envI: L.envI, fog: f ? [f.near, f.far] : null, sk };
 }
-H6.K = { sun: 1.0, key: 1.0, fill: 1.0, rim: 1.0, rim0: .7, eye: 1.0, sky: 1.0, expo: .62, armRest: { pik: [.45, 0, .5] } };   // armRest: лапки Пика в покое опущены вдоль тела ладошками к себе (а не вперёд и развёрнуты к зрителю)   // сверено по кадрам: Пик серый, кепка Рона не «горит»
+H6.K = { smile: {}, sun: 1.0, key: 1.0, fill: 1.0, rim: 1.0, rim0: .7, eye: 1.0, sky: 1.0, expo: .62, armRest: { pik: [.45, 0, .5] } };   // armRest: лапки Пика в покое опущены вдоль тела ладошками к себе (а не вперёд и развёрнуты к зрителю)   // сверено по кадрам: Пик серый, кепка Рона не «горит»
 
 })(typeof window !== "undefined" ? window : globalThis);

@@ -102,6 +102,8 @@ const vec3 PH = vec3(0.0, -0.01, 0.6), EARB0 = vec3(-0.122, 0.012, 0.893), EARB1
 const vec3 HIP0 = vec3(-0.088, -0.005, 0.17), HIP1 = vec3(0.088, -0.005, 0.17), SH0 = vec3(-0.128, -0.035, 0.5), SH1 = vec3(0.128, -0.035, 0.5), ELB0 = vec3(-0.156, -0.064, 0.428), ELB1 = vec3(0.156, -0.064, 0.428), JAWP = vec3(0.0, -0.1, 0.675);
 mat3 rotAxis(vec3 a, float g) { a = normalize(a); float c = cos(g), s = sin(g), t = 1.0 - c;
   return mat3(t*a.x*a.x+c, t*a.x*a.y+s*a.z, t*a.x*a.z-s*a.y, t*a.x*a.y-s*a.z, t*a.y*a.y+c, t*a.y*a.z+s*a.x, t*a.x*a.z+s*a.y, t*a.y*a.z-s*a.x, t*a.z*a.z+c); }
+vec3 smileD(vec3 q) { float ax = abs(q.x), w = smoothstep(0.006, 0.033, ax), up = uSmile > 0.0 ? 0.017 : 0.012;   // 24.11: улыбка выше (на обложке и в общем плане было не видно)
+  q.z += uSmile * up * w; return q; }
 vec3 browD(vec3 p, float wh) {   // мимика: надбровье и край века над каждым глазом поднимаются (x — у переносицы, y — у виска, z — дугой посередине)
   if (wh <= 0.0 || (uBrow.x == 0.0 && uBrow.y == 0.0 && uBrow.z == 0.0)) return p;
   float u = (abs(p.x) - 0.081) / 0.061, v = (p.z - 0.768) / 0.061;   // u: −1 у переносицы … +1 у виска; v: 0 — центр глаза, 1 — его верх
@@ -160,7 +162,7 @@ void main() {
   if (uDecC > 1 && kind < 200 && s % uDecC != 0) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }   // Барсик далеко: каждый N-й волосок, чуть шире
   int ka = max(k - 1, 0), kb = min(k + 1, 4); float tr = (kind == 0 || kind == 5 || kind == 6 || kind == 7) ? uTrim : 1.0;   // «подстричь» тело, лапы, хвост
   vec3 q0 = r0.xyz + (texelFetch(uPos, ti(s * 5 + k), 0).xyz - r0.xyz) * tr, qa = r0.xyz + (texelFetch(uPos, ti(s * 5 + ka), 0).xyz - r0.xyz) * tr, qb = r0.xyz + (texelFetch(uPos, ti(s * 5 + kb), 0).xyz - r0.xyz) * tr;
-  if (kind == 201 && uSmile != 0.0) { q0.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(q0.x)); qa.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(qa.x)); qb.z += uSmile * 0.012 * smoothstep(0.006, 0.033, abs(qb.x)); }   // улыбка — уголки «ω» вверх, грусть — вниз
+  if (kind == 201 && uSmile != 0.0) { q0 = smileD(q0); qa = smileD(qa); qb = smileD(qb); }   // улыбка — уголки «ω» вверх и в стороны, грусть — вниз
   q0 = browD(q0, wh); qa = browD(qa, wh); qb = browD(qb, wh);
   vec3 p = toW(poseP(q0, wh, ts, we, wb, wx));
   vec3 pa = toW(poseP(qa, wh, ts, we, wb, wx)), pb = toW(poseP(qb, wh, ts, we, wb, wx));
