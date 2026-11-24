@@ -88,5 +88,7 @@ jobs:
           cp out_el/log.txt "$D"/log_el.txt 2>/dev/null || true
           cp -r out/qa "$D"/ 2>/dev/null || true; cp out/files/speech.json "$D"/ 2>/dev/null || true
           cp out/video/*.txt "$D"/ 2>/dev/null || true; cp -r out/files/video "$D"/covers 2>/dev/null || true
+          # ударения и омографы по голосам героев (chk/omografy.py, 24.11): список для проверки после сборки — runs/<имя>/omografy.txt
+          python3 chk/omografy.py "scripts/${{ steps.req.outputs.name }}.txt" --golos golosa.json > "$D"/omografy.txt 2>&1 || true
           git config user.name "studio"; git config user.email "actions@users.noreply.github.com"
           git add runs && git commit -qm "студия: ${{ steps.req.outputs.name }} $(date -u +%F_%H:%M)" && git pull -q --rebase origin studio && git push -q || true
