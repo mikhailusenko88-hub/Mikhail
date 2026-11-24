@@ -1,2 +1,2 @@
-# 2026-11-24 00:00 МСК (повтор 2: GitHub не дал Mac) — серия 38 с окончательным голосом Рона (golosa.json: kseniya модели xenia, темп 0,88, vend 1,7 — выбран Михаилом по пробам golosa13–17; движок mebel-3d 4228a63)
-38g --shorts
+# 2026-11-24 01:30 МСК — голос Рона, вопросы (обещал Михаилу: «в вопросах голос не поднимает интонацию»): движок qrise-eng — подъём на последнем ударном слоге вопроса без вопросительного слова. 1 — как сейчас, 2 — подъём 3,5 полутона, 3 — 5 полутонов
+golosa18 --eng=qrise-eng --golos=Рон:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:laugh=F16,Ронни:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:laugh=F16:qrise=3.5,Роня:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:laugh=F16:qrise=5
