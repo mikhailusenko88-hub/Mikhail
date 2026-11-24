@@ -80,18 +80,21 @@ jobs:
       - name: Запрос
         id: rq
         run: |
-          echo "prev=$(grep -o 'prev=[0-9]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
+          echo "prev=$(grep -o 'prev=[0-9a-z:,]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
           echo "only=$(grep -o 'only=[a-z]*' hero-free-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"
-      - name: Второй герой — из прошлого запуска
-        if: steps.rq.outputs.prev != '' && steps.rq.outputs.only == 'ron'
-        uses: actions/download-artifact@v4
-        with:
-          pattern: 'H-barsik-*'
-          merge-multiple: true
-          path: pack/
-          run-id: ${{ steps.rq.outputs.prev }}
-          github-token: ${{ github.token }}
+      - name: Части из прошлых запусков (prev=<запуск>:<герой>,…)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p pack dl
+          for pr in $(echo "${{ steps.rq.outputs.prev }}" | tr ',' ' '); do
+            id=${pr%%:*}; h=${pr#*:}
+            gh run download "$id" -R ${{ github.repository }} -p "H-$h-*" -D "dl/$id" || echo "нет частей $pr"
+          done
+          for d in dl/*/*/; do [ -d "$d" ] && cp -r "$d". pack/; done
+          ls pack | wc -l
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: 'H-${{ steps.rq.outputs.only }}*'
           merge-multiple: true
@@ -108,6 +111,10 @@ jobs:
         run: |
           git config user.name svoy-golos
           git config user.email svoy-golos@users.noreply.github.com
-          git add -A hero
-          git commit -m "hero-free result" || echo nothing
-          for i in 1 2 3; do git fetch -q origin svoy-golos && git rebase -q FETCH_HEAD && git push origin HEAD:svoy-golos && break; sleep 5; done
+          # результат кладём поверх свежей ветки (25.11: rebase упал на add/add, когда hero/ уже появился в ветке)
+          rm -rf /tmp/res && cp -r hero /tmp/res
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && rm -rf hero && git checkout -q -f -B res FETCH_HEAD && mkdir -p hero && cp -r /tmp/res/. hero/
+            git add -A hero; git commit -q -m "hero-free result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
