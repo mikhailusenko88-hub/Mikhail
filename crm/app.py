@@ -604,7 +604,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     @app.route("/api/outbox/replies")
     def outbox_replies() -> Any:
         """Ответы на письма Claude с zapros@ — только шифром для его ключа (READER.pub в ветке outbox)."""
-        resp = jsonify(ob.replies(pochta, _reader_prefix()))
+        resp = jsonify(ob.replies(pochta, _reader_prefix(), with_files=request.args.get("atts") != "0"))   # ?atts=0 — без файлов
         resp.headers["Cache-Control"] = "no-store"
         return resp
 

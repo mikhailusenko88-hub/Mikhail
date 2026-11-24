@@ -301,7 +301,7 @@ class Outbox:
                 break
         return out
 
-    def replies(self, pochta: Any, prefix: str = "") -> dict[str, Any]:
+    def replies(self, pochta: Any, prefix: str = "", with_files: bool = True) -> dict[str, Any]:
         """Ответы на запросы, зашифрованные ключом Claude. Без ключа их никто не прочитает (в т.ч. по дороге)."""
         if not self.read_enabled():
             return {"v": 1, "off": True, "items": []}
@@ -317,7 +317,7 @@ class Outbox:
             atts = []
             for a in m.get("atts") or []:
                 x = {"name": a.get("name", ""), "mime": a.get("mime", ""), "size": a.get("size", 0)}
-                data = pochta.read_bytes(e["id"], a.get("n")) if a.get("saved") and total + int(a.get("size") or 0) <= REPLY_ATT_TOTAL else None
+                data = pochta.read_bytes(e["id"], a.get("n")) if with_files and a.get("saved") and total + int(a.get("size") or 0) <= REPLY_ATT_TOTAL else None
                 if data is not None:
                     x["b64"] = _b64(data)
                     total += len(data)

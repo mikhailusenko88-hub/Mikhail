@@ -2355,7 +2355,7 @@ class TestDzClaude(TestPochta):
         r = self.c.get(f"/api/dz/export?k={q}").get_json()
         self.assertEqual(r["key"], pub2[:8])
         self.assertEqual(self.outbox.unseal(sk2, r["item"], self.outbox.INFO_DZ)["kind"], "dz-export")
-        self.assertEqual(self.c.get(f"/api/outbox/replies?k={q}").get_json()["key"], pub2[:8])
+        self.assertEqual(self.c.get(f"/api/outbox/replies?k={q}&atts=0").get_json()["key"], pub2[:8])   # ?atts=0 — без файлов
         main = self.c.get("/api/dz/export").get_json()                       # без k — по-прежнему READER.pub
         self.assertEqual(self.outbox.unseal(self.sk, main["item"], self.outbox.INFO_DZ)["kind"], "dz-export")
         self.assertTrue(self.c.get("/api/dz/export?k=AAAAAAAA").get_json()["nokey"])   # чужой префикс — ничего
