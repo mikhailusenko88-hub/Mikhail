@@ -1,10 +1,15 @@
 """Сетка банки-кота: внутренняя поверхность стекла, отверстие сверху. → cat_mesh.npz (v, f), cat_sdf.npz (SDF 4 мм, край)."""
+import os
 import sys
 import numpy as np
 from skimage import measure
-import catsdf as C
-h = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0025
-x0, x1, y0, y1, z0, z1 = -0.16, 0.16, -0.14, 0.14, -0.006, 0.40
+import importlib
+NAME = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1][0].isdigit() else 'cat'
+C = importlib.import_module(NAME + 'sdf')
+NAME = os.environ.get('OUT_NAME', NAME)             # имя файлов сосуда (варианты размера: OUT_NAME=bears BEAR_K=0.80)
+_a = [a for a in sys.argv[1:] if a[0].isdigit()]
+h = float(_a[0]) if _a else 0.0025
+x0, x1, y0, y1, z0, z1 = -0.17, 0.17, -0.17, 0.14, -0.006, 0.40
 xs = np.arange(x0, x1, h); ys = np.arange(y0, y1, h); zs = np.arange(z0, z1, h)
 X, Y, Z = np.meshgrid(xs, ys, zs, indexing='ij')
 D = C.sdf(np.stack([X, Y, Z], -1)).astype(np.float32)
@@ -34,12 +39,12 @@ eu, cnt = np.unique(e, axis=0, return_counts=True)
 rim = v[np.unique(eu[cnt == 1])]
 print('граней', len(f), 'вершин', len(v), 'вырожденных убрано', int((~good).sum()), 'крышка', int(cap.sum()),
       'край z от', round(rim[:, 2].min(), 4), 'до', round(rim[:, 2].max(), 4))
-np.savez_compressed('cat_mesh.npz', v=v.astype(np.float32), f=f.astype(np.int32))
+np.savez_compressed(NAME + '_mesh.npz', v=v.astype(np.float32), f=f.astype(np.int32))
 hs = 0.004
 xs = np.arange(x0, x1 + hs, hs); ys = np.arange(y0, y1 + hs, hs); zs = np.arange(z0, z1 + hs, hs)
 X, Y, Z = np.meshgrid(xs, ys, zs, indexing='ij')
 Ds = C.sdf(np.stack([X, Y, Z], -1))
-np.savez_compressed('cat_sdf.npz', d=Ds.astype(np.float16), o=np.array([x0, y0, z0]), h=hs,
+np.savez_compressed(NAME + '_sdf.npz', d=Ds.astype(np.float16), o=np.array([x0, y0, z0]), h=hs,
                     mouth=np.array([C.OPEN_C[0], C.OPEN_C[1], C.OPEN_R, rim[:, 2].min()]))
 zr = rim[:, 2].min()
 vol = ((Ds < 0) & (Z < zr)).sum() * hs ** 3
