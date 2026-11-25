@@ -51,6 +51,16 @@ def contour(x48, sr=48000):
     return {"f": fc, "e": ec, "dur": dur, "f0": float(np.median(f[v])), "sd": float(np.std(st)), "voiced": float(v.mean())}
 
 
+def pool_phrases(n):
+    """Фразы из запаса бота, которых нет ни в подборе тембра, ни в пробе (phrases24)."""
+    import re, sluh2
+    used = set(sluh2.phrases24())
+    B = json.load(open("bank/bank.json", encoding="utf-8"))
+    ls = [l for s in B["scripts"] for l in s["lines"] if not re.search(r"\d", l) and 35 < len(l) < 95 and "—" not in l and ":" not in l and l not in used]
+    ls = list(dict.fromkeys(ls))
+    return ls[::max(1, len(ls) // n)][:n]
+
+
 def cmp(c, t):
     """Близость манеры кандидата c к образцу t на одной фразе (чем больше, тем ближе) и её части."""
     if c is None or t is None:
@@ -70,14 +80,32 @@ def main(target, seed, rate, gens):
     svoy_omo.ruacc(); svoy2.patch_ruaccent()
     L = sluh_opt.Lab(target)
     torch, net = L.torch, L.net
-    # тембр — лучшая находка
+    # тембр — лучшая находка (по близости к образцу)
     spe, src = L.base_rows[L.spe_key].double().numpy(), "основа"
     best_sc = -9
     for f in sorted(glob.glob(f"{OUT}/opt_{target}_*.json")):
         pr = json.load(open(f, encoding="utf-8"))
-        if pr["win"]["score"] > best_sc:
-            best_sc, spe, src = pr["win"]["score"], np.array(pr["win"]["spe"], dtype=float), os.path.basename(f)
+        if pr["win"].get("close", pr["win"]["score"]) > best_sc:
+            best_sc, spe, src = pr["win"].get("close", pr["win"]["score"]), np.array(pr["win"]["spe"], dtype=float), os.path.basename(f)
     log("тембр:", src, best_sc)
+    # фразы: восемь из подбора тембра + запас бота; последние десять — только для проверки (подбор их не видит)
+    POOL = int(os.environ.get("POOL", "0"))
+    PH, TWall = list(L.ph), list(L.tw)
+    if POOL:
+        import svoy_bars, svoy_kot3 as K3
+        extra_ph = pool_phrases(POOL + 10)
+        ru = svoy2.Net(svoy2.RU)
+        if target == "n4":
+            ru.put(ru.build(svoy_bars.W4)); spk = svoy2.SLOT[svoy2.RU]
+        else:
+            spk = target
+        for t in extra_ph:
+            a = ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000, put_accent=True, put_yo=True)
+            PH.append(t); TWall.append(a.numpy().copy())
+        del ru
+    NV = 10 if POOL else 0
+    TRAIN = list(range(len(PH) - NV)); VAL = list(range(len(PH) - NV, len(PH))) or list(range(8))
+    log("фраз для подбора", len(TRAIN), "для проверки", len(VAL))
     keys = {r: k for k, (r, _) in net.tabs.items()}
     names = [s for s in net.ids if s in net.rows and not s.startswith("ru_nash")]
     PC = {}
@@ -105,27 +133,42 @@ def main(target, seed, rate, gens):
         x = np.asarray(x)
         return {keys["pp"]: rowof("pp", x[:NPCM]), keys["dp"]: rowof("dp", x[NPCM:2 * NPCM]), "coef": float(np.clip(c0 * np.exp(x[2 * NPCM] * 0.25), 1.5, 12.0))}
 
-    TC = [contour(w) for w in L.tw]
-    log("образец: длины", [round(c["dur"], 2) for c in TC], "размах", [round(c["sd"], 2) for c in TC])
+    TC = [contour(w) for w in TWall]
+    f0t = float(np.median([c["f0"] for c in TC if c]))
+    log("образец: высота", round(f0t, 1), "длины", [round(c["dur"], 2) for c in TC[:8] if c], "размах", [round(c["sd"], 2) for c in TC[:8] if c])
 
     def score(ex, idx):
-        S, parts = [], []
+        S, parts, f0 = [], [], []
         for i in idx:
-            a = L.say(spe, L.ph[i], ex, rate)
-            sc, pt = cmp(contour(a.numpy() if hasattr(a, "numpy") else np.asarray(a)), TC[i])
+            a = L.say(spe, PH[i], ex, rate)
+            c = contour(a.numpy() if hasattr(a, "numpy") else np.asarray(a))
+            sc, pt = cmp(c, TC[i])
             S.append(sc); parts.append(pt)
+            if c:
+                f0.append(c["f0"])
         agg = {k: round(float(np.mean([p[k] for p in parts if k in p])), 3) for k in ("mel", "ritm", "dur", "razmah", "rms")} if any(parts) else {}
-        return float(np.mean(S)), agg
+        pt = 12 * np.log2(float(np.median(f0)) / f0t) if f0 else 9.0
+        agg["pt"] = round(float(pt), 2)
+        return float(np.mean(S)) - 0.05 * max(0.0, abs(pt) - 0.3), agg       # средняя высота — как у образца (±0,3 полутона без штрафа)
 
-    all8 = list(range(8))
+    all8 = VAL                                    # полная оценка — на фразах проверки
     # старты: основа и манера каждого готового диктора
     cand = []
+    probe = TRAIN[::max(1, len(TRAIN) // 4)][:4]
     for s in names:
         if not s.startswith("ru_"):
             continue
         ex = {keys["pp"]: net.rows[s][keys["pp"]].double().numpy(), keys["dp"]: net.rows[s][keys["dp"]].double().numpy(), "coef": float(net.rows[s].get("coef") or c0)}
-        sc, agg = score(ex, [0, 3, 6])
+        sc, agg = score(ex, probe)
         cand.append((sc, s, agg, ex))
+    prev = f"{OUT}/man_{target}_{seed}_{rate}.json"
+    if os.path.exists(prev):                       # прошлая находка — тоже старт
+        try:
+            pw = json.load(open(prev, encoding="utf-8"))["win"]
+            ex = {keys["pp"]: np.array(pw["pp"]), keys["dp"]: np.array(pw["dp"]), "coef": float(pw["coef"])}
+            sc, agg = score(ex, probe); cand.append((sc, "прошлая находка", agg, ex))
+        except Exception:
+            traceback.print_exc()
     cand.sort(key=lambda x: -x[0])
     log("манера готовых дикторов:", [(s, round(sc, 3), a.get("mel"), a.get("dur")) for sc, s, a, _ in cand[:8]])
     ex0 = {keys["pp"]: L.base_rows[keys["pp"]].double().numpy(), keys["dp"]: L.base_rows[keys["dp"]].double().numpy(), "coef": c0}
@@ -143,7 +186,7 @@ def main(target, seed, rate, gens):
     rnd = np.random.default_rng(seed)
     trail, t0, top = [], time.time(), [(best[0], best[1], best[2])]
     for gi in range(gens):
-        idx = sorted(rnd.choice(8, size=4, replace=False).tolist())
+        idx = sorted(rnd.choice(TRAIN, size=min(6, len(TRAIN)), replace=False).tolist())
         X = es.ask()
         F = []
         for x in X:
@@ -166,17 +209,19 @@ def main(target, seed, rate, gens):
     import svoy_lib as SL
     for sc, ex, agg in top[:3]:
         mt, ut, E = [], [], {k: [] for k in sluh_opt.REF}
-        for i in (1, 3, 6):
+        QI = VAL[:3]
+        TEq = {k: [] for k in sluh_opt.REF}
+        for i in QI:
             p = f"tmp/q_{i}.wav"
-            a = L.say(spe, L.ph[i], ex, rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p)
+            a = L.say(spe, PH[i], ex, rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p)
             try:
-                mt.append(SL.heard_match(p, L.ph[i])[1]); ut.append(SL.utmos(SL.load(p, 16000)))
-                e = L.S.embeds(L.to16(a))
+                mt.append(SL.heard_match(p, PH[i])[1]); ut.append(SL.utmos(SL.load(p, 16000)))
+                e = L.S.embeds(L.to16(a)); et = L.S.embeds(L.to16(TWall[i]))
                 for k in E:
-                    E[k].append(e[k])
+                    E[k].append(e[k]); TEq[k].append(et[k])
             except Exception:
                 traceback.print_exc()
-        sims = {k: round(float(L.norm(np.mean(v, 0)) @ L.norm(L.Tk[k][[1, 3, 6]].mean(0))), 3) for k, v in E.items() if v}
+        sims = {k: round(float(L.norm(np.mean(v, 0)) @ L.norm(np.mean(TEq[k], 0))), 3) for k, v in E.items() if v}
         res.append({"score": round(sc, 4), **agg, "match": round(float(np.mean(mt)), 3) if mt else None, "utmos": round(float(np.mean(ut)), 2) if ut else None,
                     "sims": sims, "coef": ex["coef"], "pp": [round(float(v), 6) for v in ex[keys["pp"]]], "dp": [round(float(v), 6) for v in ex[keys["dp"]]]})
         log("итог", {k: v for k, v in res[-1].items() if k not in ("pp", "dp")})
@@ -188,10 +233,10 @@ def main(target, seed, rate, gens):
     json.dump(out, open(f"{OUT}/man_{target}_{seed}_{rate}.json", "w", encoding="utf-8"), ensure_ascii=False)
     parts = []
     exw = {keys["pp"]: np.array(win["pp"]), keys["dp"]: np.array(win["dp"]), "coef": win["coef"]}
-    for j, i in enumerate((0, 3, 6)):
-        p = f"tmp/t_{j}.wav"; g.save_wav(L.tw[i], p); parts.append(p)
-    for j, i in enumerate((0, 3, 6)):
-        p = f"tmp/w_{j}.wav"; a = L.say(spe, L.ph[i], exw, rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p); parts.append(p)
+    for j, i in enumerate(VAL[:3]):
+        p = f"tmp/t_{j}.wav"; g.save_wav(TWall[i], p); parts.append(p)
+    for j, i in enumerate(VAL[:3]):
+        p = f"tmp/w_{j}.wav"; a = L.say(spe, PH[i], exw, rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p); parts.append(p)
     lst = "tmp/list.txt"
     open(lst, "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in parts))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-c:a", "libmp3lame", "-q:a", "3",
