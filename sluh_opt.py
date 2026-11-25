@@ -16,7 +16,7 @@ OUT = "cast10"
 log = lambda *a: print(*a, flush=True)
 REF = {"ecapa": (0.97, 0.30), "wavlm": (0.99, 0.92), "resem": (0.98, 0.65)}     # (образец сам с собой, в среднем с чужими) — из sluh/itog.md
 BASE = {"n4": ("g03", "low"), "eugene": ("g03", "low"), "xenia": ("ru_zhadyra", "medium"), "kseniya": ("ru_zhazira", "medium")}
-NPC = 24
+NPC = int(os.environ.get("NPC", "24"))
 
 
 class Lab:
@@ -86,13 +86,17 @@ class Lab:
         n = np.linalg.norm(r)
         return r * (min(max(n, self.norms[0]), self.norms[1]) / (n + 1e-9))
 
-    def say(self, row, t):
+    def say(self, row, t, extra=None, rate="medium"):
+        """row — строка тембра; extra = {ключ таблицы: строка, "coef": число} — своя мелодия (pp), ритм (dp), размах."""
         rows = dict(self.base_rows)
         rows[self.spe_key] = self.torch.tensor(row, dtype=self.base_rows[self.spe_key].dtype)
+        for k, v in (extra or {}).items():
+            rows[k] = float(v) if k == "coef" else self.torch.tensor(v, dtype=self.base_rows[k].dtype)
         self.net.put(rows)
-        if t not in self.texts:
-            self.texts[t] = self.K3.text_for({"model": "cis", "pitch": self.pitch, "rate": "medium"}, t)
-        return self.net.m.apply_tts(ssml_text=self.texts[t], speaker=self.svoy2.SLOT[self.svoy2.CIS], sample_rate=48000)
+        key = (t, rate)
+        if key not in self.texts:
+            self.texts[key] = self.K3.text_for({"model": "cis", "pitch": self.pitch, "rate": rate}, t)
+        return self.net.m.apply_tts(ssml_text=self.texts[key], speaker=self.svoy2.SLOT[self.svoy2.CIS], sample_rate=48000)
 
     def score(self, row, idx):
         """Близость к образцу на фразах idx: сравнение по тем же фразам + штраф за высоту дальше ±2 полутонов."""
@@ -144,6 +148,13 @@ def main(target, seed, gens):
     log("лучшие готовые дикторы:", [(s, round(sc, 3), i["sims"]["ecapa"], i["f0"]) for sc, s, i in cand[:6]])
     for sc, s, i in cand[:2]:
         starts.append((s, L.net.rows[s][L.spe_key].double().numpy()))
+    import glob
+    for f in sorted(glob.glob(f"{OUT}/opt_{target}_*.json")):          # прошлые находки — продолжаем с лучшей
+        try:
+            pr = json.load(open(f, encoding="utf-8"))
+            starts.append((os.path.basename(f), np.array(pr["win"]["spe"], dtype=float)))
+        except Exception:
+            traceback.print_exc()
     best = None
     for name, row in starts:
         sc, info = L.score(row, all8)
@@ -152,7 +163,8 @@ def main(target, seed, gens):
             best = (sc, row, info, name)
     start_info = {"name": best[3], "score": round(best[0], 4), **best[2]}
     z0 = L.z_of(best[1])
-    es = cma.CMAEvolutionStrategy(z0.tolist(), 0.35, {"popsize": 14, "seed": seed + 1, "bounds": [-3.5, 3.5], "verbose": -9})
+    log("старт поиска:", best[3], "; строка в осях восстановлена с ошибкой", round(float(np.linalg.norm(L.row_of(z0) - best[1]) / np.linalg.norm(best[1])), 3))
+    es = cma.CMAEvolutionStrategy(z0.tolist(), float(os.environ.get("SIGMA", "0.35")), {"popsize": 14, "seed": seed + 1, "bounds": [-3.5, 3.5], "verbose": -9})
     trail, t0 = [], time.time()
     top = [(best[0], best[1], best[2])]
     for gi in range(gens):
@@ -184,6 +196,8 @@ def main(target, seed, gens):
     win = ok[0]
     out = {"target": target, "seed": seed, "f0_target": L.f0t, "start": start_info, "trail": trail, "best": res, "win": win,
            "base": BASE[target], "ready": [(s, round(sc, 4), i) for sc, s, i in cand[:10]], "spe_key": L.spe_key}
+    tag = os.environ.get("TAG", "")
+    seed = f"{seed}{tag}"
     json.dump(out, open(f"{OUT}/opt_{target}_{seed}.json", "w", encoding="utf-8"), ensure_ascii=False)
     # послушать и посмотреть: три фразы образцом, потом находкой
     parts = []
