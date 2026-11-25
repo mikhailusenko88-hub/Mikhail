@@ -86,3 +86,4 @@
 | shorts | 2026-11-24 | 1 | India vs Indonesia vs Mexico | https://youtube.com/shorts/TEIczLtjmMw | public (только Shorts) |
 | shorts | 2026-11-24 | 2 | Philippines vs Thailand vs Colombia | https://youtube.com/shorts/KsgnzXH1L2o | public (только Shorts) |
 | shorts | 2026-11-24 | 3 | Russia vs France vs Korea | https://youtube.com/shorts/OaxkESiOdNA | public (только Shorts) |
+| shorts | 2026-11-25 | 1 | Algeria vs Portugal vs Sweden | https://youtube.com/shorts/yilHRkug2sE | public (только Shorts) |
