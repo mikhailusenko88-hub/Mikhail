@@ -126,11 +126,14 @@ def extras(M):
     for vi, v in enumerate(cfg["voices"]):
         tgt = byv.get(v["target"], [])
         base = byv.get(v["from"], []) if v.get("from") else tgt
+        if v.get("mix") and SMOKE:
+            base = base[:6]
         for m in base:
-            if not any(t["text"] == m["text"] for t in tgt):
+            tt = next((t for t in tgt if t["text"] == m["text"]), None)
+            if tt is None:
                 continue
             X.append({"id": f"add{ADDTAG}_{vi:03d}_{m['k']:02d}", "voice": v["name"] + "@add", "text": m["text"], "k": m["k"], "src": "add", "vi": vi, "cfg": v,
-                      "base": m, "pic": m["k"] in (2, 4) and v.get("kind", "fix") == "fix", "grp": v["group"], "note": v.get("note", v["name"]),
+                      "base": m, "pic": bool(tt.get("pic")) and v.get("kind", "fix") == "fix", "grp": v["group"], "note": v.get("note", v["name"]),
                       "kind": v.get("kind", "fix")})
     if SMOKE:
         X = [x for x in X if x["vi"] < 4]
@@ -212,23 +215,40 @@ def make_voice(items, byv):
     import svoy_lib as SL
     v = items[0]["cfg"]
     tgt = {t["text"]: t for t in byv[v["target"]]}
+    def cut(p):
+        x = SL.load(p, SRH)
+        b0, b1 = bounds(x, SRH)
+        return x[int(b0 * SRH):int(b1 * SRH)]
+
     raw = []
     for m in items:
-        if v.get("spk"):
+        if v.get("mix"):
             p = f"tmp/raw_{m['id']}.wav"
-            synth({"syn": "cis:" + v["spk"], "text": m["text"]}, p)
-            x = SL.load(p, SRH)
-            b0, b1 = bounds(x, SRH); x = x[int(b0 * SRH):int(b1 * SRH)]
+            synth({"mix": v["mix"], "text": m["text"]}, p); x = cut(p)
+            if v.get("atempo"):
+                q = f"tmp/at_{m['id']}.wav"
+                subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", p, "-af", f"atempo={float(v['atempo']):.3f}", q], check=True); x = cut(q)
+        elif v.get("spk"):
+            p = f"tmp/raw_{m['id']}.wav"
+            synth({"syn": "cis:" + v["spk"], "text": m["text"]}, p); x = cut(p)
         else:
             x = SL.load(m["base"]["path"], SRH)
         raw.append(x)
     texts = [m["text"] for m in items]
-    tw = [SL.load(tgt[t]["path"], SRH) for t in texts]
+    tw = []
+    for t in texts:
+        if tgt[t].get("path"):
+            tw.append(SL.load(tgt[t]["path"], SRH))
+        else:                                           # образец из синтеза (№4): читаем его здесь же
+            p = f"tmp/tgt_{tgt[t]['id']}.wav"
+            if not os.path.exists(p):
+                synth(tgt[t], p)
+            tw.append(cut(p))
     ss, ts = vstats(raw, texts), vstats(tw, texts)
     clip = lambda a, lo, hi: max(lo, min(hi, a))
     F = float(v.get("F", 1.0))
-    P = float(v["P"]) if v.get("P") else (ts["f0"] / ss["f0"] if v.get("spk") else 1.0)
-    T = float(v["T"]) if v.get("T") else (clip(ts["rate"] / ss["rate"], 0.8, 1.35) if v.get("spk") else 1.0)
+    P = float(v["P"]) if v.get("P") else (ts["f0"] / ss["f0"] if (v.get("spk") and not v.get("mix")) else 1.0)
+    T = float(v["T"]) if v.get("T") else (clip(ts["rate"] / ss["rate"], 0.8, 1.35) if (v.get("spk") and not v.get("mix")) else 1.0)
     kr = v.get("range", 1.0)
     if kr == "auto":
         kr = clip(ts["range"] / max(ss["range"], 0.5), 0.6, 1.8)
@@ -252,7 +272,7 @@ _net = {}
 
 def synth(item, path):
     import gen as g, svoy2, svoy_bars, svoy_kot3 as K3
-    v = item["syn"]
+    v = item.get("syn") or "mix"
     if v in ("n4", "xenia", "kseniya", "eugene", "aidar", "baya"):
         if "ru" not in _net:
             _net["ru"] = svoy2.Net(svoy2.RU); _net["ru_on"] = None
@@ -272,6 +292,26 @@ def synth(item, path):
             _net["cis"] = svoy2.Net(svoy2.CIS); _net["cis_on"] = None
         net = _net["cis"]
         pitch, rate = "low", "medium"
+        mx = item.get("mix")
+        if mx:                                          # добавочный голос: {"w": смесь | "g03", "spe_row": [...], "pitch", "rate", "coef_k"}
+            w = mx.get("w") or "g03"
+            if w == "g03":
+                w = json.load(open("cast7/golos_free.json", encoding="utf-8"))["voices"]["ru_svoy1"]["w"]
+            pitch, rate = mx.get("pitch", "low"), mx.get("rate", "medium")
+            tag = "mix:" + json.dumps(mx, sort_keys=True, ensure_ascii=False)[:4000]
+            if _net["cis_on"] != tag:
+                rows = net.build(w)
+                if mx.get("spe_row"):
+                    import torch
+                    k = next(k for k, (r, _) in net.tabs.items() if r == "spe")
+                    rows[k] = torch.tensor(mx["spe_row"], dtype=rows[k].dtype)
+                if mx.get("coef_k") and rows.get("coef"):
+                    rows["coef"] = rows["coef"] * float(mx["coef_k"])      # меньше — мелодия шире (coef = средняя высота / разброс)
+                net.put(rows); _net["cis_on"] = tag
+            a = net.m.apply_tts(ssml_text=K3.text_for({"model": "cis", "pitch": pitch, "rate": rate}, item["text"]), speaker=svoy2.SLOT[svoy2.CIS],
+                                sample_rate=48000)
+            g.save_wav(a.numpy() if hasattr(a, "numpy") else a, path)
+            return
         if v.startswith("cis:"):
             s = v[4:]; w = {r: {s: 1.0} for r in ("dp", "pp", "spe")}; pitch = "medium"
         elif v in ("g03", "g03f"):
