@@ -2,7 +2,7 @@
 global.window = global;
 require('../../g8-hook3d/physics.js'); require('../../g9-mud/mud2d.js');
 const M = global.MudSide, Z = M.ZONES;
-const BUILDS = { 'обычный': {}, 'длинный': { base: 1 }, 'лифт1': { lift: 1 }, 'лифт2': { lift: 2 }, 'колёса1': { wheel: 1 }, 'колёса2': { wheel: 2 }, '6×6': { axles: 3 }, 'длин+лифт1': { base: 1, lift: 1 }, 'длин+6×6': { base: 1, axles: 3 }, 'грязевые': { tires: 2 }, 'дорожные': { tires: 0 }, 'мотор2': { eng: 4 }, 'шноркель': { snorkel: 1 }, 'всё': { base: 1, lift: 2, wheel: 2, axles: 3, tires: 2, eng: 4, snorkel: 1, tank: 1 } };
+const BUILDS = { 'обычный': {}, 'длинный': { base: 1 }, 'оч.длин': { base: 2 }, 'оч.длин+лифт1': { base: 2, lift: 1 }, 'оч.длин+лифт2': { base: 2, lift: 2 }, 'оч.длин+6×6': { base: 2, axles: 3 }, 'оч.длин+кол2': { base: 2, wheel: 2 }, 'лифт1': { lift: 1 }, 'лифт2': { lift: 2 }, 'колёса1': { wheel: 1 }, 'колёса2': { wheel: 2 }, '6×6': { axles: 3 }, 'длин+лифт1': { base: 1, lift: 1 }, 'длин+6×6': { base: 1, axles: 3 }, 'грязевые': { tires: 2 }, 'дорожные': { tires: 0 }, 'мотор2': { eng: 4 }, 'шноркель': { snorkel: 1 }, 'всё': { base: 1, lift: 2, wheel: 2, axles: 3, tires: 2, eng: 4, snorkel: 1, tank: 1 } };
 const MODES = { '2': {}, '4': { awd: 1 }, '4L': { awd: 1, low: 1 }, '4LB': { awd: 1, low: 1, lock: 1 } };
 function run(route, build, mode, sec, goalX) {
   const S = M.create(route, { build }), inp = Object.assign({ gas: true }, mode); let t = 0, maxTilt = 0;
