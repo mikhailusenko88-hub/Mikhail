@@ -407,7 +407,7 @@
     const tr = S.truck; truckG.position.set(tr.x, -tr.y, 0); truckG.rotation.z = -tr.a;
     sparks.forEach((q, i) => { const k = Math.sin(t * 2.6 + i * 1.9), s2 = k > 0 ? k * k * 1.25 : 0; q.visible = s2 > 0.03; if (q.visible) { q.scale.set(s2, s2, s2); q.rotation.z = t * 0.8 + i; } });
     if (shine) { const h = (t * 0.12) % 1; shine[0].color.setHSL(h, 0.9, 0.56).convertSRGBToLinear(); shine[1].color.setHSL((h + 0.07) % 1, 0.9, 0.4).convertSRGBToLinear(); }
-    S.wheels.forEach((w, i) => { wheelG[i].position.set(w.x, -w.y, 0); wheelG[i].rotation.z = -w.a; });
+    S.wheels.forEach((w, i) => { const g = wheelG[i]; if (g) { g.position.set(w.x, -w.y, 0); g.rotation.z = -w.a; } }); // у игры про бездорожье мостов бывает три и колёса свои
     sun.target.position.set(tr.x, -tr.y, 0); sun.position.set(tr.x - 430, -tr.y + 1050, 640); sun.target.updateMatrixWorld();
     const scared = S.state === 'dead' || (!S.grounded && Math.abs(tr.vy) > 500), happy = S.state === 'win';
     for (const cg of [catG, cat2G]) { const es = scared ? 1.4 : 1; cg.userData.eyes.forEach((e) => e.scale.set(1, happy ? 0.35 : es, es)); cg.userData.head.rotation.z = scared ? 0.16 : Math.sin(t * 2) * 0.05; }
@@ -463,7 +463,7 @@
   // для проверки плавности: сколько вызовов отрисовки, треугольников и собранных шейдеров в кадре
   R.info = function () { const i = renderer ? renderer.info : null; return i ? { calls: i.render.calls, tris: i.render.triangles, programs: i.programs ? i.programs.length : 0 } : null; };
 
-  R.api = { get T() { return T; }, get scene() { return scene; }, get truck() { return truckG; }, C: (h) => C(h), lam: (h, o) => lam(h, o), bas: (h, o) => bas(h, o), box, cyl };
+  R.api = { get T() { return T; }, get scene() { return scene; }, get truck() { return truckG; }, get wheels() { return wheelG; }, C: (h) => C(h), lam: (h, o) => lam(h, o), bas: (h, o) => bas(h, o), box, cyl };
 
   root.Hook3D = R;
 })(window);
