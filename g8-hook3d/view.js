@@ -53,6 +53,17 @@
     PF.base = avg; PF.prev = gq; gq = Math.max(1 / DPR, gq - 0.25); PF.test = true;
   }
   addEventListener('resize', resize); resize();
+  // замер кадров по образцу Playgama (performance_sample): копим времена кадров только в заезде, без пауз, рекламы и скрытой вкладки; раз в ~30 с активной игры — одно событие
+  const PS = { t0: 0, act: 0, ft: [], gap: true, win: +window.HOOK_PERF_MS || 30000 };
+  function perfSample(now, ms, live) {
+    if (!live) { PS.gap = true; return; }
+    if (PS.gap) { PS.gap = false; if (!PS.t0) PS.t0 = now; return; } // первый кадр после паузы несёт в себе саму паузу — это не кадр
+    if (!(ms > 0)) return; PS.ft.push(ms); PS.act += ms; if (PS.act < PS.win) return;
+    const a = PS.ft.sort((x, y) => x - y), n = a.length, q = (k) => a[Math.min(n - 1, Math.floor(k * n))], over = (lim) => { let c = 0; for (let i = n - 1; i >= 0 && a[i] > lim; i--) c++; return c; }, r1 = (v) => Math.round(v * 10) / 10;
+    pgEv('performance_sample', { target_fps: 60, window_ms: Math.round(now - PS.t0), active_ms: Math.round(PS.act), frame_count: n, fps_avg: r1((1000 * n) / PS.act), fps_p10: r1(1000 / q(0.9)), frame_time_p50_ms: r1(q(0.5)), frame_time_p95_ms: r1(q(0.95)), frame_time_p99_ms: r1(q(0.99)), frame_time_max_ms: r1(a[n - 1]),
+      frames_over_50ms: over(50), frames_over_100ms: over(100), frames_over_250ms: over(250), frames_over_500ms: over(500), frames_over_1000ms: over(1000), build_version: BUILD, quality: gq, dpr: DPR });
+    PS.t0 = now; PS.act = 0; PS.ft = [];
+  }
 
   const rr = (x, y, w, h, r) => { ctx.beginPath(); if (!(w > 0 && h > 0)) return; r = Math.max(0, Math.min(r, w / 2, h / 2)); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -66,10 +77,11 @@
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
   // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
-  const BUILD = '9', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const BUILD = '10', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const stepOf = (l) => ({ step_id: 'L' + String(l + 1).padStart(2, '0'), step_index: l + 1 }); // шаг продвижения по образцу Playgama: имя события постоянное, номер уровня — в данных
   const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
-  const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign({ level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
-  const runQuit = (how) => { if (TM.live && S && S.state !== 'win') pgEv('level_quit', runData({ how })); TM.live = false; }; // ушёл с уровня, не доехав: в меню или начал заново
+  const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign(stepOf(lvl), { level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
+  const runQuit = (how) => { if (TM.live && S && S.state !== 'win') pgEv('progression_failed', runData({ how, assists: TA.n })); TM.live = false; }; // ушёл с уровня, не доехав: в меню или начал заново
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
   // межстраничная: только в паузах между уровнями (после уровня или перед стартом уровня из меню), начиная с 3-го уровня,
   // не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду; чаще не даст и сама площадка
@@ -101,9 +113,11 @@
       B.advertisement.on('interstitial_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'inter') return; if (st === 'opened') PG.ad = true; else if (st === 'closed' || st === 'failed') pgDone(true); });
       B.advertisement.on('rewarded_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'rew') return; if (st === 'opened') PG.ad = true; else if (st === 'rewarded') PG.got = true; else if (st === 'closed' || st === 'failed') { PG.lastRew = pgNow(); pgDone(PG.got); } });
       // облачное сохранение площадки: берём его, если оно свежее браузерного и игрок ещё не начал заезд
-      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); duo = !!save.duo; ctl = save.ctl === 'auto' ? 'auto' : 'manual'; ser = H.levels[firstOpen()].ser; applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } }).catch(() => {});
-    }).catch(() => { PG.on = false; });
-  }
+      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); duo = !!save.duo; ctl = save.ctl === 'auto' ? 'auto' : 'manual'; ser = H.levels[firstOpen()].ser; applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } firstRun(); }).catch(() => firstRun()); else firstRun();
+      setTimeout(firstRun, 3500); // облако молчит — не ждём дольше
+    }).catch(() => { PG.on = false; firstRun(); });
+  } else setTimeout(() => firstRun(), 0);
+  addEventListener('pagehide', () => { if (TM.live && mode === 'play' && S && S.state !== 'win') { pgEv('progression_failed', runData({ how: 'left', assists: TA.n })); TM.live = false; } }); // закрыл игру посреди уровня
   addEventListener('contextmenu', (e) => e.preventDefault()); // долгое нажатие и правый клик не открывают меню браузера
 
   // ---------- звук (всё синтезом, без файлов) ----------
@@ -183,6 +197,17 @@
   let hangT = 0;
   // управление: 'manual' — газ, тормоз и крюк (по умолчанию: Михаилу так интереснее); 'auto' — газ сам, палец только на крюке; вдвоём — всегда ручное
   let ctl = save.ctl === 'auto' ? 'auto' : 'manual', wait = false, ts = 1, tut = null, hookT0 = 0;
+  // Самый первый запуск: без меню, сразу уровень 1 в режиме «один палец» (газ сам). По данным песочницы 16% уходили из меню, а 44% начавших не проходили ни одного уровня.
+  // Кто уже играл или сам выбрал управление — у тех ничего не меняется. TA — помощь на первом уровне: игра не даёт его провалить.
+  const FR = { done: false, on: false, w: 0 }, TA = { t: 0, auto: false, n: 0, lock: false, early: false };
+  const isNew = () => !save.stars.some((n) => n > 0) && !(save.tut && (save.tut[0] || save.tut[1])); // ни одного пройденного уровня — в том числе тот, кто заходил и ушёл
+  function firstRun() {
+    if (FR.done) return; FR.done = true;
+    if ((navigator.webdriver && !window.HOOK_FIRST) || mode !== 'menu' || !isNew()) return; // под автоматикой проверок меню остаётся, если проверка сама не просит первый запуск
+    if (save.ctl === undefined) { ctl = 'auto'; save.ctl = 'auto'; } FR.on = true; // управление, выбранное игроком в меню, не трогаем
+    if (PG.on && !PG.ready) { PG.ready = true; pgMsg('game_ready'); }
+    startGame(false, 0);
+  }
   const isAuto = () => ctl === 'auto' && !duo;
   const SER = [{ n: ['Meadow', 'Луг'], need: 0 }, { n: ['Canyon', 'Каньон'], need: 16 }], NS = Math.ceil(NL / 12);
   let ser = 0;
@@ -236,7 +261,7 @@
     return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: duo && (!!k.KeyS || held('pull')) };
   }
 
-  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; TA.t = 0; TA.auto = false; TA.n = 0; TA.lock = false; TA.early = false; FR.w = 0; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; pgEv('progression_started', Object.assign(stepOf(lvl), { control: duo ? 'duo' : ctl, first_run: FR.on && lvl === 0 && !(save.tut && save.tut[0]) })); ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
@@ -245,7 +270,7 @@
     res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt), earn };
     const tutWas = !!(save.tut && save.tut[0] && save.tut[1]);
     save.coins += earn; (save.tut = save.tut || [])[lvl] = 1; pgMsg('level_completed', { level: lvl + 1 }); pgMsg('gameplay_stopped');
-    pgEv('level_won', runData({ stars: n, got_star: got, fast, first_time: !(save.stars[lvl] > 0), time_sec: Math.round(S.wonAt * 10) / 10 })); TM.live = false;
+    pgEv('progression_completed', runData({ stars: n, got_star: got, fast, first_time: !(save.stars[lvl] > 0), time_sec: Math.round(S.wonAt * 10) / 10, assists: TA.n })); TM.live = false;
     if (!tutWas && save.tut[0] && save.tut[1]) pgEv('tutorial_completed', { control: duo ? 'duo' : ctl });
     save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
   }
@@ -272,24 +297,41 @@
     tut = null;
     const G = H.levels[lvl].guide; if (!G || (save.tut && save.tut[lvl]) || S.state !== 'play') return 1; // обучение — пока уровень не пройден с ним хоть раз (у старых сохранений покажется заново)
     const tr = S.truck, slow = lvl === 0 && !save.up.eng && !save.up.winch;
+    if (slow) { // первый уровень в первый раз провалить нельзя
+      const t = S.target, tg = !S.rope && t && G[t.i];
+      if (TA.lock && !S.rope && (S.grounded || (tg && !tg.climb && tr.x > t.x - tg.att - 60 && tr.x <= t.x + 40))) TA.lock = false; // приземлился или подъехал к следующей яме — крюк снова слушается
+      if (TA.lock && !S.rope) inp.hook = false; // отпустил и летит: повторное нажатие в воздухе не цепляет обратно — именно так новички и падали
+      else if (TA.auto) inp.hook = true; // не нажал за 2,5 с — игра сама держит крюк и показывает, как надо
+    }
     if (!isAuto() && !inp.gas && S.grounded && !S.rope && Math.abs(tr.vx) < 140) { tut = 'gas'; return 1; } // ручное управление: стоит — покажи, где газ
     if (!S.rope) {
       const a = S.target, g = a && G[a.i]; if (!g) return 1;
       if (g.climb) { if (S.wallTouch || tr.x > a.x - 300) tut = 'hold'; return 1; }
-      if (tr.x > a.x + 40) return 1; // кольцо уже позади — после отпускания «держи» не показываем
+      if (tr.x > a.x + 40) { if (slow) inp.hook = false; return 1; } // кольцо уже позади — «держи» не показываем; на первом уровне за кольцо позади не цепляем (иначе утянет назад в яму)
       if (tr.x > a.x - g.att - (slow ? 170 : 340)) tut = 'hold'; // рука появляется заранее: нажать можно сразу, крюк сам выстрелит у края
-      if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
-      return slow && !inp.hook ? 0 : 1;
+      if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; if (stop && TA.t > 2.5) { TA.auto = true; TA.n++; return 1; } inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
+      if (slow && !inp.hook) { if (TA.t > 2.5) { TA.auto = true; TA.n++; inp.hook = true; return 1; } return 0; }
+      return 1;
     }
     const a = S.ropeA, g = G[a.i]; if (!g) return 1;
     if (g.climb) { if (S.grounded && tr.y < a.y + 300 && (tr.x > a.x - 80 || S.rope.len <= 160)) tut = 'rel'; return 1; }
     const rel = tr.x - a.x;
+    if (slow) {
+      const inWin = tr.vx > 0 && rel >= g.lo && rel <= g.hi, at = a.i === 0 ? (g.lo + g.hi) / 2 : g.lo + (g.hi - g.lo) * 0.6;
+      if (!inp.hook) { // игрок крюк не держит
+        if (inWin && (!TA.early || rel >= at)) { if (TA.early) TA.n++; TA.early = false; TA.lock = true; return 1; } // отпустил там, где надо (или мы додержали за него до середины окна)
+        inp.hook = true; TA.early = true; tut = inWin ? 'rel' : 'hold'; return 1; // отпустил раньше времени — держим сами до нужного места
+      }
+      if (!inWin) { if (rel < g.lo) tut = 'hold'; return 1; }
+      tut = 'rel'; if (rel < at) return 1;
+      if (TA.auto || TA.t > 3) { inp.hook = false; TA.auto = false; TA.early = false; TA.lock = true; TA.n++; return 1; } // не отпустил за 3 с — отпускаем сами
+      return 0; // ждём, пока отпустит
+    }
     if (tr.vx > 0 && rel >= g.lo && rel <= g.hi) {
       tut = 'rel'; if (!inp.hook) return 1;
       // первая часть «окна» идёт на полной скорости: кто умеет — отпустит сам и никакого замедления не увидит (иначе обучение выглядит как тормоза).
       // Замедляем только опоздавших: самое первое кольцо — пауза в середине окна, остальные — замедление в последних 40% окна
-      if (slow && a.i === 0) return rel >= (g.lo + g.hi) / 2 ? 0 : 1;
-      return rel >= g.lo + (g.hi - g.lo) * 0.6 ? (slow ? 0.22 : 0.3) : 1;
+      return rel >= g.lo + (g.hi - g.lo) * 0.6 ? 0.3 : 1;
     }
     if (rel < g.lo) tut = 'hold';
     return 1;
@@ -321,11 +363,17 @@
       ctx.globalAlpha = 1;
     }
     hand(x, y, big, lift * big);
-    const fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10);
-    ctx.font = `900 ${fs}px system-ui, sans-serif`; const half = Math.min(ctx.measureText(txt).width * 1.07 + fs * 0.3, W - 16) / 2, tx = clamp(x, half + 8, W - half - 8), mw = W - 28;
+    const side = kind === 'go' && !port && !hk, fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = side ? y + 16 * big : y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10); // лёжа «нажми — поехали» пишем сбоку от руки, под дорогой: над рукой надпись закрывала грузовик
+    ctx.font = `900 ${fs}px system-ui, sans-serif`; const half = Math.min(ctx.measureText(txt).width * 1.07 + fs * 0.3, W - 16) / 2, tx = clamp(side ? x - 50 * big - half : x, half + 8, W - half - 8), mw = W - 28;
     ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0, mw); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0, mw); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0, mw);
     ctx.restore();
+    if (kind === 'go' && FR.on && lvl === 0) { // первый запуск без меню: правило игры и «поверни телефон» видны с первой секунды
+      const coarse = matchMedia('(pointer: coarse)').matches, f2 = Math.round(17 * big), yy = H2 * 0.3 + (W < 600 || H2 < 480 ? 36 : 48); // под названием уровня
+      ctx.font = `800 ${f2}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.lineWidth = f2 * 0.3; ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+      const rule = isAuto() ? (coarse ? T.touchAuto : T.keyAuto) : ''; if (rule) { ctx.strokeText(rule, W / 2, yy, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(rule, W / 2, yy, W - 24); }
+      if (coarse && port && !save.rot) { ctx.strokeText('⟳ ' + T.rot, W / 2, yy + f2 * 1.7, W - 24); ctx.fillStyle = '#ffe082'; ctx.fillText('⟳ ' + T.rot, W / 2, yy + f2 * 1.7, W - 24); }
+    }
     if ((kind === 'go' || kind === 'hold') && isAuto() && !matchMedia('(pointer: coarse)').matches) { ctx.font = '800 16px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(T.keyHint, tx, ty + fs * 0.85); ctx.fillStyle = '#fff'; ctx.fillText(T.keyHint, tx, ty + fs * 0.85); }
   }
 
@@ -897,7 +945,7 @@
     const hold = PG.ad || PG.paused || !!PG.pend || document.hidden; // реклама, пауза площадки, скрытая вкладка — мир стоит
     if (master) master.gain.value = hold || PG.mutedP ? 0 : 0.7;
     const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; realT += dt;
-    perfTick(raw, mode === 'play' && !hold && (!navigator.webdriver || dbg.adapt));
+    perfTick(raw, mode === 'play' && !hold && (!navigator.webdriver || dbg.adapt)); perfSample(now, raw * 1000, mode === 'play' && !hold);
     if (mode === 'play' && !hold && raw > 0 && raw < 0.25) { TM.fn++; TM.fs += raw; } // кадров в секунду за заезд — уходит вместе с итогом
     if (!save.rot && mode === 'play' && W > H2 * 1.15 && matchMedia('(pointer: coarse)').matches) { save.rot = 1; store(); } // играл лёжа — подсказку «поверни телефон» больше не показываем
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
@@ -906,7 +954,9 @@
     if (mode === 'play' && !dbg.freeze && !hold) {
       inp = input(); const auto = isAuto();
       if (auto && wait && inp.hook) wait = false; // «один палец»: уровень и каждая новая попытка начинаются с первого нажатия
+      if (auto && wait && FR.on && lvl === 0 && (FR.w += Math.min(raw, 0.25)) > 5) wait = false; // первый запуск: не нажал за 5 секунд — поехали сами, пусть увидит игру
       const want = auto && wait ? 0 : tutor(inp);
+      TA.t = want === 0 && !(auto && wait) ? TA.t + Math.min(raw, 0.25) : 0; // сколько уже ждём игрока на первом уровне
       ts = auto && wait ? 0 : want >= 1 ? Math.min(1, ts + dt * 6) : Math.max(want, ts - dt * 7);
       acc += dt * ts; let n = 0;
       while (acc >= P.DT && n < 10) {
@@ -914,7 +964,7 @@
         S.step(inp); acc -= P.DT; n++;
         for (const e of S.events) {
           if (e.e === 'hook') { sfx.hook(); hookT0 = S.t; } else if (e.e === 'unhook') sfx.unhook();
-          else if (e.e === 'dead') { TM.deaths++; if (TM.deaths <= 40) pgEv('crash', runData({ reason: e.why || 'fell' })); sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
+          else if (e.e === 'dead') { TM.deaths++; TA.lock = false; TA.early = false; TA.auto = false; if (TM.deaths <= 40) pgEv('crash', runData({ reason: e.why || 'fell' })); sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
           else if (e.e === 'cp') { sfx.cp(); toasts.push({ t: 0, text: T.cp, col: '#69f0ae' }); }
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
