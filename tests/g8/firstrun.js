@@ -1,5 +1,5 @@
 // Hook Truck, сборка 10: самый первый запуск — без меню, сразу уровень 1 в режиме «один палец», и провалить его нельзя.
-// Четыре новичка: смотрит и ничего не жмёт; зажал и не отпускает; тычет как попало; отпускает слишком рано. Плюс: кто уже играл — в меню; второй заход новичка — в меню;
+// Четыре новичка: смотрит и ничего не жмёт (ждём его у ямы; после первого касания доводим до финиша); зажал и не отпускает; тычет как попало; отпускает слишком рано. Плюс: кто уже играл — в меню; второй заход новичка — в меню;
 // замер кадров performance_sample; закрыл игру посреди уровня — progression_failed (how: left). node tests/g8/firstrun.js
 const { chromium } = require('/opt/npm-tools/node_modules/playwright');
 const path = require('path'), fs = require('fs');
@@ -23,9 +23,12 @@ const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
     const ps = await ev(p, 'progression_started'); ok(ps.length === 1 && ps[0].step_id === 'L01' && ps[0].step_index === 1 && ps[0].first_run === true && ps[0].control === 'auto', 'progression_started с отметкой первого запуска: ' + JSON.stringify(ps[0]));
     await p.screenshot({ path: '/tmp/pg/first-1wait.png' });
     await p.waitForTimeout(5200); s = await st(p); ok(!s.wait, 'не нажал за 5 секунд — поехали сами');
-    await p.waitForTimeout(4000); await p.screenshot({ path: '/tmp/pg/first-2assist.png' });
+    await p.waitForTimeout(9000); await p.screenshot({ path: '/tmp/pg/first-2edge.png' });
+    const e1 = await p.evaluate(() => ({ ts: window.__hook.ts, tut: window.__hook.tut, mode: window.__hook.mode, rope: !!window.__hook.S.rope })), x1 = (await st(p)).x; await p.waitForTimeout(4000);
+    ok(e1.mode === 'play' && e1.ts === 0 && e1.tut === 'hold' && !e1.rope && (await st(p)).x === x1 && (await ev(p, 'progression_completed')).length === 0, 'ни разу не коснулся — грузовик ждёт у ямы с рукой «держи», сам уровень не проходится: ' + JSON.stringify(e1));
+    await p.keyboard.down('Space'); await p.waitForTimeout(150); await p.keyboard.up('Space'); // одно короткое касание
     const t = await untilWin(p, 60000); const pc = await ev(p, 'progression_completed'), cr = await ev(p, 'crash');
-    ok(t > 0 && pc.length === 1 && pc[0].deaths === 0 && cr.length === 0, `ничего не нажимал — уровень 1 пройден за ${t.toFixed(0)} с без аварий`); ok(pc[0] && pc[0].assists >= 3, 'игра сама показала, как цеплять и отпускать: подсказок ' + (pc[0] && pc[0].assists));
+    ok(t > 0 && pc.length === 1 && pc[0].deaths === 0 && cr.length === 0, `одно касание — и уровень 1 пройден за ${t.toFixed(0)} с без аварий`); ok(pc[0] && pc[0].assists >= 2, 'дальше игра сама показала, как цеплять и отпускать: подсказок ' + (pc[0] && pc[0].assists));
     ok(await p.evaluate(() => window.__hook.save().ctl === 'auto' && window.__hook.save().stars[0] > 0), '«один палец» и звёзды сохранены');
     await p.screenshot({ path: '/tmp/pg/first-3win.png' }); ok(p.errs.length === 0, 'ошибок нет' + (p.errs.length ? ': ' + p.errs[0] : ''));
     // второй заход того же игрока — меню, управление то же

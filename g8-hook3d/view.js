@@ -199,7 +199,7 @@
   let ctl = save.ctl === 'auto' ? 'auto' : 'manual', wait = false, ts = 1, tut = null, hookT0 = 0;
   // Самый первый запуск: без меню, сразу уровень 1 в режиме «один палец» (газ сам). По данным песочницы 16% уходили из меню, а 44% начавших не проходили ни одного уровня.
   // Кто уже играл или сам выбрал управление — у тех ничего не меняется. TA — помощь на первом уровне: игра не даёт его провалить.
-  const FR = { done: false, on: false, w: 0 }, TA = { t: 0, auto: false, n: 0, lock: false, early: false };
+  const FR = { done: false, on: false, w: 0 }, TA = { t: 0, auto: false, n: 0, lock: false, early: false, user: false };
   const isNew = () => !save.stars.some((n) => n > 0) && !(save.tut && (save.tut[0] || save.tut[1])); // ни одного пройденного уровня — в том числе тот, кто заходил и ушёл
   function firstRun() {
     if (FR.done) return; FR.done = true;
@@ -261,7 +261,7 @@
     return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: duo && (!!k.KeyS || held('pull')) };
   }
 
-  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; TA.t = 0; TA.auto = false; TA.n = 0; TA.lock = false; TA.early = false; FR.w = 0; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; pgEv('progression_started', Object.assign(stepOf(lvl), { control: duo ? 'duo' : ctl, first_run: FR.on && lvl === 0 && !(save.tut && save.tut[0]) })); ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; TA.t = 0; TA.auto = false; TA.n = 0; TA.lock = false; TA.early = false; TA.user = false; FR.w = 0; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; pgEv('progression_started', Object.assign(stepOf(lvl), { control: duo ? 'duo' : ctl, first_run: FR.on && lvl === 0 && !(save.tut && save.tut[0]) })); ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
@@ -309,8 +309,8 @@
       if (g.climb) { if (S.wallTouch || tr.x > a.x - 300) tut = 'hold'; return 1; }
       if (tr.x > a.x + 40) { if (slow) inp.hook = false; return 1; } // кольцо уже позади — «держи» не показываем; на первом уровне за кольцо позади не цепляем (иначе утянет назад в яму)
       if (tr.x > a.x - g.att - (slow ? 170 : 340)) tut = 'hold'; // рука появляется заранее: нажать можно сразу, крюк сам выстрелит у края
-      if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; if (stop && TA.t > 2.5) { TA.auto = true; TA.n++; return 1; } inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
-      if (slow && !inp.hook) { if (TA.t > 2.5) { TA.auto = true; TA.n++; inp.hook = true; return 1; } return 0; }
+      if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; if (stop && TA.user && TA.t > 2.5) { TA.auto = true; TA.n++; return 1; } inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
+      if (slow && !inp.hook) { if (TA.user && TA.t > 2.5) { TA.auto = true; TA.n++; inp.hook = true; return 1; } return 0; } // сама игра цепляет только за того, кто хоть раз коснулся экрана: без единого нажатия уровень сам не проходится
       return 1;
     }
     const a = S.ropeA, g = G[a.i]; if (!g) return 1;
@@ -952,7 +952,7 @@
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
     let inp = { gas: false, brake: false, hook: false, pull: false };
     if (mode === 'play' && !dbg.freeze && !hold) {
-      inp = input(); const auto = isAuto();
+      inp = input(); const auto = isAuto(); if (inp.hook) TA.user = true;
       if (auto && wait && inp.hook) wait = false; // «один палец»: уровень и каждая новая попытка начинаются с первого нажатия
       if (auto && wait && FR.on && lvl === 0 && (FR.w += Math.min(raw, 0.25)) > 5) wait = false; // первый запуск: не нажал за 5 секунд — поехали сами, пусть увидит игру
       const want = auto && wait ? 0 : tutor(inp);
