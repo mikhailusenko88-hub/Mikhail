@@ -1,0 +1,355 @@
+{
+ "target": "n4",
+ "f0": 82.55018214821803,
+ "ref": {
+  "ecapa": [
+   0.9735208660364151,
+   0.26101463414634146
+  ],
+  "wavlm": [
+   0.9961962059140206,
+   0.6300219512195122
+  ],
+  "resem": [
+   0.9882197961211204,
+   0.6264439024390244
+  ]
+ },
+ "g03": {
+  "close": 0.6247,
+  "sims": {
+   "ecapa": 0.558,
+   "wavlm": 0.952,
+   "resem": 0.835
+  },
+  "f0": 89.0,
+  "id": "g03",
+  "spe": {
+   "ru_kejilgan": 0.178,
+   "ru_nash2": 0.822
+  },
+  "pitch": "low"
+ },
+ "singles": [
+  {
+   "id": "nash2@x-low",
+   "close": 0.6855,
+   "sims": {
+    "ecapa": 0.64,
+    "wavlm": 0.96,
+    "resem": 0.852
+   },
+   "f0": 83.6
+  },
+  {
+   "id": "nash3@x-low",
+   "close": 0.6478,
+   "sims": {
+    "ecapa": 0.576,
+    "wavlm": 0.958,
+    "resem": 0.846
+   },
+   "f0": 92.9
+  },
+  {
+   "id": "nash1@x-low",
+   "close": 0.6446,
+   "sims": {
+    "ecapa": 0.588,
+    "wavlm": 0.963,
+    "resem": 0.832
+   },
+   "f0": 86.1
+  },
+  {
+   "id": "eduard@x-low",
+   "close": 0.6438,
+   "sims": {
+    "ecapa": 0.608,
+    "wavlm": 0.976,
+    "resem": 0.807
+   },
+   "f0": 89.5
+  },
+  {
+   "id": "roman@x-low",
+   "close": 0.559,
+   "sims": {
+    "ecapa": 0.509,
+    "wavlm": 0.923,
+    "resem": 0.817
+   },
+   "f0": 88.7
+  },
+  {
+   "id": "alexandr@x-low",
+   "close": 0.5166,
+   "sims": {
+    "ecapa": 0.564,
+    "wavlm": 0.906,
+    "resem": 0.761
+   },
+   "f0": 89.9
+  },
+  {
+   "id": "safarhuja@low",
+   "close": 0.4238,
+   "sims": {
+    "ecapa": 0.532,
+    "wavlm": 0.864,
+    "resem": 0.717
+   },
+   "f0": 86.5
+  },
+  {
+   "id": "safarhuja@x-low",
+   "close": 0.4092,
+   "sims": {
+    "ecapa": 0.533,
+    "wavlm": 0.855,
+    "resem": 0.711
+   },
+   "f0": 80.3
+  },
+  {
+   "id": "miyau@x-low",
+   "close": 0.3832,
+   "sims": {
+    "ecapa": 0.4,
+    "wavlm": 0.857,
+    "resem": 0.748
+   },
+   "f0": 85.9
+  },
+  {
+   "id": "bogdan@x-low",
+   "close": 0.3675,
+   "sims": {
+    "ecapa": 0.331,
+    "wavlm": 0.866,
+    "resem": 0.756
+   },
+   "f0": 95.0
+  },
+  {
+   "id": "kejilgan@x-low",
+   "close": 0.1934,
+   "sims": {
+    "ecapa": 0.215,
+    "wavlm": 0.864,
+    "resem": 0.628
+   },
+   "f0": 81.3
+  },
+  {
+   "id": "kejilgan@low",
+   "close": 0.1927,
+   "sims": {
+    "ecapa": 0.234,
+    "wavlm": 0.885,
+    "resem": 0.597
+   },
+   "f0": 91.3
+  }
+ ],
+ "finals": [
+  {
+   "close": 0.7407,
+   "sims": {
+    "ecapa": 0.662,
+    "wavlm": 0.974,
+    "resem": 0.887
+   },
+   "f0": 81.2,
+   "spe": {
+    "ru_nash2": 0.5057,
+    "ru_eduard": 0.2167,
+    "ru_roman": 0.1275,
+    "ru_alexandr": 0.15
+   },
+   "pitch": "x-low",
+   "start": "nash2@x-low"
+  },
+  {
+   "close": 0.7304,
+   "sims": {
+    "ecapa": 0.654,
+    "wavlm": 0.973,
+    "resem": 0.881
+   },
+   "f0": 82.6,
+   "spe": {
+    "ru_kejilgan": 0.061,
+    "ru_nash2": 0.282,
+    "ru_eduard": 0.147,
+    "ru_nash3": 0.21,
+    "ru_alexandr": 0.3
+   },
+   "pitch": "x-low",
+   "start": "g03"
+  }
+ ],
+ "trail": [
+  {
+   "start": "nash2@x-low",
+   "it": 0,
+   "best": {
+    "close": 0.73,
+    "sims": {
+     "ecapa": 0.659,
+     "wavlm": 0.971,
+     "resem": 0.88
+    },
+    "f0": 81.6,
+    "spe": {
+     "ru_nash2": 0.7,
+     "ru_eduard": 0.3
+    },
+    "pitch": "x-low"
+   }
+  },
+  {
+   "start": "nash2@x-low",
+   "it": 1,
+   "best": {
+    "close": 0.7357,
+    "sims": {
+     "ecapa": 0.667,
+     "wavlm": 0.971,
+     "resem": 0.882
+    },
+    "f0": 81.1,
+    "spe": {
+     "ru_nash2": 0.595,
+     "ru_eduard": 0.255,
+     "ru_roman": 0.15
+    },
+    "pitch": "x-low"
+   }
+  },
+  {
+   "start": "nash2@x-low",
+   "it": 2,
+   "best": {
+    "close": 0.7407,
+    "sims": {
+     "ecapa": 0.662,
+     "wavlm": 0.974,
+     "resem": 0.887
+    },
+    "f0": 81.2,
+    "spe": {
+     "ru_nash2": 0.5057,
+     "ru_eduard": 0.2167,
+     "ru_roman": 0.1275,
+     "ru_alexandr": 0.15
+    },
+    "pitch": "x-low",
+    "start": "nash2@x-low"
+   }
+  },
+  {
+   "start": "nash2@x-low",
+   "it": 3,
+   "best": {
+    "close": 0.742,
+    "sims": {
+     "ecapa": 0.664,
+     "wavlm": 0.974,
+     "resem": 0.888
+    },
+    "f0": 81.7,
+    "spe": {
+     "ru_nash2": 0.4298,
+     "ru_eduard": 0.1842,
+     "ru_roman": 0.1084,
+     "ru_alexandr": 0.1275,
+     "ru_nash3": 0.15
+    },
+    "pitch": "x-low"
+   }
+  },
+  {
+   "start": "g03",
+   "it": 0,
+   "best": {
+    "close": 0.6896,
+    "sims": {
+     "ecapa": 0.633,
+     "wavlm": 0.964,
+     "resem": 0.856
+    },
+    "f0": 88.2,
+    "spe": {
+     "ru_kejilgan": 0.1246,
+     "ru_nash2": 0.5754,
+     "ru_eduard": 0.3
+    },
+    "pitch": "low"
+   }
+  },
+  {
+   "start": "g03",
+   "it": 1,
+   "best": {
+    "close": 0.7063,
+    "sims": {
+     "ecapa": 0.637,
+     "wavlm": 0.967,
+     "resem": 0.869
+    },
+    "f0": 93.8,
+    "spe": {
+     "ru_kejilgan": 0.0872,
+     "ru_nash2": 0.4028,
+     "ru_eduard": 0.21,
+     "ru_nash3": 0.3
+    },
+    "pitch": "low"
+   }
+  },
+  {
+   "start": "g03",
+   "it": 2,
+   "best": {
+    "close": 0.7168,
+    "sims": {
+     "ecapa": 0.645,
+     "wavlm": 0.976,
+     "resem": 0.867
+    },
+    "f0": 91.7,
+    "spe": {
+     "ru_kejilgan": 0.061,
+     "ru_nash2": 0.282,
+     "ru_eduard": 0.147,
+     "ru_nash3": 0.21,
+     "ru_alexandr": 0.3
+    },
+    "pitch": "low"
+   }
+  },
+  {
+   "start": "g03",
+   "it": 3,
+   "best": {
+    "close": 0.7182,
+    "sims": {
+     "ecapa": 0.657,
+     "wavlm": 0.974,
+     "resem": 0.865
+    },
+    "f0": 88.8,
+    "spe": {
+     "ru_kejilgan": 0.0519,
+     "ru_nash2": 0.2397,
+     "ru_eduard": 0.1249,
+     "ru_nash3": 0.1785,
+     "ru_alexandr": 0.255,
+     "ru_safarhuja": 0.15
+    },
+    "pitch": "low"
+   }
+  }
+ ]
+}
