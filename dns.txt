@@ -1,7 +1,3 @@
-# домен — адреса для списка «напрямую» в Amnezia (25.11, Петербургское образование и госуслуги СПб)
-petersburgedu.ru
-dnevnik2.petersburgedu.ru
-dnevnik.petersburgedu.ru
-gu.spb.ru
-gosuslugi.spb.ru
-pgu.spb.ru
+# домен [IP сервера] — проверка DNS (16.11 21:17 МСК, у Михаила сайт то открывается, то нет)
+nashdekor.ru 185.60.134.150
+crm.nashdekor.ru 185.60.134.150
