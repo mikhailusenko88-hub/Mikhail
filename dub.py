@@ -27,6 +27,10 @@ def _words(t):
 D.words = _words                  # D.clear_pct берёт words из модуля dubcore
 
 NAME, LANG = sys.argv[1], sys.argv[2]
+# Долгие языки (арабский — весь через Chatterbox Multilingual, на процессоре минуты на реплику): «part=k/N» — озвучить только свою
+# долю реплик и сохранить; «merge» — собрать доли и свести. Без третьего слова — как раньше, всё одним заданием.
+MODE = sys.argv[3] if len(sys.argv) > 3 else ""
+PART = tuple(int(x) for x in MODE[5:].split("/")) if MODE.startswith("part=") else None
 SRM = 44100                       # частота сведения студии
 OUT = os.path.join("out_dub", NAME)
 os.makedirs(OUT, exist_ok=True)
@@ -140,8 +144,12 @@ def main():
     # озвучка реплик
     rows, dub = [], {}
     starts = [ln["t"] for ln in L["lines"]]
+    nv = -1
     for k, ln in enumerate(L["lines"]):
-        if ln["vocal"]:
+        if ln["vocal"] or MODE == "merge":
+            continue
+        nv += 1
+        if PART and nv % PART[1] != PART[0]:
             continue
         i, name = ln["i"], ln["name"]
         text = T.get(str(i))
@@ -198,6 +206,25 @@ def main():
                    syl=round(syllables(text) / max(0.3, len(a) / SRM), 1))
         rows.append(row)
         D.log(f"{i:3d} {name:7s} понято {best['clear']:5.1f}% лишних {best['extra']} темп ×{row['tempo']} | {text}")
+
+    pdir = os.path.join(OUT, f"parts_{LANG}")
+    if PART:
+        os.makedirs(pdir, exist_ok=True)
+        np.savez_compressed(os.path.join(pdir, f"p{PART[0]}.npz"), **{str(i): np.asarray(a, dtype=np.float32) for i, a in dub.items()})
+        json.dump({"rows": rows, "minutes": round((time.time() - t_start) / 60, 1)}, open(os.path.join(pdir, f"p{PART[0]}.json"), "w", encoding="utf-8"), ensure_ascii=False)
+        D.log("доля готова", PART, "реплик", len(rows), "мин", round((time.time() - t_start) / 60, 1))
+        return
+    if MODE == "merge":
+        import glob
+        mins = 0.0
+        for f in sorted(glob.glob(os.path.join(pdir, "p*.json"))):
+            J = json.load(open(f, encoding="utf-8")); rows += J["rows"]; mins = max(mins, J.get("minutes", 0))
+        for f in sorted(glob.glob(os.path.join(pdir, "p*.npz"))):
+            z = np.load(f)
+            dub.update({int(k_): z[k_] for k_ in z.files})
+        rows.sort(key=lambda r: r["i"])
+        t_start -= mins * 60          # в отчёте — время самой долгой доли
+        D.log("доли собраны: реплик", len(rows), "звук у", len(dub))
 
     # сведение: подобрать громкость музыки (a) и голосов (b) по русскому полному сведению
     me = np.concatenate([D.load(os.path.join(dd, f), SRM) for f in sorted(os.listdir(dd)) if f.startswith("me_")])

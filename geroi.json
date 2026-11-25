@@ -32,6 +32,18 @@
    "engine": "kokoro",
    "lang": "h",
    "voice": "hf_alpha"
+  },
+  "fr": {
+   "engine": "kokoro",
+   "lang": "f",
+   "voice": "ff_siwis"
+  },
+  "ar": {
+   "engine": "mtl",
+   "lang": "ar",
+   "ref_default": true,
+   "cfg": 0.3,
+   "exag": 0.5
   }
  },
  "heroes": {
@@ -127,10 +139,14 @@
  "builds": {"37g": "37g", "36f": "36f", "36e": "36e", "35d": "35d", "37f": "37f", "36dub": "36c", "36c": "36c", "31dub": "31", "33dub": "33g", "34dub": "34d", "35dub": "35b", "37d": "37d", "38d": "38d", "39c": "39c", "38e": "38d", "39d": "39c", "38f": "38d", "39e": "39c", "38g": "38d", "39f": "39c", "32dub": "32", "30dub": "30", "29dub": "29", "28dub": "28", "27dub": "27"},
  "whisper_lang": {
   "hi": "fw:large-v3-turbo",
-  "de": "fw:large-v3-turbo"
+  "de": "fw:large-v3-turbo",
+  "ar": "fw:large-v3-turbo",
+  "fr": "fw:large-v3-turbo"
  },
  "by_chars": [
-  "hi"
+  "hi",
+  "ar"
  ],
- "_hi": "Хинди (проба 22.11, faster-whisper large-v3-turbo, по буквам): Барсик hf_beta 98 %, Рон hf_beta 100 %, Филя hf_alpha 100 %, Топа hm_omega 100 %, Пик hf_alpha (поднят, ×0,88) 93 %."
+ "_hi": "Хинди (проба 22.11, faster-whisper large-v3-turbo, по буквам): Барсик hf_beta 98 %, Рон hf_beta 100 %, Филя hf_alpha 100 %, Топа hm_omega 100 %, Пик hf_alpha (поднят, ×0,88) 93 %.",
+ "_ar_fr": "Арабский (литературный) и французский — подготовка по заданию Михаила 25.11.2026 (чат «Свой голос»); в обычный дубляж НЕ включены, в Studio не загружать до его слова «добавляй». fr — Kokoro ff_siwis (Apache-2.0, данные SIWIS — CC BY 4.0); ar — Chatterbox Multilingual (MIT) встроенным голосом, без образца; проверка ar — fw:large-v3-turbo по буквам (огласовки и варианты алифа не считаются)."
 }

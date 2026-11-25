@@ -1,0 +1,147 @@
+name: dub-parts
+# Дубляж долгого языка долями (арабский — весь через Chatterbox Multilingual, на процессоре минуты на реплику).
+# Запуск — строка в dubp-request.txt: «<сборка> <язык> <долей>», например «36f ar 8». Доли озвучиваются параллельно (dub.py … part=k/N),
+# потом одно задание собирает их и сводит (dub.py … merge) — превью, релиз, dub-files и отчёт как в обычном dub.
+on:
+  push:
+    branches: [golos-en]
+    paths: ['dubp-request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: dubp-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.r.outputs.name }}
+      lang: ${{ steps.r.outputs.lang }}
+      n: ${{ steps.r.outputs.n }}
+      parts: ${{ steps.r.outputs.parts }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: r
+        run: |
+          L=$(grep -v '^#' dubp-request.txt | head -1); set -- $L
+          echo "name=$1" >> $GITHUB_OUTPUT; echo "lang=$2" >> $GITHUB_OUTPUT; echo "n=${3:-6}" >> $GITHUB_OUTPUT
+          echo "parts=$(python3 -c "import json;print(json.dumps(list(range(int('${3:-6}')))))")" >> $GITHUB_OUTPUT
+          echo "Сборка $L"
+  part:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        part: ${{ fromJson(needs.plan.outputs.parts) }}
+    env:
+      HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      GH_TOKEN: ${{ github.token }}
+      NAME: ${{ needs.plan.outputs.name }}
+      LANGC: ${{ needs.plan.outputs.lang }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+          key: golos-lab-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m spacy download en_core_web_sm -q || true
+      - name: Файлы сборки
+        run: |
+          mkdir -p "tmp_dubsrc/$NAME"
+          gh release download "studio-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME" || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME"   # серии из телефона — исходники из готового ролика (dubsrc.yml)
+          [ -f "tmp_dubsrc/$NAME/ep-$NAME-540.mp4" ] || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
+          gh release download "studio-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
+          ls -la "tmp_dubsrc/$NAME"
+      - name: Дубляж — доля
+        run: python dub.py "$NAME" "$LANGC" "part=${{ matrix.part }}/${{ needs.plan.outputs.n }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: DP-${{ matrix.part }}
+          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}/p${{ matrix.part }}.*
+          retention-days: 7
+  final:
+    needs: [plan, part]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        lang: ['${{ needs.plan.outputs.lang }}']
+    env:
+      HF_HUB_DISABLE_SYMLINKS_WARNING: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      GH_TOKEN: ${{ github.token }}
+      NAME: ${{ needs.plan.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+          key: golos-lab-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
+          python -m spacy download en_core_web_sm -q || true
+      - name: Файлы сборки
+        run: |
+          mkdir -p "tmp_dubsrc/$NAME"
+          gh release download "studio-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME" || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME"   # серии из телефона — исходники из готового ролика (dubsrc.yml)
+          [ -f "tmp_dubsrc/$NAME/ep-$NAME-540.mp4" ] || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
+          gh release download "studio-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
+          ls -la "tmp_dubsrc/$NAME"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'DP-*'
+          merge-multiple: true
+          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}/
+      - name: Дубляж — сборка долей и сведение
+        run: |
+          ls -la "out_dub/$NAME/parts_${{ matrix.lang }}"
+          python dub.py "$NAME" "${{ matrix.lang }}" merge
+      - name: Превью и релиз
+        if: always()
+        run: |
+          O="out_dub/$NAME"; L="${{ matrix.lang }}"; V="tmp_dubsrc/$NAME/ep-$NAME-540.mp4"
+          if [ -f "$O/dub_$L.wav" ] && [ -f "$V" ]; then ffmpeg -y -loglevel error -i "$V" -i "$O/dub_$L.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k -shortest -movflags +faststart "$O/ep-$NAME-$L-540.mp4"; fi
+          if [ -f "$O/dub_$L.wav" ]; then ffmpeg -y -loglevel error -i "$O/dub_$L.wav" -c:a libmp3lame -b:a 192k "$O/dub_$L.mp3"; fi
+          gh release create "dub-$NAME" --target golos-en --prerelease --title "Дубляж: $NAME" --notes "Дорожки на других языках для YouTube Studio → Языки → Дубляж. Отчёты — ветка golos-en, out_dub/$NAME." >/dev/null 2>&1 || true
+          gh release upload "dub-$NAME" --clobber $(ls $O/dub_$L.wav $O/dub_$L.mp3 $O/ep-$NAME-$L-540.mp4 2>/dev/null) || true
+      - name: Дорожка — в ветку dub-files (оттуда страница Studio берёт файл для загрузки)
+        if: always()
+        run: |
+          O="out_dub/$NAME"; L="${{ matrix.lang }}"; [ -f "$O/dub_$L.mp3" ] || exit 0
+          git clone -q --depth 1 -b dub-files "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" df
+          mkdir -p "df/$NAME"; cp "$O/dub_$L.mp3" "df/$NAME/"
+          cd df && git config user.name dub && git config user.email dub@users.noreply.github.com
+          git add "$NAME/dub_$L.mp3" && git commit -qm "dub-files: $NAME $L" || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done
+      - name: Отчёт — в ветку
+        if: always()
+        run: |
+          git config user.name dub; git config user.email dub@users.noreply.github.com
+          git add out_dub/$NAME/report_${{ matrix.lang }}.md out_dub/$NAME/report_${{ matrix.lang }}.json 2>/dev/null || true
+          git commit -qm "dub $NAME ${{ matrix.lang }}" || echo nothing
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done

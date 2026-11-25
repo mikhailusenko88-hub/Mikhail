@@ -203,6 +203,8 @@ def spec_ref(spec):
     """Образец для Chatterbox Multilingual: готовый файл spec['ref'] или фраза голосом Piper spec['ref_piper']."""
     if spec.get("ref"):
         return spec["ref"]
+    if spec.get("ref_default"):      # встроенный голос модели (MIT) — когда свободного родного голоса-образца для языка нет (арабский)
+        return None
     key = spec["ref_piper"]
     if key not in _refcache:
         text = spec.get("ref_text") or "Heute ist ein schöner Tag. Die Kinder spielen draußen im Schnee und lachen laut."
@@ -222,7 +224,10 @@ def mtl(text, lang, ref, speed=1.0, cfg=0.5, exag=0.5):
         except Exception:
             traceback.print_exc()
             _mtl = M.from_pretrained(device="cpu")
-    w = call_kw(_mtl.generate, text=text, language_id=lang, audio_prompt_path=ref, exaggeration=exag, cfg_weight=cfg, temperature=0.8)
+    kw = dict(text=text, language_id=lang, exaggeration=exag, cfg_weight=cfg, temperature=0.8)
+    if ref:
+        kw["audio_prompt_path"] = ref
+    w = call_kw(_mtl.generate, **kw)
     a = resample(to_np(w), _mtl.sr)
     return tempo(a, speed) if abs(speed - 1.0) > 0.01 else a
 
@@ -295,6 +300,10 @@ def norm_chars(t):
     import unicodedata
     t = unicodedata.normalize("NFC", t.lower())
     t = t.replace("\u093c", "").replace("\u0901", "\u0902")
+    # арабский: без огласовок и растяжки; алиф с хамзой/маддой = алиф, алиф максура = йа, та марбута = ха, хамза на вав/йа = вав/йа
+    t = re.sub("[\u064b-\u0652\u0670\u0640]", "", t)
+    for a, b in (("أ", "ا"), ("إ", "ا"), ("آ", "ا"), ("ٱ", "ا"), ("ى", "ي"), ("ة", "ه"), ("ؤ", "و"), ("ئ", "ي"), ("ء", "")):
+        t = t.replace(a, b)
     return "".join(ch for ch in t if ch.isalnum())
 
 
