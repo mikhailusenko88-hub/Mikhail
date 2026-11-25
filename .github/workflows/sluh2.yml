@@ -24,12 +24,13 @@ jobs:
         id: rq
         run: |
           if grep -q smoke sluh2-request.txt; then echo "smoke=1" >> "$GITHUB_OUTPUT"; echo "n=1" >> "$GITHUB_OUTPUT"; else echo "smoke=0" >> "$GITHUB_OUTPUT"; echo "n=10" >> "$GITHUB_OUTPUT"; fi
+          echo "prev=$(grep -o 'final=[0-9]*' sluh2-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"   # final=<запуск>: только итог по замерам того запуска
       - uses: actions/setup-python@v5
-        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         with:
           python-version: '3.11'
       - uses: actions/cache@v4
-        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         with:
           path: |
             ~/.cache/pip
@@ -42,13 +43,13 @@ jobs:
             pik-free-cache-v2
             svoy-free-cache-v1
       - name: Install
-        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng unzip
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy
       - name: Реплики героев из сборок студии
-        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -59,13 +60,13 @@ jobs:
           done
           ls dubz/*/dub | head
       - name: Замеры
-        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         env:
           SMOKE: ${{ steps.rq.outputs.smoke }}
           GITHUB_TOKEN: ${{ github.token }}
         run: python sluh2.py feat ${{ matrix.part }} ${{ steps.rq.outputs.n }}
       - uses: actions/upload-artifact@v4
-        if: always() && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
+        if: always() && steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         with:
           name: SL-${{ matrix.part }}
           path: sl/
@@ -80,7 +81,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Замеры прошлого запуска (final=<запуск>)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prev=$(grep -o 'final=[0-9]*' sluh2-request.txt | head -1 | cut -d= -f2)
+          mkdir -p sl dl
+          if [ -n "$prev" ]; then
+            gh run download "$prev" -R ${{ github.repository }} -p 'SL-*' -D dl
+            for d in dl/*/; do cp -r "$d". sl/; done
+          fi
+          ls sl | head
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           pattern: 'SL-*'
           merge-multiple: true

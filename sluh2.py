@@ -858,7 +858,11 @@ def final():
         md += [f"## 3. {gname}: образец {tv.split('@')[0]} — {T['f0_hz']:.0f} Гц, размах {T['range']:.1f} пт, темп {T['rate']:.1f} слог/с", ""]
         if fl is None:
             md += ["Свой разброс не посчитан (мало фраз).", ""]; continue
-        RES["groups"][gname] = {"target": tv, "floor": fl, "cands": {}}
+        RES["groups"][gname] = {"target": tv, "floor": fl, "cands": {},
+                                "others": {k: sorted([[i, round(v, 4)] for v, i in oth[k]], key=lambda x: -x[1] if k in ("ecapa", "wavlm", "resem") else x[1])
+                                           for k in oth},
+                                "profile": {k: T.get(k) for k in ("f0", "f0_hz", "range", "mob", "rate", "pause_share", "hnr", "cpps", "bright", "air", "tilt",
+                                                                    "s_dur", "s_f0", "s_int", "gop")}}
         line = "Узнаватели голоса — похожесть образца с самим собой (в среднем / худший случай) и с ближайшим чужим голосом: "
         bits = []
         for k, nm, sgn in VEC[:3]:
