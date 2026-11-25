@@ -1,266 +1,297 @@
-# Проверка DNS — 2026-11-25 14:16 UTC
+# Проверка DNS — 2026-11-25 14:27 UTC
 
-## domonap.ru
+## upload.rutube.ru
 ```
 --- whois (реестр)
-domain:        DOMONAP.RU
-nserver:       ns1.domonap.ru. 93.157.247.19
-nserver:       ns2.domonap.ru. 93.157.247.20
-state:         REGISTERED, DELEGATED, UNVERIFIED
-registrar:     BEGET-RU
-created:       2017-08-25T16:42:15Z
-paid-till:     2027-08-25T16:42:15Z
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62749
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A domonap.ru / A www.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 23421
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+--- ns1.firstvds.ru: A upload.rutube.ru / A www.upload.rutube.ru
    / 
---- ns2.firstvds.ru: A domonap.ru / A www.domonap.ru
+--- ns2.firstvds.ru: A upload.rutube.ru / A www.upload.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A domonap.ru -> 91.221.164.41 
---- публичный DNS 1.1.1.1: A domonap.ru -> 91.221.164.41 
---- публичный DNS 77.88.8.8: A domonap.ru -> 91.221.164.41 
---- http://domonap.ru/ -> 301 91.221.164.41
---- https://domonap.ru/ -> 200 91.221.164.41
---- http://www.domonap.ru/ -> 301 91.221.164.41
+--- публичный DNS 8.8.8.8: A upload.rutube.ru -> 195.246.246.21 77.220.220.28 
+--- публичный DNS 1.1.1.1: A upload.rutube.ru -> 77.220.220.28 195.246.246.21 
+--- публичный DNS 77.88.8.8: A upload.rutube.ru -> 77.220.220.28 195.246.246.21 
+--- http://upload.rutube.ru/ -> 000 
+--- https://upload.rutube.ru/ -> 000 
+--- http://www.upload.rutube.ru/ -> 000 
 ```
 
-## api.domonap.ru
+## uploader.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 40805
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
---- ns1.firstvds.ru: A api.domonap.ru / A www.api.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 49413
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+--- ns1.firstvds.ru: A uploader.rutube.ru / A www.uploader.rutube.ru
    / 
---- ns2.firstvds.ru: A api.domonap.ru / A www.api.domonap.ru
+--- ns2.firstvds.ru: A uploader.rutube.ru / A www.uploader.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A api.domonap.ru -> 89.207.217.94 
---- публичный DNS 1.1.1.1: A api.domonap.ru -> 89.207.217.94 
---- публичный DNS 77.88.8.8: A api.domonap.ru -> 89.207.217.94 
---- http://api.domonap.ru/ -> 302 89.207.217.94
---- https://api.domonap.ru/ -> 200 89.207.217.94
---- http://www.api.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A uploader.rutube.ru -> 
+--- публичный DNS 1.1.1.1: A uploader.rutube.ru -> 
+--- публичный DNS 77.88.8.8: A uploader.rutube.ru -> 
+--- http://uploader.rutube.ru/ -> 000 
+--- https://uploader.rutube.ru/ -> 000 
+--- http://www.uploader.rutube.ru/ -> 000 
 ```
 
-## app.domonap.ru
+## u.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41798
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A app.domonap.ru / A www.app.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57761
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+--- ns1.firstvds.ru: A u.rutube.ru / A www.u.rutube.ru
    / 
---- ns2.firstvds.ru: A app.domonap.ru / A www.app.domonap.ru
+--- ns2.firstvds.ru: A u.rutube.ru / A www.u.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A app.domonap.ru -> 
---- публичный DNS 1.1.1.1: A app.domonap.ru -> 
---- публичный DNS 77.88.8.8: A app.domonap.ru -> 
---- http://app.domonap.ru/ -> 000 
---- https://app.domonap.ru/ -> 000 
---- http://www.app.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A u.rutube.ru -> 195.246.246.13 77.220.221.13 77.220.220.13 
+--- публичный DNS 1.1.1.1: A u.rutube.ru -> 77.220.220.13 77.220.221.13 195.246.246.13 
+--- публичный DNS 77.88.8.8: A u.rutube.ru -> 77.220.220.13 77.220.221.13 195.246.246.13 
+--- http://u.rutube.ru/ -> 308 77.220.220.13
+--- https://u.rutube.ru/ -> 000 
+--- http://www.u.rutube.ru/ -> 000 
 ```
 
-## lk.domonap.ru
+## studio.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 55521
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
---- ns1.firstvds.ru: A lk.domonap.ru / A www.lk.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8631
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+--- ns1.firstvds.ru: A studio.rutube.ru / A www.studio.rutube.ru
    / 
---- ns2.firstvds.ru: A lk.domonap.ru / A www.lk.domonap.ru
+--- ns2.firstvds.ru: A studio.rutube.ru / A www.studio.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A lk.domonap.ru -> 
---- публичный DNS 1.1.1.1: A lk.domonap.ru -> 
---- публичный DNS 77.88.8.8: A lk.domonap.ru -> 
---- http://lk.domonap.ru/ -> 000 
---- https://lk.domonap.ru/ -> 000 
---- http://www.lk.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A studio.rutube.ru -> rutube.ru. 178.248.233.148 109.238.90.239 
+--- публичный DNS 1.1.1.1: A studio.rutube.ru -> rutube.ru. 109.238.90.239 178.248.233.148 
+--- публичный DNS 77.88.8.8: A studio.rutube.ru -> rutube.ru. 178.248.233.148 109.238.90.239 
+--- http://studio.rutube.ru/ -> 301 109.238.90.239
+--- https://studio.rutube.ru/ -> 200 178.248.233.148
+--- http://www.studio.rutube.ru/ -> 000 
 ```
 
-## cloud.domonap.ru
+## api.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1183
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
---- ns1.firstvds.ru: A cloud.domonap.ru / A www.cloud.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42514
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+--- ns1.firstvds.ru: A api.rutube.ru / A www.api.rutube.ru
    / 
---- ns2.firstvds.ru: A cloud.domonap.ru / A www.cloud.domonap.ru
+--- ns2.firstvds.ru: A api.rutube.ru / A www.api.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A cloud.domonap.ru -> 
---- публичный DNS 1.1.1.1: A cloud.domonap.ru -> 
---- публичный DNS 77.88.8.8: A cloud.domonap.ru -> 
---- http://cloud.domonap.ru/ -> 000 
---- https://cloud.domonap.ru/ -> 000 
---- http://www.cloud.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A api.rutube.ru -> 
+--- публичный DNS 1.1.1.1: A api.rutube.ru -> 
+--- публичный DNS 77.88.8.8: A api.rutube.ru -> 
+--- http://api.rutube.ru/ -> 000 
+--- https://api.rutube.ru/ -> 000 
+--- http://www.api.rutube.ru/ -> 000 
 ```
 
-## sip.domonap.ru
+## s3.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 61611
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A sip.domonap.ru / A www.sip.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 59935
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+--- ns1.firstvds.ru: A s3.rutube.ru / A www.s3.rutube.ru
    / 
---- ns2.firstvds.ru: A sip.domonap.ru / A www.sip.domonap.ru
+--- ns2.firstvds.ru: A s3.rutube.ru / A www.s3.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A sip.domonap.ru -> 
---- публичный DNS 1.1.1.1: A sip.domonap.ru -> 
---- публичный DNS 77.88.8.8: A sip.domonap.ru -> 
---- http://sip.domonap.ru/ -> 000 
---- https://sip.domonap.ru/ -> 000 
---- http://www.sip.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A s3.rutube.ru -> 
+--- публичный DNS 1.1.1.1: A s3.rutube.ru -> 
+--- публичный DNS 77.88.8.8: A s3.rutube.ru -> 
+--- http://s3.rutube.ru/ -> 000 
+--- https://s3.rutube.ru/ -> 000 
+--- http://www.s3.rutube.ru/ -> 000 
 ```
 
-## media.domonap.ru
+## storage.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58555
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A media.domonap.ru / A www.media.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 56059
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+--- ns1.firstvds.ru: A storage.rutube.ru / A www.storage.rutube.ru
    / 
---- ns2.firstvds.ru: A media.domonap.ru / A www.media.domonap.ru
+--- ns2.firstvds.ru: A storage.rutube.ru / A www.storage.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A media.domonap.ru -> 
---- публичный DNS 1.1.1.1: A media.domonap.ru -> 
---- публичный DNS 77.88.8.8: A media.domonap.ru -> 
---- http://media.domonap.ru/ -> 000 
---- https://media.domonap.ru/ -> 000 
---- http://www.media.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A storage.rutube.ru -> 
+--- публичный DNS 1.1.1.1: A storage.rutube.ru -> 
+--- публичный DNS 77.88.8.8: A storage.rutube.ru -> 
+--- http://storage.rutube.ru/ -> 000 
+--- https://storage.rutube.ru/ -> 000 
+--- http://www.storage.rutube.ru/ -> 000 
 ```
 
-## video.domonap.ru
+## bl.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:23:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 46435
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A video.domonap.ru / A www.video.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57835
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+--- ns1.firstvds.ru: A bl.rutube.ru / A www.bl.rutube.ru
    / 
---- ns2.firstvds.ru: A video.domonap.ru / A www.video.domonap.ru
+--- ns2.firstvds.ru: A bl.rutube.ru / A www.bl.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A video.domonap.ru -> 
---- публичный DNS 1.1.1.1: A video.domonap.ru -> 
---- публичный DNS 77.88.8.8: A video.domonap.ru -> 
---- http://video.domonap.ru/ -> 000 
---- https://video.domonap.ru/ -> 000 
---- http://www.video.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A bl.rutube.ru -> 178.248.232.241 91.221.164.55 
+--- публичный DNS 1.1.1.1: A bl.rutube.ru -> 178.248.232.241 91.221.164.55 
+--- публичный DNS 77.88.8.8: A bl.rutube.ru -> 91.221.164.55 178.248.232.241 
+--- http://bl.rutube.ru/ -> 404 91.221.164.55
+--- https://bl.rutube.ru/ -> 404 178.248.232.241
+--- http://www.bl.rutube.ru/ -> 000 
 ```
 
-## stream.domonap.ru
+## cdn.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:28:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 45999
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A stream.domonap.ru / A www.stream.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 42217
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+--- ns1.firstvds.ru: A cdn.rutube.ru / A www.cdn.rutube.ru
    / 
---- ns2.firstvds.ru: A stream.domonap.ru / A www.stream.domonap.ru
+--- ns2.firstvds.ru: A cdn.rutube.ru / A www.cdn.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A stream.domonap.ru -> 
---- публичный DNS 1.1.1.1: A stream.domonap.ru -> 
---- публичный DNS 77.88.8.8: A stream.domonap.ru -> 
---- http://stream.domonap.ru/ -> 000 
---- https://stream.domonap.ru/ -> 000 
---- http://www.stream.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A cdn.rutube.ru -> 
+--- публичный DNS 1.1.1.1: A cdn.rutube.ru -> 
+--- публичный DNS 77.88.8.8: A cdn.rutube.ru -> 
+--- http://cdn.rutube.ru/ -> 000 
+--- https://cdn.rutube.ru/ -> 000 
+--- http://www.cdn.rutube.ru/ -> 000 
 ```
 
-## cdn.domonap.ru
+## video.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:28:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41234
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
---- ns1.firstvds.ru: A cdn.domonap.ru / A www.cdn.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 1594
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+--- ns1.firstvds.ru: A video.rutube.ru / A www.video.rutube.ru
    / 
---- ns2.firstvds.ru: A cdn.domonap.ru / A www.cdn.domonap.ru
+--- ns2.firstvds.ru: A video.rutube.ru / A www.video.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A cdn.domonap.ru -> 
---- публичный DNS 1.1.1.1: A cdn.domonap.ru -> 
---- публичный DNS 77.88.8.8: A cdn.domonap.ru -> 
---- http://cdn.domonap.ru/ -> 000 
---- https://cdn.domonap.ru/ -> 000 
---- http://www.cdn.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A video.rutube.ru -> rutube.ru. 109.238.90.239 178.248.233.148 
+--- публичный DNS 1.1.1.1: A video.rutube.ru -> rutube.ru. 109.238.90.239 178.248.233.148 
+--- публичный DNS 77.88.8.8: A video.rutube.ru -> rutube.ru. 109.238.90.239 178.248.233.148 
+--- http://video.rutube.ru/ -> 301 109.238.90.239
+--- https://video.rutube.ru/ -> 301 178.248.233.148
+--- http://www.video.rutube.ru/ -> 000 
 ```
 
-## auth.domonap.ru
+## static.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:28:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 51405
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
---- ns1.firstvds.ru: A auth.domonap.ru / A www.auth.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 60917
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+--- ns1.firstvds.ru: A static.rutube.ru / A www.static.rutube.ru
    / 
---- ns2.firstvds.ru: A auth.domonap.ru / A www.auth.domonap.ru
+--- ns2.firstvds.ru: A static.rutube.ru / A www.static.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A auth.domonap.ru -> 
---- публичный DNS 1.1.1.1: A auth.domonap.ru -> 
---- публичный DNS 77.88.8.8: A auth.domonap.ru -> 
---- http://auth.domonap.ru/ -> 000 
---- https://auth.domonap.ru/ -> 000 
---- http://www.auth.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A static.rutube.ru -> 89.248.230.8 
+--- публичный DNS 1.1.1.1: A static.rutube.ru -> 89.248.230.8 
+--- публичный DNS 77.88.8.8: A static.rutube.ru -> 89.248.230.8 
+--- http://static.rutube.ru/ -> 200 89.248.230.8
+--- https://static.rutube.ru/ -> 200 89.248.230.8
+--- http://www.static.rutube.ru/ -> 000 
 ```
 
-## mobile.domonap.ru
+## pic.rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+Last updated on 2026-11-25T14:28:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31340
-domonap.ru.		345600	IN	NS	ns2.domonap.ru.
-domonap.ru.		345600	IN	NS	ns1.domonap.ru.
---- ns1.firstvds.ru: A mobile.domonap.ru / A www.mobile.domonap.ru
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 51224
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+--- ns1.firstvds.ru: A pic.rutube.ru / A www.pic.rutube.ru
    / 
---- ns2.firstvds.ru: A mobile.domonap.ru / A www.mobile.domonap.ru
+--- ns2.firstvds.ru: A pic.rutube.ru / A www.pic.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A mobile.domonap.ru -> 
---- публичный DNS 1.1.1.1: A mobile.domonap.ru -> 
---- публичный DNS 77.88.8.8: A mobile.domonap.ru -> 
---- http://mobile.domonap.ru/ -> 000 
---- https://mobile.domonap.ru/ -> 000 
---- http://www.mobile.domonap.ru/ -> 000 
+--- публичный DNS 8.8.8.8: A pic.rutube.ru -> 89.248.230.8 
+--- публичный DNS 1.1.1.1: A pic.rutube.ru -> 89.248.230.8 
+--- публичный DNS 77.88.8.8: A pic.rutube.ru -> 89.248.230.8 
+--- http://pic.rutube.ru/ -> 204 89.248.230.8
+--- https://pic.rutube.ru/ -> 204 89.248.230.8
+--- http://www.pic.rutube.ru/ -> 000 
 ```
 
-## domonap.com
+## rutube.ru
 ```
 --- whois (реестр)
-Last updated on 2026-11-25T14:13:01Z
+domain:        RUTUBE.RU
+nserver:       ns3-l2.nic.ru.
+nserver:       ns4-cloud.nic.ru.
+nserver:       ns4-l2.nic.ru.
+nserver:       ns8-cloud.nic.ru.
+nserver:       ns8-l2.nic.ru.
+state:         REGISTERED, DELEGATED, VERIFIED
+registrar:     RU-CENTER-RU
+created:       2006-10-10T20:00:00Z
+paid-till:     2027-10-10T21:00:00Z
+Last updated on 2026-11-25T14:28:01Z
 --- зона .ru (a.dns.ripn.net), NS
-;; ->>HEADER<<- opcode: QUERY, status: REFUSED, id: 55493
---- ns1.firstvds.ru: A domonap.com / A www.domonap.com
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58909
+RUTUBE.RU.		345600	IN	NS	ns4-cloud.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns4-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns3-l2.nic.RU.
+RUTUBE.RU.		345600	IN	NS	ns8-l2.nic.RU.
+--- ns1.firstvds.ru: A rutube.ru / A www.rutube.ru
    / 
---- ns2.firstvds.ru: A domonap.com / A www.domonap.com
+--- ns2.firstvds.ru: A rutube.ru / A www.rutube.ru
    / 
---- публичный DNS 8.8.8.8: A domonap.com -> 91.221.164.41 
---- публичный DNS 1.1.1.1: A domonap.com -> 91.221.164.41 
---- публичный DNS 77.88.8.8: A domonap.com -> 91.221.164.41 
---- http://domonap.com/ -> 301 91.221.164.41
---- https://domonap.com/ -> 200 91.221.164.41
---- http://www.domonap.com/ -> 301 91.221.164.41
+--- публичный DNS 8.8.8.8: A rutube.ru -> 109.238.90.239 178.248.233.148 
+--- публичный DNS 1.1.1.1: A rutube.ru -> 109.238.90.239 178.248.233.148 
+--- публичный DNS 77.88.8.8: A rutube.ru -> 178.248.233.148 109.238.90.239 
+--- http://rutube.ru/ -> 301 178.248.233.148
+--- https://rutube.ru/ -> 200 178.248.233.148
+--- http://www.rutube.ru/ -> 301 178.248.233.148
 ```
