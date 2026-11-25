@@ -12,7 +12,7 @@ concurrency:
 jobs:
   opt:
     runs-on: ubuntu-latest
-    timeout-minutes: 110
+    timeout-minutes: 200
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +48,10 @@ jobs:
           export SPEC=$(rq spec); export SPEC=${SPEC:-0}
           export PITCHTOL=$(rq pitchtol); export PITCHTOL=${PITCHTOL:-2.0}
           export MAN=$(rq man)
+          export OPTPOOL=$(rq optpool); export OPTPOOL=${OPTPOOL:-0}
+          export HEROPOOL=$(rq heropool)
+          export POP=$(rq pop); export POP=${POP:-14}
+          export TLIM=$(rq tlim); export TLIM=${TLIM:-70}
           python sluh_opt.py ${{ matrix.target }} ${{ matrix.seed }} $(rq gens)
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -55,7 +59,7 @@ jobs:
         if: always()
         with:
           name: OP-${{ matrix.target }}-${{ matrix.seed }}
-          path: cast10/opt_*
+          path: cast10/opt_${{ matrix.target }}_${{ matrix.seed }}*
           retention-days: 7
   final:
     needs: [opt]

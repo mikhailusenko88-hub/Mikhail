@@ -41,6 +41,13 @@ class Lab:
         self.torch, self.S, self.K3, self.svoy2 = torch, sluh2, K3, svoy2
         ph = sluh2.phrases24()
         self.ph = [ph[i] for i in (0, 2, 5, 6, 9, 11, 14, 17)]
+        self.n8 = len(self.ph)
+        npool = int(os.environ.get("OPTPOOL", "0"))      # круг 4: подбор тембра не на восьми фразах, а ещё и на запасе (героям — их реплики из мультика)
+        if npool:
+            import sluh_man
+            hero = sluh_man.HERO.get(target) if os.environ.get("HEROPOOL") == "1" else None
+            self.ph = self.ph + sluh_man.pool_phrases(npool, hero)
+            log("фраз для подбора тембра:", len(self.ph), "(герой:", hero, ")")
         ru = svoy2.Net(svoy2.RU)
         if target == "n4":
             ru.put(ru.build(svoy_bars.W4)); spk = svoy2.SLOT[svoy2.RU]
@@ -70,6 +77,7 @@ class Lab:
         self.mu = M.mean(0)
         U, sv, Vt = np.linalg.svd(M - self.mu, full_matrices=False)
         self.pc = Vt[:NPC]; self.sd = sv[:NPC] / np.sqrt(len(names) - 1)
+        self.sd = np.maximum(self.sd, 0.02 * self.sd[0])            # последние оси почти пустые — не делить на ноль
         self.norms = (float(np.percentile(np.linalg.norm(M, axis=1), 10)), float(np.percentile(np.linalg.norm(M, axis=1), 90)))
         self.names, self.M = names, M
         b, self.pitch = BASE[target]
@@ -163,13 +171,18 @@ def main(target, seed, gens):
     svoy_omo.ruacc(); svoy2.patch_ruaccent()
     L = Lab(target)
     rnd = np.random.default_rng(seed)
-    all8 = list(range(8))
+    NP = len(L.ph)
+    if NP > 16:                                   # запас фраз: последние восемь — только проверка, подбор их не видит
+        TRAIN, all8 = list(range(NP - 8)), list(range(NP - 8, NP))
+    else:
+        TRAIN, all8 = list(range(NP)), list(range(NP))
+    log("подбор на", len(TRAIN), "фразах, проверка на", len(all8))
     # старт: лучший из готовых дикторов и прежней смеси по полной мерке
     starts = [("основа", L.base_rows[L.spe_key].double().numpy())]
     cand = []
     for s in L.names:
         if s.startswith("ru_"):
-            sc, info = L.score(L.net.rows[s][L.spe_key].double().numpy(), [0, 3, 6])
+            sc, info = L.score(L.net.rows[s][L.spe_key].double().numpy(), TRAIN[::max(1, len(TRAIN) // 3)][:3])
             cand.append((sc, s, info))
     cand.sort(reverse=True)
     log("лучшие готовые дикторы:", [(s, round(sc, 3), i["sims"]["ecapa"], i["f0"]) for sc, s, i in cand[:6]])
@@ -191,11 +204,11 @@ def main(target, seed, gens):
     start_info = {"name": best[3], "score": round(best[0], 4), **best[2]}
     z0 = L.z_of(best[1])
     log("старт поиска:", best[3], "; строка в осях восстановлена с ошибкой", round(float(np.linalg.norm(L.row_of(z0) - best[1]) / np.linalg.norm(best[1])), 3))
-    es = cma.CMAEvolutionStrategy(z0.tolist(), float(os.environ.get("SIGMA", "0.35")), {"popsize": 14, "seed": seed + 1, "bounds": [-3.5, 3.5], "verbose": -9})
+    es = cma.CMAEvolutionStrategy(z0.tolist(), float(os.environ.get("SIGMA", "0.35")), {"popsize": int(os.environ.get("POP", "14")), "seed": seed + 1, "bounds": [-3.5, 3.5], "verbose": -9})
     trail, t0 = [], time.time()
     top = [(best[0], best[1], best[2])]
     for gi in range(gens):
-        idx = sorted(rnd.choice(8, size=3, replace=False).tolist())
+        idx = sorted(rnd.choice(TRAIN, size=3 if len(TRAIN) <= 8 else 4, replace=False).tolist())
         Z = es.ask()
         F = []
         for z in Z:
@@ -211,7 +224,7 @@ def main(target, seed, gens):
             top.append((sc, row, info))
             trail.append({"gen": gi + 1, "score": round(sc, 4), **info, "sigma": round(float(es.sigma), 3), "min": round((time.time() - t0) / 60, 1)})
             log("поколение", gi + 1, trail[-1])
-        if time.time() - t0 > 70 * 60:
+        if time.time() - t0 > float(os.environ.get("TLIM", "70")) * 60:
             log("время вышло"); break
     top.sort(key=lambda x: -x[0])
     res = []
