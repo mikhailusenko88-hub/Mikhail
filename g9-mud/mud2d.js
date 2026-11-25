@@ -54,7 +54,7 @@
 
   // ---------- построитель маршрута ----------
   function Route() {
-    const S = { polys: [], anchors: [], pits: [], ceils: [], boosts: [], springs: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9, mud: [], water: [], trees: [], cans: [], marks: [], signs: [] };
+    const S = { polys: [], anchors: [], pits: [], ceils: [], boosts: [], springs: [], star: null, cps: [], fin: 0, minY: 1e9, maxY: -1e9, mud: [], water: [], trees: [], cans: [], marks: [], signs: [], rough: [], rocks: [] };
     let x = 0, y = 600; const cur = [];
     const push = (px, py) => { cur.push([px, py]); S.minY = Math.min(S.minY, py); S.maxY = Math.max(S.maxY, py); };
     const B = {
@@ -66,6 +66,11 @@
       hill(len, h, n = 14) { const x0 = x; for (let i = 1; i <= n; i++) { const t = i / n; push(x0 + len * t, y - h * (0.5 - 0.5 * Math.cos(t * Math.PI * 2))); } x = x0 + len; return B; },
       // грязь: d — глубина до твёрдого дна, k — как держит (меньше — глубже тонешь), res — сопротивление на колесо, mu — как гребут колёса
       mud(len, o) { S.mud.push(Object.assign({ x0: x, x1: x + len, t: 'mud', d: 40, k: 500, res: 1500, mu: 0.75, coh: 700, stick: 0.6, heal: 0, digK: 1, spd: 1, lockK: 0.4 }, o)); return B.flat(len); },
+      // грязь, глина или осыпь на уклоне: up > 0 — подъём, up < 0 — спуск. На уклоне грунт не только держит, но и тянет вниз по склону (inc)
+      mudOn(len, up, o) { S.mud.push(Object.assign({ x0: x, x1: x + len, t: 'mud', d: 40, k: 500, res: 1500, mu: 0.75, coh: 700, stick: 0.6, heal: 0, digK: 1, spd: 1, lockK: 0.4, inc: true }, o)); return B.slope(len, up); },
+      // каменная россыпь: камни разной высоты через неравные промежутки. Ряд задаётся числом seed — на каждом заезде он один и тот же
+      rocks(len, hMax, seed = 1) { let r = (seed * 7919 + 104729) % 233280, left = len; const rnd = () => (r = (r * 9301 + 49297) % 233280) / 233280; S.rough.push({ x0: x, x1: x + len, h: hMax, t: 'rocks' });
+        while (left > 170) { const gap = 60 + rnd() * 90, w = 50 + rnd() * 44, h = hMax * (0.5 + 0.5 * rnd()); B.flat(gap); S.rocks.push({ x: x + w / 2, y, w, h }); B.bump(w, h); left -= gap + w; } return B.flat(Math.max(40, left)); },
       // брод: depth — глубина воды посередине (вода стоит чуть ниже берега); silt — ил на дне (как грязь)
       ford(len, depth, silt, n = 16) {
         const x0 = x, y0 = y; S.water.push({ x0, x1: x + len, y: y0 + 6, depth });
@@ -77,11 +82,11 @@
       // канава с отвесными стенками: маленькое колесо проваливается целиком
       ditch(w, d) { push(x + 5, y + d); push(x + w - 5, y + d); push(x + w, y); x += w; return B; },
       // уступ: отвесная ступенька вверх — маленькое колесо упирается
-      step(h) { push(x + 5, y - h); x += 5; y -= h; return B; },
+      step(h) { S.rough.push({ x0: x - 40, x1: x + 60, h, t: 'step' }); push(x + 5, y - h); x += 5; y -= h; return B; },
       // ухаб (бревно поперёк дороги)
       bump(len, h) { push(x + len * 0.3, y - h); push(x + len * 0.7, y - h); push(x + len, y); x += len; return B; },
       tree(dx = 0, h = 78) { S.trees.push({ x: x + dx, gy: y, y: y - h }); return B; },    // дерево для лебёдки
-      can(dx = 0) { S.cans.push({ x: x + dx, y: y - 44, got: false }); return B; },        // канистра
+      can(dx = 0, k = 1) { S.cans.push({ x: x + dx, y: y - 44, got: false, l: CAN * k, k }); return B; }, // канистра 20 л (k — сколько их разом: на длинных горных трассах по две-три)
       mark(dx, kind) { S.marks.push({ x: x + dx, y, kind }); return B; },                  // постройка у дороги: 'garage' | 'mill'
       sign(dx, kind, val) { S.signs.push({ x: x + dx, y, kind, val }); return B; },        // указатель перед препятствием: что впереди и сколько
       cp(dx = 0) { S.cps.push({ x: x + dx, y }); return B; },
@@ -208,6 +213,7 @@
         S.inMud++; S.sunk[i] = sub + rut + pk; S.soil = z.t;
         const Fs = z.k * C.float * pr.fl * e * sub;                  // грунт держит колесо: чем глубже, тем сильнее; большое и спущенное колесо держит лучше
         w.vy -= (Fs / w.m) * dt; w.vy *= 1 - Math.min(0.9, 5 * dt * (sub / WR));
+        if (z.inc) w.vx += (Fs / w.m) * ((S.groundAt(w.x + 15) - S.groundAt(w.x - 15)) / 30) * dt; // опора в грунте перпендикулярна склону: на подъёме её часть толкает назад, на спуске — вперёд (у ровной грязи этой части нет)
         // сколько тяги даёт грязь: трение под весом плюс «липкость» (её даёт каждое колесо — потому три моста гребут лучше двух); без блокировки одно колесо моста буксует впустую
         const gk = C.grip * pr.gr * (1 - 0.35 * S.clog[i]);         // забитый протектор гребёт на треть хуже
         const cap = (z.mu * gk * Fs + z.coh * gk * C.float * e * Math.min(1, sub / 8)) * (S.lock ? 1 : z.lockK); // без блокировки одно колесо моста буксует впустую (в песке разница меньше: он одинаковый под обоими колёсами)
@@ -287,7 +293,7 @@
       if (play) {
         const rev = br && fwd <= 70 && S.fuel > 0;                                                 // задний ход — тоже на моторе
         const bn = Math.min(S.fuel, (0.1 + (g ? rate : rev ? rate * 0.6 : 0) + (S.pullOn ? WINCH_BURN : 0)) * dt); S.fuel -= bn; S.used += bn; // сколько сожгли за рейс — в заказах топливо стоит денег
-        for (const c of L.cans) if (!c.got && Math.abs(c.x - T.x) < 90 && Math.abs(c.y - T.y) < 160) { c.got = true; S.fuel = Math.min(C.tank, S.fuel + CAN); S.events.push({ e: 'can' }); }
+        for (const c of L.cans) if (!c.got && Math.abs(c.x - T.x) < 90 && Math.abs(c.y - T.y) < 160) { c.got = true; S.fuel = Math.min(C.tank, S.fuel + (c.l || CAN)); S.events.push({ e: 'can', l: c.l || CAN }); }
       }
       P.step(S.W, soft);
       after(inp);
@@ -326,6 +332,7 @@
     sand: { t: 'sand', d: 46, k: 350, res: 1750, mu: 0.36, coh: 0, stick: 0, heal: 5, digK: 3.2, spd: -0.55, lockK: 0.75 },   // песок: не липнет, но буксанул — закопался; берётся с хода и на спущенных шинах
     clay: { t: 'clay', d: 20, k: 950, res: 800, mu: 0.52, coh: 1200, stick: 1.7 },                               // глина: мелкая и скользкая, забивает протектор
     peat: { t: 'peat', d: 88, k: 250, res: 3300, mu: 0.7, coh: 500, stick: 0.45 },                               // торф: глубокий и рыхлый — садишься на брюхо
+    scree: { t: 'scree', d: 30, k: 520, res: 1200, mu: 0.42, coh: 0, stick: 0, heal: 6, digK: 2.6, spd: -0.4, lockK: 0.75 },    // осыпь: мелкий камень на склоне — не липнет, из-под колёс уходит; буксанул — закопался и пополз вниз
   };
 
   // ---------- маршруты ----------
@@ -393,8 +400,39 @@
       b.sign(-170, 'climb', 28).slope(1400, 620).flat(900).can(-600).cp(-700).sign(-170, 'crest', 0.8).crest(300, 80).flat(450).cp(-300).sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).flat(450).can(-150).cp(-300);
       b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(300).slope(600, 200).flat(450).cp(-300);
       b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).tree(1750).can(700).mud(1400, ZONES.peat); }) },
+    // ---------- район 3, «Перевал»: трассы вдвое длиннее. Новое: камни, уступы, осыпь и глина на подъёмах и спусках. Нужны грязевые шины и лифт ----------
+    { id: 'pass', r: 2, name: ['Logs to the mountain lodge', 'Брёвна на горную заимку'], cargo: 'log', pay: 190, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp']], build: mk((b) => { // знакомство с горами: камни, осыпь в гору, брод, глина в гору, спуск, липкая грязь и подъём
+      b.sign(-170, 'rocks', 0.4).rocks(1200, 22, 1).flat(700).can(-250, 2).cp(-400).sign(-190, 'soil', 'screeUp').mudOn(1200, 280, ZONES.scree).flat(900).can(-600, 2).cp(-400);
+      b.sign(-170, 'ford', 0.9).ford(700, 49).flat(300).sign(-170, 'rocks', 0.5).rocks(900, 26, 2).flat(700).can(-250, 2).cp(-400).sign(-190, 'soil', 'clayUp').mudOn(1200, 380, ZONES.clay).flat(900).can(-600, 2).cp(-400);
+      b.sign(-170, 'crest', 0.55).crest(240, 55).flat(500).slope(900, -300).flat(700).can(-250, 2).cp(-400).sign(-190, 'soil', 'sticky').mud(700, ZONES.sticky).flat(500).can(-150).sign(-170, 'climb', 24).slope(1400, 520); }) },
+    { id: 'stones', r: 2, name: ['Melons down the stone river', 'Арбузы по каменной реке'], cargo: 'melon', pay: 190, need: [['awd', 1], ['low', 1], ['lock', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // камни и броды вперемежку, спуск по осыпи прямо в камни: гонишь — теряешь арбузы
+      b.sign(-170, 'rocks', 0.45).rocks(1100, 24, 3).sign(-170, 'ford', 0.7).ford(600, 38).flat(250).sign(-170, 'rocks', 0.5).rocks(900, 28, 4).flat(700).can(-250, 2).cp(-400);
+      b.hill(900, 110).flat(300).sign(-170, 'ford', 1.1).ford(800, 60).flat(250).sign(-170, 'rocks', 0.5).rocks(1000, 26, 5).flat(700).can(-250, 2).cp(-400);
+      b.sign(-190, 'soil', 'screeDown').mudOn(900, -260, ZONES.scree).sign(-60, 'rocks', 0.45).rocks(700, 24, 6).flat(700).can(-250, 2).cp(-400).sign(-190, 'soil', 'sand').mud(800, ZONES.sand).flat(300);
+      b.sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).flat(300).sign(-190, 'soil', 'clay').mud(500, ZONES.clay).flat(700).can(-250, 2).cp(-400).sign(-170, 'climb', 20).slope(1400, 420); }) },
+    { id: 'mine', r: 2, name: ['Barrels to the mine', 'Бочки на рудник'], cargo: 'barrel', pay: 420, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp'], ['base', 1, 'tip6'], ['winch', 1, 'opt'], ['tank', 1, 'opt']], build: mk((b) => { // грязь в гору, два уступа, крутая глина с разгона, камни, слоёная грязь, подъём, торф с лебёдкой и осыпь под конец
+      b.sign(-190, 'soil', 'mediumUp').mudOn(900, 160, ZONES.medium).flat(700).can(-250, 3).cp(-400).sign(-170, 'step', 0.35).step(20).flat(450).sign(-170, 'step', 0.4).step(22).flat(900);
+      b.sign(-190, 'soil', 'clayUp').mudOn(1200, 350, ZONES.clay).flat(900).can(-600, 3).cp(-400).sign(-170, 'rocks', 0.5).rocks(900, 28, 7).flat(600).sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'clay').mud(400, ZONES.clay).flat(1000).can(-550, 3).cp(-700);
+      b.sign(-170, 'climb', 24).slope(1400, 520).flat(900).can(-600, 3).cp(-400).sign(-190, 'soil', 'peat').tree(450).tree(900).tree(1300).tree(1650).mud(1200, ZONES.peat).flat(1100).can(-650, 3).cp(-800);
+      b.sign(-190, 'soil', 'screeUp').mudOn(1100, 260, ZONES.scree); }) },
+    { id: 'scree', r: 2, name: ['Logs across the scree slopes', 'Брёвна через осыпи'], cargo: 'log', pay: 240, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'screeUp'], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // три осыпи в гору, между ними осыпь и глина под гору, уступ, камни, песок, гребень и брод
+      b.sign(-190, 'soil', 'screeUp').mudOn(1200, 300, ZONES.scree).flat(800).can(-300, 3).cp(-400).sign(-170, 'step', 0.4).step(22).flat(500).sign(-190, 'soil', 'screeDown').mudOn(900, -280, ZONES.scree).flat(300).sign(-170, 'rocks', 0.5).rocks(800, 26, 8).flat(700).can(-250, 3).cp(-400);
+      b.sign(-190, 'soil', 'sand').mud(900, ZONES.sand).flat(700).sign(-190, 'soil', 'screeUp').mudOn(1200, 320, ZONES.scree).flat(900).can(-600, 3).cp(-400).flat(400).sign(-170, 'crest', 0.55).crest(240, 55).flat(700).can(-250, 3).cp(-400);
+      b.sign(-190, 'soil', 'clayDown').mudOn(1000, -320, ZONES.clay).flat(300).sign(-170, 'ford', 1.1).ford(800, 60).flat(700).sign(-190, 'soil', 'screeUp').mudOn(1100, 310, ZONES.scree).flat(900).can(-600, 3).cp(-400);
+      b.sign(-190, 'soil', 'sticky').mud(800, ZONES.sticky).flat(1000).can(-600).sign(-170, 'climb', 24).slope(1400, 520); }) },
+    { id: 'gorge', r: 2, name: ['Barrels through the gorge', 'Бочки через ущелье'], cargo: 'barrel', pay: 520, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp'], ['base', 1, 'tip6'], ['snorkel', 1, 'ford'], ['winch', 1, 'opt'], ['tank', 1, 'opt']], build: mk((b) => { // спуск в ущелье, камни, глубокий брод с илом, из него сразу глина в гору; болото с лебёдкой, камни, подъём, слоёная грязь, осыпь и второй брод
+      b.sign(-170, 'climb', -22).slope(1000, -380).flat(500).sign(-170, 'rocks', 0.4).rocks(700, 22, 9).flat(300).slope(700, -220).flat(400).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(250);
+      b.sign(-190, 'soil', 'clayUp').mudOn(1300, 400, ZONES.clay).flat(900).can(-600, 3).cp(-400).sign(-170, 'rocks', 0.5).rocks(1000, 28, 14).flat(700).sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1150).mud(800, ZONES.swamp).flat(1300).can(-850, 3).cp(-1000);
+      b.sign(-170, 'climb', 24).slope(1400, 520).flat(900).can(-600, 3).cp(-400).sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).flat(1000).can(-550, 3).cp(-700);
+      b.sign(-190, 'soil', 'screeUp').mudOn(1100, 260, ZONES.scree).flat(900).can(-600, 3).cp(-400).sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).sign(-30, 'soil', 'sticky').mud(700, ZONES.sticky).flat(1000).can(-600).sign(-170, 'climb', 24).slope(1400, 520); }) },
+    { id: 'summit', r: 2, name: ['Expedition over the pass', 'Экспедиция через перевал'], cargo: 'log', pay: 290, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp'], ['snorkel', 1, 'ford'], ['tank', 1, 'opt'], ['winch', 1, 'opt']], build: mk((b) => { // самый длинный рейс: всё, что есть в горах, подряд — вверх до перевала и вниз на ту сторону
+      b.sign(-190, 'soil', 'soft').mud(600, ZONES.soft).sign(-30, 'soil', 'sand').mud(700, ZONES.sand).flat(700).can(-250, 3).cp(-400).sign(-170, 'rocks', 0.5).rocks(1000, 26, 11).flat(300).sign(-170, 'ford', 1.1).ford(800, 60).flat(700);
+      b.sign(-190, 'soil', 'screeUp').mudOn(1200, 310, ZONES.scree).flat(900).can(-600, 3).cp(-400).sign(-170, 'step', 0.4).step(22).flat(900).sign(-190, 'soil', 'clayUp').mudOn(1200, 370, ZONES.clay).flat(900).can(-600, 3).cp(-400);
+      b.sign(-190, 'soil', 'peat').tree(450).tree(900).tree(1300).tree(1650).tree(2100).mud(1200, ZONES.peat).flat(1200).can(-750, 3).cp(-900).sign(-170, 'climb', 24).slope(1400, 520).flat(1300).can(-900, 3).cp(-700).sign(-170, 'crest', 0.8).crest(300, 80).flat(800).can(-300, 3).cp(-400);
+      b.sign(-190, 'soil', 'screeDown').mudOn(1000, -300, ZONES.scree).flat(300).sign(-170, 'rocks', 0.55).rocks(900, 30, 12).flat(700).can(-250, 3).cp(-400).sign(-190, 'soil', 'clayDown').mudOn(900, -280, ZONES.clay).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(700);
+      b.sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).flat(1000).can(-550, 3).cp(-700).sign(-190, 'soil', 'screeUp').mudOn(1100, 300, ZONES.scree).flat(800).can(-300, 3).cp(-400).sign(-170, 'climb', 24).slope(1400, 520); }) },
   ];
 
-  const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }];
+  const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }, { name: ['High pass', 'Перевал'], from: 12, n: 6 }];
   root.MudSide = { create, spec, capOf, spaceOf, spaceTruck, payT, ENG_T, TR_T, REGIONS, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
 })(typeof window !== 'undefined' ? window : globalThis);
