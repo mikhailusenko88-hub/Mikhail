@@ -552,6 +552,58 @@ def profile(utts):
     return P
 
 
+def _mel_centers():
+    m = lambda f: 2595 * np.log10(1 + f / 700.0)
+    pts = np.linspace(m(60), m(11000), 66)
+    return 700 * (10 ** (pts[1:-1] / 2595) - 1)
+
+
+MC = _mel_centers()
+LG = np.log(np.geomspace(600, 7500, 140))
+SHIFTS = np.arange(-0.25, 0.2501, 0.005)
+
+
+def warp(A, B):
+    """Во сколько раз огибающая гласных B растянута по частоте относительно A (в %, + — форманты B выше, голос «мельче»).
+    Огибающие ударных гласных на логарифмической оси частот, без наклона; ищем сдвиг с лучшим совпадением по всем гласным."""
+    acc, tot = np.zeros(len(SHIFTS)), 0
+    lmc = np.log(MC)
+
+    def detr(v):
+        return v - np.polyval(np.polyfit(LG, v, 1), LG)
+
+    for k, (va, na) in A["mel"].items():
+        if not k.startswith("V") or k not in B["mel"]:
+            continue
+        vb, nb = B["mel"][k]
+        if na < 2 or nb < 2:
+            continue
+        x = detr(np.interp(LG, lmc, va))
+        nx = np.linalg.norm(x) + 1e-9
+        w = min(na, nb)
+        for j, sft in enumerate(SHIFTS):
+            y = detr(np.interp(LG + sft, lmc, vb))
+            acc[j] += w * float(x @ y) / (nx * (np.linalg.norm(y) + 1e-9))
+        tot += w
+    if not tot:
+        return float("nan")
+    return 100 * (math.exp(float(SHIFTS[int(np.argmax(acc))])) - 1)
+
+
+def bands(A, B):
+    """Спектр по полосам: кандидат минус образец, дБ (общая громкость убрана) — готовая подсказка для эквалайзера."""
+    edges = np.geomspace(80, 20000, 41); cen = np.sqrt(edges[:-1] * edges[1:])
+    d = B["ltas"] - A["ltas"]
+    ok = np.isfinite(d) & (cen > 100) & (cen < 16000)
+    d = d - np.mean(d[ok & (cen > 200) & (cen < 4000)])
+    out = {}
+    for name, a, b in (("0,1–0,3", 100, 300), ("0,3–0,8", 300, 800), ("0,8–2", 800, 2000), ("2–4", 2000, 4000), ("4–7", 4000, 7000), ("7–11", 7000, 11000),
+                       ("11–16", 11000, 16000)):
+        m = ok & (cen >= a) & (cen < b)
+        out[name] = float(np.mean(d[m])) if m.any() else float("nan")
+    return out
+
+
 def pair(A, B, ci=None):
     """Чем B (кандидат) отличается от A (образец): скаляры — разность B−A; векторы — похожесть или расстояние."""
     D = {}
@@ -568,7 +620,8 @@ def pair(A, B, ci=None):
                     r.append(math.log(fb[kf] / fa[kf]))
             if all(x == x for x in (fa[0], fa[1], fb[0], fb[1])):
                 v.append(math.hypot(bark(fb[0]) - bark(fa[0]), bark(fb[1]) - bark(fa[1])))
-    D["fscale"] = 100 * (math.exp(float(np.mean(r))) - 1) if r else float("nan")
+    D["fscale_praat"] = 100 * (math.exp(float(np.mean(r))) - 1) if r else float("nan")
+    D["fscale"] = warp(A, B)
     D["vsp"] = float(np.mean(v)) if v else float("nan")
     for name in ("ecapa", "wavlm", "resem"):
         D[name] = float(A["e_" + name] @ B["e_" + name]) if ("e_" + name in A and "e_" + name in B) else float("nan")
@@ -677,7 +730,7 @@ def final():
     scale = {f: (float(np.median(v)) if v else 1.0) for f, v in scale.items()}
 
     def together(d):
-        x = [d[f] / scale[f] for f in scale if d[f] == d[f] and scale[f] > 0]
+        x = [d[f] / scale[f] for f in scale if f != "ppg" and d[f] == d[f] and scale[f] > 0]
         return float(np.mean(x)) if x else float("nan")
 
     f0i = {i: PI[i]["f0"] for i in ids}
@@ -711,6 +764,29 @@ def final():
         md.append(f"| {nm} | {a:.0f} % из {ok[f][1]} | {b:.0f} % из {okh[f][1]} |")
         RES["abx"][f] = [round(a, 1), ok[f][1], round(b, 1), okh[f][1]]
     md.append("")
+    bt = {}
+    for u in U:
+        if u["src"] == "syn":
+            bt.setdefault(u["text"], []).append(u)
+    cm, cr = [], []
+    for t, us in bt.items():
+        for _ in range(12):
+            if len(us) < 2:
+                break
+            a, b = rnd.sample(us, 2)
+            if ident(a["voice"]) == ident(b["voice"]):
+                continue
+            m_, r_ = contour(a, b)
+            if m_ is not None:
+                cm.append(m_)
+            if r_ is not None:
+                cr.append(r_)
+    BASE = {"mel": float(np.mean(cm)) if cm else float("nan"), "mel90": float(np.percentile(cm, 90)) if cm else float("nan"),
+            "rh": float(np.mean(cr)) if cr else float("nan"), "rh10": float(np.percentile(cr, 10)) if cr else float("nan")}
+    RES["contour_base"] = BASE
+    md += [f"Точка отсчёта для «одной фразы двумя голосами»: два РАЗНЫХ диктора на одной фразе совпадают по мелодии в среднем на {BASE['mel']:.2f} "
+           f"(лучшие 10 % пар — от {BASE['mel90']:.2f}), по ритму расходятся на {100 * (math.exp(BASE['rh']) - 1):.0f} % длины слова "
+           f"(лучшие 10 % — до {100 * (math.exp(BASE['rh10']) - 1):.0f} %). Совпадение на этом уровне — это текст, а не манера.", ""]
 
     # ---------- 2. слышу ли малые сдвиги (подкрученные записи Барсика)
     if "Барсик~id@mod" in PR:
@@ -835,11 +911,12 @@ def final():
                    f"Тембр по звукам: {D['mel']:.1f} дБ — в {tim:.1f} раза больше своего разброса ({fl['mel']:.1f}). "
                    f"Произношение звуков: в {pro:.1f} раза больше своего разброса. Гласные (F1–F2): {D['vsp']:.2f} барк (свой разброс {fl.get('vsp', float('nan')):.2f}).",
                    (f"Одна и та же фраза: мелодия совпадает на {mel:.2f}, ритм расходится на {100 * (math.exp(rh) - 1):.0f} % длины слова." if mel == mel and rh == rh else ""),
+                   "Спектр по полосам (кандидат минус образец, дБ): " + ", ".join(f"{k} кГц {v:+.1f}" for k, v in bands(T, C).items()) + ".",
                    "", "| что слышно | насколько | свой разброс | × |", "|---|---|---|---|"]
             for x, k, nm, unit, word, dv, f_ in rows[:12]:
                 md.append(f"| {word} | {dv:+.2f} {unit} | {f_:.2f} | {x:.1f} |")
             md.append("")
-            RES["groups"][gname]["cands"][cv] = {"verdict": verdict, "D": {k: (None if (isinstance(v, float) and v != v) else v) for k, v in D.items()},
+            RES["groups"][gname]["cands"][cv] = {"verdict": verdict, "bands": bands(T, C), "D": {k: (None if (isinstance(v, float) and v != v) else v) for k, v in D.items()},
                                                  "rows": [[k, round(dv, 3), round(f_, 3), round(x, 2)] for x, k, nm, unit, word, dv, f_ in rows],
                                                  "ident": [[k, round(v, 3), round(f_, 3), round(pos, 3), rank, tot] for k, nm, v, f_, pos, rank, tot in idv]}
         # кто из всего набора ближе всего к образцу (по «всё вместе»)
