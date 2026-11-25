@@ -1,8 +1,2 @@
-# 24.11 22:00 что смотрят в Швеции (gl=SE)
-scan:search-month:satisfying 3d simulation asmr @SE
-scan:search-month:satisfying asmr shorts @SE
-scan:search-month:tillfredsställande @SE
-scan:search-month:kulor asmr @SE
-scan:hashtag:satisfying @SE
-scan:hashtag:tillfredsställande
-scan:search-month:satisfying 3d simulation asmr @US
+# 25.11 09:55 МСК обход
+all
