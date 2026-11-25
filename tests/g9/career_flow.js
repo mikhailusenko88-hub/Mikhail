@@ -33,10 +33,14 @@ const SIZES = { phone: [390, 844, true], land: [844, 390, true], desk: [1280, 72
     log.push('заказ 2, автопилот: ' + await drive()); await p.waitForTimeout(2200); await shot('10end2'); log.push('заказ 2: ' + JSON.stringify(await st()));
     // авария: топим мотор в заказе 5 (нужен лифт) — открываем его для теста
     await p.evaluate(() => { const m = window.__mud; for (const c of ['village', 'farm', 'creek', 'pit']) m.save.stars[c] = Math.max(1, m.save.stars[c] || 0); m.toMenu(); });
-    await p.waitForTimeout(500); await shot('11menu-open'); await tap('c:4'); await tap('go'); await p.waitForTimeout(800);
+    await p.waitForTimeout(500); await shot('11menu-open'); await tap('c:4'); await shot('11b-brief-deep'); await tap('go'); await p.waitForTimeout(1500); await shot('11c-ride-warn'); await p.waitForTimeout(800);
     log.push('заказ 5 без лифта: ' + await drive(40)); await p.waitForTimeout(1800); await shot('12fail'); log.push('авария: ' + JSON.stringify(await st()));
-    await tap('towad'); await p.waitForTimeout(600); log.push('тягач бесплатно: ' + JSON.stringify(await st()) + ' ' + await p.evaluate(() => window.__mud.S.state + ' tows ' + window.__mud.S.tows));
-    log.push('ещё раз: ' + await drive(40)); await p.waitForTimeout(1800); await shot('13fail2'); await tap('quit'); await shot('14after-quit'); log.push('бросил рейс: ' + JSON.stringify(await st()));
+    await tap('gar'); await shot('13garage-after-flood'); log.push('в гараж после залива: ' + JSON.stringify(await st()) + ' вкладка ' + await p.evaluate(() => window.__mud.buttons.filter((b) => b.id.startsWith('p:lift')).length ? 'Шасси' : 'другая'));
+    await tap('p:lift:1'); await shot('13b-lift-preview'); await tap('adcoins'); await tap('buy'); log.push('лифт куплен: ' + JSON.stringify(await st()) + ' lift ' + await p.evaluate(() => window.__mud.build.lift));
+    await tap('menu'); await shot('14brief-ok'); await tap('go'); await p.waitForTimeout(800);
+    log.push('с лифтом: ' + await p.evaluate(() => { const m = window.__mud, S = m.S, w = S.L.water[0]; m.dbg.freeze = true; let n = 0; while (S.state === 'play' && S.truck.x < w.x1 + 200 && n++ < 120 * 30) S.step({ gas: true, awd: true }); m.dbg.freeze = false; return S.state + (S.truck.x > w.x1 ? ', брод пройден' : ', НЕ ПРОЙДЕН'); }));
+    await tap('pause'); await tap('tow'); await p.waitForTimeout(500); log.push('тягач из паузы: ' + await p.evaluate(() => window.__mud.S.state + ' tows ' + window.__mud.S.tows + ' paused ' + window.__mud.paused));
+    await tap('pause'); await tap('quit'); log.push('бросил рейс: ' + JSON.stringify(await st()));
     await tap('unsel'); await tap('poly'); await shot('15poly'); log.push('полигон: ' + JSON.stringify(await st())); await tap('go'); await p.waitForTimeout(1500); await shot('16poly-ride'); log.push('полигон, рейс: ' + JSON.stringify(await st()));
     console.log(name + '\n  ' + log.join('\n  ') + '\n  ' + (errs.length ? 'ОШИБКИ: ' + errs.slice(0, 4).join(' | ') : 'без ошибок'));
     await ctx.close();
