@@ -298,13 +298,17 @@ def synth(item, path):
             if w == "g03":
                 w = json.load(open("cast7/golos_free.json", encoding="utf-8"))["voices"]["ru_svoy1"]["w"]
             pitch, rate = mx.get("pitch", "low"), mx.get("rate", "medium")
-            tag = "mix:" + json.dumps(mx, sort_keys=True, ensure_ascii=False)[:4000]
+            import hashlib
+            tag = "mix:" + hashlib.sha1(json.dumps(mx, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
             if _net["cis_on"] != tag:
                 rows = net.build(w)
-                if mx.get("spe_row"):
-                    import torch
-                    k = next(k for k, (r, _) in net.tabs.items() if r == "spe")
-                    rows[k] = torch.tensor(mx["spe_row"], dtype=rows[k].dtype)
+                import torch
+                for role in ("spe", "pp", "dp"):                # свои строки: тембр, мелодия, ритм (находки sluh_opt.py и sluh_man.py)
+                    if mx.get(role + "_row"):
+                        k = next(k for k, (r, _) in net.tabs.items() if r == role)
+                        rows[k] = torch.tensor(mx[role + "_row"], dtype=rows[k].dtype)
+                if mx.get("coef"):
+                    rows["coef"] = float(mx["coef"])
                 if mx.get("coef_k") and rows.get("coef"):
                     rows["coef"] = rows["coef"] * float(mx["coef_k"])      # меньше — мелодия шире (coef = средняя высота / разброс)
                 net.put(rows); _net["cis_on"] = tag

@@ -1,0 +1,53 @@
+name: onnx-svoy
+# Свои голоса (строки из cast10/svoy_voices.json) → модель движка мультика: ветка multik-voice → multik-voice-svoy. onnx_svoy.py
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['onnx-svoy-request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: onnx-svoy
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/torch
+            models
+          key: sluh2-cache-v1
+          restore-keys: |
+            pik-free-cache-v2
+            svoy-free-cache-v1
+      - name: Install
+        run: |
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q onnx numpy ruaccent
+      - name: Модель движка
+        run: git clone -q --depth 1 -b multik-voice --single-branch https://github.com/${{ github.repository }} mv && du -sh mv/voice
+      - name: Вписать свои голоса
+        run: |
+          mkdir -p out
+          python onnx_svoy.py mv/voice out
+          ls -la out
+      - name: Ветка multik-voice-svoy
+        run: |
+          cd mv
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          git checkout -q -B multik-voice-svoy
+          cp ../out/* voice/
+          git add voice
+          git commit -q -m "свои голоса: $(python3 -c "import json;print(', '.join(json.load(open('voice/svoy.json'))))")"
+          git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}
+          git push -f origin multik-voice-svoy
+          git log --oneline -2
