@@ -159,7 +159,7 @@ def main(target):
     Wb, mb = measure(base_spe, None, "medium")
     mb.update(quality(Wb))
     log("основа", mb)
-    table = [{"spe": "основа", "man": "основа", "rate": "medium", **mb}]
+    table = [{"spe_from": "основа", "man_from": "основа", "rate": "medium", **mb}]
     keep = {}
     for sn, spe, _ in found[:3]:
         for mn, ex, rate in mans:
@@ -171,18 +171,18 @@ def main(target):
             m["J"] = round(m["close"] + 0.5 * m["man"] - 0.03 * max(0.0, abs(m["pt"]) - 0.5), 4)
             if tr:
                 m["coef_path"] = tr
-            table.append({"spe": sn, "man": mn, "rate": rate, **m})
+            table.append({"spe_from": sn, "man_from": mn, "rate": rate, **m})
             keep[(sn, mn)] = (W, spe, ex, rate)
             log(sn, mn, m)
     cand = sorted([r for r in table if "J" in r], key=lambda r: -r["J"])
     win = None
     for r in cand[:4]:
-        r.update(quality(keep[(r["spe"], r["man"])][0]))
-        log("качество", r["spe"], r["man"], r.get("match"), r.get("utmos"))
+        r.update(quality(keep[(r["spe_from"], r["man_from"])][0]))
+        log("качество", r["spe_from"], r["man_from"], r.get("match"), r.get("utmos"))
         if win is None and (r["match"] or 0) >= (mb["match"] or 0.9) - 0.07 and (r["utmos"] or 0) >= (mb["utmos"] or 3.0) - 0.45:
             win = r
     win = win or cand[0]
-    W, spe, ex, rate = keep[(win["spe"], win["man"])]
+    W, spe, ex, rate = keep[(win["spe_from"], win["man_from"])]
     ex = ex or base_ex
     # эквалайзер под долгий спектр образца: считается на фразах подбора, проверяется на отложенных
     Wtr = [wave(L.say(spe, t, ex, rate)) for t in L.ph]
@@ -228,7 +228,7 @@ def main(target):
                     "-t", f"{total:.3f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-tune", "stillimage", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "1",
                     "-movflags", "+faststart", f"{OUT}/proba_{target}.mp4"], check=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", "tmp/proba.wav", "-c:a", "libmp3lame", "-q:a", "3", f"{OUT}/proba_{target}.mp3"], check=True)
-    log("готово", target, "основа", mb["close"], "→", win["close"], "манера", mb["man"], "→", win["man"], win["spe"], win["man"], f"{total:.1f} с")
+    log("готово", target, "основа", mb["close"], "→", win["close"], "манера", mb["man"], "→", win["man"], win["spe_from"], win["man_from"], f"{total:.1f} с")
 
 
 def merge():
@@ -237,7 +237,7 @@ def merge():
         p = json.load(open(f, encoding="utf-8")); w = p["win"]
         V[p["name"]] = {"slot": p["slot"], "spe": w["spe_row"], "pp": w["pp_row"], "dp": w["dp_row"], "coef": w["coef"], "rate": w["rate"], "pitch": w["pitch"],
                         "eq": {"hz": w["eq"]["hz"], "db": w["eq"]["db"], "used": w["eq"]["used"]} if w.get("eq") else None,
-                        "note": f"под {p['title']}: тембр {w['spe']}, манера {w['man']}; близость {w['close']} (основа {p['base']['close']})"}
+                        "note": f"под {p['title']}: тембр {w['spe_from']}, манера {w['man_from']}; близость {w['close']} (основа {p['base']['close']})"}
         mix = {"w": "g03" if w["base_voice"] == "g03" else {r: {w["base_voice"]: 1.0} for r in ("dp", "pp", "spe")}, "spe_row": w["spe_row"], "pp_row": w["pp_row"],
                "dp_row": w["dp_row"], "coef": w["coef"], "pitch": w["pitch"], "rate": w["rate"]}
         if p["target"] == "n4":
