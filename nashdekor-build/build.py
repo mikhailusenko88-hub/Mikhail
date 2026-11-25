@@ -10,7 +10,7 @@
 Запуск: python3 nashdekor-build/build.py   (из корня репозитория, ветка mebel)
 Цены и наличие на страницах при заходе обновляются из CRM (crm.nashdekor.ru/api/catalog), как на главной.
 """
-import json, os, re, sys, html, datetime, shutil
+import json, os, re, sys, html, datetime, shutil, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(os.path.dirname(HERE), "0f7s1eez")
@@ -435,6 +435,23 @@ def about(x):
     return "".join(out)
 
 # ---------- страница товара ----------
+# «Полезно почитать» — 1–2 свои статьи под описанием карточки и под FAQ раздела (25.11.2026): робот находит статьи
+# с разделов и карточек, покупатель — ответ «какой выбрать / как поставить». Названия ссылок — заголовки статей.
+ART_FOR = {"panel": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
+           "color": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
+           "wall": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
+           "plinth": ("kak-kleit-plintus-iz-duropolimera", "kak-pokrasit-plintus-i-paneli"),
+           "led": ("kak-vybrat-potolochnyj-plintus", "kak-kleit-plintus-iz-duropolimera"),
+           "cornice": ("kak-vybrat-potolochnyj-plintus", "kak-otrezat-ugol-potolochnogo-plintusa"),
+           "mold": ("moldingi-na-stene-v-interere", "kak-pokrasit-plintus-i-paneli"),
+           "corner": ("montazh-stenovyh-panelej",)}
+def read_more(code, root):
+    by = {a["slug"]: a for a in ARTICLES}
+    arts = [by[s] for s in ART_FOR.get(code, ()) if s in by]
+    if not arts: return ""
+    return ('<aside class="more-art"><h2>Полезно почитать</h2><ul>%s</ul></aside>' %
+            "".join('<li><a href="%sstati/%s/">%s</a></li>' % (root, a["slug"], esc(a["title"])) for a in arts))
+
 def product_page(x):
     a, c = x["a"], x["c"]
     sl = slug(a); url = "%s/p/%s/" % (BASE, sl); catc = CAT_BY[c]
@@ -552,7 +569,7 @@ def product_page(x):
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + gal_html + prof_html + specs_html +
-            '<div class="about"><h2>О товаре</h2>%s</div>%s</div>%s</div></div>' % (about(x), revs_html, buy) +
+            '<div class="about"><h2>О товаре</h2>%s</div>%s%s</div>%s</div></div>' % (about(x), read_more(c, ROOT), revs_html, buy) +
             with_it + related + lead_form(x) + "</main>" + footer(ROOT) +
             ('<script src="/mebel/_lib/three.min.js"></script><script src="/mebel/_lib/OrbitControls.js"></script>' if has3d else "") +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps(data, ensure_ascii=False), ROOT, VER))
@@ -639,7 +656,7 @@ def category_page(code, sl, menu, h1, intro, ctitle, cdesc):
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="head" style="margin-top:6px"><div><h1 style="font-size:clamp(24px,4.2vw,38px)">%s</h1><p class="catintro">%s</p></div></div>' % (esc(h1), esc(intro)) +
             sections_nav(code, ROOT) + grid +
-            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, 3D, профиль, размеры, цена и заявка.</p>' + faq_html + '</div>' +
+            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, 3D, профиль, размеры, цена и заявка.</p>' + faq_html + read_more(code, ROOT) + '</div>' +
             lead_form(None) + "</main>" + footer(ROOT) +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": ROOT, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), ROOT, VER))
     return head(t, desc, url, og_img, ld, ROOT) + body
@@ -965,12 +982,6 @@ open(os.path.join(SITE, "site-index.json"), "w", encoding="utf-8").write(json.du
                     "date": a.get("date", ""), "custom": True, "hidden": bool(a.get("hidden"))} for a in CONTENT.get("articles", []) if a.get("slug")],
     "hidden_articles": [k for k, v in _AO.items() if v.get("hidden")] + [x["slug"] for x in CONTENT.get("articles", []) if x.get("hidden")],
 }, ensure_ascii=False, indent=1))
-sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-      '  <url><loc>%s/</loc><lastmod>%s</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' % (BASE, TODAY)]
-sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>' % (u, TODAY, f, p) for u, f, p in urls]
-sm += ['  <url><loc>%s/%s</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
-sm.append("</urlset>")
-open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(sm) + "\n")
 
 # ---------- товарный фид YML для Яндекс Товаров: https://nashdekor.ru/yml.xml (с 11.11.2026) ----------
 # Цены — как на сайте (index.html CAT); раз в час их и наличие обновляет из CRM GitHub Actions «Авито — фид из CRM» (yml_prices.py).
@@ -982,6 +993,8 @@ YML_CAT_OF = {"panel": 11, "color": 12, "plinth": 2, "cornice": 3, "mold": 4, "c
 for _i, (_code, _k) in enumerate(CUSTOM.items()):
     YML_CATS.append((100 + _i, None, _k["menu"])); YML_CAT_OF[_code] = 100 + _i
 def yml_id(a): return re.sub(r"[^A-Za-z0-9-]", "", a.replace("/", "-").replace(" ", ""))
+def yml_pics(a):   # доп. фото товара для фида — те же, что в карусели карточки (справка Яндекс Товаров: «несколько изображений,
+    return [f for f in GALLERY.get(a, []) if os.path.exists(os.path.join(SITE, "img", "2x", f))][:4]   # первое — основное»), 25.11.2026
 def yml_offer(x):
     mat = (x.get("m") or CUSTOM[x["c"]].get("material", "")) if x["c"] in CUSTOM else "дюрополимер"
     p = [("Материал", "", mat)] if mat else []
@@ -989,10 +1002,11 @@ def yml_offer(x):
          ("Длина", "мм", x["l"]), ("В коробке", "шт", x["b"])]
     q = STOCK.get(yml_id(x["a"]), 0)
     return ('    <offer id="%s" available="%s">\n      <url>%s/p/%s/</url>\n      <price>%d</price>\n      <currencyId>RUR</currencyId>\n%s'
-            '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'
+            '      <categoryId>%d</categoryId>\n      <picture>%s/%s</picture>\n%s      <name>%s</name>\n      <vendorCode>%s</vendorCode>\n'
             '      <description><![CDATA[%s]]></description>\n      <sales_notes>Поштучно и коробками, предоплата</sales_notes>\n'
             '      <pickup>true</pickup>\n      <delivery>true</delivery>\n%s\n    </offer>') % (
-        yml_id(x["a"]), "true" if q > 0 else "false", BASE, slug(x["a"]), int(round(x["r"])), ("      <count>%d</count>\n" % q) if q > 0 else "", YML_CAT_OF[x["c"]], BASE, photo2x(x["a"]), esc(x["n"]), esc(x["a"]),
+        yml_id(x["a"]), "true" if q > 0 else "false", BASE, slug(x["a"]), int(round(x["r"])), ("      <count>%d</count>\n" % q) if q > 0 else "", YML_CAT_OF[x["c"]], BASE, photo2x(x["a"]),
+        "".join('      <picture>%s/img/2x/%s?v=%s</picture>\n' % (BASE, esc(f), PHOTO_V) for f in yml_pics(x["a"])), esc(x["n"]), esc(x["a"]),
         description(x).replace("]]>", ""), "\n".join('      <param name="%s"%s>%s</param>' % (n, (' unit="%s"' % u) if u else "", esc(v)) for n, u, v in p))
 yml_items = [x for x in CAT if x.get("r") and photo(x["a"]) and x["c"] in YML_CAT_OF]
 YML = ['<?xml version="1.0" encoding="UTF-8"?>', '<yml_catalog date="%s">' % datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S+03:00"), '  <shop>',
@@ -1023,4 +1037,26 @@ for _dir, _subs, _files in os.walk(SITE):
         if _h2 != _h:
             open(_p, "w", encoding="utf-8").write(_h2)
 print("мини-приложение MAX: подключение на %d страницах" % _max_n)
+# ---------- sitemap.xml — в самом конце, когда все страницы уже записаны (и с подключением MAX) ----------
+# lastmod — настоящая дата изменения страницы (25.11.2026; раньше всем ставилась дата сборки). Google учитывает lastmod, только
+# если он «consistently and verifiably accurate». Хэш страницы без ?v=… (как у IndexNow: «без изменений по сути») хранится
+# в nashdekor-build/lastmod.json {адрес: [хэш, дата]}: хэш тот же — дата прежняя, другой или новый адрес — сегодня.
+LASTMOD_FILE = os.path.join(HERE, "lastmod.json")
+try: LASTMOD = json.load(open(LASTMOD_FILE, encoding="utf-8"))
+except (OSError, ValueError): LASTMOD = {}
+_VERQ = re.compile(r"[?&]v=[0-9A-Za-z]+")
+def lastmod(u):
+    p = u[len(BASE) + 1:]
+    try: h = hashlib.sha1(_VERQ.sub("", open(os.path.join(SITE, p + "index.html" if p == "" or p.endswith("/") else p), encoding="utf-8").read()).encode("utf-8")).hexdigest()
+    except OSError: return TODAY
+    if LASTMOD.get(u, [None])[0] != h: LASTMOD[u] = [h, TODAY]
+    return LASTMOD[u][1]
+sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      '  <url><loc>%s/</loc><lastmod>%s</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' % (BASE, lastmod(BASE + "/"))]
+sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>' % (u, lastmod(u), f, p) for u, f, p in urls]
+sm += ['  <url><loc>%s/%s</loc><lastmod>%s</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, lastmod("%s/%s" % (BASE, f)), p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
+_live = {BASE + "/"} | {u for u, _, _ in urls} | {"%s/%s" % (BASE, f) for f in ("oferta.html", "privacy.html", "consent.html")}
+open(LASTMOD_FILE, "w", encoding="utf-8").write(json.dumps({k: v for k, v in sorted(LASTMOD.items()) if k in _live}, ensure_ascii=False, indent=0) + "\n")
+sm.append("</urlset>")
+open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(sm) + "\n")
 print("товаров: %d, разделов: %d, статей: %d, в sitemap: %d адресов, версия ассетов %s" % (len(CAT), len(CATS), len(ARTICLES), len(urls) + 4, VER))
