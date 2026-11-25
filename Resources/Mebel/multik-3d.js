@@ -2636,26 +2636,30 @@ function winterHQ(g, spec, r) { const time = spec.time || 'day', night = time ==
   const sn = new THREE.Color(night ? '#7a8ab8' : eve ? '#e2dce4' : '#eef2f8'), sb = new THREE.Color(night ? '#5a6a9a' : eve ? '#b8b4d0' : '#c8d6ea');
   const tm = terrain(g, { w: 320, d: 240, cx: 0, cz: -100, sx: 320, sz: 240, h: (x, z) => inPond(x, z) ? -.06 : H(x, z), c: (x, z, y, out) => { out.copy(sn).lerp(sb, smooth(.4, .7, fbm2(x * .15, z * .15, 2)) * .5); }, mat: snowMat(snowT()) });
   tm.material.vertexColors = true;
+  const hill = spec.variant === 'hill', Hh = (x, z) => H(x, z) + (hill ? hillH(x, z) : 0);   // 25.11.2026: зимняя горка — снежный холм позади компании (слева), с него съезжают на санках (действие ride)
+  if (hill) { const shC = new THREE.Color(night ? '#45507a' : eve ? '#9a90b8' : '#a9bcd8'), sdx = -.55, sdz = .35;   // склон в тени — голубее (белое на белом иначе не читается)
+    terrain(g, { w: 12.6, d: 12.4, cx: -5.2, cz: -6.4, sx: 101, sz: 99, h: (x, z) => H(x, z) + hillH(x, z) - .012, c: (x, z, y, out) => { out.copy(sn).lerp(sb, smooth(.4, .7, fbm2(x * .15, z * .15, 2)) * .5); const e = .15, gx = (hillH(x + e, z) - hillH(x - e, z)) / (2 * e), gz = (hillH(x, z + e) - hillH(x, z - e)) / (2 * e), gl = Math.hypot(gx, gz); if (gl > .02) { const f = clamp(.5 + .5 * (gx * sdx + gz * sdz) / gl, 0, 1); out.lerp(shC, smooth(.1, .8, gl) * (.18 + .5 * f)); } }, mat: tm.material });   // своя мелкая сетка (12 см): основная земля — шагом 1 м, по ней санки то тонули, то висели
+    C.floor = (x, z) => { const hh = hillH(x, z); return hh > .015 ? H(x, z) + hh - .012 : 0; }; }
   // пруд — гладкий лёд с отражением неба
   { const iceT = ctex('ice', 512, 256, (q) => { const gr = q.createRadialGradient(256, 128, 10, 256, 128, 270); gr.addColorStop(0, '#2f6aa8'); gr.addColorStop(.7, '#5a9ad0'); gr.addColorStop(1, '#cfe6f6'); q.fillStyle = gr; q.fillRect(0, 0, 512, 256); const rr = rng(3); q.strokeStyle = 'rgba(255,255,255,.55)'; for (let i = 0; i < 26; i++) { q.lineWidth = .8 + rr() * 1.5; q.beginPath(); let x = rr() * 512, y = rr() * 256; q.moveTo(x, y); for (let k = 0; k < 5; k++) { x += (rr() - .5) * 90; y += (rr() - .5) * 50; q.lineTo(x, y); } q.stroke(); }
       q.fillStyle = 'rgba(255,255,255,.35)'; for (let i = 0; i < 40; i++) { q.beginPath(); q.ellipse(rr() * 512, rr() * 256, 6 + rr() * 30, 3 + rr() * 8, rr() * 3, 0, 7); q.fill(); } });
     const ice = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshPhysicalMaterial({ color: night ? '#8aa8d8' : '#ffffff', map: iceT, roughness: eve ? .6 : .25, metalness: 0, clearcoat: eve ? .25 : .7, clearcoatRoughness: eve ? .55 : .1, envMapIntensity: .45 }));   /* 25.11: вечером низкое солнце давало на льду пруда белое пятно-блик (39-я 3:08) — лёд матовее */ ice.rotation.x = -Math.PI / 2; ice.scale.set(3.25, 1.58, 1); ice.position.set(PDX, .015, PDZ); ice.receiveShadow = true; g.add(ice);
     { const rim = new THREE.Mesh(new THREE.RingGeometry(.97, 1.08, 64), snowMat()); rim.rotation.x = -Math.PI / 2; rim.scale.set(3.3, 1.6, 1); rim.position.set(PDX, .03, PDZ); g.add(rim); } }  // ели в снегу: ближние — подробные, дальние — пачкой
-  for (const [x, z, s] of [[-8.6, -4.6, 1.5], [10.4, -8.8, 1.7], [-11.4, -9, 1.9], [10.8, -11, 2], [3.4, -13, 1.6], [-2.4, -15.5, 1.8], [14, -6, 1.6], [-14, -3.5, 1.4]]) snowFir(g, x, H(x, z), z, s, r, night);
+  for (const [x, z, s] of [hill ? [-10.4, -6.2, 1.5] : [-8.6, -4.6, 1.5], [10.4, -8.8, 1.7], [-11.4, -9, 1.9], [10.8, -11, 2], [3.4, -13, 1.6], [-2.4, -15.5, 1.8], [14, -6, 1.6], [-14, -3.5, 1.4]]) snowFir(g, x, Hh(x, z), z, s, r, night);
   const pts = []; for (let i = 0; i < 1100; i++) { const x = (r() - .5) * 300, z = -18 - Math.pow(r(), .75) * 120; if (fbm2(x * .03, z * .035 + 6, 3) < .42 && r() > .1) continue; const s2 = 1.4 + r() * 1.4; pts.push([x, H(x, z) - .1, z, s2, night ? '#8a9ac8' : (r() < .5 ? '#ffffff' : '#e8eef4'), r() * 6]); }
   { const im = new THREE.InstancedMesh(snowFirBlobGeo(), new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: .85 }), pts.length); pts.forEach(([x, y, z, s2, c, ry], i) => { _q.setFromEuler(new THREE.Euler(0, ry, 0)); _v.set(x, y, z); _s.set(s2, s2 * 1.2, s2); _m4.compose(_v, _q, _s); im.setMatrixAt(i, _m4); im.setColorAt(i, _c.set(c)); }); im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.castShadow = true; im.receiveShadow = true; g.add(im); }
   // сугробы-кочки
-  for (let k = 0; k < 14; k++) { const x = (r() - .5) * 24; if (Math.abs(x) < 4.5) continue; const z = -1 - r() * 7; const d = new THREE.Mesh(G.sph(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), snowMat()); d.position.set(x, H(x, z) - .05, z); d.scale.set(.7 + r() * 1.2, .22 + r() * .25, .6 + r() * .8); d.receiveShadow = true; d.castShadow = true; g.add(d); }
+  for (let k = 0; k < 14; k++) { const x = (r() - .5) * 24; if (Math.abs(x) < 4.5) continue; const z = -1 - r() * 7; if (hill && hillH(x, z) > .02) continue;   /* на склоне горки кочка торчала полкой */ const d = new THREE.Mesh(G.sph(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), snowMat()); d.position.set(x, Hh(x, z) - .05, z); d.scale.set(.7 + r() * 1.2, .22 + r() * .25, .6 + r() * .8); d.receiveShadow = true; d.castShadow = true; g.add(d); }
   // снеговик, санки, снежки
-  if (!spec.noSnowman) { const sm = placeProp(g, 'snowman', -3.3, 0, -4.4, 1.7, .4); sm.traverse(o => { if (o.isMesh && o.material && o.material.map && o.material.color && o.material.color.r > .9 && o.material.color.g > .9) o.material = snowMat(); }); }
-  placeProp(g, 'sled', -4.4, 0, .4, 1.5, .7); for (let k = 0; k < 7; k++) { const b = new THREE.Mesh(G.sph(.1 + r() * .04, 14, 10), snowMat()); b.position.set(-5.4 + (r() - .5) * .5, .09, -1.2 + (r() - .5) * .4 - (k > 4 ? 0 : 0)); if (k > 4) b.position.y = .26; b.castShadow = true; g.add(b); }
+  if (!spec.noSnowman) { const sm = hill ? placeProp(g, 'snowman', 1.9, 0, -4.5, 1.7, .2) : placeProp(g, 'snowman', -3.3, 0, -4.4, 1.7, .4);   /* на горке — снеговик сбоку, не на пути санок */ sm.traverse(o => { if (o.isMesh && o.material && o.material.map && o.material.color && o.material.color.r > .9 && o.material.color.g > .9) o.material = snowMat(); }); }
+  if (!hill) placeProp(g, 'sled', -4.4, 0, .4, 1.5, .7);   /* на горке у каждого героя свои санки */ for (let k = 0; k < 7; k++) { const b = new THREE.Mesh(G.sph(.1 + r() * .04, 14, 10), snowMat()); b.position.set((hill ? -7.2 : -5.4) + (r() - .5) * .5, .09, (hill ? -.4 : -1.2) + (r() - .5) * .4 - (k > 4 ? 0 : 0));   /* на горке снежки не на пути санок */ if (k > 4) b.position.y = .26; b.castShadow = true; g.add(b); }
   // избушка с тёплым окном и дымком
   { const cx = 11.5, cz = -19, hs = gableHouse({ w: 3.4, d: 3, h: 2.1, rh: 1.5, wallMap: grainTex('#8a5a3a'), roof: '#f2f6fc', lit: '#ffc070', chim: '#7a5a48' }); hs.position.set(cx, H(cx, cz) - .05, cz); hs.rotation.y = -.35; g.add(hs);
     hs.traverse(o => { if (o.isMesh && o.material.color && o.material.color.getHex() === new THREE.Color('#f2f6fc').getHex()) o.material = snowMat(); });
     const lt = new THREE.PointLight(0xffb070, 4, 7, 1.6); lt.position.set(cx - .3, H(cx, cz) + 1.3, cz + 2.4); g.add(lt);
     const sp = []; for (let k = 0; k < 14; k++) sp.push([cx + .55, H(cx, cz) + 3.9, cz - .3]); glowPoints(g, sp, night ? '#4a5470' : '#dde2ea', 1.1, 2); }
   // искорки на снегу
-  { const sp = []; for (let i = 0; i < 260; i++) { const x = (r() - .5) * 18, z = -7 + r() * 10; sp.push([x, H(x, z) + .02, z]); } glowPoints(g, sp, night ? '#a8c0ff' : '#ffffff', .05, 1); }
+  { const sp = []; for (let i = 0; i < 260; i++) { const x = (r() - .5) * 18, z = -7 + r() * 10; sp.push([x, Hh(x, z) + .02, z]); } glowPoints(g, sp, night ? '#a8c0ff' : '#ffffff', .05, 1); }
   C.rays = night ? 0 : eve ? .55 : .3; C.grade = night ? 'night' : eve ? 'sunset' : 'winter';
   C.light = night ? { hs: '#9db4ff', hg: '#4a5a88', hi: .7, sc: '#c4d4ff', si: 2.2, sp: [-4, 9, 6], rc: '#9fc0ff', ri: 2.2, rp: [-5, 4, -6], ei: .55 } : eve ? { hs: '#9a9ae0', hg: '#b8a0b8', hi: .42, sc: '#ffc89a', si: 2.5, sp: [8, 3.4, 2.5], rc: '#ffb080', ri: 1.9, rp: [3, 2.5, -7], ei: .28 } : C.light; }
 // ================= ПЛЯЖ: живое море (волны, блики солнца, пена у берега, мокрый песок), пальмы, зонтик и полотенце, остров и парусник вдали =================
@@ -3078,6 +3082,32 @@ function arcOf(S, lib, hugF) { let n = 0, a = 9, b = -9;
     Место кладёт препятствия в g.userData.obst = [{x, z, r}] (круг на полу); героя, попавшего в круг (с запасом на его толщину), ставим перед ним. */
 function obstZ(x, z) { const O = curLoc && curLoc.userData.obst; if (!O) return z;
   for (const o of O) if (Math.abs(x - o.x) < o.r + .35 && z < o.z + o.r + .3 && z > o.z - o.r - .6) z = o.z + o.r + .3; return z; }
+/** 25.11.2026: зимняя горка (место winter, variant 'hill'; геометрия — MK.HILL в multik-engine.js). Профиль вдоль склона — косинус (наверху и внизу полого), сбоку — мягкий скат. */
+function hillH(x, z) { const HL = global.MK.HILL, tx = HL.B[0] - HL.T[0], tz = HL.B[1] - HL.T[1], L = Math.hypot(tx, tz), ux = tx / L, uz = tz / L, dx = x - HL.T[0], dz = z - HL.T[1], s = dx * ux + dz * uz, dl = Math.abs(dx * uz - dz * ux);
+  const pr = s >= L ? 0 : s >= 0 ? HL.h * (1 + Math.cos(Math.PI * s / L)) / 2 : s >= -1.2 ? HL.h : HL.h * (1 - smooth(-1.2, -5.5, s)); return pr * (1 - smooth(1.9, 4.4, dl)); }
+/** Катание на санках (действие ride; время фаз — MK.ride): бежит назад за компанию и на горку → наверху разворачивается и садится на свои санки → съезжает вдоль склона
+    и внизу забирает влево → сидит → встаёт и шагает к друзьям (санки остаются внизу). Камера — общий план с горкой (camFor, c.ride). */
+function rideOf(st, id, rx, rz) { const a = st.act, t = a.t || 0, R = global.MK.ride, g = R.geo(id, st.x, a.trk), T0 = g.T0, B0 = g.B0, E = [rx, rz], G = [rx, rz - 1.9];
+  const yawOf = (dx, dz) => Math.atan2(dx, dz), angLerp = (a0, a1, k) => { let d = a1 - a0; d = Math.atan2(Math.sin(d), Math.cos(d)); return a0 + d * k; }, rideYaw = yawOf(g.ux, g.uz);
+  // путь вниз: прямо по склону T0→B0, потом короткая дуга (Безье) влево-вперёд к R
+  const pts = []; for (let i = 0; i <= 16; i++) { const k = i / 16; pts.push([lerp(T0[0], B0[0], k), lerp(T0[1], B0[1], k)]); }
+  { const Q = [B0[0] + g.ux * .9, B0[1] + g.uz * .9]; for (let i = 1; i <= 12; i++) { const k = i / 12, m = 1 - k; pts.push([m * m * B0[0] + 2 * m * k * Q[0] + k * k * g.R[0], m * m * B0[1] + 2 * m * k * Q[1] + k * k * g.R[1]]); } }
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); const Lt = cum[cum.length - 1];
+  const along = (d) => { d = clamp(d, 0, Lt); let i = 1; while (i < cum.length - 1 && cum[i] < d) i++; const k = (d - cum[i - 1]) / Math.max(1e-6, cum[i] - cum[i - 1]); return { x: lerp(pts[i - 1][0], pts[i][0], k), z: lerp(pts[i - 1][1], pts[i][1], k), yaw: yawOf(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]) }; };
+  const t1 = g.tc, t2 = t1 + R.SIT, t3 = t2 + R.GO, t4 = t3 + R.STOP, t5 = t4 + R.UP, r = { x: rx, z: rz, yaw: 0, sit: 0, seat: 0, tilt: 0, walk: null, stand: 0, sled: { x: T0[0], z: T0[1], yaw: rideYaw }, speed: 0, along, Lt, d: t < t2 ? 0 : t < t3 ? Lt * ((t - t2) / R.GO) ** 2 * (3 - 2 * (t - t2) / R.GO) : Lt };
+  if (t < t1) { const d1 = Math.hypot(G[0] - E[0], G[1] - E[1]), d = t * R.RUN; let yw; if (d < d1) { const k = d / d1; r.x = lerp(E[0], G[0], k); r.z = lerp(E[1], G[1], k); yw = yawOf(G[0] - E[0], G[1] - E[1]); } else { const k = clamp((d - d1) / Math.max(.01, g.climb - d1), 0, 1); r.x = lerp(G[0], T0[0], k); r.z = lerp(G[1], T0[1], k); yw = yawOf(T0[0] - G[0], T0[1] - G[1]); }
+    r.yaw = t < .25 ? angLerp(0, yw, t / .25) : yw; r.walk = { on: true, run: true, ph: t * 13 };   // бежит за компанию и наверх
+    if (st.rode) { const bk = 1.05, k = clamp(t / .5, 0, 1); r.sled = { x: lerp(g.R[0], r.x - Math.sin(r.yaw) * bk, k), z: lerp(g.R[1], r.z - Math.cos(r.yaw) * bk, k), yaw: r.yaw }; } }   // второй раз — санки снизу тянет за собой
+  else if (t < t2) { const k = (t - t1) / R.SIT, cy = yawOf(T0[0] - G[0], T0[1] - G[1]); r.x = T0[0]; r.z = T0[1]; r.yaw = angLerp(cy, rideYaw, ease(clamp(k / .55, 0, 1))); r.sit = ease(clamp((k - .3) / .7, 0, 1)); r.seat = r.tilt = r.sit; r.sled.under = true; if (st.rode) { const sk = ease(clamp(k / .5, 0, 1)), bk = 1.05; r.sled = { x: lerp(T0[0] - Math.sin(cy) * bk, T0[0], sk), z: lerp(T0[1] - Math.cos(cy) * bk, T0[1], sk), yaw: angLerp(cy, rideYaw, sk), under: true }; } }   // разворачивается и садится
+  else if (t < t3) { const q = (t - t2) / R.GO, w = along(Lt * q * q * (3 - 2 * q)); r.x = w.x; r.z = w.z; r.yaw = w.yaw; r.sit = r.seat = r.tilt = 1; r.speed = Lt * 6 * q * (1 - q) / R.GO; r.sled = { x: w.x, z: w.z, yaw: w.yaw, under: true }; }   // съезжает
+  else { const w = along(Lt); r.sled = { x: w.x, z: w.z, yaw: w.yaw, under: true }; r.yaw = w.yaw; r.x = w.x; r.z = w.z; r.sit = r.seat = r.tilt = 1;
+    if (t >= t4) { const k = clamp((t - t4) / R.UP, 0, 1); r.stand = k; r.sit = 1 - ease(k); r.seat = r.tilt = r.sit; const m = ease(clamp((k - .35) / .65, 0, 1)); r.x = lerp(w.x, w.x + .55, m); r.z = lerp(w.z, g.R[1], m); r.yaw = angLerp(w.yaw, Math.PI / 2 * .6, ease(k)); } }   // встаёт и шагает к друзьям
+  return r; }
+/** Санки героя (свои у каждого): ждут его наверху горки, во время катания — под ним, потом лежат внизу слева. */
+const SLED_C = ['#d8213a', '#2a6fc0', '#f0a020', '#3aa05a', '#8a4ac8'];
+function sledFor(id) { const c = SLED_C[(global.MK.hash32('sl' + id) >>> 0) % SLED_C.length]; return propMesh({ id: 'ridesled_' + id, type: 'sled', color: c }); }
+function placeSled(m, x, z, yaw, floor, s) { const y = floor ? floor(x, z) : 0, fx = Math.sin(yaw), fz = Math.cos(yaw), d = .3, g = floor ? (floor(x + fx * d, z + fz * d) - floor(x - fx * d, z - fz * d)) / (2 * d) : 0;
+  const n = new THREE.Vector3(-g * fx, 1, -g * fz).normalize(); ensureIn(m); m.visible = true; m.position.set(x, y, z); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw - Math.PI / 2)); m.scale.setScalar(s); return n; }
 function arcDz(A, st) { if (!A || !st) return 0; const u = Math.min(1, Math.abs(st.x - A.mid) / A.half); return -A.k * (1 - u * u); }   /* глубина героя на полукруге, м: 0 у крайних, −k в середине */
 // средний план «по промежуткам»: края кадра ставим между героями — сдвигом вбок и расстоянием камеры (0,8…1,24 от обычного), чтобы сосед был либо целиком в кадре,
 // либо целиком за ним, а не половиной у края. Решение одно на весь план (по его началу, середине и концу), поэтому камера внутри плана не дёргается.
@@ -3144,6 +3174,12 @@ function camFor(c, S, seg, lib) {
     const id = c.on || ids[0], x = px(id), z = pz(id), mp = (seg.props || []).find(q => q.type === 'moon'), mx = mp ? X(mp._x != null ? mp._x : mp.x0) : x + 1.5, cx = x * .62 + mx * .38;
     return { pos: new THREE.Vector3(cx, .55, z + 4.3), look: new THREE.Vector3(cx, 2.2, z - 2) }; }
   if (c.mode === 'pan') { const x = X(c.on != null ? +c.on : .5); return { pos: new THREE.Vector3(x, 1.5, 6 / (c.zoom || 1.3) * 1.3), look: new THREE.Vector3(x, .8, 0) }; }
+  if (c.ride === 'go' && S[c.on] && S[c.on].act && S[c.on].act.n === 'ride' && global.MK.ride) {   // 25.11.2026: съезжает — камера на склоне впереди него (чуть сбоку и ниже), он едет прямо на зрителя и тормозит перед камерой
+    const st = S[c.on], rd = rideOf(st, c.on, X(st.x), 0), FL = curLoc && curLoc.userData.cine && curLoc.userData.cine.floor, fl = (x, z) => FL ? FL(x, z) : 0, dc = rd.d + 3.3, end = rd.along(rd.Lt);
+    const A = dc <= rd.Lt ? rd.along(dc) : { x: end.x + Math.sin(end.yaw) * Math.min(dc - rd.Lt, 2.0), z: end.z + Math.cos(end.yaw) * Math.min(dc - rd.Lt, 2.0), yaw: end.yaw };
+    const px = A.x + Math.cos(A.yaw) * 1.15, pz = A.z - Math.sin(A.yaw) * 1.15, ry = fl(rd.x, rd.z) + .55;
+    return { pos: new THREE.Vector3(px, Math.max(fl(px, pz) + .95, ry + .25), pz), look: new THREE.Vector3(rd.x, ry, rd.z) }; }
+  if (c.ride) return { pos: new THREE.Vector3(.6, 2.15, 8.6), look: new THREE.Vector3(-1.9, .95, -2.3) };   // 25.11.2026: съезжают с горки — общий план чуть левее: горка слева позади и вся компания
   return yawCam({ pos: new THREE.Vector3(0, 1.75, 8.4), look: new THREE.Vector3(0, .85, 0) }, seg, 1.04);
 }
 /** Общий план не «в лоб» (25.11): камера повёрнута вокруг точки взгляда на MK3D.WIDE_YAW градусов, сторона — от сцены к сцене; ряд героев идёт по диагонали — видна глубина. */
@@ -3259,12 +3295,18 @@ MK3D.draw = function (ctx, tl, seg, t, T) {
   for (const id in S) {
     const st = S[id], lc = tl.lib.characters[id]; if (!lc || !st.vis) continue;
     const rig = rigFor(lc); ensureIn(rig.root); rig.root.visible = true; const hf = hugF[id]; st._hug = hf || null;
-    const rx = hf ? hf.x : X(st.x), rz = hf ? -(st.z || 0) * 1.5 : obstZ(rx, -(st.z || 0) * 1.5 + arcDz(ARC, st)); rig.root.position.set(rx, CF && CF.floor ? CF.floor(rx, rz) : 0, rz);
+    let rx = hf ? hf.x : X(st.x), rz = hf ? -(st.z || 0) * 1.5 : obstZ(rx, -(st.z || 0) * 1.5 + arcDz(ARC, st)); const FL = CF && CF.floor ? CF.floor : null;
+    const ss = 1.25 * (rig.scale || 1), rd = st.act && st.act.n === 'ride' && !hf && global.MK.ride ? rideOf(st, id, rx, rz) : null; rig.root.quaternion.identity();   // 25.11.2026: съезжает с горки на санках
+    if (rd) { rx = rd.x; rz = rd.z; const sm = sledFor(id); if (rd.sled) { const n = placeSled(sm, rd.sled.x, rd.sled.z, rd.sled.yaw, FL, ss); if (rd.tilt > 0) rig.root.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 1, 0).lerp(n, rd.tilt).normalize()); }
+      if (rd.speed > 1.2) { const fx = Math.sin(rd.yaw), fz = Math.cos(rd.yaw), sk = clamp((rd.speed - 1.2) / 2.5, 0, 1); for (let i = 0; i < 9; i++) { const ph = (T * 2.6 + i / 9) % 1, sd = Math.sin(i * 2.7) * .22 * ss, bx = rx - fx * (.42 * ss + ph * .55) + fz * sd, bz = rz - fz * (.42 * ss + ph * .55) - fx * sd;
+        sprite(haloTex('#ffffff'), bx, (FL ? FL(bx, bz) : 0) + .04 + ph * .22, bz, .1 + ph * .16, .75 * (1 - ph) * sk); } } }   // снежная пыль из-под полозьев
+    else if ((st.willRide || st.rode) && global.MK.ride) { const gq = global.MK.ride.geo(id, st.x, st.rode ? st.rodeTrk : st.willTrk); if (st.rode) placeSled(sledFor(id), gq.R[0], gq.R[1], Math.PI * .6, FL, ss); else placeSled(sledFor(id), gq.T0[0], gq.T0[1], Math.atan2(gq.ux, gq.uz), FL, ss); }   // санки ждут наверху горки, после катания лежат внизу
+    rig.root.position.set(rx, (FL ? FL(rx, rz) : 0) + (rd ? .13 * ss * rd.seat : 0), rz);
     const wkOn = st.walk && st.walk.on && !st.walk.side;   /* шаг в сторону (уступает место) — боком не поворачивается */ let yw = hf ? lerp(st.face * .5, hf.dir * .3, hf.k) : st.face * (wkOn ? 1.35 : .5);   // стоит и смотрит на друга — вполоборота (~30°), лицо к зрителю; боком — только когда идёт
     if (!hf && camE && st.face) { const az = Math.atan2(camE.x - rx, camE.z - rz), lim = wkOn ? 1.45 : .6; let d = yw - az; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) > lim) yw = az + Math.sign(d) * lim; }   // стоит — не больше ~35° от зрителя, идёт — не спиной
-    rig.yaw.rotation.y = yw;
+    if (rd) yw = rd.yaw; rig.yaw.rotation.y = yw;
     const held = seg.props.find(p => p._holder === id && p._vis !== false); st.prop = held || null;
-    applyPose(rig, st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
+    applyPose(rig, rd ? Object.assign({}, st, { act: rd.stand ? { n: 'stand', p: rd.stand, t: rd.stand * .74 } : null, walk: rd.walk || { on: false }, persist: rd.sit > 0 && !rd.stand ? 'sit' : 'none', prev: 'sit', pt: rd.stand ? 9 : (rd.sit < 1 ? rd.sit * .35 : 9) }) : st, T); fxFor(rig, st, T); rig._held = held; rig._needFur = true;
   }
   scene.updateMatrixWorld(true);
   for (const p of seg.props) { const m = propMesh(p); ensureIn(m); const fa = p._fxAge;

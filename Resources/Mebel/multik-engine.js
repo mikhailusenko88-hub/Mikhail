@@ -633,7 +633,16 @@ function drawWeather(ctx, L, T) {
 // ---------- сборка таймлайна ----------
 const DUR = { water: 2.6, jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shake: 1, clap: 1.6, point: 1.4, think: 2.2, laugh: 1.8, scared: 1.4, fall: 1.0, sit: .6, stand: .6, sleep: .8, wake: .8, take: .6, give: 1.1, drop: .5, turn: .25, look: .25, bow: 1.0, cry: 2, surprise: .8,
   roll: 2.8, somersault: 1.1, lie: .6, hug: 1.8, scratch: 1.6, yawn: 2.0, stretch: 1.8, sneeze: 1.3, eat: 2.2, stomp: 1.3, crouch: .5, hide: .5, sing: 2.6, kick: 1.0, throw: 1.1, shout: 1.4,
-  read: 2.4, peer: 2.2, dig: 2.6, knock: 1.4, push: 1.8, pull: 1.8, drink: 1.8, paint: 2.4, write: 2.4, play: 2.8, sniff: 1.6, listen: 2.0, cheer: 1.8, lookaround: 2.4, shrug: 1.2 };
+  read: 2.4, peer: 2.2, dig: 2.6, knock: 1.4, push: 1.8, pull: 1.8, drink: 1.8, paint: 2.4, write: 2.4, play: 2.8, sniff: 1.6, listen: 2.0, cheer: 1.8, lookaround: 2.4, shrug: 1.2, ride: 7.4 };   /* 25.11.2026: ride — забирается на горку с санками, садится, съезжает и встаёт (multik-3d.js → rideOf) */
+/** 25.11.2026: зимняя горка (место winter, variant 'hill') и катание на санках (действие ride). Метры сцены (x −5…5 — сцена героев, z — к зрителю).
+    Горка слева позади компании: вершина T, низ склона B. У каждого героя своя дорожка (сдвиг вбок), его санки ждут наверху, после катания остаются внизу слева (R). */
+const HILL = { T: [-6.0, -6.4], B: [-4.9, -1.6], h: 2.0 }, RIDES = new WeakMap();   /* RIDES: сцена (её C) → кто когда по какой дорожке едет */
+MK.HILL = HILL;
+MK.ride = { RUN: 3.2, SIT: .7, GO: 2.5, STOP: .45, UP: .75,
+  geo(id, x, trk) { const tx = HILL.B[0] - HILL.T[0], tz = HILL.B[1] - HILL.T[1], L = Math.hypot(tx, tz), ux = tx / L, uz = tz / L, nx = uz, nz = -ux, off = trk != null ? trk : ((MK.hash32('tr' + id) >>> 0) % 3 - 1) * .8;   /* trk — дорожка (сдвиг вбок, м): кто едет одновременно — на разных */
+    const T0 = [HILL.T[0] + nx * off, HILL.T[1] + nz * off], B0 = [HILL.B[0] + nx * off, HILL.B[1] + nz * off], R = [B0[0] + ux * .6 - .35, 0], rx = (x - .5) * 10, G = [rx, -1.9];
+    const climb = Math.hypot(G[0] - rx, G[1]) + Math.hypot(T0[0] - G[0], T0[1] - G[1]); return { L, ux, uz, T0, B0, R, G, climb, tc: climb / MK.ride.RUN, xe: (R[0] + .55) / 10 + .5 }; },
+  dur(id, x, trk) { const g = MK.ride.geo(id, x, trk), r = MK.ride; return g.tc + r.SIT + r.GO + r.STOP + r.UP; } };
 const MOVES = { walk: .2, run: .42, enter: .2, exit: .2, crawl: .1, sneak: .11 };
 /** Возгласы голосом персонажа при действиях */
 const VOCAL = { cheer: 'Ура-а!', knock: 'Тук-тук!', sniff: 'Хм-м…', shrug: 'Хм.', laugh: 'Ха-ха-ха-ха!', scared: 'Ой-ой!', surprise: 'Ого!', fall: 'Ай!', sneeze: 'Апчхи!', cry: 'Уа-а-а!', yawn: 'А-а-а-ах.', sing: 'Ля-ля-ля-ля!', somersault: 'Хоп!', stomp: 'Хм!' };
@@ -1144,15 +1153,19 @@ MK.compile = function (ep, lib, audio) {
           if (BESIDE_MV.length) { const ta = s0 + Math.max(0, (tgtX != null ? Math.abs(tgtX - ch.x) / .22 : 0) - .7);   // соседи делают шаг в сторону, когда он подходит (лицом не поворачиваются)
             for (const m of BESIDE_MV) { const o = C[m.o]; let t0 = ta; for (const e of o.ev) if (e.k === 'move' && e.t1 > t0) t0 = e.t1; o.ev.push({ t: t0, k: 'move', x0: o.x, x1: m.x, t1: t0 + Math.max(.4, Math.abs(m.x - o.x) / .22), side: true }); o.x = m.x; } BESIDE_MV = []; }
           if (tgtX != null && Math.abs(tgtX - ch.x) > .04) { const wd = Math.abs(tgtX - ch.x) / .22; { const indoor = /^(room|kitchen)$/.test(lspec.type || ''); for (let tt = s0 + .05, k = 0; tt < s0 + wd - .05; tt += .3, k++) sfx.push({ t: st0 + tt, n: indoor ? 'tap' : lspec.type === 'winter' ? 'crunch' : 'step', v: .5 * (k % 2 ? .85 : 1) }); } ch.ev.push({ t: s0, k: 'move', x0: ch.x, x1: tgtX, t1: s0 + wd }); ch.ev.push({ t: s0, k: 'face', v: tgtX >= ch.x ? 1 : -1 }); ch.x = tgtX; s0 += wd; }
-          dur = (s0 - start) + (step.dur || DUR[d]);
+          let trk = null; if (d === 'ride') { if (!RIDES.has(C)) RIDES.set(C, []); const busy = RIDES.get(C).filter(q => q.t1 > s0 && q.t0 < s0 + 12).map(q => q.trk); trk = [0, .8, -.8].find(k => !busy.includes(k)); if (trk == null) trk = 0; }   // 25.11.2026: едут одновременно — каждый по своей дорожке
+          dur = (s0 - start) + (step.dur || (d === 'ride' ? MK.ride.dur(who, ch.x, trk) : DUR[d]));
           if (['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d)) ch.ev.push({ t: s0, k: 'persist', v: d === 'fall' ? 'fallen' : d });
           if (d === 'stand' || d === 'wake') { ch.ev.push({ t: start, k: 'act', n: 'stand', t1: start + dur }); ch.ev.push({ t: start + dur, k: 'persist', v: 'none' }); }
           else if (d === 'turn' || d === 'look') ch.ev.push({ t: start, k: 'face', v: faceVal(step.to || step.face || 'camera', ch, C) });
-          else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to });
+          else if (!['sit', 'sleep', 'fall', 'lie', 'crouch', 'hide'].includes(d) || d === 'fall') ch.ev.push({ t: s0, k: 'act', n: d, t1: start + dur, text: step.text, to: step.to, trk: trk != null ? trk : undefined });
           if (d === 'hug' && step.to && C[step.to]) { C[step.to].ev.push({ t: s0, k: 'act', n: 'hug', t1: start + dur, to: who }); C[step.to].ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? -1 : 1 }); ch.ev.push({ t: s0, k: 'face', v: C[step.to].x >= ch.x ? 1 : -1 }); }
           beats.push({ t: s0, t1: start + dur, k: 'act', who, d, to: step.to, ptype: step.prop ? (props.find(p => p.id === step.prop) || {}).type : undefined, near: NEAR_ACT.has(d) || (d === 'take' && (KEY_PROP.has((props.find(p => p.id === step.prop) || {}).type) || !!(coldOn && MAIN && (props.find(p => p.id === step.prop) || {}).type === MAIN.type))) });   // берёт главный предмет — средний план на него if (BIGACT.has(d)) evts.push({ t: st0 + s0, k: 'act', d, who });
           if (d === 'play' && step.sfx !== false) { const ins = (props.find(p => p.holder === who) || {}).type; const sn = ins === 'bell' ? 'bell' : ins === 'drum' ? 'drum' : null;   // звонит в колокольчик, стучит в барабан — их и слышно
             if (sn) sfx.push({ t: st0 + s0 + .25, n: sn, rep: sn === 'drum' ? 6 : 3, gap: sn === 'drum' ? .32 : .6 }); }
+          if (d === 'ride') { RIDES.get(C).push({ t0: s0, t1: start + dur, trk }); const rg = MK.ride.geo(who, ch.x, trk), R = MK.ride, tg = s0 + rg.tc + R.SIT; if (step.sfx !== false) { for (let tt = s0 + .1, k = 0; tt < s0 + rg.tc; tt += .3, k++) sfx.push({ t: st0 + tt, n: 'crunch', v: .55 * (k % 2 ? .85 : 1) }); sfx.push({ t: st0 + tg + .1, n: 'whoosh' }); sfx.push({ t: st0 + tg + R.GO * .5, n: 'whoosh', v: .6 }); }   // 25.11.2026: бежит на горку — снег хрустит, съезжает — свист
+            { const bt = beats[beats.length - 1]; if (bt && bt.d === 'ride' && bt.who === who) bt.go = tg; }
+            ch.ev.push({ t: start + dur, k: 'move', x0: rg.xe, x1: rg.xe, t1: start + dur + .01 }); ch.ev.push({ t: start + dur, k: 'face', v: 1 }); ch.x = rg.xe; }   // после катания стоит внизу горки, лицом к друзьям
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
           if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
             if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
@@ -1221,6 +1234,9 @@ MK.compile = function (ep, lib, audio) {
       const manual = cam.slice(1).filter(c => !c.auto && !c.shake); const auto = directScene(beats, C, inits, manual, { cold: cold && !(sc.camera && sc.camera !== 'wide') ? { px: coldPx, sky: coldSky } : null, capWide: coldOn && !sc.camera, tempo: coldOn });   // всё новое в режиссуре — только при «Начало серии: новое»; «как было» — кадр в кадр как раньше
       if (auto[0] && auto[0].cold) { const c0 = auto.shift(); if (sc.camera === 'wide') { c0.t = 1.5; auto.unshift(c0); } else Object.assign(cam[0], c0, { t: 0 }); }   // «КАМЕРА: общий план» в начале — не дольше 1,5 с
       const keep = cam.slice(1).filter(c => !c.auto); cam.length = 1; cam.push(...auto, ...keep); cam.sort((a, b) => a.t - b.t);
+      for (const b of beats) if (b.k === 'act' && b.d === 'ride' && b.t1 > b.t) {   // 25.11.2026: съезжает с горки — общий план на всё катание (горка позади компании), потом режиссура как обычно
+        const a0 = b.t - .1; for (let i = cam.length - 1; i >= 1; i--) if (cam[i].auto && cam[i].t >= a0 - .05 && cam[i].t < b.t1 - .2) cam.splice(i, 1);
+        cam.push({ t: Math.max(0, a0), mode: 'wide', cut: true, auto: true, ride: 'wide', on: b.who }); if (b.go && !beats.some(o => o !== b && o.k === 'act' && o.d === 'ride' && o.t < b.t1 && o.t1 > b.t)) cam.push({ t: b.go - .1, mode: 'wide', cut: true, auto: true, ride: 'go', on: b.who });   /* бежит на горку — общий план с горкой; съезжает — камера впереди него на склоне (multik-3d.js camFor) */ const nx = cam.find(c => c.t >= b.t1 - .2); if (!nx) { const lst = cam.filter(c => c.t < a0).pop(); if (lst && lst.mode !== 'wide') cam.push(Object.assign({}, lst, { t: b.t1 + .1, cut: true, auto: true, _mf: undefined, _mfc: undefined })); } cam.sort((a, c) => a.t - c.t); }
       if (coldOn && MAIN && !cam.some(c => c.mode === 'prop')) {   // 21.11.2026: «крупно вещь» — главный предмет серии на весь кадр:
         // (1) герой берёт его — в первой сцене всегда, дальше не чаще раза в минуту (в 32-й компас был мелким, стрелку не видно);
         // (2) предмет меняется на глазах (шишка закрывается под дождём) — показываем, как меняется
@@ -1333,7 +1349,7 @@ function autoStand(ev) {   // присел на корточки → через 
 }
 MK.evalChar = (...a) => evalChar(...a);   // для проверок
 function evalChar(init, ev, t, audio, T) {
-  let x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, emoT1 = Infinity, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
+  let rode = false, rodeTrk, x = init.x0, face = init.face0, faceFrom = init.face0, faceT = -9, emo = 'neutral', emoT = -9, emoT1 = Infinity, vis = init.vis0, persist = 'none', prev = 'none', pT = 0, act = null, walk = { on: false }, talk = 0, thinkText = null, vz = null;
   for (const e of ev) {
     if (e.t > t) break;
     switch (e.k) {
@@ -1342,13 +1358,13 @@ function evalChar(init, ev, t, audio, T) {
       case 'emo': emo = e.v; emoT = e.t; emoT1 = e.t1 != null ? e.t1 : Infinity; break;
       case 'vis': vis = e.v; break;
       case 'persist': prev = persist; persist = e.v; pT = e.t; break;
-      case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t, to: e.to }, thinkText = e.text; break;
+      case 'act': if (t < e.t1) act = { n: e.n, p: (t - e.t) / (e.t1 - e.t), t: t - e.t, to: e.to, trk: e.trk }, thinkText = e.text; else if (e.n === 'ride') { rode = true; rodeTrk = e.trk; } break;
       case 'say': if (t < e.t1) { const a = audio[e.key]; if (a && a.env) { const i = Math.floor((t - e.t) * 50); talk = clamp((a.env[i] || 0) * 3.2, 0, 1); } else { const k = t - e.t; talk = (Math.sin(k * 21) * .5 + .5) * (Math.sin(k * 5.3) * .3 + .7) * (k > e.t1 - e.t - .15 ? 0 : 1); } vz = e.vocal ? null : MK.viseme(e.text || '', t - e.t, e.t1 - e.t); } break;
     }
   }
   const fk = ease((t - faceT) / .22); const fv = lerp(faceFrom, face, fk);
   let emoK = 1; if (t > emoT1 && emo !== 'sleepy') { emoK = clamp(1 - (t - emoT1) / .8, 0, 1); if (emoK <= 0) { emo = 'neutral'; emoK = 1; } }
-  return { x, face: fv, emo, emoK, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText, vz };
+  return { x, face: fv, emo, emoK, et: t - emoT, vis, persist, prev, pt: t - pT, act, walk, talk, thinkText, vz, rode, rodeTrk };
 }
 
 function camTarget(c, seg, t, S) {
@@ -1608,7 +1624,7 @@ MK._sceneState = function (tl, seg, t, T) {
     const cd = seg.C[id], cs = (seg.sc.cast || []).find(c => c.who === id) || {};
     const init = { x0: cs._x != null ? cs._x : cs.x != null ? cs.x : .5, face0: cs.face === 'left' ? -1 : cs.face === 'camera' ? 0 : 1, vis0: !cs.hidden };
     if (!cd._sorted) { cd.ev.sort((a, b) => a.t - b.t); cd._sorted = true; }
-    S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0;
+    S[id] = evalChar(init, cd.ev, t, tl.audio, T); S[id].z = cd.z || 0; { const nr = cd.ev.find(e => e.k === 'act' && e.n === 'ride' && e.t > t); if (nr) { S[id].willRide = true; S[id].willTrk = nr.trk; } }
   }
   avoidWalkers(S, seg);
   for (const p of seg.props) { const ps = MK.propAt(p, t); p._holder = ps.holder; p._x = ps.x; p._air = ps.air; p._vis = ps.vis; p._glow = ps.glowK; p._fx = ps.fx; p._fxAge = ps.fxAge; p._tb = ps.tb; p._open = ps.openK; p._paint = ps.paintK; }
