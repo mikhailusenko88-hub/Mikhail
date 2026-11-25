@@ -1,0 +1,7 @@
+# 2026-11-25 18:49 UTC — манера на 48 фразах (запуск 45670417314): из каждой выгрузки только свои файлы
+45670417314 MN-n4-medium man_n4_1_medium*
+45670417314 MN-n4-fast man_n4_1_fast*
+45670417314 MN-xenia-medium man_xenia_1_medium*
+45670417314 MN-xenia-fast man_xenia_1_fast*
+45670417314 MN-kseniya-medium man_kseniya_1_medium*
+45670417314 MN-kseniya-fast man_kseniya_1_fast*

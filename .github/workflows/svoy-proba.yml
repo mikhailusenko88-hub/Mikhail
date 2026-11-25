@@ -44,7 +44,7 @@ jobs:
         if: always()
         with:
           name: PB-${{ matrix.target }}
-          path: cast10/proba_*
+          path: cast10/proba_${{ matrix.target }}*
           retention-days: 7
   final:
     needs: [proba]

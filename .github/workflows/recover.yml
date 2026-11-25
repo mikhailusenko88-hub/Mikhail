@@ -1,0 +1,38 @@
+name: recover
+# Достать из выгрузок прошлых запусков только «свои» файлы заданий (25.11: параллельные задания выгружали и чужие старые копии,
+# при слиянии выгрузок старое затёрло новое). Строки recover-request.txt: <запуск> <выгрузка> <шаблон файлов>
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['recover-request.txt']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: recover
+  cancel-in-progress: false
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/out
+          grep -v '^#' recover-request.txt | while read run art pat; do
+            [ -z "$run" ] && continue
+            rm -rf /tmp/a && mkdir -p /tmp/a
+            gh run download "$run" -R ${{ github.repository }} -n "$art" -D /tmp/a || { echo "нет выгрузки $art"; continue; }
+            cp -v /tmp/a/$pat /tmp/out/ || echo "нет файлов $pat в $art"
+          done
+          ls -la /tmp/out | head -80
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && git checkout -q -f -B res FETCH_HEAD && mkdir -p cast10 && cp -r /tmp/out/. cast10/
+            git add -A cast10; git commit -q -m "recover: свои файлы заданий из выгрузок" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done

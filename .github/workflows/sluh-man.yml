@@ -50,7 +50,7 @@ jobs:
         if: always()
         with:
           name: MN-${{ matrix.target }}-${{ matrix.rate }}
-          path: cast10/man_*
+          path: cast10/man_${{ matrix.target }}_1_${{ matrix.rate }}*
           retention-days: 7
   final:
     needs: [man]
