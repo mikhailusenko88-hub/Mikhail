@@ -10,7 +10,8 @@ fs.mkdirSync(OUT, { recursive: true });
     const [w, h, touch] = SIZES[name];
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: touch, isMobile: touch });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 200)));
-    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.waitForTimeout(2500);
+    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.evaluate(() => window.__mud.toMenu()); // первый запуск теперь сразу в рейсе — проверки начинают с меню
+    await p.waitForTimeout(2500);
     await p.screenshot({ path: path.join(OUT, name + '-0garage.png') });
     await p.evaluate(() => { const m = window.__mud; m.setPart('base', 1); m.setPart('lift', 2); m.setPart('wheel', 2); m.setPart('axles', 3); m.setPart('tires', 2); m.setPart('snorkel', 1); m.setPart('tank', 1); }); await p.waitForTimeout(1800);
     await p.screenshot({ path: path.join(OUT, name + '-1garage-all.png') });

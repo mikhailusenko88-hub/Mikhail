@@ -7,7 +7,8 @@ const OUT = process.argv[2] || '/tmp/mud4';
   for (const [name, w, h] of [['small', 360, 640], ['land', 844, 390]]) {
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: true, isMobile: true });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 200)));
-    await p.goto('file://' + require('path').resolve(__dirname, '../../dist/mud-side/index.html')); await p.waitForFunction(() => window.__mud); await p.waitForTimeout(1200);
+    await p.goto('file://' + require('path').resolve(__dirname, '../../dist/mud-side/index.html')); await p.waitForFunction(() => window.__mud); await p.evaluate(() => window.__mud.toMenu()); // первый запуск теперь сразу в рейсе — проверки начинают с меню
+    await p.waitForTimeout(1200);
     const log = [], st = () => p.evaluate(() => { const m = window.__mud; return m.mode + ' ¤' + m.save.coins + ' awd' + m.save.build.awd + ' low' + m.save.build.low + ' кнопки:' + m.buttons.map((b) => b.id).filter((q) => /adv|go|gar/.test(q)).join(','); });
     const tap = async (id) => { const q = await p.evaluate((id) => { const b = window.__mud.buttons.find((b) => b.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!q) { log.push('НЕТ КНОПКИ ' + id); return; } await p.touchscreen.tap(q[0], q[1]); await p.waitForTimeout(400); };
     await tap('c:0'); await p.waitForTimeout(600); await p.screenshot({ path: `${OUT}/adv-${name}-1ready.png` }); log.push('заказ 1: ' + await st());

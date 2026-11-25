@@ -10,7 +10,8 @@ const SIZES = { phone: [390, 844, true], land: [844, 390, true], desk: [1280, 72
     const [w, h, touch] = SIZES[name], log = [];
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: touch, isMobile: touch });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 200)));
-    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.waitForTimeout(1500);
+    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.evaluate(() => window.__mud.toMenu()); // первый запуск теперь сразу в рейсе — проверки начинают с меню
+    await p.waitForTimeout(1500);
     const tap = async (id) => { const q = await p.evaluate((id) => { const b = window.__mud.buttons.find((b) => b.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!q) { log.push('НЕТ КНОПКИ ' + id); return; } if (touch) await p.touchscreen.tap(q[0], q[1]); else await p.mouse.click(q[0], q[1]); await p.waitForTimeout(350); };
     const st = () => p.evaluate(() => { const m = window.__mud, S = m.S; return { mode: m.mode, coins: m.save.coins, cargo: S.cargo + '/' + S.cargo0 + ' ' + S.kind, stars: JSON.stringify(m.save.stars), b: 'awd' + m.build.awd + ' eng' + m.build.eng, paused: m.paused }; });
     const shot = async (n) => { await p.waitForTimeout(700); await p.screenshot({ path: path.join(OUT, `${name}-${n}.png`) }); };

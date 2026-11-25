@@ -9,7 +9,8 @@ const SIZES = { phone: [390, 844, true], land: [844, 390, true], small: [360, 64
     const [w, h, touch] = SIZES[name], log = [];
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: touch, isMobile: touch });
     const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 200)));
-    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.waitForTimeout(1200); await p.evaluate(() => window.__mud.press('poly')); await p.waitForTimeout(600); // с пробы 4 игра открывается на заказах; эта проверка — про полигон
+    await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.evaluate(() => window.__mud.toMenu()); // первый запуск теперь сразу в рейсе — проверки начинают с меню
+    await p.waitForTimeout(1200); await p.evaluate(() => window.__mud.press('poly')); await p.waitForTimeout(600); // с пробы 4 игра открывается на заказах; эта проверка — про полигон
     const tap = async (id) => { const q = await p.evaluate((id) => { const b = window.__mud.buttons.find((b) => b.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!q) { log.push('НЕТ КНОПКИ ' + id); return; } await p.touchscreen.tap(q[0], q[1]); await p.waitForTimeout(500); };
     const st = () => p.evaluate(() => { const m = window.__mud, S = m.S; return { mode: m.mode, st: S.state, why: S.why, x: Math.round(S.truck.x), lift: m.build.lift }; });
     await tap('go');
