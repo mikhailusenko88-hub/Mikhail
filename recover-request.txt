@@ -1,7 +1,5 @@
-# 2026-11-25 18:49 UTC — манера на 48 фразах (запуск 45670417314): из каждой выгрузки только свои файлы
-45670417314 MN-n4-medium man_n4_1_medium*
-45670417314 MN-n4-fast man_n4_1_fast*
-45670417314 MN-xenia-medium man_xenia_1_medium*
-45670417314 MN-xenia-fast man_xenia_1_fast*
-45670417314 MN-kseniya-medium man_kseniya_1_medium*
-45670417314 MN-kseniya-fast man_kseniya_1_fast*
+# 2026-11-25 21:39 UTC — круг 4 тембра: герои готовы раньше №4 — достать их находки из выгрузок, не дожидаясь
+45691854347 OP-xenia-1 opt_xenia_1d*
+45691854347 OP-xenia-2 opt_xenia_2d*
+45691854347 OP-kseniya-1 opt_kseniya_1d*
+45691854347 OP-kseniya-2 opt_kseniya_2d*
