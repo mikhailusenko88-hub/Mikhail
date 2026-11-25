@@ -26,7 +26,7 @@
     for (let c = c0; c <= c1; c++) { let a = W.cells.get(c); if (!a) W.cells.set(c, (a = [])); a.push(s); }
     return s;
   };
-  P.addBody = (W, b) => { W.bodies.push(b); return b; };
+  P.addBody = (W, b) => { W.bodies.push(b); if (b.cc) (W.ccl || (W.ccl = [])).push(b); return b; }; // cc — тело-круг, которое сталкивается с такими же (груз в кузове)
 
   // круг против отрезка: точка касания на отрезке и нормаль от отрезка к центру круга
   function cseg(cx, cy, r, ax, ay, bx, by) {
@@ -78,6 +78,16 @@
     }
   }
 
+  // круг против круга — только между телами с пометкой cc
+  function collideCC(W) {
+    const L = W.ccl; if (!L) return;
+    for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) {
+      const A = L[i], B = L[j]; if (A.off || B.off) continue;
+      const ra = A.circles[0].r, rb = B.circles[0].r, dx = A.x - B.x, dy = A.y - B.y, d2 = dx * dx + dy * dy, R = ra + rb; if (d2 >= R * R || d2 < 1e-9) continue;
+      const d = Math.sqrt(d2), nx = dx / d, ny = dy / d;
+      addContact(W, A, B, { nx, ny, pen: R - d, qx: B.x + nx * rb, qy: B.y + ny * rb }, Math.sqrt(A.mu * B.mu), Math.max(A.e || 0, B.e || 0), A.circles[0], B.circles[0]);
+    }
+  }
   const vel = (b, rx, ry) => [b.vx - b.w * ry, b.vy + b.w * rx];
   function imp(b, rx, ry, px, py) { if (!b || !b.dyn) return; b.vx += b.im * px; b.vy += b.im * py; b.w += b.iI * cross(rx, ry, px, py); }
 
@@ -190,7 +200,7 @@
     const dt = P.DT;
     for (const b of W.bodies) if (b.dyn) { b.vy += P.G * dt * (b.gk === undefined ? 1 : b.gk); }
     if (before) before(dt);
-    collide(W);
+    collide(W); collideCC(W);
     for (const j of W.joints) prepJoint(j);
     for (const k of W.contacts) prepContact(k);
     for (let it = 0; it < P.ITER; it++) {

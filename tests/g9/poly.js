@@ -1,7 +1,7 @@
 // Полигон: «умный» водитель (режимы по участку, в болоте — лебёдка) на разных сборках. Что проходит, где встаёт, сколько топлива.
 global.window = global; require('../../g8-hook3d/physics.js'); require('../../g9-mud/mud2d.js');
 const M = global.MudSide;
-const BUILDS = { 'обычный': {}, 'лифт1+шноркель': { lift: 1, snorkel: 1 }, 'лифт1+шноркель+подкачка': { lift: 1, snorkel: 1, ctis: 1 }, 'лифт1+шноркель+спущенные': { lift: 1, snorkel: 1, press: 0 }, 'грязевые+лифт1+шноркель': { tires: 2, lift: 1, snorkel: 1 }, 'колёса1+грязевые+шноркель+мотор1': { wheel: 1, tires: 2, snorkel: 1, eng: 1 }, '6×6+шноркель': { axles: 3, snorkel: 1 }, 'всё': { base: 1, lift: 2, wheel: 2, axles: 3, tires: 2, eng: 2, snorkel: 1, tank: 1 } };
+const BUILDS = { 'обычный': {}, 'лифт1+шноркель': { lift: 1, snorkel: 1 }, 'лифт1+шноркель+подкачка': { lift: 1, snorkel: 1, ctis: 1 }, 'лифт1+шноркель+спущенные': { lift: 1, snorkel: 1, press: 0 }, 'грязевые+лифт1+шноркель': { tires: 2, lift: 1, snorkel: 1 }, 'колёса1+грязевые+шноркель+мотор1': { wheel: 1, tires: 2, snorkel: 1, eng: 2 }, '6×6+шноркель': { axles: 3, snorkel: 1 }, 'всё': { base: 1, lift: 2, wheel: 2, axles: 3, tires: 2, eng: 4, snorkel: 1, tank: 1 } };
 function drive(build, noRespawn) {
   const S = M.create(0, { build }), L = S.L, log = []; let t = 0, lastCp = 0;
   while (t < 400 && S.state !== 'win') {
