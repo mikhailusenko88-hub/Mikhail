@@ -1606,6 +1606,16 @@
    "link": "https://youtube.com/shorts/Z__JB-NTuzM",
    "title": "1000 ta shar! Samarqand, Navoiy, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №4 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-25",
+   "slot": 3,
+   "league": "mass_cars",
+   "no": 9,
+   "final": false,
+   "link": "https://youtube.com/shorts/IKhK1WD30Dw",
+   "title": "1000 ta shar! Nexia, Onix, Cobalt… Qaysi mashina yutadi? Какая машина победит? №9 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1616,27 +1626,27 @@
  ],
  "mass": {
   "cars": {
-   "no": 8,
+   "no": 9,
    "cnt": {
-    "Malibu": 3,
+    "Malibu": 4,
     "Damas": 4,
-    "Onix": 3,
+    "Onix": 4,
     "Kia K5": 4,
-    "Gentra": 8,
-    "Nexia": 8,
+    "Gentra": 9,
+    "Nexia": 9,
     "BYD Song": 4,
-    "Cobalt": 8,
+    "Cobalt": 9,
     "Matiz": 4,
-    "Lacetti": 3,
+    "Lacetti": 4,
     "Equinox": 4,
     "Labo": 3,
     "Spark": 3,
-    "Tahoe": 3,
-    "Jiguli": 3,
+    "Tahoe": 4,
+    "Jiguli": 4,
     "Captiva": 3,
     "Chery Tiggo": 3,
-    "Epica": 3,
-    "Tracker": 3,
+    "Epica": 4,
+    "Tracker": 4,
     "Tico": 3
    },
    "results": [
@@ -1743,6 +1753,19 @@
      ],
      "in_cup": 401,
      "link": "https://youtube.com/shorts/LTBkPR9-HjM"
+    },
+    {
+     "no": 9,
+     "date": "2026-11-25",
+     "slot": 3,
+     "winner": "Jiguli",
+     "top3": [
+      "Jiguli",
+      "Tracker",
+      "Lacetti"
+     ],
+     "in_cup": 327,
+     "link": "https://youtube.com/shorts/IKhK1WD30Dw"
     }
    ]
   },
