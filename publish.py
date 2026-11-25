@@ -7,6 +7,7 @@
   short <релиз> <серия> <ГГГГ-ММ-ДДTЧЧ:ММ> — Shorts этой серии (ep-<релиз>-shorts.mp4) с таймером выхода; полная серия уже должна быть загружена
     … --file=<путь в ветке> — взять Shorts из файла ветки studio, а не из релиза (Shorts в формате сервера: shorts_server.py)
   cancel <id ролика>                     — снять таймер выхода (ролик остаётся закрытым)
+  delete [--dry] <id> …                  — удалить закрытые дубли перезалитых серий (только без таймера, без просмотров, с живым двойником; «да» Михаила 25.11)
   retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>  — перенести таймер выхода закрытого ролика (время московское)
   stats                                  — последние ролики канала: просмотры, статус
   lang [сколько] [от скольки секунд]     — старым полным сериям проставить русский язык и категорию «Фильмы и анимация» (текст не меняется, Shorts не трогает)
@@ -134,7 +135,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb", "kanal", "sbornik"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb", "kanal", "sbornik", "delete"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -164,6 +165,15 @@ def main():
                        "последний: " + (f"{vids[0]['title'][:70]} — {vids[0]['views']} просмотров, категория {vids[0]['category']}, для детей: {vids[0]['kids']}" if vids else "—")])
     if mode == "cancel":
         return finish([f"ОТМЕНА {a[1]}: {yt.cancel(a[1])}"])
+    if mode == "delete":                                       # 25.11.2026, «да» Михаила: delete [--dry] <id> … — только закрытые дубли без таймера и без просмотров, у которых есть живой двойник
+        dry = "--dry" in a
+        ids = [x for x in a[1:] if not x.startswith("--")]
+        keep = {"DSKSoIpqPvc", "nCJHU-PLZK8", "W2Aaf9OEKEQ", "7y9nKRoGU5Q", "6yBYiyfdcc4", "4yS2JnxdSSs", "nfDYiVC-dpo", "B86QuwSDoB8",
+                "M2qZeQuFbzM", "EtxnmePX5RY", "zCv44IJcyuU", "ko1NB7Hx32Q", "SCE7JcQNMAM", "cjAd-R1eaH0", "dxSzLbcBfRA", "fJ8ZJ2N9cx4"}   # серии 33–39 и сборники, что выходят
+        vids = yt.last_videos(50)
+        res = [f"{v}: {yt.delete_dup(v, vids, keep, dry)}" for v in ids]
+        n = sum(1 for x in res if ("можно удалить" if dry else "УДАЛЁН") in x)
+        return finish([("ПРОБА УДАЛЕНИЯ: можно" if dry else "УДАЛЕНО ДУБЛЕЙ:") + f" {n} из {len(ids)}"] + res)
     if mode == "retime":                                       # перенести таймер: retime <id ролика> <ГГГГ-ММ-ДДTЧЧ:ММ>
         at, human = when_utc(a[2])
         ok, msg = yt.retime(a[1], at)

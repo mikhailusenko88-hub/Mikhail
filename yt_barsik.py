@@ -476,6 +476,28 @@ class YT:
         return [{"id": s["id"], "type": s["snippet"].get("type"), "title": s["snippet"].get("title"), "pos": s["snippet"].get("position"),
                  "playlists": s.get("contentDetails", {}).get("playlists")} for s in r.json().get("items", [])]
 
+    def delete_dup(self, vid, vids, keep, dry=False):
+        """25.11.2026, «да» Михаила: удалить закрытый дубль перезалитой серии. Только если ролик не в списке нужных, закрыт, без таймера, без просмотров
+        и на канале есть ролик с тем же названием — открытый или с таймером (живой двойник). Иначе не трогаем."""
+        if vid in keep:
+            return "в списке нужных — не трогаю"
+        r = requests.get(f"{API}/videos", params={"part": "snippet,status,statistics", "id": vid}, headers=self.h(), timeout=30)
+        items = r.json().get("items", []) if r.status_code == 200 else []
+        if not items:
+            return "не найден"
+        st, sn, sc = items[0]["status"], items[0]["snippet"], items[0].get("statistics", {})
+        if st.get("privacyStatus") != "private" or st.get("publishAt"):
+            return f"{st.get('privacyStatus')}{' с таймером ' + st['publishAt'] if st.get('publishAt') else ''} — не трогаю"
+        if int(sc.get("viewCount", 0)):
+            return f"просмотров {sc.get('viewCount')} — не трогаю"
+        twin = [v for v in vids if v["id"] != vid and v["title"] == sn["title"] and (v["privacy"] == "public" or v.get("publishAt"))]
+        if not twin:
+            return f"нет живого двойника для «{sn['title'][:50]}» — не трогаю"
+        if dry:
+            return f"можно удалить: «{sn['title'][:50]}», двойник {twin[0]['id']} ({twin[0]['privacy']}{', ' + twin[0]['publishAt'] if twin[0].get('publishAt') else ''})"
+        d = requests.delete(f"{API}/videos", params={"id": vid}, headers=self.h(), timeout=30)
+        return f"УДАЛЁН «{sn['title'][:50]}» (двойник {twin[0]['id']})" if d.status_code == 204 else f"не удалился: {d.status_code} {d.text[:200]}"
+
     def cancel(self, vid):
         """Снять таймер выхода: ролик остаётся закрытым. Уже вышедший ролик этим не закрывается — только по отдельной просьбе Михаила."""
         st = self.status(vid)
