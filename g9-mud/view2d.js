@@ -2,7 +2,7 @@
 /* Грязь, вид сбоку — рисование и управление, версия 2. Мир рисует объёмный вид Hook Truck (r3d.js); здесь — гараж-конструктор, свой грузовик
    (каждая деталь видна), живая грязь (колея остаётся), вода с вешками, указатели, брызги и дым, кнопки. Правая рука — газ и назад, левая — остальное. */
 (function () {
-  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '5.3';
+  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.0';
   const cv = document.getElementById('c'), ctx = cv.getContext('2d'), glc = document.getElementById('gl');
   const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '') || /[?&]ru\b/.test(location.search);
   const T = RU ? {
@@ -124,11 +124,12 @@
   try { const q = JSON.parse(localStorage.getItem('mud4.save') || 'null'); if (q && q.build) { save = Object.assign(save, q); save.build = Object.assign({}, START, q.build); } } catch (e) { /* */ }
   const persist = () => { try { localStorage.setItem('mud4.save', JSON.stringify(save)); localStorage.setItem('mud3.build', JSON.stringify(build)); } catch (e) { /* */ } };
   let newKey = '', fuelLvl = 2; // подсказка про только что купленную кнопку; ступень предупреждения о топливе
-  let career = true, cur = -1, sel = -1, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9;
+  let career = true, cur = -1, sel = -1, reg = 0, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9;
   const kindOf = (i) => (career && i >= 0 ? M.CONTRACTS[i].cargo : 'log'), capNow = () => M.capOf(M.spec(save.build), kindOf(Math.max(0, sel)));
   const optIdx = (k, v) => PARTS.find((q) => q[0] === k)[1].indexOf(v), priceOf = (k, v) => (PRICE[k] ? PRICE[k][optIdx(k, v)] : 0);
   const owns = (k, v) => !career || !priceOf(k, v) || START[k] === v || (save.own[k] || []).includes(v), BD = () => (career ? save.build : build);
   const unlocked = (i) => i === 0 || (save.stars[M.CONTRACTS[i - 1].id] || 0) > 0;
+  const regOf = () => { const n = M.CONTRACTS.findIndex((c) => !(save.stars[c.id] > 0)), k = n < 0 ? M.CONTRACTS.length - 1 : n; return Math.max(0, M.REGIONS.findIndex((r) => k >= r.from && k < r.from + r.n)); }; // район следующего недовезённого заказа
   let S = null, SV = null, mode = 'menu', resume = null, rebuilds = 0, note = T.intro, buildKey = 1, tab = 0;
   const sw = { awd: false, lock: false, low: false, soft: false }, keys = {}, ptrs = new Map(), dbg = { freeze: false };
   let realT = 0, last = performance.now(), acc = 0, camX = 0, camY = 0, Z = 0.5, buttons = [], toast = null, muted = false;
@@ -161,7 +162,7 @@
   const fordHere = () => { const w = S.L.water.find((q) => S.truck.x > q.x0 - 300 && S.truck.x < q.x1 + 300), z = w && S.L.mud.find((q) => q.wet && q.x0 > w.x0 && q.x1 < w.x1); return (w ? w.depth : 0) + (z ? z.d : 0); }; // глубина брода, в котором стоит грузовик: вода плюс ил
   function failTip() { const dpx = fordHere(); return S.why === 'water' ? T.tWater(fmt(dpx / PX), fmt(S.cfg.ford / PX, 2), fixText(fordFix(dpx))) : S.why === 'fuel' ? T.tFuel : T.tFlip; }
   function toGarage(keep) { let tip = mode === 'play' && S.state === 'dead' ? failTip() : null; if (tip && S.why === 'water') { const dpx = fordHere(), fx = fordFix(dpx); tab = fx.some((q) => q[1] === 'lift') ? 0 : 3; tip = T.tWaterG(fmt(dpx / PX), fmt(S.cfg.ford / PX, 2), fixText(fx)); } paused = false; resume = !career && keep && S.cp ? { x: S.cp.x, y: S.cp.y } : null; pend = null; mode = 'garage'; newSim(); if (tip) note = tip; else { const a = advice(); if (a) { note = `${T.mech}: ${a.why}. ${partName(a.k, a.v)}${a.own ? '' : ' — ' + a.price}.`; tab = PARTS.find((q) => q[0] === a.k)[2]; } } camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
-  function toMenu(keep) { career = true; cur = -1; if (!keep) sel = -1; paused = false; pend = null; res = null; resume = null; mode = 'menu'; newSim(); camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
+  function toMenu(keep) { career = true; cur = -1; if (!keep) { sel = -1; reg = regOf(); } paused = false; pend = null; res = null; resume = null; mode = 'menu'; newSim(); camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
   function buy() { if (!pend) return; const pr = priceOf(pend.k, pend.v); if (save.coins < pr) { tone(200, 0.15, 0.12); return; } save.coins -= pr; (save.own[pend.k] = save.own[pend.k] || []).push(pend.v); save.build[pend.k] = pend.v; pend = null; persist(); newSim(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); }
   function start(fromCp) {
     if (career) { cur = sel >= 0 ? sel : cur; fromCp = false; } pend = null; res = null; paused = false; adTow = 0; newSim(); sw.awd = sw.lock = sw.low = sw.soft = false;
@@ -176,7 +177,7 @@
     save.coins += total; save.stars[c.id] = Math.max(was, n); persist();
   }
   function tow(free) { paused = false; if (mode !== 'play') return; if (S.state === 'dead') { if (!free) S.tows++; S.respawn(); } else { S.rescue(); if (free) S.tows--; } if (free) adTow++; }
-  newSim(); camX = S.truck.x; camY = S.truck.y;
+  reg = regOf(); newSim(); camX = S.truck.x; camY = S.truck.y;
   if (!(save.seen && save.seen.first) && !save.coins && !Object.keys(save.stars || {}).length) { sel = 0; nlogs = Math.ceil(capNow() / 2); start(false); } // самый первый запуск — сразу в рейс, меню подождёт
 
   // ---------- объёмная сцена: свои предметы поверх мира Hook Truck ----------
@@ -451,6 +452,7 @@
     else if (id === 'adv') { const a = advice(); if (a && (a.own || save.coins >= a.price)) { if (!a.own) { save.coins -= a.price; (save.own[a.k] = save.own[a.k] || []).push(a.v); } save.build[a.k] = a.v; persist(); newSim(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); } else tone(200, 0.15, 0.12); }
     else if (id === 'adcoins') adReward(() => { if (pend) { save.coins = Math.max(save.coins, priceOf(pend.k, pend.v)); persist(); tone(990, 0.14, 0.12); } });
     else if (id === 'poly') { career = false; cur = -1; sel = -1; toGarage(false); } else if (id === 'buy') buy(); else if (id === 'unsel') { sel = -1; newSim(); }
+    else if (id.slice(0, 4) === 'reg:') { reg = +id.slice(4); tone(520, 0.05, 0.08); }
     else if (id.slice(0, 2) === 'c:') { const i = +id.slice(2); if (unlocked(i)) { sel = i; nlogs = Math.ceil(capNow() / 2); newSim(); tone(660, 0.06, 0.1); } else tone(200, 0.12, 0.1); }
     else if (id === 'lg-' || id === 'lg+') { nlogs = clamp(nlogs + (id === 'lg+' ? 1 : -1), 1, capNow()); newSim(); tone(600, 0.04, 0.08); }
     else if (id === 'tow') tow(false);
@@ -569,12 +571,17 @@
   }
   // заказы: список, а по нажатию — карточка заказа: что на дороге, какой груз и сколько взять, сколько заплатят
   function drawMenu() {
-    const { x0, ww, top, small, view, L } = panel(T.menu), CT = M.CONTRACTS, goH = small ? 46 : 56, gy = H2 - 8 - goH - 10, fs = small ? 15 : 18; let y = top + 12;
+    const { x0, ww, top, small, view, L, px: PXL } = panel(T.menu), CT = M.CONTRACTS, goH = small ? 46 : 56, gy = H2 - 8 - goH - 10, fs = small ? 15 : 18; let y = top + 12;
     ctx.textBaseline = 'middle';
     if (sel < 0) {
-      const rh = Math.min(62, (gy - y - 8) / CT.length);
-      CT.forEach((c, i) => {
-        const ok = unlocked(i), st = save.stars[c.id] || 0, b = { id: 'c:' + i, x: x0, y: y + (rh * i) + 2, w: ww, h: rh - 5 }; buttons.push(b);
+      // районы: стоя — две вкладки над списком, лёжа — под грузовиком слева, чтобы строки заказов остались крупными
+      const RG = M.REGIONS, R = RG[reg] || RG[0], nr = RG.length;
+      RG.forEach((q, k) => { const lock = !unlocked(q.from), on = k === reg, bw = L ? (PXL - 16 - 6 * (nr - 1)) / nr : (ww - 6 * (nr - 1)) / nr, b = L ? { id: 'reg:' + k, x: 8 + k * (bw + 6), y: H2 - 54, w: bw, h: 46 } : { id: 'reg:' + k, x: x0 + k * (bw + 6), y, w: bw, h: 36 }; buttons.push(b);
+        ctx.fillStyle = on ? '#37474f' : L ? 'rgba(255,253,247,0.94)' : '#eceff1'; rr(b.x, b.y, b.w, b.h, 11); ctx.fill(); ctx.fillStyle = on ? '#fff' : '#546e7a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; font(Math.min(16, b.w * 0.11), 900); ctx.fillText(`${k + 1}. ${q.name[RU ? 1 : 0]}${lock ? ' 🔒' : ''}`, b.x + b.w / 2, b.y + b.h / 2 + 1, b.w - 10); });
+      if (!L) y += 42;
+      const rh = Math.min(62, (gy - y - 8) / R.n);
+      CT.slice(R.from, R.from + R.n).forEach((c, j) => { const i = R.from + j;
+        const ok = unlocked(i), st = save.stars[c.id] || 0, b = { id: 'c:' + i, x: x0, y: y + (rh * j) + 2, w: ww, h: rh - 5 }; buttons.push(b);
         ctx.fillStyle = ok ? '#eceff1' : '#f5f5f5'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill();
         ctx.fillStyle = ok ? '#fb8c00' : '#cfd8dc'; ctx.beginPath(); ctx.arc(b.x + 22, b.y + b.h / 2, Math.min(15, b.h * 0.34), 0, 7); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; font(15); ctx.fillText(ok ? String(i + 1) : '🔒', b.x + 22, b.y + b.h / 2 + 1);
         if (L) { // лёжа панель широкая, а строки низкие: название и цена в одну строку, зато крупно

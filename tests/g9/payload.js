@@ -1,6 +1,6 @@
 // Сколько бочек увозит сборка: ищем наибольший груз, с которым проходит карьер и торфяник (водитель включает всё в грязи)
 global.window = global; require('../../g8-hook3d/physics.js'); require('../../g9-mud/mud2d.js'); const M = global.MudSide;
-const NEED = { pit: { awd: 1, low: 1, lock: 1, tires: 1 }, bog: { awd: 1, low: 1, lock: 1, tires: 1, snorkel: 1, tank: 1 }, mill: { awd: 1, low: 1, lock: 1, tires: 1, lift: 1 } };
+const NEED = { pit: { awd: 1, low: 1, lock: 1, tires: 1 }, bog: { awd: 1, low: 1, lock: 1, tires: 1, snorkel: 1, tank: 1 }, mill: { awd: 1, low: 1, lock: 1, tires: 1, lift: 1 }, wetclay: { awd: 1, low: 1, lock: 1, tires: 1 }, twofords: { awd: 1, low: 1, lock: 1, tires: 1, snorkel: 1 } };
 function drive(c, build, cargo) {
   const S = M.create(c.build, { build, cargo, kind: c.cargo }), L = S.L, b = S.cfg.b; let t = 0, back = 0, hx = 0, hangs = 0;
   while (t < 200 && S.state === 'play') {

@@ -335,8 +335,32 @@
     { id: 'bog', name: ['Barrels across the peat bog', 'Бочки через торфяник'], cargo: 'barrel', pay: 190, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // торф с лебёдкой, глубокий брод с илом, глина перед подъёмом
       b.sign(-190, 'soil', 'clay').mud(900, ZONES.clay).flat(600).cp(-460).sign(-170, 'climb', 28).slope(1400, 620).flat(500).can(-150).cp(-300);
       b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(300).slope(600, 200).flat(500).can(-150).cp(-300);
-      b.sign(-190, 'soil', 'peat').tree(500).tree(1050).tree(1600).tree(2150).tree(2500).can(1100).mud(1900, ZONES.peat); }) },
+      b.sign(-190, 'soil', 'peat').tree(500).tree(1050).tree(1600).tree(2150).tree(2500).can(1100).mud(1900, ZONES.peat); }) },    // ---------- район 2, «Болота»: грунты идут слоями, без твёрдой дороги между ними. Проходится, но туго ----------
+    { id: 'layers', r: 1, name: ['Logs through layered mud', 'Брёвна через слоёную грязь'], cargo: 'log', pay: 90, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // мягкая → вязкая → липкая подряд; потом глина вплотную к подъёму — протектор не успевает очиститься
+      b.sign(-190, 'soil', 'soft').mud(600, ZONES.soft).sign(-30, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(550, ZONES.sticky).flat(500).cp(-300);
+      b.hill(900, 110).flat(400).cp(-250).sign(-190, 'soil', 'clay').mud(700, ZONES.clay).flat(300).sign(-170, 'climb', 28).slope(1400, 620).flat(500).can(-150).cp(-300);
+      b.sign(-170, 'ford', 0.9).ford(700, 49); }) },
+    { id: 'dunes', r: 1, name: ['Melons over sand and creeks', 'Арбузы через пески и ручьи'], cargo: 'melon', pay: 100, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // из брода сразу в песок, гребёнка между двумя песками, брод с илом
+      b.sign(-170, 'ford', 0.7).ford(600, 38).sign(-30, 'soil', 'sand').mud(900, ZONES.sand).flat(260).bump(70, 15).flat(190).bump(70, 15).flat(190).bump(70, 15).flat(200).cp(-120);
+      b.sign(-150, 'soil', 'sand').mud(700, ZONES.sand).flat(300).sign(-170, 'climb', 20).slope(1400, 420).flat(500).cp(-300);
+      b.sign(-170, 'ford', 1.5).ford(800, 51, ZONES.silt).sign(-30, 'soil', 'soft').mud(600, ZONES.soft); }) },
+    { id: 'wetclay', r: 1, name: ['Barrels over wet clay', 'Бочки по размокшей глине'], cargo: 'barrel', pay: 200, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // глина — липкая — глина, и после каждой глины подъём
+      b.sign(-190, 'soil', 'clay').mud(600, ZONES.clay).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).sign(-30, 'soil', 'clay').mud(500, ZONES.clay).flat(600).sign(-170, 'climb', 24).slope(1400, 520).flat(900).can(-600).cp(-700);
+      b.sign(-170, 'crest', 0.55).crest(240, 55).flat(500).cp(-300).sign(-190, 'soil', 'medium').mud(700, ZONES.medium).sign(-30, 'soil', 'clay').mud(400, ZONES.clay).flat(300).can(-150).sign(-170, 'climb', 20).slope(1400, 420); }) },
+    { id: 'windows', r: 1, name: ['Logs across the bog windows', 'Брёвна через топь с окнами'], cargo: 'log', pay: 130, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['winch', 1, 'opt']], build: mk((b) => { // торф — островок — болото — островок — торф: без лебёдки никак, а она жжёт топливо
+      b.sign(-190, 'soil', 'peat').tree(280).tree(720).tree(980).mud(700, ZONES.peat).flat(280).can(-140).cp(-200);
+      b.sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1080).mud(800, ZONES.swamp).flat(280).can(-140).cp(-200);
+      b.sign(-190, 'soil', 'peat').tree(300).tree(750).tree(1150).tree(1500).mud(900, ZONES.peat).sign(-30, 'soil', 'sticky').mud(400, ZONES.sticky); }) },
+    { id: 'twofords', r: 1, name: ['Barrels across two fords', 'Бочки через два брода'], cargo: 'barrel', pay: 240, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // из брода в вязкую грязь, второй брод — с вязким дном, за ним липкая и подъём
+      b.sign(-170, 'ford', 1.1).ford(800, 60).sign(-30, 'soil', 'medium').mud(600, ZONES.medium).flat(400).cp(-250);
+      b.sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).sign(-30, 'soil', 'sticky').mud(700, ZONES.sticky).flat(600).can(-300).cp(-450).sign(-170, 'climb', 24).slope(1400, 520); }) },
+    { id: 'longhaul', r: 1, name: ['The long haul to the sawmill', 'Большой рейс на лесопилку'], cargo: 'log', pay: 150, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // всё сразу и подряд: длинный рейс, топливо в обрез
+      b.sign(-190, 'soil', 'soft').mud(500, ZONES.soft).sign(-30, 'soil', 'sand').mud(700, ZONES.sand).flat(350).cp(-250).sign(-170, 'ford', 0.9).ford(700, 49).sign(-30, 'soil', 'clay').mud(600, ZONES.clay).flat(350);
+      b.sign(-170, 'climb', 28).slope(1400, 620).flat(900).can(-600).cp(-700).sign(-170, 'crest', 0.8).crest(300, 80).flat(450).cp(-300).sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).flat(450).can(-150).cp(-300);
+      b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(300).slope(600, 200).flat(450).cp(-300);
+      b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).tree(1750).can(700).mud(1400, ZONES.peat); }) },
   ];
 
-  root.MudSide = { create, spec, capOf, spaceOf, payT, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
+  const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }];
+  root.MudSide = { create, spec, capOf, spaceOf, payT, REGIONS, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
 })(typeof window !== 'undefined' ? window : globalThis);
