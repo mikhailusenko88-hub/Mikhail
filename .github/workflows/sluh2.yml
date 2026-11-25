@@ -24,7 +24,8 @@ jobs:
         id: rq
         run: |
           if grep -q smoke sluh2-request.txt; then echo "smoke=1" >> "$GITHUB_OUTPUT"; echo "n=1" >> "$GITHUB_OUTPUT"; else echo "smoke=0" >> "$GITHUB_OUTPUT"; echo "n=10" >> "$GITHUB_OUTPUT"; fi
-          echo "prev=$(grep -o 'final=[0-9]*' sluh2-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"   # final=<запуск>: только итог по замерам того запуска
+          echo "prev=$(grep -o 'final=[0-9,]*' sluh2-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"   # final=<запуски>: только итог по готовым замерам
+          echo "add=$(grep -o 'add=[0-9,]*' sluh2-request.txt | head -1 | cut -d= -f2)" >> "$GITHUB_OUTPUT"       # add=<запуски>: замеры только добавочных голосов (sluh_add.json) + итог вместе с прежними
       - uses: actions/setup-python@v5
         if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         with:
@@ -63,6 +64,8 @@ jobs:
         if: steps.rq.outputs.prev == '' && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
         env:
           SMOKE: ${{ steps.rq.outputs.smoke }}
+          ADD: ${{ steps.rq.outputs.add != '' && '1' || '0' }}
+          ADDTAG: ${{ github.run_id }}
           GITHUB_TOKEN: ${{ github.token }}
         run: python sluh2.py feat ${{ matrix.part }} ${{ steps.rq.outputs.n }}
       - uses: actions/upload-artifact@v4
@@ -85,13 +88,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          prev=$(grep -o 'final=[0-9]*' sluh2-request.txt | head -1 | cut -d= -f2)
-          mkdir -p sl dl
-          if [ -n "$prev" ]; then
-            gh run download "$prev" -R ${{ github.repository }} -p 'SL-*' -D dl
-            for d in dl/*/; do cp -r "$d". sl/; done
-          fi
-          ls sl | head
+          prev=$(grep -o -E '(final|add)=[0-9,]*' sluh2-request.txt | head -1 | cut -d= -f2)
+          mkdir -p sl
+          for id in $(echo "$prev" | tr ',' ' '); do
+            rm -rf dl && mkdir -p dl
+            gh run download "$id" -R ${{ github.repository }} -p 'SL-*' -D dl || echo "нет замеров $id"
+            for d in dl/*/; do [ -d "$d" ] && cp -r "$d". sl/; done
+          done
+          ls sl | wc -l
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with:

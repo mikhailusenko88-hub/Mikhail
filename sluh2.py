@@ -110,6 +110,142 @@ def manifest():
     return M
 
 
+# ---------------------------------------------------------------- добавочные голоса (sluh_add.json): правка готовых проб и подделка движка
+ADD = os.environ.get("ADD") == "1"
+ADDTAG = os.environ.get("ADDTAG", "x")
+
+
+def extras(M):
+    """sluh_add.json → записи добавочных голосов. Виды: fix — готовые реплики кандидата + правка (эквалайзер под образец, форманты,
+    размах мелодии); emu — диктор свободной модели, доведённый до образца так же, как это делает движок (высота, форманты, темп)."""
+    cfg = json.load(open("sluh_add.json", encoding="utf-8"))
+    byv = {}
+    for m in M:
+        byv.setdefault(m["voice"], []).append(m)
+    X = []
+    for vi, v in enumerate(cfg["voices"]):
+        tgt = byv.get(v["target"], [])
+        base = byv.get(v["from"], []) if v.get("from") else tgt
+        for m in base:
+            if not any(t["text"] == m["text"] for t in tgt):
+                continue
+            X.append({"id": f"add{ADDTAG}_{vi:03d}_{m['k']:02d}", "voice": v["name"] + "@add", "text": m["text"], "k": m["k"], "src": "add", "vi": vi, "cfg": v,
+                      "base": m, "pic": m["k"] in (2, 4) and v.get("kind", "fix") == "fix", "grp": v["group"], "note": v.get("note", v["name"]),
+                      "kind": v.get("kind", "fix")})
+    if SMOKE:
+        X = [x for x in X if x["vi"] < 4]
+    return X, byv
+
+
+def world_mod(x, sr, P=1.0, F=1.0, Tm=1.0, kr=1.0):
+    """Как движок мультика: высота ×P, форманты ×F, темп ×Tm; плюс размах мелодии ×kr вокруг средней высоты."""
+    import pyworld as pw
+    x = x.astype(np.float64)
+    f0, t = pw.harvest(x, sr, f0_floor=70, f0_ceil=800, frame_period=5.0)
+    sp = pw.cheaptrick(x, f0, t, sr); ap = pw.d4c(x, f0, t, sr)
+    if abs(kr - 1) > 1e-3 and (f0 > 0).sum() > 5:
+        lm = float(np.median(np.log(f0[f0 > 0])))
+        f0 = np.where(f0 > 0, np.exp(lm + kr * (np.log(np.maximum(f0, 1.0)) - lm)), 0.0)
+    k = Tm / F
+    n = max(2, int(round(len(f0) / k)))
+    idx = np.linspace(0, len(f0) - 1, n)
+    i0 = np.floor(idx).astype(int); i1 = np.minimum(i0 + 1, len(f0) - 1); w = (idx - i0)[:, None]
+    f0n = np.where((f0[i0] > 0) & (f0[i1] > 0), f0[i0] * (1 - w[:, 0]) + f0[i1] * w[:, 0], 0) * (P / F)
+    spn = np.exp(np.log(sp[i0] + 1e-12) * (1 - w) + np.log(sp[i1] + 1e-12) * w)
+    apn = ap[i0] * (1 - w) + ap[i1] * w
+    y = pw.synthesize(np.ascontiguousarray(f0n), np.ascontiguousarray(spn), np.ascontiguousarray(apn), sr, 5.0)
+    if abs(F - 1) > .004:
+        m = int(np.floor((len(y) - 2) / F)); y = np.interp(np.arange(m) * F, np.arange(len(y)), y)
+    return y.astype(np.float32)
+
+
+def power_spec(xs, sr=SRH):
+    n, hop = 2048, 512
+    acc, cnt = np.zeros(n // 2 + 1), 0
+    for x in xs:
+        k = (len(x) - n) // hop
+        if k < 2:
+            continue
+        fr = np.stack([x[i * hop:i * hop + n] for i in range(k)]) * np.hanning(n)
+        pw = np.abs(np.fft.rfft(fr, axis=1)) ** 2
+        en = pw.sum(1); sel = en > en.max() * 10 ** (-3.5)
+        acc += pw[sel].sum(0) / (np.mean(en[sel]) + 1e-20); cnt += sel.sum()
+    return np.fft.rfftfreq(n, 1 / sr), acc / max(cnt, 1)
+
+
+def eq_match(xs, tgt, sr=SRH, lim=12.0):
+    """Эквалайзер: долгий спектр набора xs подтягивается к спектру образца (сглажено по трети октавы, не больше ±lim дБ)."""
+    from scipy import signal
+    fq, ps = power_spec(xs, sr); _, pt_ = power_spec(tgt, sr)
+    g = 10 * np.log10((pt_ + 1e-20) / (ps + 1e-20))
+    cen = np.geomspace(80, 18000, 64)
+    gs = np.array([np.mean(g[(fq >= c / 2 ** (1 / 6)) & (fq <= c * 2 ** (1 / 6))]) if ((fq >= c / 2 ** (1 / 6)) & (fq <= c * 2 ** (1 / 6))).any() else 0.0
+                   for c in cen])
+    gs = gs - np.mean(gs[(cen > 200) & (cen < 4000)])
+    gs = np.clip(gs, -lim, lim)
+    gs[cen > 15000] = gs[cen <= 15000][-1]
+    freqs = np.concatenate([[0.0], cen, [sr / 2]]); gains = np.concatenate([[gs[0]], gs, [gs[-1]]])
+    h = signal.firwin2(2049, freqs, 10 ** (gains / 20), fs=sr)
+    return [signal.fftconvolve(x, h, mode="same").astype(np.float32) for x in xs], {int(c): round(float(v), 1) for c, v in zip(cen[::6], gs[::6])}
+
+
+def vstats(xs, texts, sr=SRH):
+    """Высота (медиана, Гц), размах (пт), темп (слог/с по времени речи) набора реплик."""
+    import parselmouth
+    st, syl, tm = [], 0, 0.0
+    for x, t in zip(xs, texts):
+        snd = parselmouth.Sound(x.astype(np.float64), sr)
+        p0 = snd.to_pitch_ac(time_step=0.01, pitch_floor=60, pitch_ceiling=800).selected_array["frequency"]
+        st.append(p0[p0 > 0])
+        hop = int(sr * 0.01); k = len(x) // hop
+        e = np.sqrt((x[:k * hop].reshape(k, hop) ** 2).mean(1) + 1e-12)
+        tm += float((e > e.max() * 10 ** (-30 / 20)).sum()) * 0.01
+        syl += sum(c in VOWL for c in t.lower())
+    f = np.concatenate(st)
+    med = float(np.median(f)); f = f[(f > med / 1.9) & (f < med * 2.2)]
+    s = 12 * np.log2(f / 100.0)
+    return {"f0": float(np.median(f)), "range": float(np.percentile(s, 90) - np.percentile(s, 10)), "rate": syl / max(tm, 0.3)}
+
+
+def make_voice(items, byv):
+    """Все реплики одного добавочного голоса → tmp/<id>.wav. Возвращает применённые настройки."""
+    import svoy_lib as SL
+    v = items[0]["cfg"]
+    tgt = {t["text"]: t for t in byv[v["target"]]}
+    raw = []
+    for m in items:
+        if v.get("spk"):
+            p = f"tmp/raw_{m['id']}.wav"
+            synth({"syn": "cis:" + v["spk"], "text": m["text"]}, p)
+            x = SL.load(p, SRH)
+            b0, b1 = bounds(x, SRH); x = x[int(b0 * SRH):int(b1 * SRH)]
+        else:
+            x = SL.load(m["base"]["path"], SRH)
+        raw.append(x)
+    texts = [m["text"] for m in items]
+    tw = [SL.load(tgt[t]["path"], SRH) for t in texts]
+    ss, ts = vstats(raw, texts), vstats(tw, texts)
+    clip = lambda a, lo, hi: max(lo, min(hi, a))
+    F = float(v.get("F", 1.0))
+    P = float(v["P"]) if v.get("P") else (ts["f0"] / ss["f0"] if v.get("spk") else 1.0)
+    T = float(v["T"]) if v.get("T") else (clip(ts["rate"] / ss["rate"], 0.8, 1.35) if v.get("spk") else 1.0)
+    kr = v.get("range", 1.0)
+    if kr == "auto":
+        kr = clip(ts["range"] / max(ss["range"], 0.5), 0.6, 1.8)
+    kr = float(kr)
+    if max(abs(P - 1), abs(F - 1), abs(T - 1)) > 0.003 or abs(kr - 1) > 0.01:
+        out = [world_mod(x, SRH, P, F, T, kr) for x in raw]
+    else:
+        out = raw
+    eq = None
+    if v.get("eq"):
+        out, eq = eq_match(out, tw)
+    for m, y in zip(items, out):
+        SL.save(y / (np.abs(y).max() + 1e-9) * 0.9, f"tmp/{m['id']}.wav", SRH)
+    return {"P": round(P, 3), "F": F, "T": round(T, 3), "range": round(kr, 2), "eq": eq, "src": {k: round(x, 2) for k, x in ss.items()},
+            "tgt": {k: round(x, 2) for k, x in ts.items()}}
+
+
 # ---------------------------------------------------------------- синтез (№4, свободные смеси, дикторы)
 _net = {}
 
@@ -458,11 +594,30 @@ def feat(part, n):
         os.makedirs(d, exist_ok=True)
     svoy_omo.ruacc(); svoy2.patch_ruaccent()
     M = manifest()
+    out = []
+    if ADD:
+        X, byv = extras(M)
+        vs = sorted(set(x["vi"] for x in X))
+        mine_v = [vi for vi in vs if vi % n == part]
+        log("добавочных голосов", len(vs), "моих", len(mine_v))
+        for vi in mine_v:
+            items = [x for x in X if x["vi"] == vi]
+            try:
+                info = make_voice(items, byv)
+                log(items[0]["voice"], info)
+                for m in items:
+                    u = analyze(m, f"tmp/{m['id']}.wav")
+                    u.update(grp=m["grp"], note=m["note"], kind=m["kind"], made=info, ref=m["cfg"].get("ref"), target=m["cfg"]["target"])
+                    out.append(u)
+            except Exception as e:
+                log("ОШИБКА", items[0]["voice"], repr(e)); traceback.print_exc()
+        pickle.dump(out, open(f"{WK}/part_add{ADDTAG}_{part}.pkl", "wb"))
+        log("готово", part, len(out))
+        return
     mine = [m for i, m in enumerate(M) if i % n == part]
     # baya читаем раньше №4 (смесь №4 занимает её место в модели)
     mine.sort(key=lambda m: (0 if m.get("syn") == "baya" else 1, m.get("syn") or "", m["id"]))
     log("записей всего", len(M), "моих", len(mine))
-    out = []
     for j, m in enumerate(mine):
         try:
             wav = m.get("path")
@@ -692,12 +847,16 @@ def final():
     byv, byi = {}, {}
     for u in U:
         byv.setdefault(u["voice"], []).append(u)
-        if u["src"] != "mod":
+        if u["src"] in ("dub", "syn"):
             byi.setdefault(ident(u["voice"]), []).append(u)
     for v in byv:
         byv[v].sort(key=lambda u: u["k"])
     rnd = random.Random(7)
     PR = {v: profile(us) for v, us in byv.items()}
+    XA = {}                                   # группа → добавочные голоса
+    for v, us in byv.items():
+        if us[0]["src"] == "add":
+            XA.setdefault(us[0]["grp"], []).append(v); NOTE[v] = us[0]["note"]
     PI = {i: profile(us) for i, us in byi.items()}
     keys = [k for k, *_ in SC] + [k for k, *_ in VEC]
     md = ["# Слух 2 — проверка слуха и разбор голосов (25.11.2026)", "",
@@ -883,10 +1042,12 @@ def final():
                       f"«тот же» по {same} из 3; тембр по звукам {D['mel']:.1f} дБ (свой разброс {fl['mel']:.1f}).")
             RES["groups"][gname].setdefault("control", {})[cv] = {k: D[k] for k in ("ecapa", "wavlm", "resem", "mel", "ppg")}
         md.append("")
-        for cv in cands:
+        compact = []
+        for cv in cands + sorted(XA.get(gname, [])):
             if cv not in PR:
                 continue
             C = PR[cv]; D = pair(T, C, ci=ci)
+            kind = byv[cv][0].get("kind") if byv[cv][0]["src"] == "add" else "base"
             # одна и та же фраза: мелодия и ритм
             tu = {u["text"]: u for u in byv[tv]}
             cc = [contour(tu[u["text"]], u) for u in byv[cv] if u["text"] in tu]
@@ -913,8 +1074,17 @@ def final():
             tim = D["mel"] / fl["mel"] if fl["mel"] == fl["mel"] and fl["mel"] > 0 else float("nan")
             pro = D["ppg"] / fl["ppg"] if fl["ppg"] == fl["ppg"] and fl["ppg"] > 0 else float("nan")
             verdict = "ТОТ ЖЕ ГОЛОС" if (n_same == len(idv) and not big and tim <= 1.2) else ("близко, но слышно отличие" if (n_same >= 2 and len(big) <= 2 and tim <= 2) else "ДРУГОЙ ГОЛОС")
+            close = float(np.mean([x[4] for x in idv])) if idv else float("nan")
+            bd = bands(T, C)
+            compact.append((close, cv, kind, verdict, idv, tim, D, bd, len(big)))
+            RES["groups"][gname]["cands"][cv] = {"verdict": verdict, "close": close, "kind": kind, "bands": bd, "made": byv[cv][0].get("made"),
+                                                 "D": {k: (None if (isinstance(v, float) and v != v) else v) for k, v in D.items()},
+                                                 "rows": [[k, round(dv, 3), round(f_, 3), round(x, 2)] for x, k, nm, unit, word, dv, f_ in rows],
+                                                 "ident": [[k, round(v, 3), round(f_, 3), round(pos, 3), rank, tot] for k, nm, v, f_, pos, rank, tot in idv]}
+            if kind in ("emu", "check"):
+                continue
             verdicts.append((gname, cv, verdict, n_same, len(idv), len(big), tim))
-            md += [f"### {NOTE.get(cv, cv)} — {verdict}", "",
+            md += [f"### {NOTE.get(cv, cv)} — {verdict} (близость {100 * close:.0f} %)", "",
                    "Узнаватели: " + "; ".join(f"{nm.split(' (')[0]} {v:.2f} (нужно ≥ {f_:.2f}; {100 * pos:.0f} % пути от «чужого» к «тому же»; "
                                                f"ближе него {rank} из {tot} чужих)" for _, nm, v, f_, pos, rank, tot in idv) + ".",
                    f"Тембр по звукам: {D['mel']:.1f} дБ — в {tim:.1f} раза больше своего разброса ({fl['mel']:.1f}). "
@@ -925,9 +1095,24 @@ def final():
             for x, k, nm, unit, word, dv, f_ in rows[:12]:
                 md.append(f"| {word} | {dv:+.2f} {unit} | {f_:.2f} | {x:.1f} |")
             md.append("")
-            RES["groups"][gname]["cands"][cv] = {"verdict": verdict, "bands": bands(T, C), "D": {k: (None if (isinstance(v, float) and v != v) else v) for k, v in D.items()},
-                                                 "rows": [[k, round(dv, 3), round(f_, 3), round(x, 2)] for x, k, nm, unit, word, dv, f_ in rows],
-                                                 "ident": [[k, round(v, 3), round(f_, 3), round(pos, 3), rank, tot] for k, nm, v, f_, pos, rank, tot in idv]}
+        if len(compact) > 1:
+            compact.sort(key=lambda x: (x[0] != x[0], -x[0] if x[0] == x[0] else 0))
+            md += [f"### {gname}: все кандидаты по близости к образцу", "",
+                   "Близость — средняя доля пути от «чужого» к «тому же» по трём узнавателям (100 % — тот же голос).", "",
+                   "| кандидат | близость | узн. 1 / 2 / 3 | тембр × | размер голоса | спектр 2–4 / 4–7 / 7–11 кГц | сильных отличий |", "|---|---|---|---|---|---|---|"]
+            for close, cv, kind, verdict, idv, tim, D, bd, nb in compact[:45]:
+                e = {x[0]: x[2] for x in idv}
+                md.append(f"| {NOTE.get(cv, cv.split('@')[0])} | {100 * close:.0f} % | {e.get('ecapa', float('nan')):.2f} / {e.get('wavlm', float('nan')):.2f} / "
+                          f"{e.get('resem', float('nan')):.2f} | {tim:.1f} | {D['fscale']:+.1f} % | {bd['2–4']:+.0f} / {bd['4–7']:+.0f} / {bd['7–11']:+.0f} | {nb} |")
+            md.append("")
+        for cv in sorted(XA.get(gname, [])):        # точность подделки движка: подделка против настоящей пробы того же диктора
+            ref = byv[cv][0].get("ref")
+            if ref and ref in PR:
+                D = pair(PR[ref], PR[cv], ci=ci)
+                md.append(f"Точность подделки движка — {NOTE.get(cv, cv)} против настоящей пробы {ref.split('@')[0]}: узнаватели "
+                          f"{D['ecapa']:.2f} / {D['wavlm']:.2f} / {D['resem']:.2f}, тембр по звукам {D['mel']:.1f} дБ, высота {D['f0']:+.2f} пт, размер {D['fscale']:+.1f} %.")
+                RES["groups"][gname].setdefault("emu_check", {})[cv] = {k: D[k] for k in ("ecapa", "wavlm", "resem", "mel", "f0", "fscale")}
+        md.append("")
         # кто из всего набора ближе всего к образцу (по «всё вместе»)
         near = []
         for i, us in byi.items():
@@ -983,6 +1168,7 @@ def final():
     edges = np.geomspace(80, 20000, 41); cen = np.sqrt(edges[:-1] * edges[1:])
     for gname, tv, cands, src in GROUPS:
         vs = [v for v in [tv] + cands if v in byv and (v == tv or v.endswith("@g24") or v.endswith("@syn"))]
+        vs += [v for v in sorted(XA.get(gname, [])) if byv[v][0].get("kind") == "fix"][:4]
         if len(vs) < 2:
             continue
         slug = {"Барсик": "barsik", "Рон": "ron", "Пик": "pik", "№4": "n4"}[gname]
