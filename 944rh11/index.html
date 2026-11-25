@@ -26,6 +26,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);overflow:hidde
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .lbl{font-size:12px;color:var(--muted);min-width:74px}
 .note{font-size:12.5px;margin:0;color:var(--muted);line-height:1.35}
+.sum{font-size:13px;font-weight:600;line-height:1.4;margin:0;padding:7px 9px;border-left:3px solid var(--accent);background:rgba(47,111,143,.09);border-radius:4px}
 .sel{font-size:12px;margin:0;color:var(--muted)}
 button{font:500 12.5px var(--f-ui);padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
 button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -51,6 +52,7 @@ select{font:13px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border
     <div class="hint" id="hint">Нажмите на фасад — откроется · крутить пальцем, приблизить двумя</div>
   </div>
   <div class="bar" id="bar">
+    <p class="sum" id="sum"></p>
     <div class="row"><span class="lbl">Планировка</span><span class="row" id="segLay"></span></div>
     <div class="row"><span class="lbl">Материал</span><span class="row" id="segMat"></span></div>
     <p class="note" id="note"></p>
@@ -62,6 +64,7 @@ select{font:13px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border
       <button id="bFr" aria-pressed="true">Фасады</button>
       <button id="bCodes" aria-pressed="true">Коды</button>
       <button id="bDims" aria-pressed="false">Размеры</button>
+      <button id="bZones" aria-pressed="true">Рабочие зоны</button>
       <button id="b3d">3D</button><button id="bFront">Спереди</button><button id="bPlan">Сверху</button>
       <button id="bTab" aria-pressed="false">Таблица размеров</button>
     </div>
@@ -78,7 +81,7 @@ select{font:13px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border
 // Модуль строится в своей системе: x по ширине, z от стены к фасаду; модули левой стены повёрнуты.
 const S=0.001;
 const PL=100, BH=720, BD=560, FT=18, CT=38, CTD=600, TOP=PL+BH+CT, GOLA=30, FTOP=PL+BH-GOLA;
-const UY=1460, UTOP=2400, UH=UTOP-UY, GH=320, FH=UH-GH, UD=320;
+const UY=1460, UTOP=2400, UH=UTOP-UY, GH=340, FH=UH-GH, UD=320; // рифлёный ярус 600 — под AVENTOS HK top (корпус до 600)
 const RW=2800, RD=1600, RH=2700;
 const FR={w:750,h:1780,d:545}; // встраиваемый холодильник 75 см: ниша по высоте 1780 (уточнить по модели)
 
@@ -90,126 +93,117 @@ const FRAME_COLORS=[['Чёрный','#1d1d1d'],['Графит','#4a4c4f'],['Ал
 
 // ---------- планировки
 const LAYS={
- 1:{name:'1 · Основной, как на фото',
-  note:'Как на фото: у угла узкая дверь, духовка под варкой, тумба с 3 ящиками, над ней СВЧ (В4), вытяжка спрятана в В3; встроенный холодильник 75 см в пенале П1 за фасадами. На левой стене — мойка 40 см у угла и ваша посудомойка 60 см (Н5). Мойку шире здесь не поставить: на стене 1,6 м помещается только мойка 40 + посудомойка 60.',
+ 1:{name:'1 · Как на фото',walls:'2800 × 1650',
+  sum:'Стены 2800 × 1650 (слева на 5 см длиннее) · слева мойка 45 + ПММ 60 · сзади духовка с варкой 60, ящики 60, СВЧ над ними · холодильник встроенный 75 · столешница 858 от пола · рабочая зона у угла 80 см',
+  note:'Как на фото. Чтобы рядом с мойкой встала ваша посудомойка 60, левая сторона кухни нужна 1,65 м: мойка 45 у угла + посудомойка 60. Если слева ровно 1,6 м — смотрите вариант 2.',
   mods:[
   {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
   {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:800},
   {code:'Н3',type:'drawers',name:'Тумба с 3 ящиками',w:600,wall:'back',at:1400},
   {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'L',hinge:'L'},
-  {code:'Н4',type:'sink',name:'Тумба под мойку 40 см',w:400,wall:'left',at:580},
-  {code:'Н5',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'left',at:980,endPanel:true},
-  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой на всю левую стену, сушка над мойкой',w:1600,wall:'left',at:0,doorWs:[620,580],rackDoor:1},
-  {code:'В2',type:'up',name:'Шкаф верхний, полка',w:460,wall:'back',at:340,hinge:'L'},
-  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:800},
+  {code:'Н4',type:'sink',name:'Тумба под мойку 45, 2 ящика с вырезом под сифон',w:450,wall:'left',at:580},
+  {code:'Н5',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'left',at:1030,endPanel:true},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний на всю левую стену, сушка над мойкой',w:1650,wall:'left',at:0,doorWs:[620,630],rackDoor:1},
+  {code:'В2',type:'up',name:'Шкаф верхний, подъёмник',w:460,wall:'back',at:340},
+  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой, подъёмник',w:600,wall:'back',at:800},
   {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1400},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:460,wall:'back',at:340},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:800},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1400}],
-  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}},
- 2:{name:'2 · Мойка 60, посудомойка у холодильника',
-  note:'Мойка 60 см у угла и тумба с 3 ящиками 40 см — на левой стене. Посудомойка 60 — на задней стене у холодильника, над ней СВЧ (В4). Минус: посудомойка дальше от мойки (около 1,5 м), шланги удлиняются — проверить по инструкции посудомойки.',
+  {code:'С1',type:'glass',name:'Витрина со стеклом, подъёмник',w:460,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:800},
+  {code:'С3',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1400}],
+  top:[[0,0,2000,600],[0,600,600,1050]], splash:{back:2000,left:1650},
+  zones:[[0,0,800,600,'рабочая зона 80 см'],[1400,0,600,600,'60 см'],[0,1030,600,620,'62 см']]},
+ 2:{name:'2 · Мойка 60 сзади (1,6 м) ★',walls:'2800 × 1600',
+  sum:'Стены 2800 × 1600 · сзади мойка 60 + ПММ 60, над ними сушка и СВЧ · слева духовка с варкой 60 и ящики 40 · холодильник встроенный 75 · столешница 858 · рабочая зона у угла 80 см + 60 у холодильника + 40 у варки',
+  note:'Рекомендую. Влезает в 1,6 м: мойка 60 и посудомойка рядом на задней стене, над мойкой сушка, над посудомойкой СВЧ; холодильник 75 в пенале справа. Духовка с варкой — на левой стене, по бокам столешница (угол 80 см и ящики). Между мойкой и варкой — угол для нарезки.',
   mods:[
   {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
-  {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:800},
-  {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1400},
-  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'L',hinge:'L'},
-  {code:'Н4',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'left',at:580},
-  {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:400,wall:'left',at:1180,vis:'L'},
-  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой на всю левую стену, сушка над мойкой',w:1600,wall:'left',at:0,doorWs:[420,390,390],rackDoor:1},
-  {code:'В2',type:'up',name:'Шкаф верхний, полка',w:460,wall:'back',at:340,hinge:'L'},
-  {code:'В3',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:800},
-  {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1400},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:460,wall:'back',at:340},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:800},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1400}],
-  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}},
- 3:{name:'3 · Холодильник на левой стене',
-  note:'Пенал со встроенным холодильником 75 см переезжает на левую стену, в конец (П1). Вся задняя стена — рабочая: мойка 60 и посудомойка 60 рядом, духовка с варкой, тумба с 3 ящиками 42 см. Над мойкой сушка (В3), над посудомойкой СВЧ (В4), вытяжка в В5. Больше всего рабочей столешницы.',
-  mods:[
-  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'left',at:0,blind:'R',dw:220},
-  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'left',at:800,side:'LR',hinge:'L'},
-  {code:'Н2',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'back',at:580},
-  {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1180},
-  {code:'Н4',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1780},
-  {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:420,wall:'back',at:2380},
-  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'left',at:0,doors:1,noVis:true},
-  {code:'В2',type:'up',name:'Шкаф верхний узкий (специи)',w:240,wall:'back',at:340,hinge:'L'},
-  {code:'В3',type:'up',name:'Шкаф верхний с сушкой над мойкой',w:600,wall:'back',at:580,hinge:'L',rack:true},
-  {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1180},
-  {code:'В5',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:1780},
-  {code:'В6',type:'up',name:'Шкаф верхний, полка',w:420,wall:'back',at:2380,hinge:'R'},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:240,wall:'back',at:340},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:580},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1180},
-  {code:'С4',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1780},
-  {code:'С5',type:'glass',name:'Витрина со стеклом',w:420,wall:'back',at:2380}],
-  top:[[0,0,600,800],[600,0,2200,600]], splash:{back:2800,left:800}, cam:[[2.75,1.7,3.7],[1.35,1.15,0.7]]},
- 4:{name:'4 · Зеркально: холодильник слева',
-  note:'Основной вариант зеркально: пенал с холодильником 75 см слева у стены, рядом тумба с ящиками и СВЧ над ней, духовка с варкой, угловая тумба; мойка 40 см и посудомойка 60 — на правой стене. Подходит, если правая стена 1,6 м свободна (нет двери и окна).',
-  mods:[
-  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:0,side:'R',hinge:'R'},
-  {code:'Н1',type:'drawers',name:'Тумба с 3 ящиками',w:600,wall:'back',at:800},
-  {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1400},
-  {code:'Н3',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:2000,blind:'R',dw:220},
-  {code:'Н4',type:'sink',name:'Тумба под мойку 40 см',w:400,wall:'right',at:580},
-  {code:'Н5',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'right',at:980,endPanel:'R'},
-  {code:'В1',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:800},
-  {code:'В2',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'back',at:1400},
-  {code:'В3',type:'up',name:'Шкаф верхний, полка',w:460,wall:'back',at:2000,hinge:'R'},
-  {code:'В4',type:'cornerUp',name:'Шкаф верхний угловой на всю правую стену, сушка над мойкой',w:1600,wall:'right',at:0,doorWs:[580,620],rackDoor:0,blindL:true},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:800},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1400},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:460,wall:'back',at:2000}],
-  top:[[800,0,2000,600],[2200,600,600,1000]], splash:{back:[800,2000],right:1600}, cam:[[0.75,1.75,3.85],[1.6,1.15,0.6]]},
- 5:{name:'5 · П-образная',
-  note:'Пенал с холодильником 75 см — на левой стене, в конце. По задней стене мойка 60, посудомойка 60 и ящики; на правой стене духовка с варкой, по бокам от неё столешница. Больше всего шкафов и столешницы. Нужна свободная правая стена 1,6 м (нет двери и окна); проход между сторонами около 1,6 м.',
-  mods:[
-  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'left',at:0,blind:'R',dw:220},
-  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'left',at:800,side:'LR',hinge:'L'},
-  {code:'Н2',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'back',at:580},
-  {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1180},
-  {code:'Н4',type:'drawers',name:'Тумба с 3 ящиками',w:440,wall:'back',at:1780},
-  {code:'Н5',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'right',at:0,blind:'L',dw:220},
-  {code:'Н6',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'right',at:800},
-  {code:'Н7',type:'door',name:'Тумба узкая, полки',w:200,wall:'right',at:1400,vis:'R',hinge:'L'},
-  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'left',at:0,doors:1,noVis:true},
-  {code:'В2',type:'up',name:'Шкаф верхний узкий (специи)',w:240,wall:'back',at:340,hinge:'L'},
-  {code:'В3',type:'up',name:'Шкаф верхний с сушкой над мойкой',w:600,wall:'back',at:580,hinge:'L',rack:true},
-  {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1180},
-  {code:'В5',type:'up',name:'Шкаф верхний, полка',w:680,wall:'back',at:1780},
-  {code:'В6',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'right',at:0,doors:1,noVis:true,blindL:true},
-  {code:'В7',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'right',at:800},
-  {code:'В8',type:'up',name:'Шкаф верхний узкий',w:200,wall:'right',at:1400,hinge:'L',vis:'R'},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:240,wall:'back',at:340},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:580},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1180},
-  {code:'С4',type:'glass',name:'Витрина со стеклом',w:680,wall:'back',at:1780},
-  {code:'С5',type:'glass',name:'Витрина со стеклом',w:600,wall:'right',at:800},
-  {code:'С6',type:'glass',name:'Витрина со стеклом',w:200,wall:'right',at:1400}],
-  top:[[0,0,600,800],[600,0,1600,600],[2200,0,600,1600]], splash:{back:2800,left:800,right:1600}, cam:[[1.4,1.85,4.3],[1.4,1.15,0.7]]}
-,
- 6:{name:'6 · Варка на левой стене',
-  note:'Задняя стена почти как на фото, но вместо духовки — мойка 60 и рядом посудомойка 60, над ними сушка и СВЧ; холодильник 75 в пенале П1. Духовка с варкой — на левой стене, по бокам от неё столешница, вытяжка в В5. Мойка большая и посудомойка рядом, варка далеко от пенала.',
-  mods:[
-  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:0,blind:'L',dw:220},
-  {code:'Н2',type:'sink',name:'Тумба под мойку 60 см',w:600,wall:'back',at:800},
+  {code:'Н2',type:'sink',name:'Тумба под мойку 60, 2 ящика с вырезом под сифон',w:600,wall:'back',at:800},
   {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1400},
   {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:2000,side:'L',hinge:'L'},
   {code:'Н4',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'left',at:580},
   {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:400,wall:'left',at:1180,vis:'L'},
   {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'back',at:0,doors:1,noVis:true,blindL:true},
-  {code:'В2',type:'up',name:'Шкаф верхний с сушкой над мойкой',w:600,wall:'back',at:800,hinge:'L',rack:true},
+  {code:'В2',type:'up',name:'Шкаф верхний с сушкой над мойкой, подъёмник',w:600,wall:'back',at:800,rack:true},
   {code:'В3',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1400},
-  {code:'В4',type:'up',name:'Шкаф верхний узкий (специи)',w:240,wall:'left',at:340,hinge:'R'},
-  {code:'В5',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой',w:600,wall:'left',at:580},
-  {code:'В6',type:'up',name:'Шкаф верхний, полка',w:400,wall:'left',at:1180,hinge:'L',vis:'L'},
-  {code:'С1',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:800},
-  {code:'С2',type:'glass',name:'Витрина со стеклом',w:600,wall:'back',at:1400},
-  {code:'С3',type:'glass',name:'Витрина со стеклом',w:240,wall:'left',at:340},
-  {code:'С4',type:'glass',name:'Витрина со стеклом',w:600,wall:'left',at:580},
-  {code:'С5',type:'glass',name:'Витрина со стеклом',w:400,wall:'left',at:1180}],
-  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600}}
+  {code:'В4',type:'up',name:'Шкаф верхний узкий (специи), подъёмник',w:240,wall:'left',at:340},
+  {code:'В5',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой, подъёмник',w:600,wall:'left',at:580},
+  {code:'В6',type:'up',name:'Шкаф верхний, подъёмник',w:400,wall:'left',at:1180,vis:'L'},
+  {code:'С1',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:800},
+  {code:'С2',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1400},
+  {code:'С3',type:'glass',name:'Витрина со стеклом, подъёмник',w:240,wall:'left',at:340},
+  {code:'С4',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'left',at:580},
+  {code:'С5',type:'glass',name:'Витрина со стеклом, подъёмник',w:400,wall:'left',at:1180}],
+  top:[[0,0,2000,600],[0,600,600,1000]], splash:{back:2000,left:1600},
+  zones:[[0,0,800,600,'рабочая зона 80 см'],[1400,0,600,600,'60 см'],[0,1180,600,420,'42 см']]},
+ 3:{name:'3 · Холодильник на левой стене',walls:'2800 × 1600',
+  sum:'Стены 2800 × 1600 · холодильник встроенный 75 на левой стене · сзади мойка 60, ПММ 60, духовка с варкой 60, ящики 42 · рабочая зона 60 см между мойкой и варкой + 80 см у холодильника + 42 у стены',
+  note:'Пенал с холодильником 75 — на левой стене, в конце (П1). Вся задняя стена рабочая: мойка 60 и посудомойка рядом, дальше духовка с варкой и ящики. У холодильника — столешница 80 см, чтобы ставить продукты.',
+  mods:[
+  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'left',at:0,blind:'R',dw:220},
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'left',at:800,side:'LR',hinge:'L'},
+  {code:'Н2',type:'sink',name:'Тумба под мойку 60, 2 ящика с вырезом под сифон',w:600,wall:'back',at:580},
+  {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1180},
+  {code:'Н4',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1780},
+  {code:'Н5',type:'drawers',name:'Тумба с 3 ящиками',w:420,wall:'back',at:2380},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'left',at:0,doors:1,noVis:true},
+  {code:'В2',type:'up',name:'Шкаф верхний узкий (специи), подъёмник',w:240,wall:'back',at:340},
+  {code:'В3',type:'up',name:'Шкаф верхний с сушкой над мойкой, подъёмник',w:600,wall:'back',at:580,rack:true},
+  {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1180},
+  {code:'В5',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой, подъёмник',w:600,wall:'back',at:1780},
+  {code:'В6',type:'up',name:'Шкаф верхний, подъёмник',w:420,wall:'back',at:2380},
+  {code:'С1',type:'glass',name:'Витрина со стеклом, подъёмник',w:240,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:580},
+  {code:'С3',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1180},
+  {code:'С4',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1780},
+  {code:'С5',type:'glass',name:'Витрина со стеклом, подъёмник',w:420,wall:'back',at:2380}],
+  top:[[0,0,600,800],[600,0,2200,600]], splash:{back:2800,left:800}, cam:[[2.75,1.7,3.7],[1.35,1.15,0.7]],
+  zones:[[0,0,600,800,'у холодильника 80 см'],[1180,0,600,600,'рабочая зона 60 см'],[2380,0,420,600,'42 см']]},
+ 4:{name:'4 · Зеркально: холодильник слева',walls:'2800 × 1650 (справа)',
+  sum:'Стены 2800 × 1650 (справа на 5 см длиннее) · холодильник встроенный 75 слева у стены · сзади ящики 60 с СВЧ над ними, духовка с варкой 60 · справа мойка 45 + ПММ 60 · рабочая зона у угла 80 см',
+  note:'Вариант 1 зеркально: пенал с холодильником слева у стены, мойка и посудомойка — на правой стене. Нужна свободная правая стена 1,65 м (нет двери и окна).',
+  mods:[
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'back',at:0,side:'R',hinge:'R'},
+  {code:'Н1',type:'drawers',name:'Тумба с 3 ящиками',w:600,wall:'back',at:800},
+  {code:'Н2',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'back',at:1400},
+  {code:'Н3',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'back',at:2000,blind:'R',dw:220},
+  {code:'Н4',type:'sink',name:'Тумба под мойку 45, 2 ящика с вырезом под сифон',w:450,wall:'right',at:580},
+  {code:'Н5',type:'dw',name:'Посудомоечная машина 60 см, фасад + боковина',w:600,wall:'right',at:1030,endPanel:'R'},
+  {code:'В1',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:800},
+  {code:'В2',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой, подъёмник',w:600,wall:'back',at:1400},
+  {code:'В3',type:'up',name:'Шкаф верхний, подъёмник',w:460,wall:'back',at:2000},
+  {code:'В4',type:'cornerUp',name:'Шкаф верхний на всю правую стену, сушка над мойкой',w:1650,wall:'right',at:0,doorWs:[630,620],rackDoor:0,blindL:true},
+  {code:'С1',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:800},
+  {code:'С2',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1400},
+  {code:'С3',type:'glass',name:'Витрина со стеклом, подъёмник',w:460,wall:'back',at:2000}],
+  top:[[800,0,2000,600],[2200,600,600,1050]], splash:{back:[800,2000],right:1650}, cam:[[0.75,1.75,3.85],[1.6,1.15,0.6]],
+  zones:[[800,0,600,600,'60 см'],[2000,0,800,600,'рабочая зона 80 см'],[2200,1030,600,620,'62 см']]},
+ 5:{name:'5 · П-образная',walls:'2800 × 1600 × 1600',
+  sum:'Стены: левая 1600, задняя 2800, правая 1600 · холодильник встроенный 75 на левой · сзади мойка 60 + ПММ 60, угловая тумба · справа духовка с варкой 60 и ящики 42 · рабочая зона у угла ~1 м + 80 у холодильника',
+  note:'П-образная: пенал с холодильником на левой стене, по задней — мойка 60, посудомойка и большая угловая тумба (в ней можно поворотные полки LeMans); на правой — духовка с варкой, по бокам столешница. Больше всего шкафов и столешницы. Нужна свободная правая стена 1,6 м; проход между сторонами около 1,6 м.',
+  mods:[
+  {code:'Н1',type:'corner',name:'Тумба угловая, узкая дверь, полка',w:800,wall:'left',at:0,blind:'R',dw:220},
+  {code:'П1',type:'fridge',name:'Пенал под встраиваемый холодильник 75 см, антресоль',w:800,wall:'left',at:800,side:'LR',hinge:'L'},
+  {code:'Н2',type:'sink',name:'Тумба под мойку 60, 2 ящика с вырезом под сифон',w:600,wall:'back',at:580},
+  {code:'Н3',type:'dw',name:'Посудомоечная машина 60 см, фасад',w:600,wall:'back',at:1180},
+  {code:'Н4',type:'corner',name:'Тумба угловая 102 см, дверь 44 см (под поворотные полки)',w:1020,wall:'back',at:1780,blind:'R',dw:440},
+  {code:'Н5',type:'oven',name:'Тумба под духовку и варочную панель, ящик внизу',w:600,wall:'right',at:580},
+  {code:'Н6',type:'drawers',name:'Тумба с 3 ящиками',w:420,wall:'right',at:1180,vis:'R'},
+  {code:'В1',type:'cornerUp',name:'Шкаф верхний угловой',w:800,wall:'left',at:0,doors:1,noVis:true},
+  {code:'В2',type:'up',name:'Шкаф верхний узкий (специи), подъёмник',w:240,wall:'back',at:340},
+  {code:'В3',type:'up',name:'Шкаф верхний с сушкой над мойкой, подъёмник',w:600,wall:'back',at:580,rack:true},
+  {code:'В4',type:'upMicro',name:'Шкаф верхний со встроенной СВЧ',w:600,wall:'back',at:1180},
+  {code:'В5',type:'cornerUp',name:'Шкаф верхний угловой',w:1020,wall:'back',at:1780,doorWs:[620],noVis:true},
+  {code:'В6',type:'up',name:'Шкаф верхний узкий, подъёмник',w:240,wall:'right',at:340},
+  {code:'В7',type:'upHood',name:'Шкаф верхний со встроенной вытяжкой, подъёмник',w:600,wall:'right',at:580},
+  {code:'В8',type:'up',name:'Шкаф верхний, подъёмник',w:420,wall:'right',at:1180,vis:'R'},
+  {code:'С1',type:'glass',name:'Витрина со стеклом, подъёмник',w:240,wall:'back',at:340},
+  {code:'С2',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:580},
+  {code:'С3',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'back',at:1180},
+  {code:'С4',type:'glass',name:'Витрина со стеклом, подъёмник',w:240,wall:'right',at:340},
+  {code:'С5',type:'glass',name:'Витрина со стеклом, подъёмник',w:600,wall:'right',at:580},
+  {code:'С6',type:'glass',name:'Витрина со стеклом, подъёмник',w:420,wall:'right',at:1180}],
+  top:[[0,0,600,800],[600,0,2200,600],[2200,600,600,1000]], splash:{back:2800,left:800,right:1600}, cam:[[1.4,1.85,4.3],[1.4,1.15,0.7]],
+  zones:[[0,0,600,800,'у холодильника 80 см'],[1180,0,600,600,'60 см'],[1780,0,1020,600,'рабочая зона 1 м + угол'],[2200,1180,600,420,'42 см']]}
 };
 const MATV={A:{name:'А · МДФ в плёнке',note:'Фасады — МДФ в матовой плёнке ПВХ, верхние — рифлёные; видимые боковины — тоже МДФ; корпус — белая ЛДСП.'},
             B:{name:'Б · ЛДСП',note:'Всё из ЛДСП Egger: фасады гладкие, корпус белый. Рифление на ЛДСП не делается.'}};
@@ -266,19 +260,20 @@ plane(RW,2600,new THREE.MeshLambertMaterial({color:0xffffff,map:ft}),RW/2,0,1300
 function box(w,h,d,x,y,z,mat,parent){const m=new THREE.Mesh(new THREE.BoxGeometry(w*S,h*S,d*S),mat);m.position.set((x+w/2)*S,(y+h/2)*S,(z+d/2)*S);parent.add(m);return m}
 const CODES=[], DIMS=[];
 function label(text,x,y,z,kind,parent){
-  const big=kind==='code', fs=big?58:38, cv=document.createElement('canvas'), ctx=cv.getContext('2d');
+  const big=kind==='code', zone=kind==='zone', fs=big?58:zone?44:38, cv=document.createElement('canvas'), ctx=cv.getContext('2d');
   const font=`600 ${fs}px ui-monospace, Menlo, Consolas, monospace`; ctx.font=font;
   cv.width=Math.ceil(ctx.measureText(text).width)+26; cv.height=fs+20; ctx.font=font;
-  ctx.fillStyle=big?'#2f6f8f':'rgba(255,255,255,0.94)'; ctx.fillRect(0,0,cv.width,cv.height);
-  if(!big){ctx.strokeStyle='rgba(47,111,143,0.6)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2)}
-  ctx.fillStyle=big?'#ffffff':'#1d2328'; ctx.textBaseline='middle'; ctx.fillText(text,13,cv.height/2+2);
+  ctx.fillStyle=big?'#2f6f8f':zone?'#2e8b57':'rgba(255,255,255,0.94)'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(!big&&!zone){ctx.strokeStyle='rgba(47,111,143,0.6)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2)}
+  ctx.fillStyle=(big||zone)?'#ffffff':'#1d2328'; ctx.textBaseline='middle'; ctx.fillText(text,13,cv.height/2+2);
   const t=new THREE.CanvasTexture(cv); t.minFilter=THREE.LinearFilter;
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));
   const k=big?0.0011:0.001; sp.scale.set(cv.width*k,cv.height*k,1);
   sp.position.set(x*S,y*S,z*S); sp.renderOrder=10; parent.add(sp);
-  (big?CODES:DIMS).push(sp); sp.visible=big?showCodes:showDims; return sp;
+  if(!zone){(big?CODES:DIMS).push(sp); sp.visible=big?showCodes:showDims} return sp;
 }
-let showCodes=true, showDims=false, showFronts=true;
+let showCodes=true, showDims=false, showFronts=true, showZones=true;
+const ZONE_MAT=new THREE.MeshBasicMaterial({color:0x4fbf74,transparent:true,opacity:0.32,depthWrite:false});
 
 // ---------- фасады и видимые боковины (цвет модуля)
 const FRONTS=[], VIS=[], FRAMES=[], EDGE=new THREE.LineBasicMaterial({color:0x8f8f8a,transparent:true,opacity:0.5});
@@ -315,7 +310,7 @@ function drawer(mod,x,y,w,h,ix0,ix1,depth,fluted){
   
   return g;
 }
-function lift(mod,x,yTop,w,h,z0,build){ // фасад поднимается вверх
+function lift(mod,x,yTop,w,h,z0,build,key){ // фасад поднимается вверх
   const g=new THREE.Group(); g.position.set(x*S,yTop*S,z0*S); mod.g.add(g); build(g,w,h);
   mod.op.push({k:'lift',g,c:0,t:0});
   
@@ -372,7 +367,7 @@ function upCarcass(mod,y,h,o){o=o||{};const g=mod.g,w=mod.w,d=o.d||UD;
 function rack(mod,x,w){[UY+40,UY+300].forEach(yy=>{box(w,5,UD-60,x,yy,30,MATS.steelDark,mod.g);
   for(let k=0;k<14;k++){const r=new THREE.Mesh(new THREE.CylinderGeometry(0.0022,0.0022,0.09,6),MATS.steel);r.position.set((x+10+k*(w-20)/13)*S,(yy+50)*S,(UD-80)*S);mod.g.add(r)}})}
 function led(mod,x,w,y,z){box(w,4,12,x,y-4,z,MATS.led,mod.g);}
-function codeAt(mod,x,y,z){label(mod.code,x,y,z,'code',mod.g);label(mod.size,x,y-120,z,'dim',mod.g)}
+function codeAt(mod,x,y,z){label(mod.code,x,y,z,'code',mod.g)}
 
 // ---------- модули
 const BUILD={
@@ -392,7 +387,11 @@ const BUILD={
    if(mod.hob)hob(mod,w/2);
    mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,520,BD+60)},
  sink(mod){baseCarcass(mod,{shelf:false,back:false});const w=mod.w,fh=FTOP-PL;
-   if(w>=500){door(mod,1.5,PL,w/2-3,fh,'L',false); door(mod,w/2+1.5,PL,w/2-3,fh,'R',false)} else door(mod,1.5,PL,w-3,fh,'R',false);
+   if(w>=450){const d1=drawer(mod,1.5,PL,w-3,330,16,w-16,470);drawer(mod,1.5,460,w-3,330,16,w-16,470);
+     box(w,GOLA,14,0,430,BD-14,MATS.frame,mod.g);
+     [[40,(w-60)/2-10],[(w-60)/2+40,(w-60)/2-10]].forEach(([x,bw])=>box(bw,300,280,x,140,BD-400,MATS.steelDark,d1)); // вёдра
+     }
+   else door(mod,1.5,PL,w-3,fh,'R',false);
    sink(mod,w/2,w>=500?Math.min(w-110,480):w-60);
    mod.size=`${w} × ${BH} × ${BD}`; codeAt(mod,w/2,560,BD+60)},
  door(mod){baseCarcass(mod,{shelf:true});const w=mod.w,fh=FTOP-PL;
@@ -406,8 +405,8 @@ const BUILD={
    
    mod.size=`${w} × ${BH}, ниша ПММ ${w}`; codeAt(mod,w/2,560,BD+60)},
  up(mod){const w=mod.w;upCarcass(mod,UY,FH,{shelves:1});
-   const n=w>650?2:1,fh=FH+13,y0=UY-15;
-   if(n===1)door(mod,1.5,y0,w-3,fh,mod.hinge||'L',true,UD); else{door(mod,1.5,y0,w/2-3,fh,'L',true,UD);door(mod,w/2+1.5,y0,w/2-3,fh,'R',true,UD)}
+   const fh=FH+13.5;
+   lift(mod,1.5,UY+FH-1.5,w-3,fh,UD,(lg,ww,hh)=>{const f=frontMesh(mod,ww,hh,true,'Фасад подъёмный');f.position.set(ww/2*S,-hh/2*S,FT/2*S);lg.add(f)},'liftTop');
    if(mod.rack){rack(mod,25,w-50);}
    led(mod,15,w-30,UY,UD-70);
    mod.size=`${w} × ${FH} × ${UD}`; codeAt(mod,w/2,UY+FH/2+70,UD+60)},
@@ -426,8 +425,8 @@ const BUILD={
    const sg=new THREE.Group();g.add(sg);box(hw,40,300,hx,UY-22,30,MATS.steel,sg);box(hw-60,6,4,hx+30,UY-10,330,MATS.black,sg);
    mod.op.push({k:'slide',g:sg,dist:200,c:0,t:0});
    if(hx>4)[[1.5,hx-3],[w-hx+1.5,hx-3]].forEach(([x,ww])=>{const f=frontMesh(mod,ww,33,false,'Планка у вытяжки');f.position.set((x+ww/2)*S,(UY-15+16.5)*S,(UD+FT/2)*S);g.add(f)});
-   const y0=UY+21,fh=UY+FH-1.5-y0,n=w>650?2:1;
-   if(n===1)door(mod,1.5,y0,w-3,fh,'L',true,UD); else{door(mod,1.5,y0,w/2-3,fh,'L',true,UD);door(mod,w/2+1.5,y0,w/2-3,fh,'R',true,UD)}
+   const y0=UY+21,fh=UY+FH-1.5-y0;
+   lift(mod,1.5,UY+FH-1.5,w-3,fh,UD,(lg,ww,hh)=>{const f=frontMesh(mod,ww,hh,true,'Фасад подъёмный');f.position.set(ww/2*S,-hh/2*S,FT/2*S);lg.add(f)},'liftTop');
    mod.size=`${w} × ${FH} × ${UD}`; codeAt(mod,w/2,UY+FH/2+70,UD+60)},
  glass(mod){const w=mod.w,g=mod.g,y=UY+FH;upCarcass(mod,y,GH,{shelves:0});
    box(w-40,4,10,20,y+GH-20,UD-60,MATS.led,g);
@@ -503,9 +502,13 @@ function buildLayout(id){const L=LAYS[id];L.root=new THREE.Group();L.root.visibl
       mats:{front:new THREE.MeshLambertMaterial({color:col}),flute:new THREE.MeshLambertMaterial({color:col,map:FLUTE})}
       });
     BUILD[sp.type](mod);
+    if(!/^(up|upHood|upMicro|glass|cornerUp)$/.test(sp.type))label(`${sp.w}`,sp.w/2,TOP+30,CTD+60,'dim',g);
     g.traverse(o=>{if(o.isMesh)o.userData.mod=mod});
     L.mods.push(mod);
   });
+  const zg=new THREE.Group();L.root.add(zg);L.zonesGroup=zg;zg.visible=showZones;
+  (L.zones||[]).forEach(([x,z,w,d,t])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry((w-24)*S,(d-24)*S),ZONE_MAT);m.rotation.x=-Math.PI/2;
+    m.position.set((x+w/2)*S,(TOP+1.5)*S,(z+d/2)*S);m.userData.noPick=1;m.renderOrder=5;zg.add(m);label(t,x+w/2,TOP+45,z+d/2,'zone',zg)});
   // общие размеры
   const dg=new THREE.Group();L.root.add(dg);
   const line=(a,b)=>{const ge=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a[0]*S,a[1]*S,a[2]*S),new THREE.Vector3(b[0]*S,b[1]*S,b[2]*S)]);
@@ -567,12 +570,13 @@ function refresh(){
   seg(document.getElementById('segLay'),Object.keys(LAYS).map(k=>[k,LAYS[k].name]),state.lay,setLayout);
   seg(document.getElementById('segMat'),Object.keys(MATV).map(k=>[k,MATV[k].name]),state.mat,setMat);
   document.getElementById('note').textContent=LAYS[state.lay].note+' '+MATV[state.mat].note;
+  document.getElementById('sum').textContent=LAYS[state.lay].sum;
   drawTargets();drawSw();drawSel();drawTab();
   
   setOpenBtn();
 }
 function drawTab(){const L=LAYS[state.lay];const fr=L.mods.find(m=>m.type==='fridge');
-  const rows=[['Кухня по стенам','2800 × 1600'],['Ножки и цоколь',`${PL}`],['Нижние модули, корпус',`выс. ${BH}, гл. ${BD}`],['Столешница 38 мм, верх от пола',`${TOP}`],
+  const rows=[['Кухня по стенам',L.walls||'2800 × 1600'],['Ножки и цоколь',`${PL}`],['Нижние модули, корпус',`выс. ${BH}, гл. ${BD}`],['Столешница 38 мм, верх от пола',`${TOP}`],
     ['Фартук (стеновая панель)',`${TOP} – ${UY}`],['Верхние: низ / верх',`${UY} / ${UTOP}`]];
   L.mods.forEach(m=>rows.push([`${m.code} ${m.name}`,m.size]));
   rows.push(['Холодильник встраиваемый 75 см (уточнить модель)',`ниша ${fr?fr.iw:768} × ${FR.h}`]);
@@ -581,6 +585,7 @@ function drawTab(){const L=LAYS[state.lay];const fr=L.mods.find(m=>m.type==='fri
 function tog(id,get,set){const b=document.getElementById(id);b.onclick=()=>{set(!get());b.setAttribute('aria-pressed',get())}}
 tog('bCodes',()=>showCodes,v=>{showCodes=v;CODES.forEach(s=>s.visible=v)});
 tog('bDims',()=>showDims,v=>{showDims=v;DIMS.forEach(s=>s.visible=v);Object.values(LAYS).forEach(L=>L.dimsGroup.visible=v)});
+tog('bZones',()=>showZones,v=>{showZones=v;Object.values(LAYS).forEach(L=>L.zonesGroup.visible=v)});
 tog('bFr',()=>showFronts,v=>{showFronts=v;FRONTS.forEach(m=>m.visible=v);FRAMES.forEach(f=>f.visible=v)});
 document.getElementById('bTab').onclick=e=>{const t=document.getElementById('tab');t.hidden=!t.hidden;e.target.setAttribute('aria-pressed',!t.hidden)};
 function curMods(){return LAYS[state.lay].mods}
@@ -591,9 +596,11 @@ document.getElementById('bOpen').onclick=()=>{const any=curMods().some(m=>m.open
 // ---------- камера: вращение одним пальцем, приближение и сдвиг двумя
 const ctl={t:new THREE.Vector3(),r:4,th:0,ph:1.2};
 function camUpd(){const sp=Math.sin(ctl.ph);cam.position.set(ctl.t.x+ctl.r*sp*Math.sin(ctl.th),ctl.t.y+ctl.r*Math.cos(ctl.ph),ctl.t.z+ctl.r*sp*Math.cos(ctl.th));cam.lookAt(ctl.t);cam.updateMatrixWorld()}
-function setView(p,t){ctl.t.set(...t);const d=new THREE.Vector3(...p).sub(ctl.t);const asp=cam.aspect||1;ctl.r=d.length()*1.06*(asp<1.35?Math.pow(1.35/asp,0.75):1);ctl.ph=Math.acos(d.y/ctl.r);ctl.th=Math.atan2(d.x,d.z);camUpd()}
-const V3D=()=>{const c=LAYS[state.lay].cam;setView(c?c[0]:[2.25,1.75,3.85],c?c[1]:[1.25,1.15,0.6])}, VFR=()=>setView([1.4,1.35,3.9],[1.4,1.3,0.4]), VPL=()=>setView([1.4,6.2,1.45],[1.4,0,1.2]);
-document.getElementById('b3d').onclick=V3D;document.getElementById('bFront').onclick=VFR;document.getElementById('bPlan').onclick=VPL;
+function setView(p,t){ctl.t.set(...t);const d=new THREE.Vector3(...p).sub(ctl.t);const L0=d.length(),asp=cam.aspect||1;ctl.ph=Math.acos(d.y/L0);ctl.th=Math.atan2(d.x,d.z);ctl.r=L0*1.06*(asp<1.35?Math.pow(1.35/asp,0.75):1);camUpd()}
+const upVis=v=>Object.values(LAYS).forEach(L=>L.mods.forEach(m=>{if(/^(up|upHood|upMicro|glass|cornerUp)$/.test(m.type))m.g.visible=v}));
+const V3D=()=>{upVis(true);const c=LAYS[state.lay].cam;setView(c?c[0]:[2.25,1.75,3.85],c?c[1]:[1.25,1.15,0.6])}, VFR=()=>{upVis(true);setView([1.4,1.35,3.9],[1.4,1.3,0.4])}, VPL=()=>{upVis(false);setView([1.4,4.4,1.05],[1.4,0.6,0.95])};
+document.getElementById('b3d').onclick=V3D;document.getElementById('bFront').onclick=VFR;
+document.getElementById('bPlan').onclick=()=>{VPL();if(!showDims)document.getElementById('bDims').click()};
 const pts=new Map();let gest=null;
 function pan(dx,dy){const k=ctl.r*0.0013*(cam.fov/42);const rt=new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld,0),up=new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld,1);
   ctl.t.addScaledVector(rt,-dx*k).addScaledVector(up,dy*k);ctl.t.y=Math.max(0,Math.min(2.6,ctl.t.y));camUpd()}
@@ -615,7 +622,7 @@ const ray=new THREE.Raycaster();ray.camera=cam;
 function pick(cx,cy){const r=canvas.getBoundingClientRect();
   ray.setFromCamera({x:(cx-r.left)/r.width*2-1,y:-(cy-r.top)/r.height*2+1},cam);
   const hits=ray.intersectObject(LAYS[state.lay].root,true);
-  for(const h of hits){if(h.object.isSprite||h.object.isLine||!h.object.visible)continue;let o=h.object,m=null;while(o&&!m){m=o.userData.mod;o=o.parent}
+  for(const h of hits){if(h.object.isSprite||h.object.isLine||!h.object.visible||h.object.userData.noPick)continue;let o=h.object,m=null;while(o&&!m){m=o.userData.mod;o=o.parent}
     if(m){if(m.op.length)setOpen(m,!m.open);if(m.hasFront){tgt=m.code;tgtEl.value=tgt;drawSw()}setOpenBtn();document.getElementById('hint').style.opacity=0;return}
     break}
 }
