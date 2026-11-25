@@ -1,0 +1,106 @@
+name: sluh2
+# Слух 2: калиброванные мерки голоса (свой разброс образца, чужие голоса), слепая самопроверка, разбор кандидатов. sluh2.py
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['sluh2-request.txt']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: sluh2
+  cancel-in-progress: false
+jobs:
+  feat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Запрос
+        id: rq
+        run: |
+          if grep -q smoke sluh2-request.txt; then echo "smoke=1" >> "$GITHUB_OUTPUT"; echo "n=1" >> "$GITHUB_OUTPUT"; else echo "smoke=0" >> "$GITHUB_OUTPUT"; echo "n=10" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-python@v5
+        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: sluh2-cache-v1
+          restore-keys: |
+            pik-free-cache-v2
+            svoy-free-cache-v1
+      - name: Install
+        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng unzip
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy
+      - name: Реплики героев из сборок студии
+        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for b in 38g 39f golosa23 golosa24; do
+            mkdir -p dubz/$b
+            gh release download studio-$b -R ${{ github.repository }} -p dub.zip -D dubz/$b
+            (cd dubz/$b && unzip -q -o dub.zip 'dub/lines/*' 'dub/lines.json' && rm dub.zip)
+          done
+          ls dubz/*/dub | head
+      - name: Замеры
+        if: steps.rq.outputs.smoke == '0' || matrix.part == 0
+        env:
+          SMOKE: ${{ steps.rq.outputs.smoke }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python sluh2.py feat ${{ matrix.part }} ${{ steps.rq.outputs.n }}
+      - uses: actions/upload-artifact@v4
+        if: always() && (steps.rq.outputs.smoke == '0' || matrix.part == 0)
+        with:
+          name: SL-${{ matrix.part }}
+          path: sl/
+          retention-days: 7
+  final:
+    needs: [feat]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'SL-*'
+          merge-multiple: true
+          path: sl/
+      - name: Итог
+        run: |
+          pip install -q numpy matplotlib
+          ls -la sl | head -20
+          if grep -q smoke sluh2-request.txt; then export SMOKE=1; fi
+          python sluh2.py final
+          ls -la sluh
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          rm -rf /tmp/res && cp -r sluh /tmp/res
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && rm -rf sluh && git checkout -q -f -B res FETCH_HEAD && mkdir -p sluh && cp -r /tmp/res/. sluh/
+            git add -A sluh; git commit -q -m "sluh2 result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
