@@ -1,15 +1,7 @@
-# 2026-11-24 23:18 — стеклянный мишка: рендер физики bt3 (мишка поменьше, lx=0.07, в мишке 1 539 из 3 294, почти доверху), кадры 93–245 на 14 машинах
-br01 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=93-103
-br02 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=104-114
-br03 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=115-125
-br04 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=126-136
-br05 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=137-147
-br06 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=148-158
-br07 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=159-168
-br08 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=169-179
-br09 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=180-190
-br10 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=191-201
-br11 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=202-212
-br12 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=213-223
-br13 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=224-234
-br14 py=vessel.py vessel=bears anim=out/bt3/anim.npz tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:132 lx=0.07 end=330 samples=40 res=1080x1920 tz=0.26 cy0=-1.15 cy1=-1.05 cz0=0.42 cz1=0.40 range=235-245
+# 2026-11-25 19:55 — «Cat vs Bear»: два стеклянных зверя рядом, два ведра навстречу (duo). Пробы вида (две камеры) и 4 пробы физики (размер зверей × lx), r=9 мм, вёдра 0,95
+dlook1 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 nosim=1 frames=1,120,270 end=330 res=720x1280 samples=40 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.24 cy0=-1.6 cy1=-1.5 cz0=0.50 cz1=0.47
+dlook2 py=vessel.py duo=cat86,bear80 ox=0.15 bs=0.95 r=0.009 lx=0.07 nosim=1 frames=1,120,270 end=330 res=720x1280 samples=40 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45
+dA py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.24 cy0=-1.6 cy1=-1.5 cz0=0.50 cz1=0.47
+dB py=vessel.py duo=cat86,bear80 ox=0.15 bs=0.95 r=0.009 lx=0.07 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45
+dC py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.06 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.24 cy0=-1.6 cy1=-1.5 cz0=0.50 cz1=0.47
+dD py=vessel.py duo=cat86,bear80 ox=0.15 bs=0.95 r=0.009 lx=0.06 frames=120,180,240,300 end=330 res=540x960 samples=20 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45

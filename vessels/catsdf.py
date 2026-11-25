@@ -30,7 +30,8 @@ def smin(a, b, k):
     h = np.clip(0.5 + 0.5 * (b - a) / k, 0, 1)
     return b * (1 - h) + a * h - k * h * (1 - h)
 
-K = 0.86                                   # масштаб (вместимость)
+import os
+K = float(os.environ.get("CAT_K", "0.86"))     # масштаб (вместимость)
 HEAD_C = np.array([0.0, -0.012, 0.300]) * K
 HEAD_R = np.array([0.084, 0.074, 0.068]) * K
 OPEN_C = HEAD_C[:2]                         # отверстие: цилиндр по оси головы

@@ -21,23 +21,28 @@ nf = int(subprocess.run(['ffprobe', '-v', 'error', '-count_frames', '-select_str
                          'stream=nb_read_frames', '-of', 'csv=p=0', raw], capture_output=True, text=True).stdout.strip())
 d = np.load(posf)
 pos = d['pos'].astype(np.float32)
+CNTS = []                                              # счётчик на каждый сосуд (duo — два)
 if 'vessel' in d.files:                                # сосуд-зверь: внутри = SDF < 0 и ниже края отверстия
     from scipy.ndimage import map_coordinates, median_filter
-    vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vessels', str(d['vessel']) + '_sdf.npz'))
-    D, O, HH = vs['d'].astype(np.float32), vs['o'], float(vs['h'])
-    rimz = (float(vs['rimmax']) if 'rimmax' in vs.files else float(vs['mouth'][3])) + float(d['lift'])
-    P = pos.reshape(-1, 3) - np.array([0, 0, float(d['lift'])])
-    sd = map_coordinates(D, ((P - O) / HH).T, order=1, mode='nearest').reshape(pos.shape[:2])
-    inside = (sd < 0) & (pos[..., 2] < rimz + 0.004)
-    cnt = median_filter(inside.sum(1), size=5, mode='nearest')
-    cnt = np.maximum.accumulate(cnt) if os.environ.get('MONO') else cnt
+    vox = d['vox'] if 'vox' in d.files else np.zeros(1)
+    for vname, ox in zip(str(d['vessel']).split(','), vox):
+        vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vessels', vname + '_sdf.npz'))
+        D, O, HH = vs['d'].astype(np.float32), vs['o'], float(vs['h'])
+        rimz = (float(vs['rimmax']) if 'rimmax' in vs.files else float(vs['mouth'][3])) + float(d['lift'])
+        P = pos.reshape(-1, 3) - np.array([float(ox), 0, float(d['lift'])])
+        sd = map_coordinates(D, ((P - O) / HH).T, order=1, mode='nearest').reshape(pos.shape[:2])
+        inside = (sd < 0) & (pos[..., 2] < rimz + 0.004)
+        c = median_filter(inside.sum(1), size=5, mode='nearest')
+        CNTS.append(np.maximum.accumulate(c) if os.environ.get('MONO') else c)
+    cnt = CNTS[0]
 else:
     GW, GD, GH, T = (float(v) for v in d['glass'])
     inside = (np.abs(pos[..., 0]) < GW / 2 + 0.003) & (np.abs(pos[..., 1]) < GD / 2 + 0.003) & (pos[..., 2] < ZC)
     cnt = inside.sum(1)                                    # по кадрам 1..N (индекс f-1)
     cnt = np.maximum.accumulate(cnt)                       # счётчик не идёт назад (шар, отскочивший вверх, не «убывает»)
+    CNTS = [cnt]
 TOTAL = pos.shape[1]
-print('кадров', nf, 'шаров всего', TOTAL, 'в кубе к концу', int(cnt[min(len(cnt) - 1, F0 - 1 + nf - 1)]))
+print('кадров', nf, 'шаров всего', TOTAL, 'в сосуде к концу', [int(c[min(len(c) - 1, F0 - 1 + nf - 1)]) for c in CNTS])
 fb = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 150)
 fs = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 40)
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', raw, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)
@@ -66,13 +71,20 @@ for i in range(nf):
     used += 1
     im = Image.frombytes('RGB', (W, H), buf)
     k = min(len(cnt) - 1, fr - 1)
-    n = int(cnt[k])
     dr = ImageDraw.Draw(im)
-    txt = f"{n:,}"
-    tw = dr.textlength(txt, font=fb)
-    dr.text((CX - tw / 2, TY), txt, font=fb, fill=COL, stroke_width=SW, stroke_fill=SCOL)
-    lw = dr.textlength(LABEL, font=fs)
-    dr.text((CX - lw / 2, TY + 180), LABEL, font=fs, fill=COL, stroke_width=max(0, SW // 2), stroke_fill=SCOL)
+    labels = LABEL.split('|')
+    txs = [float(v) for v in os.environ.get('TXS', ','.join(['0.5'] if len(CNTS) == 1 else ['0.27', '0.73'])).split(',')] if len(CNTS) > 1 else [CX / W]
+    for j, c in enumerate(CNTS):
+        n = int(c[k])
+        cx = W * txs[j]
+        lead = len(CNTS) > 1 and n > max(int(cc[k]) for jj, cc in enumerate(CNTS) if jj != j) and fr >= E - 3
+        col = tuple(json.loads(os.environ.get('WCOL', '[20,150,60]'))) if lead else COL   # к концу лидер — зелёным
+        txt = f"{n:,}"
+        tw = dr.textlength(txt, font=fb)
+        dr.text((cx - tw / 2, TY), txt, font=fb, fill=col, stroke_width=SW, stroke_fill=SCOL)
+        lab = labels[j] if j < len(labels) else ''
+        lw = dr.textlength(lab, font=fs)
+        dr.text((cx - lw / 2, TY + 180), lab, font=fs, fill=col, stroke_width=max(0, SW // 2), stroke_fill=SCOL)
     enc.stdin.write(im.tobytes())
     if LOOP:
         mm[used - 1] = np.frombuffer(im.tobytes(), np.uint8)

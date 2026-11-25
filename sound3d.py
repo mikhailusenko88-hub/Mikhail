@@ -16,13 +16,17 @@ FPS = int(d["fps"])
 VES = str(d["vessel"]) if "vessel" in d.files else None
 if VES:                                              # сосуд-зверь: «стекло» — центр шара у стенки по SDF (изнутри или снаружи)
     from scipy.ndimage import map_coordinates
-    _vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), "vessels", VES + "_sdf.npz"))
-    _D, _O, _H = _vs["d"].astype(np.float32), _vs["o"], float(_vs["h"])
     LIFT = float(d["lift"])
     BRAD = float(d["r"])
-    _P = pos.reshape(-1, 3) - np.array([0, 0, LIFT])
-    SD = map_coordinates(_D, ((_P - _O) / _H).T, order=1, mode="nearest").reshape(pos.shape[:2])
-    del _P
+    _vox = d["vox"] if "vox" in d.files else np.zeros(1)          # сдвиг каждого сосуда по x (два сосуда — duo)
+    SD = None
+    for _name, _ox in zip(VES.split(","), _vox):
+        _vs = np.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), "vessels", _name + "_sdf.npz"))
+        _D, _O, _H = _vs["d"].astype(np.float32), _vs["o"], float(_vs["h"])
+        _P = pos.reshape(-1, 3) - np.array([float(_ox), 0, LIFT])
+        _sd = map_coordinates(_D, ((_P - _O) / _H).T, order=1, mode="nearest").reshape(pos.shape[:2])
+        SD = _sd if SD is None else np.minimum(SD, _sd)
+        del _P
 else:
     GW, GD, GH, T = (float(v) for v in d["glass"])
 OUT = sys.argv[2]
