@@ -78,7 +78,7 @@ def phrases24():
 
 def manifest():
     M = []
-    for b, tag, cap in (("38g", "ser", 60), ("39f", "ser", 60), ("golosa23", "g23", 20), ("golosa24", "g24", 20)):
+    for b, tag, cap in (("38g", "ser", 60), ("39f", "ser", 60), ("golosa23", "g23", 20), ("golosa24", "g24", 20), ("golosa25", "g25", 20)):
         p = f"dubz/{b}/dub/lines.json"
         if not os.path.exists(p):
             log("нет сборки", b); continue
