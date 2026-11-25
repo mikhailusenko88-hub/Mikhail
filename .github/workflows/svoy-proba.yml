@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
           pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy cma
-      - run: python svoy_proba.py ${{ matrix.target }}
+      - run: python svoy_proba.py ${{ matrix.target }} $(grep -v '^#' svoy-proba-request.txt | grep -o -w 'pin' | head -1)
       - uses: actions/upload-artifact@v4
         if: always()
         with:

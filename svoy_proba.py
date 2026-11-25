@@ -38,7 +38,7 @@ def bands(W, T, sr=48000):
     return {f"{lo}-{hi}": round(float(lv(a, lo, hi) - lv(b, lo, hi) - d0), 1) for lo, hi in BANDS}
 
 
-def eq_design(W, T, sr=48000, lim=9.0, f0=0.0):
+def eq_design(W, T, sr=48000, lim=9.0, f0=0.0, dead=1.5):
     import sluh2
     fq, ps = sluh2.power_spec(W, sr); _, pt_ = sluh2.power_spec(T, sr)
     g = 10 * np.log10((pt_ + 1e-20) / (ps + 1e-20))
@@ -46,6 +46,7 @@ def eq_design(W, T, sr=48000, lim=9.0, f0=0.0):
     box = lambda c: (fq >= c / 2 ** (1 / 6)) & (fq <= c * 2 ** (1 / 6))
     gs = np.array([float(np.mean(g[box(c)])) if box(c).any() else float(np.interp(c, fq, g)) for c in cen])      # на низах полоса у́же шага спектра
     gs = np.clip(gs - np.mean(gs[(cen > 200) & (cen < 4000)]), -lim, lim)
+    gs = np.sign(gs) * np.maximum(0.0, np.abs(gs) - dead)     # мелкие расхождения (до dead дБ) не трогаем: правим только то, что слышно
     gs[cen < 0.7 * f0] = 0.0                        # ниже основного тона голоса нет — там только гул, его не поднимаем
     return cen, gs
 
@@ -57,7 +58,7 @@ def eq_apply(x, cen, gs, sr=48000):
     return signal.fftconvolve(np.asarray(x, dtype=np.float64), h, mode="same").astype(np.float32)
 
 
-def main(target):
+def main(target, pin=False):
     import svoy_omo, svoy2, gen as g, sluh_opt, sluh_man, sluh2, svoy_lib as SL, svoy_bars, svoy_kot3 as K3
     for d in (OUT, "tmp", "models"):
         os.makedirs(d, exist_ok=True)
@@ -142,56 +143,66 @@ def main(target):
                 traceback.print_exc()
         return {"match": round(float(np.mean(mt)), 3) if mt else None, "utmos": round(float(np.mean(ut)), 2) if ut else None}
 
-    tq = quality(TW)
-    base_spe = L.base_rows[L.spe_key].double().numpy()
-    found = []
-    for f in sorted(glob.glob(f"{OUT}/opt_{target}_*.json")):
-        pr = json.load(open(f, encoding="utf-8"))
-        found.append((os.path.basename(f)[:-5], np.array(pr["win"]["spe"], dtype=float), pr["win"]["score"]))
-    found.sort(key=lambda x: -x[2])
-    late = [f for f in found if f[0][-1] in "bc"]              # вторые и третьи круги (у третьего в оценке ещё и спектр, сравнивать оценки кругов нельзя)
-    found = late[:4] if late else found[:3]
-    mans = [("основа", None, "medium")]
-    for f in sorted(glob.glob(f"{OUT}/man_{target}_*.json")):
-        pr = json.load(open(f, encoding="utf-8"))
-        k, w = pr["keys"], pr["win"]
-        mans.append((os.path.basename(f)[:-5], {k["pp"]: np.array(w["pp"]), k["dp"]: np.array(w["dp"]), "coef": float(w["coef"])}, pr["rate"]))
-    log("тембров", [(n, round(s, 3)) for n, _, s in found], "манер", [m[0] for m in mans])
-    base_ex = {keys["pp"]: L.base_rows[keys["pp"]].double().numpy(), keys["dp"]: L.base_rows[keys["dp"]].double().numpy(), "coef": L.base_rows.get("coef")}
-    Wb, mb = measure(base_spe, None, "medium")
-    mb.update(quality(Wb))
-    log("основа", mb)
-    table = [{"spe_from": "основа", "man_from": "основа", "rate": "medium", **mb}]
-    keep = {}
-    for sn, spe, _ in found:
-        for mn, ex, rate in mans:
-            try:
-                ex, tr = tune_pitch(spe, ex, rate)
-                W, m = measure(spe, ex, rate)
-            except Exception:
-                traceback.print_exc(); continue
-            m.update(quality(W, (0, 1, 2, 3, 4, 5)))
-            if tr:
-                m["coef_path"] = tr
-            table.append({"spe_from": sn, "man_from": mn, "rate": rate, **m})
-            keep[(sn, mn)] = (W, spe, ex, rate)
-            log(sn, mn, m)
-    rows = [r for r in table if r["spe_from"] != "основа"]
-    ubest = max((r["utmos"] or 0) for r in rows); mbest = max((r["match"] or 0) for r in rows)
-    for r in rows:        # близость голоса + манера − высота мимо − потеря естественности и разборчивости против лучшего из кандидатов
-        r["J"] = round(r["close"] + 0.5 * r["man"] - 0.03 * max(0.0, abs(r["pt"]) - 0.5) - 0.3 * max(0.0, ubest - (r["utmos"] or 0) - 0.1)
-                       - 0.5 * max(0.0, mbest - (r["match"] or 0) - 0.03), 4)
-    cand = sorted(rows, key=lambda r: -r["J"])
-    win = cand[0]
-    W, spe, ex, rate = keep[(win["spe_from"], win["man_from"])]
-    ex = ex or base_ex
+    old = f"{OUT}/proba_{target}.json"
+    if pin and os.path.exists(old):            # строки голоса уже выбраны — заново только звук, эквалайзер и ролик
+        p0 = json.load(open(old, encoding="utf-8"))
+        tq, mb, table, win = p0["target_quality"], p0["base"], p0["table"], {k: v for k, v in p0["win"].items() if k not in ("spe_row", "pp_row", "dp_row", "eq")}
+        spe = np.array(p0["win"]["spe_row"], dtype=float); rate = p0["win"]["rate"]
+        ex = {keys["pp"]: np.array(p0["win"]["pp_row"]), keys["dp"]: np.array(p0["win"]["dp_row"]), "coef": p0["win"]["coef"]}
+        W, m = measure(spe, ex, rate)
+        log("закреплённый голос:", win["spe_from"], win["man_from"], rate, "близость была", win["close"], "сейчас", m["close"])
+        win.update(m)
+    else:
+        tq = quality(TW)
+        base_spe = L.base_rows[L.spe_key].double().numpy()
+        found = []
+        for f in sorted(glob.glob(f"{OUT}/opt_{target}_*.json")):
+            pr = json.load(open(f, encoding="utf-8"))
+            found.append((os.path.basename(f)[:-5], np.array(pr["win"]["spe"], dtype=float), pr["win"]["score"]))
+        found.sort(key=lambda x: -x[2])
+        late = [f for f in found if f[0][-1] in "bc"]              # вторые и третьи круги (у третьего в оценке ещё и спектр, сравнивать оценки кругов нельзя)
+        found = late[:4] if late else found[:3]
+        mans = [("основа", None, "medium")]
+        for f in sorted(glob.glob(f"{OUT}/man_{target}_*.json")):
+            pr = json.load(open(f, encoding="utf-8"))
+            k, w = pr["keys"], pr["win"]
+            mans.append((os.path.basename(f)[:-5], {k["pp"]: np.array(w["pp"]), k["dp"]: np.array(w["dp"]), "coef": float(w["coef"])}, pr["rate"]))
+        log("тембров", [(n, round(s, 3)) for n, _, s in found], "манер", [m[0] for m in mans])
+        base_ex = {keys["pp"]: L.base_rows[keys["pp"]].double().numpy(), keys["dp"]: L.base_rows[keys["dp"]].double().numpy(), "coef": L.base_rows.get("coef")}
+        Wb, mb = measure(base_spe, None, "medium")
+        mb.update(quality(Wb))
+        log("основа", mb)
+        table = [{"spe_from": "основа", "man_from": "основа", "rate": "medium", **mb}]
+        keep = {}
+        for sn, spe, _ in found:
+            for mn, ex, rate in mans:
+                try:
+                    ex, tr = tune_pitch(spe, ex, rate)
+                    W, m = measure(spe, ex, rate)
+                except Exception:
+                    traceback.print_exc(); continue
+                m.update(quality(W, (0, 1, 2, 3, 4, 5)))
+                if tr:
+                    m["coef_path"] = tr
+                table.append({"spe_from": sn, "man_from": mn, "rate": rate, **m})
+                keep[(sn, mn)] = (W, spe, ex, rate)
+                log(sn, mn, m)
+        rows = [r for r in table if r["spe_from"] != "основа"]
+        ubest = max((r["utmos"] or 0) for r in rows); mbest = max((r["match"] or 0) for r in rows)
+        for r in rows:        # близость голоса + манера − высота мимо − потеря естественности и разборчивости против лучшего из кандидатов
+            r["J"] = round(r["close"] + 0.5 * r["man"] - 0.03 * max(0.0, abs(r["pt"]) - 0.5) - 0.3 * max(0.0, ubest - (r["utmos"] or 0) - 0.1)
+                           - 0.5 * max(0.0, mbest - (r["match"] or 0) - 0.03), 4)
+        cand = sorted(rows, key=lambda r: -r["J"])
+        win = cand[0]
+        W, spe, ex, rate = keep[(win["spe_from"], win["man_from"])]
+        ex = ex or base_ex
     # эквалайзер под долгий спектр образца: считается на фразах подбора, проверяется на отложенных
     Wtr = [wave(L.say(spe, t, ex, rate)) for t in L.ph]
     cen, gs = eq_design(Wtr, L.tw, f0=f0t)
     We = [eq_apply(w, cen, gs) for w in W]
     _, me = measure_waves(We)
     eq = {"hz": [round(float(c), 1) for c in cen], "db": [round(float(v), 2) for v in gs], "before": bands(W, TW), "after": bands(We, TW),
-          "close_before": win["close"], "close_after": me["close"], "sims_after": me["sims"], "used": bool(me["close"] >= win["close"] - 0.02)}
+          "close_before": win["close"], "close_after": me["close"], "sims_after": me["sims"], "used": bool(me["close"] >= win["close"] - 0.03)}
     log("эквалайзер", {int(c): round(float(v), 1) for c, v in zip(cen[::4], gs[::4])}, "полосы до", eq["before"], "после", eq["after"], "близость", win["close"], "→", me["close"])
     if eq["used"]:
         W = We
@@ -215,6 +226,8 @@ def main(target):
                 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", f"tmp/pf_{tag}{j}.wav", "-ar", "44100", "-ac", "1", f"{OUT}/proba_{target}_{tag}{j}.flac"], check=True)
     x = np.concatenate(track)
     g.save_wav(x, "tmp/proba.wav")
+    out["marks"] = [[j, tag, round(a, 3), round(b, 3)] for j, tag, a, b in marks]
+    json.dump(out, open(f"{OUT}/proba_{target}.json", "w", encoding="utf-8"), ensure_ascii=False)
     total = len(x) / sr
     font = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     lab = {"t": f"ОБРАЗЕЦ: {title}", "w": "СВОЙ ГОЛОС (свободная модель)"}
@@ -255,4 +268,4 @@ def merge():
 
 
 if __name__ == "__main__":
-    merge() if sys.argv[1] == "merge" else main(sys.argv[1])
+    merge() if sys.argv[1] == "merge" else main(sys.argv[1], pin=len(sys.argv) > 2 and sys.argv[2] == "pin")

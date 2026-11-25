@@ -1,0 +1,1 @@
+2026-11-25 19:05 UTC — свои голоса svoy_golos, svoy_barsik, svoy_ron в модель движка (ветка multik-voice-svoy)
