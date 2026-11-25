@@ -1,0 +1,97 @@
+name: sluh-mix
+# Смесь тембра свободной модели под образец — по трём узнавателям голоса (sluh_mix.py). Запрос: sluh-mix-request.txt, первое слово — образец (n4, eugene, …)
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['sluh-mix-request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: sluh-mix
+  cancel-in-progress: false
+jobs:
+  one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: sluh2-cache-v1
+          restore-keys: |
+            pik-free-cache-v2
+            svoy-free-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy
+      - run: python sluh_mix.py $(cut -d' ' -f1 sluh-mix-request.txt) ${{ matrix.part }} 6
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: MX-${{ matrix.part }}
+          path: cast10/s_*.json
+          retention-days: 7
+  final:
+    needs: [one]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: sluh2-cache-v1
+          restore-keys: |
+            pik-free-cache-v2
+            svoy-free-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'MX-*'
+          merge-multiple: true
+          path: cast10/
+      - run: python sluh_mix.py final $(cut -d' ' -f1 sluh-mix-request.txt)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Commit
+        if: always()
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          rm -rf /tmp/res && cp -r cast10 /tmp/res
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && rm -rf cast10 && git checkout -q -f -B res FETCH_HEAD && mkdir -p cast10 && cp -r /tmp/res/. cast10/
+            git add -A cast10; git commit -q -m "sluh-mix result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
