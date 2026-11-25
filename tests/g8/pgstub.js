@@ -1,9 +1,11 @@
 // Заглушка Playgama Bridge для проверки «как на площадке»: реклама открывается, досматривается или не грузится — по window.__adMode
 (function () {
-  const L = (window.__pg = { msgs: [], ads: [], store: {} }), hs = {};
+  const L = (window.__pg = { msgs: [], ads: [], store: {}, ev: [], ver: null }), hs = {};
   const emit = (ev, v) => (hs[ev] || []).forEach((f) => f(v));
   window.bridge = {
     initialize: () => new Promise((r) => setTimeout(r, 300)),
+    set gameVersion(v) { L.ver = v; }, get gameVersion() { return L.ver; },
+    analytics: { send: (name, data) => { L.ev.push([name, data || {}]); } },
     platform: { id: 'playgama', language: window.__pgLang || 'en', isAudioEnabled: true, sendMessage: (m, d) => L.msgs.push(m + (d && d.level ? ':' + d.level : '')), on: (ev, f) => { (hs[ev] = hs[ev] || []).push(f); } },
     advertisement: {
       isRewardedSupported: true, isInterstitialSupported: true, on: (ev, f) => { (hs[ev] = hs[ev] || []).push(f); },

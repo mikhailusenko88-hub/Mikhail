@@ -64,6 +64,12 @@
   const PG = { on: false, rew: false, inter: false, ad: false, paused: false, mutedP: false, ready: false, t0: performance.now(), lastInter: -1e9, lastRew: -1e9, lastFree: -1e9, pend: null, got: false };
   const pgNow = () => performance.now() / 1000;
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
+  // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
+  // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
+  const BUILD = '9', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
+  const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign({ level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
+  const runQuit = (how) => { if (TM.live && S && S.state !== 'win') pgEv('level_quit', runData({ how })); TM.live = false; }; // ушёл с уровня, не доехав: в меню или начал заново
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
   // межстраничная: только в паузах между уровнями (после уровня или перед стартом уровня из меню), начиная с 3-го уровня,
   // не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду; чаще не даст и сама площадка
@@ -82,6 +88,7 @@
     Promise.race([window.bridge.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))]).then(() => {
       const B = window.bridge, id = B.platform.id || '';
       PG.on = id !== 'mock' && id !== '';
+      try { if (PG.on) B.gameVersion = BUILD; } catch (e) { /* */ } // номер сборки уходит с каждым событием — сборки можно сравнивать
       // язык: мост отдаёт язык площадки; на CrazyGames там код страны — язык берём из их SDK
       try {
         let lg = String(B.platform.language || '').toLowerCase();
@@ -213,7 +220,7 @@
     if (PG.pend) return; // идёт реклама
     if (mode !== 'play') { menuClick(x, y); return; }
     const b = hit(x, y);
-    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { mode = 'menu'; pgMsg('gameplay_stopped'); } else if (b.id === 'mute') muted = !muted; return; }
+    if (b && b.ui) { if (b.id === 'restart') restart(); else if (b.id === 'menu') { runQuit('menu'); mode = 'menu'; pgMsg('gameplay_stopped'); } else if (b.id === 'mute') muted = !muted; return; }
     ptrs.set(e.pointerId, { x, y, btn: b ? b.id : isAuto() || (e.pointerType !== 'mouse' && x < W / 2) ? 'hook' : null });
     if (isAuto() && wait && !PG.paused) wait = false; // «нажми — поехали» срабатывает и от самого короткого касания
   });
@@ -229,14 +236,17 @@
     return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: duo && (!!k.KeyS || held('pull')) };
   }
 
-  function startGame(d, li) { pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
     // монеты: 20 за финиш, по 10 за каждую звезду заезда и по 30 за каждую звезду, взятую на этом уровне впервые
     const fresh = Math.max(0, n - (save.stars[lvl] || 0)), earn = 20 + 10 * n + 30 * fresh;
     res = { n, got, fast, t: S.wonAt, tries: S.attempts, par: l.par, newBest: !(save.best[lvl] <= S.wonAt), earn };
+    const tutWas = !!(save.tut && save.tut[0] && save.tut[1]);
     save.coins += earn; (save.tut = save.tut || [])[lvl] = 1; pgMsg('level_completed', { level: lvl + 1 }); pgMsg('gameplay_stopped');
+    pgEv('level_won', runData({ stars: n, got_star: got, fast, first_time: !(save.stars[lvl] > 0), time_sec: Math.round(S.wonAt * 10) / 10 })); TM.live = false;
+    if (!tutWas && save.tut[0] && save.tut[1]) pgEv('tutorial_completed', { control: duo ? 'duo' : ctl });
     save.stars[lvl] = Math.max(save.stars[lvl] || 0, n); if (!(save.best[lvl] <= S.wonAt)) save.best[lvl] = +S.wonAt.toFixed(2); store();
   }
 
@@ -246,7 +256,7 @@
     const b = menuBtns.find((q) => x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h); if (!b) return;
     if (b.id.slice(0, 2) === 'g:') garClick(b.id);
     else if (b.id === 'garage') openGarage();
-    else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); }
+    else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); pgEv('settings_changed', { setting: 'control', value: m }); }
     else if (b.id[0] === 'L') { const li = +b.id.slice(1); pgInter(() => startGame(duo, li), li); }
     else if (b.id === 'play') { const li = firstOpen(); pgInter(() => startGame(duo, li), li); }
     else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); tone(700, 0.05, 'triangle', 0.08); }
@@ -338,9 +348,9 @@
       const i = gar.pick[kind], it = SHOP[kind][i];
       if (it.stars ? starsTotal() < it.stars : save.coins < it.cost) return no();
       if (!it.stars) save.coins -= it.cost;
-      save[OWN[kind]].push(i); save[kind] = i; store(); sfx.star();
+      save[OWN[kind]].push(i); save[kind] = i; store(); sfx.star(); pgEv('item_bought', { kind, item_id: i, price: it.stars ? 0 : it.cost, for_stars: !!it.stars });
     }
-    else if (a[1] === 'up') { const lv = save.up[a[2]]; if (lv >= UPC.length) return; if (save.coins < UPC[lv]) return no(); save.coins -= UPC[lv]; save.up[a[2]] = lv + 1; store(); sfx.cp(); }
+    else if (a[1] === 'up') { const lv = save.up[a[2]]; if (lv >= UPC.length) return; if (save.coins < UPC[lv]) return no(); save.coins -= UPC[lv]; save.up[a[2]] = lv + 1; store(); sfx.cp(); pgEv('upgrade_purchased', { upgrade_id: String(a[2]), level: lv + 1, price: UPC[lv] }); }
     else if (a[1] === 'test') { save.coins += 500; store(); sfx.cp(); }
     // монеты за ролик: по желанию игрока, не чаще раза в три минуты; всё в гараже покупается и без роликов
     else if (a[1] === 'ad') pgRewarded('garage_coins', (ok) => { if (ok) { save.coins += 100; PG.lastFree = pgNow(); store(); sfx.star(); } else PG.lastFree = pgNow() - 120; });
@@ -888,6 +898,7 @@
     if (master) master.gain.value = hold || PG.mutedP ? 0 : 0.7;
     const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; realT += dt;
     perfTick(raw, mode === 'play' && !hold && (!navigator.webdriver || dbg.adapt));
+    if (mode === 'play' && !hold && raw > 0 && raw < 0.25) { TM.fn++; TM.fs += raw; } // кадров в секунду за заезд — уходит вместе с итогом
     if (!save.rot && mode === 'play' && W > H2 * 1.15 && matchMedia('(pointer: coarse)').matches) { save.rot = 1; store(); } // играл лёжа — подсказку «поверни телефон» больше не показываем
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     if (!S) { S = H.create(0); camX = S.truck.x + 300; camY = S.truck.y; }
@@ -903,7 +914,7 @@
         S.step(inp); acc -= P.DT; n++;
         for (const e of S.events) {
           if (e.e === 'hook') { sfx.hook(); hookT0 = S.t; } else if (e.e === 'unhook') sfx.unhook();
-          else if (e.e === 'dead') { sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
+          else if (e.e === 'dead') { TM.deaths++; if (TM.deaths <= 40) pgEv('crash', runData({ reason: e.why || 'fell' })); sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
           else if (e.e === 'cp') { sfx.cp(); toasts.push({ t: 0, text: T.cp, col: '#69f0ae' }); }
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
