@@ -3,7 +3,7 @@
 которых подбор не видел (иначе можно «выучить» восемь фраз и не попасть в девятую).
 
   python svoy_proba.py <образец>   → cast10/proba_<образец>.json / .mp4 / .mp3 / _t0..2.flac / _w0..2.flac
-  python svoy_proba.py merge       → cast10/svoy_voices.json (для onnx_svoy.py) и голоса для полного слуха в sluh_add.json
+  python svoy_proba.py merge       → cast10/svoy_voices.json (для onnx_svoy.py) и голоса для полного слуха в cast10/sluh_add_svoy.json
 """
 import glob, json, os, subprocess, sys, traceback
 try:
@@ -118,6 +118,22 @@ def main(target, pin=False):
         ex["coef"] = float(best[0])
         return ex, tr
 
+    def coef_true(spe, ex, rate):
+        """Настоящее «средняя высота / разброс» выращенного голоса. Модель сдвигает тон на (k − 1)·coef места, куда вписан голос (в torch своё
+        число туда не записать — список копируется), значит по высоте при k = 0,85 и 1,15 видно, каким coef должен быть, чтобы тон
+        менялся ровно в k раз. Нужен движку мультика: там высота (P) и живость (R) считаются через это число."""
+        c_slot = net.rows[svoy2.SLOT[svoy2.CIS]]["coef"]
+        keep_p, f = L.pitch, {}
+        try:
+            for pit in ("medium", "low", "high"):
+                L.pitch = pit; L.texts.clear()
+                cs = [sluh_man.contour(wave(L.say(spe, t, ex, rate))) for t in held[:6]]
+                f[pit] = float(np.mean([c_["f0"] for c_ in cs if c_]))
+        finally:
+            L.pitch = keep_p; L.texts.clear()
+        est = [f["medium"] * (k - 1) * c_slot / (f[pit] - f["medium"]) for pit, k in (("low", 0.85), ("high", 1.15)) if abs(f[pit] - f["medium"]) > 0.5]
+        return (round(float(np.mean(est)), 3) if est else None), {"slot": c_slot, **{k_: round(v, 1) for k_, v in f.items()}, "est": [round(float(e), 2) for e in est]}
+
     def measure(spe, ex, rate):
         return measure_waves([wave(L.say(spe, t, ex, rate)) for t in held])
 
@@ -206,11 +222,16 @@ def main(target, pin=False):
     log("эквалайзер", {int(c): round(float(v), 1) for c, v in zip(cen[::4], gs[::4])}, "полосы до", eq["before"], "после", eq["after"], "близость", win["close"], "→", me["close"])
     if eq["used"]:
         W = We
+    try:
+        ct, ctinfo = coef_true(spe, ex, rate)
+    except Exception:
+        traceback.print_exc(); ct, ctinfo = None, None
+    log("coef настоящий:", ct, ctinfo)
     title, name, slot = NAME[target]
     out = {"target": target, "title": title, "name": name, "slot": slot, "held": held, "f0_target": round(f0t, 1), "target_quality": tq, "base": mb, "table": table,
            "win": {**{k: v for k, v in win.items()}, "pitch": L.pitch, "base_voice": sluh_opt.BASE[target][0], "spe_row": [round(float(v), 6) for v in spe],
                    "pp_row": [round(float(v), 6) for v in ex[keys["pp"]]], "dp_row": [round(float(v), 6) for v in ex[keys["dp"]]],
-                   "coef": float(ex["coef"]) if ex.get("coef") is not None else None, "eq": eq}}
+                   "coef": float(ex["coef"]) if ex.get("coef") is not None else None, "coef_true": ct, "coef_info": ctinfo, "eq": eq}}
     json.dump(out, open(f"{OUT}/proba_{target}.json", "w", encoding="utf-8"), ensure_ascii=False)
     # звук: пары «образец → свой голос»
     sr = 48000
@@ -249,7 +270,7 @@ def merge():
     V, add = {}, []
     for f in sorted(glob.glob(f"{OUT}/proba_*.json")):
         p = json.load(open(f, encoding="utf-8")); w = p["win"]
-        V[p["name"]] = {"slot": p["slot"], "spe": w["spe_row"], "pp": w["pp_row"], "dp": w["dp_row"], "coef": w["coef"], "rate": w["rate"], "pitch": w["pitch"],
+        V[p["name"]] = {"slot": p["slot"], "spe": w["spe_row"], "pp": w["pp_row"], "dp": w["dp_row"], "coef": w.get("coef_true") or w["coef"], "rate": w["rate"], "pitch": w["pitch"],
                         "eq": {"hz": w["eq"]["hz"], "db": w["eq"]["db"], "used": w["eq"]["used"]} if w.get("eq") else None,
                         "note": f"под {p['title']}: тембр {w['spe_from']}, манера {w['man_from']}; близость {w['close']} (основа {p['base']['close']})"}
         mix = {"w": "g03" if w["base_voice"] == "g03" else {r: {w["base_voice"]: 1.0} for r in ("dp", "pp", "spe")}, "spe_row": w["spe_row"], "pp_row": w["pp_row"],
@@ -263,7 +284,7 @@ def merge():
                 add.append({"name": f"свой:{hero}:{Fk}", "group": hero, "target": f"{hero}@g24", "mix": mix, "F": Fk, "auto": True, "eq": False, "kind": "emu",
                             "note": f"выращенный голос + подделка движка, форманты ×{Fk}"})
     json.dump({"voices": V}, open(f"{OUT}/svoy_voices.json", "w", encoding="utf-8"), ensure_ascii=False)
-    json.dump({"voices": add}, open("sluh_add.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump({"voices": add}, open(f"{OUT}/sluh_add_svoy.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)     # в sluh_add.json — копировать руками перед кругом слуха
     log("голоса:", list(V), "для слуха:", [a["name"] for a in add])
 
 
