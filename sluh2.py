@@ -699,7 +699,8 @@ def final():
     md = ["# Слух 2 — проверка слуха и разбор голосов (25.11.2026)", "",
           "Каждая мерка сверена с тем, как образец отличается сам от себя на разных фразах («свой разброс», 95 % случаев). "
           "«×» — во сколько раз отличие кандидата больше своего разброса: до 1 — как тот же голос, 1–2 — заметно, больше 2 — сильно.", ""]
-    RES = {"voices": {v: {k: PR[v].get(k) for k in ("n", "f0_hz", "range", "rate", "hnr", "bright")} for v in PR}}
+    RES = {"voices": {v: {k: PR[v].get(k) for k in ("n", "f0_hz", "f0", "range", "mob", "fin", "rate", "pause_share", "int_range", "hnr", "cpps", "jitter",
+                                                    "shimmer", "bright", "air", "low", "tilt", "top", "gop", "finlen", "s_dur", "s_f0", "s_int", "sib")} for v in PR}}
 
     # ---------- 1. слепая проверка: тот же голос или другой (ABX)
     ids = [i for i, us in byi.items() if len(us) >= 6]
@@ -933,6 +934,17 @@ def final():
         md += ["Ближайшие к образцу из всего набора (всё вместе; меньше — ближе): " +
                ", ".join(f"{i.split('@')[0]} {v:.2f}" for v, i, _ in near[:8]) + ".", ""]
         RES["groups"][gname]["nearest"] = [[i, round(v, 3)] for v, i, _ in near[:15]]
+
+    # ---------- произношение: модель Барсика (v5_ru) против свободной (v5_cis) на одних и тех же фразах
+    ru = [v for v in PR if v.split("@")[0] in ("xenia", "kseniya", "eugene", "aidar", "baya")]
+    cs = [v for v in PR if v.startswith("cis:")]
+    if ru and cs:
+        g1 = [PR[v]["gop"] for v in ru]; g2 = sorted((PR[v]["gop"], v.split("@")[0][4:]) for v in cs)
+        md += ["## Чёткость звуков: дикторы модели Барсика и дикторы свободной модели", "",
+               f"Одни и те же фразы. Модель Барсика (v5_ru): {', '.join(f'{v.split(chr(64))[0]} {PR[v][chr(103) + chr(111) + chr(112)]:.2f}' for v in ru)} — в среднем {np.mean(g1):.2f}. "
+               f"Свободная (v5_cis), 32 диктора: от {g2[0][0]:.2f} ({g2[0][1]}) до {g2[-1][0]:.2f} ({g2[-1][1]}), в среднем {np.mean([x[0] for x in g2]):.2f}. "
+               f"Лучшие по чёткости: {', '.join(f'{n} {g:.2f}' for g, n in g2[::-1][:8])}.", ""]
+        RES["gop"] = {"ru": {v: PR[v]["gop"] for v in ru}, "cis": {n: g for g, n in g2}}
 
     # ---------- 4. сверка с ухом Михаила
     md += ["## 4. Сверка с ухом Михаила", "", "Михаил 25.11: «не попадаешь ты в их звук» — про все отправленные пробы.", ""]
