@@ -132,9 +132,9 @@ def main(target):
         return W, {"close": round(close, 4), "sims": {k: round(v, 3) for k, v in sims.items()}, "man": round(float(np.mean([p[0] for p in parts])), 4), **agg,
                    "f0": round(f0, 1), "pt": round(12 * np.log2(f0 / f0t), 2)}
 
-    def quality(W):
+    def quality(W, js=(0, 2, 5)):
         mt, ut = [], []
-        for j in (0, 2, 5):
+        for j in js:
             p = f"tmp/pq_{j}.wav"; g.save_wav(W[j], p)
             try:
                 mt.append(SL.heard_match(p, held[j])[1]); ut.append(SL.utmos(SL.load(p, 16000)))
@@ -149,6 +149,8 @@ def main(target):
         pr = json.load(open(f, encoding="utf-8"))
         found.append((os.path.basename(f)[:-5], np.array(pr["win"]["spe"], dtype=float), pr["win"]["score"]))
     found.sort(key=lambda x: -x[2])
+    late = [f for f in found if f[0][-1] in "bc"]              # вторые и третьи круги (у третьего в оценке ещё и спектр, сравнивать оценки кругов нельзя)
+    found = late[:4] if late else found[:3]
     mans = [("основа", None, "medium")]
     for f in sorted(glob.glob(f"{OUT}/man_{target}_*.json")):
         pr = json.load(open(f, encoding="utf-8"))
@@ -161,27 +163,26 @@ def main(target):
     log("основа", mb)
     table = [{"spe_from": "основа", "man_from": "основа", "rate": "medium", **mb}]
     keep = {}
-    for sn, spe, _ in found[:3]:
+    for sn, spe, _ in found:
         for mn, ex, rate in mans:
             try:
                 ex, tr = tune_pitch(spe, ex, rate)
                 W, m = measure(spe, ex, rate)
             except Exception:
                 traceback.print_exc(); continue
-            m["J"] = round(m["close"] + 0.5 * m["man"] - 0.03 * max(0.0, abs(m["pt"]) - 0.5), 4)
+            m.update(quality(W, (0, 1, 2, 3, 4, 5)))
             if tr:
                 m["coef_path"] = tr
             table.append({"spe_from": sn, "man_from": mn, "rate": rate, **m})
             keep[(sn, mn)] = (W, spe, ex, rate)
             log(sn, mn, m)
-    cand = sorted([r for r in table if "J" in r], key=lambda r: -r["J"])
-    win = None
-    for r in cand[:4]:
-        r.update(quality(keep[(r["spe_from"], r["man_from"])][0]))
-        log("качество", r["spe_from"], r["man_from"], r.get("match"), r.get("utmos"))
-        if win is None and (r["match"] or 0) >= (mb["match"] or 0.9) - 0.07 and (r["utmos"] or 0) >= (mb["utmos"] or 3.0) - 0.45:
-            win = r
-    win = win or cand[0]
+    rows = [r for r in table if r["spe_from"] != "основа"]
+    ubest = max((r["utmos"] or 0) for r in rows); mbest = max((r["match"] or 0) for r in rows)
+    for r in rows:        # близость голоса + манера − высота мимо − потеря естественности и разборчивости против лучшего из кандидатов
+        r["J"] = round(r["close"] + 0.5 * r["man"] - 0.03 * max(0.0, abs(r["pt"]) - 0.5) - 0.3 * max(0.0, ubest - (r["utmos"] or 0) - 0.1)
+                       - 0.5 * max(0.0, mbest - (r["match"] or 0) - 0.03), 4)
+    cand = sorted(rows, key=lambda r: -r["J"])
+    win = cand[0]
     W, spe, ex, rate = keep[(win["spe_from"], win["man_from"])]
     ex = ex or base_ex
     # эквалайзер под долгий спектр образца: считается на фразах подбора, проверяется на отложенных
