@@ -41,6 +41,8 @@ GROUPS = [  # (название, образец, кандидаты, откуд�
     ("Рон", "Рон@g24", ["Тузик@g24", "Рекс@g24", "Тузик@g23", "Бобик@g23", "Рекс@g23", "Джек@g23"], "Рон"),
     ("Пик", "Пик@g24", ["Пуся@g24", "Пуша@g24"], "Пик"),
     ("№4", "n4@syn", ["g03@syn", "g03f@syn", "manera1@syn", "manera2@syn", "nash3@syn"], "n4@syn"),
+    ("xenia", "xenia@syn", [], "xenia@syn"),            # «сырые» основы героев (до движка): по ним растим свои строки голоса
+    ("kseniya", "kseniya@syn", [], "kseniya@syn"),
 ]
 NOTE = {"Мурзик@g24": "Барсик, свободный 1 (kermen)", "Васька@g24": "Барсик, свободный 2 (zhadyra)", "Тузик@g24": "Рон, свободный 1 (nurgul)",
         "Рекс@g24": "Рон, свободный 2 (aigul)", "Пуся@g24": "Пик, свободный 1 (zara)", "Пуша@g24": "Пик, свободный 2 (zara, выше и быстрее)",
@@ -247,8 +249,9 @@ def make_voice(items, byv):
     ss, ts = vstats(raw, texts), vstats(tw, texts)
     clip = lambda a, lo, hi: max(lo, min(hi, a))
     F = float(v.get("F", 1.0))
-    P = float(v["P"]) if v.get("P") else (ts["f0"] / ss["f0"] if (v.get("spk") and not v.get("mix")) else 1.0)
-    T = float(v["T"]) if v.get("T") else (clip(ts["rate"] / ss["rate"], 0.8, 1.35) if (v.get("spk") and not v.get("mix")) else 1.0)
+    auto = (v.get("spk") and not v.get("mix")) or v.get("auto")       # высоту и темп довести до образца, как это делает движок
+    P = float(v["P"]) if v.get("P") else (ts["f0"] / ss["f0"] if auto else 1.0)
+    T = float(v["T"]) if v.get("T") else (clip(ts["rate"] / ss["rate"], 0.8, 1.35) if auto else 1.0)
     kr = v.get("range", 1.0)
     if kr == "auto":
         kr = clip(ts["range"] / max(ss["range"], 0.5), 0.6, 1.8)
