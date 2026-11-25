@@ -1,5 +1,2 @@
-# 2026-11-22 18:52 МСК — серия 36 v3 и 37 на странице (размеры как в ветке mebel: serii.json 153344, index.html 19848, обложка 36 223691, обложка 37 187246)
+# 2026-11-25 10:55 МСК — серия 35 v5 (выход 11:00) — размер serii.json в ветке mebel 184865
 http://89.126.192.214:8080/mebel/s9kbars/serii.json
-http://89.126.192.214:8080/mebel/s9kbars/index.html
-http://89.126.192.214:8080/mebel/s9kbars/serii/36/cover.jpg
-http://89.126.192.214:8080/mebel/s9kbars/serii/37/cover.jpg
