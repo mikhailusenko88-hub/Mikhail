@@ -1,7 +1,7 @@
 name: dubsrc
 # Исходники для дубляжа из готового ролика (серии из телефона): строка в dubsrc-request.txt — «<имя> <источник>»,
 # источник: release:<тег>/<файл> (файл релиза) или branch:<ветка>/<путь> (файл в ветке, например dub-src).
-# Итог: релиз studio-<имя> с dub.zip (как у студии) и ep-<имя>-540.mp4, разбор реплик — dubsrc/<имя>/ в этой ветке.
+# Итог: релиз dubsrc-<имя> с dub.zip (как у студии) и ep-<имя>-540.mp4, разбор реплик — dubsrc/<имя>/ в этой ветке.
 on:
   push:
     branches: [golos-en]
@@ -51,12 +51,13 @@ jobs:
           N="${{ steps.s.outputs.name }}"; F="${{ steps.s.outputs.file }}"; W="tmp_dubsrc/$N"
           if ffprobe -v error -select_streams v:0 -show_entries stream=codec_type -of csv=p=0 "$F" | grep -q video; then
             ffmpeg -y -loglevel error -i "$F" -vf scale=-2:540 -c:v libx264 -crf 26 -preset veryfast -c:a aac -b:a 128k -movflags +faststart "$W/ep-$N-540.mp4"; fi
-          gh release create "studio-$N" --target golos-en --prerelease --title "Исходники для дубляжа: $N" --notes "Из готового ролика: голоса отделены от музыки (demucs), реплики — распознаванием. dubsrc/$N в ветке golos-en." >/dev/null 2>&1 || true
-          gh release upload "studio-$N" --clobber "$W/dub.zip" $(ls "$W/ep-$N-540.mp4" 2>/dev/null)
+          gh release view "dubsrc-$N" -R ${{ github.repository }} >/dev/null 2>&1 || gh release create "dubsrc-$N" -R ${{ github.repository }} --target golos-en --prerelease --title "Исходники для дубляжа: $N" --notes "Из готового ролика: голоса отделены от музыки (demucs), реплики — распознаванием."
+          gh release upload "dubsrc-$N" -R ${{ github.repository }} --clobber "$W/dub.zip" dubsrc/$N/lines.txt dubsrc/$N/clusters.json dubsrc/$N/lines.json $(ls "$W/ep-$N-540.mp4" 2>/dev/null)
       - name: Разбор — в ветку
         if: always()
         run: |
           git config user.name dubsrc; git config user.email dubsrc@users.noreply.github.com
           git add dubsrc/${{ steps.s.outputs.name }}/clusters.json dubsrc/${{ steps.s.outputs.name }}/lines.json dubsrc/${{ steps.s.outputs.name }}/lines.txt 2>/dev/null || true
           git commit -qm "dubsrc ${{ steps.s.outputs.name }}" || echo nothing
-          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep 5; done
+          export GIT_EDITOR=true
+          for i in 1 2 3 4 5; do git fetch -q origin golos-en && git rebase -q origin/golos-en && git push -q origin HEAD:golos-en && break; sleep 5; done

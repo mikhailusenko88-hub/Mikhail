@@ -110,6 +110,33 @@ for k in range(2, min(8, len(lines) - 1) + 1):
     if sc > best[1] + 0.01:
         best = (lab, sc, k)
 lab, sc, k = best
+# голоса iPhone у героев из телефона — один и тот же голос с разной высотой: тембром (ECAPA) их не развести,
+# поэтому кластер делим по высоте, если внутри есть заметный разрыв (Пик ~370 Гц и Рон ~300 Гц — 3,5 полутона)
+def st(a, b):
+    return 12 * np.log2(a / b)
+lab = np.array(lab)
+for _ in range(4):
+    split = False
+    for c in sorted(set(lab.tolist())):
+        idx = [i for i in range(len(lines)) if lab[i] == c and f0s[i] > 0]
+        if len(idx) < 6:
+            continue
+        srt = sorted(idx, key=lambda i: f0s[i])
+        gaps = [(st(f0s[srt[j + 1]], f0s[srt[j]]), j) for j in range(2, len(srt) - 3)]
+        if not gaps:
+            continue
+        g, j = max(gaps)
+        lo, hi = srt[:j + 1], srt[j + 1:]
+        dm = st(np.median([f0s[i] for i in hi]), np.median([f0s[i] for i in lo]))
+        if g >= 0.8 and dm >= 2.5:
+            nc = int(lab.max()) + 1
+            for i in hi:
+                lab[i] = nc
+            log(f"кластер {c} разделён по высоте: {np.median([f0s[i] for i in lo]):.0f} / {np.median([f0s[i] for i in hi]):.0f} Гц (разрыв {g:.1f} пт)")
+            split = True
+    if not split:
+        break
+k = int(lab.max()) + 1
 # кластеры — по убыванию высоты голоса: S1 — самый высокий
 cl = {}
 for c in range(k):

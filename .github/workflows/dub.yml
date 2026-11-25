@@ -58,7 +58,8 @@ jobs:
       - name: Файлы сборки
         run: |
           mkdir -p "tmp_dubsrc/$NAME"
-          gh release download "studio-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME"
+          gh release download "studio-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME" || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME"   # серии из телефона — исходники из готового ролика (dubsrc.yml)
+          [ -f "tmp_dubsrc/$NAME/ep-$NAME-540.mp4" ] || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
           gh release download "studio-$NAME" -R ${{ github.repository }} -p "ep-$NAME-540.mp4" -D "tmp_dubsrc/$NAME" || true
           ls -la "tmp_dubsrc/$NAME"
       - name: Дубляж
