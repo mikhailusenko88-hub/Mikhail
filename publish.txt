@@ -1,2 +1,2 @@
-# 25.11 11:55 — «да» Михаила: удалить 22 закрытых дубля перезалитых 35–39 и сборника 32–36; сначала проба
-delete --dry c6vT6oqU1Ss _CKTe5ULnwk coak4sqAfdw WayXGuk4vUY 0j60E5FEG-M phoh1BvtfMQ NvOygN3DtrA n5_E8axf4Ps AvGNLuWuMBQ x4j-vG29c0s zFnis-AcOps SoEmTDkJOto hCMmT1DAzew vdHDKXCNN2o gsDpuBLPiJc 9wmxtGQVk9c hXodxfKWAYg 3FJGdr0bBPw _fU6Zf5abBA zNTRafYHBKg jRqaJMKiCNU RFp6ukLCnmE
+# 25.11 17:25 — «да» Михаила: удалить 22 закрытых дубля перезалитых 35–39 и сборника 32–36 (проба: все 22 с живым двойником)
+delete c6vT6oqU1Ss _CKTe5ULnwk coak4sqAfdw WayXGuk4vUY 0j60E5FEG-M phoh1BvtfMQ NvOygN3DtrA n5_E8axf4Ps AvGNLuWuMBQ x4j-vG29c0s zFnis-AcOps SoEmTDkJOto hCMmT1DAzew vdHDKXCNN2o gsDpuBLPiJc 9wmxtGQVk9c hXodxfKWAYg 3FJGdr0bBPw _fU6Zf5abBA zNTRafYHBKg jRqaJMKiCNU RFp6ukLCnmE
