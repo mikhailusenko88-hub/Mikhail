@@ -1596,6 +1596,16 @@
    "link": "https://youtube.com/shorts/LTBkPR9-HjM",
    "title": "1000 ta shar! Nexia, Matiz, Cobalt… Qaysi mashina yutadi? Какая машина победит? №8 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-25",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 4,
+   "final": false,
+   "link": "https://youtube.com/shorts/Z__JB-NTuzM",
+   "title": "1000 ta shar! Samarqand, Navoiy, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №4 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1737,30 +1747,30 @@
    ]
   },
   "cities": {
-   "no": 3,
+   "no": 4,
    "cnt": {
     "Asaka": 1,
     "Nukus": 2,
     "Namangan": 1,
-    "Shahrisabz": 1,
+    "Shahrisabz": 2,
     "Angren": 1,
     "Qoʻqon": 1,
     "Xiva": 1,
     "Fargʻona": 2,
-    "Samarqand": 3,
-    "Toshkent": 3,
+    "Samarqand": 4,
+    "Toshkent": 4,
     "Andijon": 2,
     "Jizzax": 2,
-    "Buxoro": 1,
+    "Buxoro": 2,
     "Olmaliq": 1,
-    "Guliston": 1,
+    "Guliston": 2,
     "Chirchiq": 1,
     "Qarshi": 1,
-    "Termiz": 1,
-    "Urganch": 1,
-    "Navoiy": 1,
-    "Zarafshon": 1,
-    "Margʻilon": 1
+    "Termiz": 2,
+    "Urganch": 2,
+    "Navoiy": 2,
+    "Zarafshon": 2,
+    "Margʻilon": 2
    },
    "results": [
     {
@@ -1801,6 +1811,19 @@
      ],
      "in_cup": 340,
      "link": "https://youtube.com/shorts/JuM5D0hY5tM"
+    },
+    {
+     "no": 4,
+     "date": "2026-11-25",
+     "slot": 2,
+     "winner": "Samarqand",
+     "top3": [
+      "Samarqand",
+      "Zarafshon",
+      "Toshkent"
+     ],
+     "in_cup": 407,
+     "link": "https://youtube.com/shorts/Z__JB-NTuzM"
     }
    ]
   }
