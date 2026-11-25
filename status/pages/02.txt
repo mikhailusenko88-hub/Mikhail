@@ -1,19 +1,115 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/45f835df-6460-49f0-9d72-c8503ba4b724
+URL: https://onprime.ru/contacts/
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Tue, 24 Nov 2026 14:04:15 GMT
-Content-Type: application/json
-Content-Length: 67
+Server: nginx-reuseport/1.30.7
+Date: Wed, 25 Nov 2026 05:59:06 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
 Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+X-Powered-By: PHP/8.5.13
+Set-Cookie: PHPSESSID=b66ee1936948583ec1d62b19efd1add5; expires=Wed, 02 Dec 2026 05:59:06 GMT; Max-Age=604800; path=/; HttpOnly
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Vary: Accept-Encoding
 
-{"error":"","sent_at":"2026-11-24T17:04:05+03:00","status":"sent"}
+Контакты 
+ +79117777788 
+ Главная 
+ Портфолио 
+ Дизайн интерьеров 
+ Назад
+ Дизайн интерьеров 
+ Комплектация интерьеров 
+ Авторский надзор 
+ Ремонт 
+ Цены 
+ Информация 
+ Назад
+ Наша команда 
+ Почему мы? 
+ Отзывы 
+ Сотрудничество 
+ Политика конфиденциальности 
+ Контакты 
+ +79117777788 
+ Контакты
+ ONPRIME
+ Адрес: Богатырский пр. 36/1 
+ Телефон: +7-911-777-77-88 
+ e-mail: info@onprime.ru 
+ Режим работы: ежедневно с 10-20
+ Мы работаем со всеми регионами. 
+ Вы можете оставить заявку на обратный звонок и мы свяжемся с Вами в удобное для Вас время. 
+А так же c нами можно связаться через WhatsApp, Viber, Telegram.
+ Сотрудничество 
+ Обратный звонок
+ Остались вопросы?
+ Оставьте заявку на бесплатную консультацию
+ Бесплатная консультация
+ Услуги
+ Дизайн интерьеров 
+ Авторский надзор 
+ Комплектация интерьера 
+ Ремонт 
+ Информация
+ О нас 
+ Отзывы 
+ Сотрудничество 
+ Реквизиты 
+ Политика конфиденциальности 
+ Контакты
+ Адрес: Богатырский пр. 36/1
+ Тел.: +7(911)777-77-88 
+ e-mail: info@onprime.ru 
+ ONPRIME © Все права защищены. 2014 - 2026. 
+ Разработка сайта chillside.ru 
+ Оставить заявку
+ Ваше имя * 
+ Укажите Ваше имя!
+ Ваш телефон * 
+ Укажите Номер телефона
+ E-mail * 
+ Укажите корректный Email
+ Сообщение 
+ Введите текс сообщения!
+ Я согласен с политикой конфиденциальности 
+ Спасибо !
+ Ваша заявка отправлена!
+ Мы используем файлы cookie 
+ для улучшения работы сайта. Продолжая пользоваться сайтом, вы соглашаетесь с нашей политикой конфиденциальности 
+ Принять
 
 ССЫЛКИ:
+/
+/assets/components/minishop2/css/web/default.css?v=f4300f1c88
+/assets/components/minishop2/css/web/lib/jquery.jgrowl.min.css
+/assets/components/ms2gallery/css/web/default.css
+/dist/css/libs.new.css?v12
+/dist/css/style.css?v12
+/favicon.ico?v=4
+/images/apple-touch-icon-192.png
+/images/icon_logo.svg
+/privacy
+about/
+aboutus/partner
+contacts
+design
+https://chillside.ru
+https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro:300,400,700,900&display=swap&subset=cyrillic
+https://onprime.ru/
+https://onprime.ru/privacy
+https://t.me/onprime
+https://wa.me/79117777788
+interior/complect
+mailto:info@onprime.ru
+nadzor
+portfolio/
+price/
+privacy
+remont
+reviews
+team
+tel:+79117777788
+tg://resolve?domain=onprime
+whatsapp://send?phone=+79117777788

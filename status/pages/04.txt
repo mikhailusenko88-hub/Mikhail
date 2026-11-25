@@ -1,19 +1,23 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/25e777fd-92d0-4dfc-a59b-c81f4b063f4f
-КОД: 200
+URL: https://remart-group.ru/contacts/
+КОД: 404
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Tue, 24 Nov 2026 14:04:17 GMT
-Content-Type: application/json
-Content-Length: 67
+Server: ddos-guard
 Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Set-Cookie: __ddg8_=9WZO1T0pZLzQrlEF; Domain=.remart-group.ru; Path=/; Expires=Wed, 25-Nov-2026 06:19:09 GMT
+Set-Cookie: __ddg10_=1795586349; Domain=.remart-group.ru; Path=/; Expires=Wed, 25-Nov-2026 06:19:09 GMT
+Set-Cookie: __ddg9_=20.64.57.193; Domain=.remart-group.ru; Path=/; Expires=Wed, 25-Nov-2026 06:19:09 GMT
+Set-Cookie: __ddg1_=ZYDzxCUOSmDyPus0HWB7; Domain=.remart-group.ru; HttpOnly; Path=/; Expires=Thu, 25-Nov-2027 05:59:09 GMT
+date: Wed, 25 Nov 2026 05:59:09 GMT
+content-type: text/html; charset=UTF-8
+content-length: 574
+last-modified: Wed, 27 May 2026 09:56:53 GMT
+etag: "23e-652c9a1960cb4"
+x-frame-options: SAMEORIGIN
+x-tilda-server: 26
+x-tilda-imprint: 7cc63929-5db0-4315-8507-ba1ea44c47d6
 
-{"error":"","sent_at":"2026-11-24T17:04:08+03:00","status":"sent"}
+404 Page Not Found. 
+ 404 Page not found
 
 ССЫЛКИ:
+https://tilda.cc
