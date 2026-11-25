@@ -1,0 +1,74 @@
+name: sluh-opt
+# Строка тембра свободной модели, подобранная слухом (CMA-ES по трём узнавателям голоса) — sluh_opt.py. Запрос: sluh-opt-request.txt
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['sluh-opt-request.txt']
+permissions:
+  contents: write
+concurrency:
+  group: sluh-opt
+  cancel-in-progress: false
+jobs:
+  opt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [n4, xenia, kseniya]
+        seed: [1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/whisper
+            ~/.cache/torch
+            models
+          key: sluh2-cache-v1
+          restore-keys: |
+            pik-free-cache-v2
+            svoy-free-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers phonemizer praat-parselmouth openai-whisper ruaccent matplotlib resemblyzer pyworld speechbrain scipy cma
+      - run: python sluh_opt.py ${{ matrix.target }} ${{ matrix.seed }} $(grep -o 'gens=[0-9]*' sluh-opt-request.txt | cut -d= -f2)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: OP-${{ matrix.target }}-${{ matrix.seed }}
+          path: cast10/opt_*
+          retention-days: 7
+  final:
+    needs: [opt]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'OP-*'
+          merge-multiple: true
+          path: cast10/
+      - name: Commit
+        timeout-minutes: 5
+        run: |
+          git config user.name svoy-golos
+          git config user.email svoy-golos@users.noreply.github.com
+          rm -rf /tmp/res && cp -r cast10 /tmp/res
+          for i in 1 2 3; do
+            git fetch -q origin svoy-golos && git checkout -q -f -B res FETCH_HEAD && mkdir -p cast10 && cp -r /tmp/res/. cast10/
+            git add -A cast10; git commit -q -m "sluh-opt result" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done
