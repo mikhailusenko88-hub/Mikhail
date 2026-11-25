@@ -13,12 +13,16 @@
   // eng 0..2; snorkel 0|1; tank 0|1; winch 0|1 — длинный трос; awd, lock, low — есть ли в машине полный привод, блокировка, пониженная
   // press 0..2 — давление в шинах (низкое/среднее/высокое); susp 0..2 — подвеска (мягкая/средняя/жёсткая); gear 0..2 — главная пара (тяговая/средняя/скоростная);
   // skid — защита днища; ctis — подкачка шин на ходу; paint — краска
-  const DEF = { base: 0, lift: 0, wheel: 0, axles: 2, tires: 1, eng: 0, snorkel: 0, tank: 0, winch: 0, awd: 1, lock: 1, low: 1, press: 1, susp: 1, gear: 1, skid: 0, ctis: 0, paint: 0 };
+  const DEF = { base: 0, lift: 0, wheel: 0, axles: 2, tires: 1, eng: 0, snorkel: 0, tank: 0, winch: 0, awd: 1, lock: 1, low: 1, press: 1, susp: 1, gear: 1, skid: 0, ctis: 0, paint: 0, trailer: 0 };
   // груз: у каждого свой характер. Брёвна — обычные; бочки — тяжёлые (машина хуже тянет); арбузы — лёгкие и прыгают на ухабах
   const CARGO = { log: { r: 10, m: 0.3, I: 16, mu: 0.9, e: 0 }, barrel: { r: 13, m: 0.7, I: 60, mu: 0.6, e: 0 }, melon: { r: 9, m: 0.16, I: 6, mu: 0.5, e: 0.62, sd: 0 } };
-  const CAPMAX = [9, 11, 13], spaceOf = (C, kind) => Math.min(CAPMAX[C.b.base], 2 * Math.floor((C.bed[1] - C.bed[0] - 4) / (2 * (CARGO[kind] || CARGO.log).r + 1)) - 1); // сколько штук входит в кузов: два ряда
-  // грузоподъёмность, т: длинная рама, форсировка и третий мост везут больше. Подобрано прогоном: с полным по весу кузовом сборка проходит карьер и торфяник
-  const payT = (C) => Math.round(10 * (2.8 + 1.1 * C.b.base + 1.4 * C.b.eng + (C.b.axles === 3 ? 6.3 : 0))) / 10;
+  const CAPMAX = [9, 11, 13], rowsOf = (len, kind) => 2 * Math.floor((len - 4) / (2 * (CARGO[kind] || CARGO.log).r + 1)) - 1; // сколько штук входит в кузов такой длины: два ряда, верхний на один короче
+  const spaceTruck = (C, kind) => Math.min(CAPMAX[C.b.base], rowsOf(C.bed[1] - C.bed[0], kind)), spaceOf = (C, kind) => spaceTruck(C, kind) + (C.tr ? rowsOf(C.tr.bed, kind) : 0); // место: кузов грузовика плюс прицеп
+  // грузоподъёмность, т — сколько сборка довозит через самые тяжёлые заказы (карьер, размокшая глина, два брода). Подобрано прогоном 90 сборок:
+  // рама +1,4 т за шаг; форсировка +1 т за ступень (с 6-й — по 0,6); третий мост +0,7 / +4,2 / +6,3 т (короткая / длинная / длинная+); короткая рама больше 7,7 т не тянет — задирает нос;
+  // прицеп места добавляет, а сам отнимает: тележка 2,1 т, большой 3,5 т (его колёса не ведущие, в гору и в грязи он обуза)
+  const ENG_T = (e) => Math.min(e, 5) + 0.6 * Math.max(0, e - 5), TR_T = [0, 2.1, 3.5];
+  const payT = (C) => { const b = C.b, p = 2.1 + 1.4 * b.base + ENG_T(b.eng) + (b.axles === 3 ? [0.7, 4.2, 6.3][b.base] : 0); return Math.max(0.7, Math.round(10 * ((b.base ? p : Math.min(p, 7.7)) - (C.tr ? TR_T[b.trailer] : 0))) / 10); };
   const capOf = (C, kind) => Math.max(1, Math.min(spaceOf(C, kind), Math.floor(payT(C) / (CARGO[kind] || CARGO.log).m + 1e-6))); // сколько штук можно взять: по месту и по весу
   // топливо — настоящее ограничение: аккуратный рейс доезжает с небольшим запасом, буксование, лебёдка и всё включённое «на всякий случай» — нет
   const FUEL_K = (root.__FK || 1.15), CAN = 20, WINCH_BURN = 0.8, F_AWD = 1.25, F_LOCK = 1.15, F_LOW = 1.15; // л/с на газу у заводского грузовика; канистра, л; лебёдка под нагрузкой, л/с
@@ -29,7 +33,7 @@
     const d3 = b.axles === 3 ? hb / 3 : 0, ax = b.axles === 3 ? [-hb + d3 - WR - 4, -hb + d3 + WR + 4, hb + d3] : [-hb, hb];
     const xr = ax[0] - WR - 12, xf = ax[ax.length - 1] + 44, len = xf - xr;
     const tire = [{ mud: 0.78, sp: 1.04, burn: 0.95 }, { mud: 1, sp: 1, burn: 1 }, { mud: 1.3, sp: 0.88, burn: 1.14 }][b.tires];
-    const m = 8 + b.base + (b.axles === 3 ? 1.3 : 0) + 0.15 * b.eng + (b.tank ? 0.5 : 0) + 0.25 * b.wheel + (b.skid ? 0.4 : 0) + (b.ctis ? 0.15 : 0), tq = 1 + 0.12 * b.eng, intake = b.snorkel ? -62 : 19;
+    const m = 8 + b.base + (b.axles === 3 ? 1.3 : 0) + 0.15 * b.eng + (b.tank ? 0.5 : 0) + 0.25 * b.wheel + (b.skid ? 0.4 : 0) + (b.ctis ? 0.15 : 0), tq = 1 + 0.12 * Math.min(b.eng, 5) + 0.07 * Math.max(0, b.eng - 5), intake = b.snorkel ? -62 : 19;
     const gr = [{ t: 1.25, s: 0.8 }, { t: 1, s: 1 }, { t: 0.82, s: 1.2 }][b.gear]; // главная пара: тяга в обмен на скорость
     return {
       b, WR, hb, ly, rest, hW, belly: BELLY, ax, xr, xf, len, m, I: m * (0.3 * len) * (0.3 * len), wm: 1.2 * (WR / 27) * (WR / 27), wI: 440 * Math.pow(WR / 27, 4),
@@ -41,8 +45,10 @@
       suspK: [0.68, 1, 1.5][b.susp], bellyMu: b.skid ? 0.12 : 0.6, bellyDrag: b.skid ? 0.45 : 1, clogK: [1.35, 1, 0.45][b.tires], // подвеска; защита днища скользит; как быстро забивается протектор
       bed: [xr + 6, xf - 132, BELLY - 16], cap: Math.min([9, 11, 13][b.base], 2 * Math.floor((xf - 132 - xr - 6 - 4) / 21) - 1), // кузов: задний край, передний край, пол; сколько брёвен входит (длинная база везёт больше)
       grip: tire.mud, float: (WR / 27) * (b.tires === 2 ? 1.12 : 1), // как колесо гребёт в грязи и как грязь его держит
-      burn: FUEL_K * (1 + 0.06 * b.eng) * tire.burn * Math.sqrt(WR / 27) * (b.axles === 3 ? 1.15 : 1) * Math.sqrt(m / 8),
+      burn: FUEL_K * (1 + 0.06 * b.eng) * tire.burn * Math.sqrt(WR / 27) * (b.axles === 3 ? 1.15 : 1) * Math.sqrt(m / 8) * (1 + 0.05 * b.trailer),
       tank: 60 + 35 * b.tank, intake, mast: [xf - 2, 6], wrange: b.winch ? 1150 : 800, reel: b.winch ? 210 : 150,
+      // прицеп: своя рама на сцепке, свой кузов и свои колёса (не ведущие). Даёт место под груз, а тянуть его — мотору
+      tr: b.trailer && b.base ? Object.assign({ hx: xr - 2, hy: 34, ty: 34 }, [null, { bed: 90, m: 0.6, ax: [-8], tx: 91, len: 146 }, { bed: 150, m: 1, ax: [-40, 26], tx: 121, len: 206, rod: 40 }][b.trailer]) : null, // на короткую раму прицеп не ставится: с ним её задирает на месте
     };
   }
 
@@ -88,12 +94,12 @@
   const edge = (z, x) => sst(0, 170, x - z.x0) * sst(0, 170, z.x1 - x); // края грязи пологие: въезжаешь постепенно
 
   function create(routeFn, o) {
-    const C = spec(o && o.build), b = C.b, WR = C.WR, NW = C.ax.length, manual = !!(o && o.manual), kind = (o && CARGO[o.kind] && o.kind) || 'log', CG = CARGO[kind], nLogs = Math.min(capOf(C, kind), (o && o.cargo) | 0); // manual — после аварии игра сама не возвращает: решает игрок
+    const C = spec(o && o.build), b = C.b, WR = C.WR, NW = C.ax.length, TR = C.tr, NT = TR ? TR.ax.length : 0, manual = !!(o && o.manual), kind = (o && CARGO[o.kind] && o.kind) || 'log', CG = CARGO[kind], nLogs = Math.min(o && o.over ? spaceOf(C, kind) : capOf(C, kind), (o && o.cargo) | 0); // manual — после аварии игра сама не возвращает: решает игрок
     const S = {
-      L: null, W: null, truck: null, wheels: [], wj: [], rope: null, ropeA: null, target: null, cfg: C, WR,
+      L: null, W: null, truck: null, wheels: [], wj: [], trailer: null, twheels: [], twj: [], allw: [], rope: null, ropeA: null, target: null, cfg: C, WR,
       state: 'play', t: 0, deadT: 0, why: '', grounded: false, wallTouch: false, flipT: 0, wonT: 0, pullOn: false,
       cp: null, attempts: 1, rescues: 0, events: [], awd: false, lock: false, low: false, fuel: C.tank, range: 0,
-      logs: [], kind, stakeH: nLogs ? CG.r * 2.82 + (CG.sd === undefined ? 3 : CG.sd) : 30, cargo: nLogs, cargo0: nLogs, tows: 0, used: 0, slip: new Array(NW).fill(0), sunk: new Array(NW).fill(0), clog: new Array(NW).fill(0), press: b.press, soil: '', depth: 0, inMud: 0, belly: false, hung: false, stuckT: 0, wetT: 0, wade: 0, dirt: 0, rutV: 0,
+      logs: [], kind, stakeH: nLogs ? CG.r * 2.82 + (CG.sd === undefined ? 3 : CG.sd) : 30, cargo: nLogs, cargo0: nLogs, tows: 0, used: 0, slip: new Array(NW + NT).fill(0), sunk: new Array(NW + NT).fill(0), clog: new Array(NW + NT).fill(0), press: b.press, soil: '', depth: 0, inMud: 0, belly: false, hung: false, stuckT: 0, wetT: 0, wade: 0, dirt: 0, rutV: 0,
     };
     S.L = (typeof routeFn === 'number' ? root.MudSide.routes[routeFn].build : routeFn)();
     const L = S.L, poly = L.polys[0];
@@ -147,13 +153,25 @@
         const w = P.addBody(W, P.body({ x: x + lx, y: y + C.hW + 2, m: C.wm, I: C.wI, group: 'truck', kind: 'wheel', mu: 1.0, circles: [{ x: 0, y: 0, r: WR }], ang: 0.999 }));
         S.wheels.push(w); S.wj.push(P.wheelJoint(W, S.truck, w, { lx, ly: C.ly, rest: C.rest, k: 1150 * ks, c: 70 * ks / Math.sqrt(C.suspK), lo: 10, hi: 44 }));
       }
-      // брёвна: нижний ряд и верхний; потерянные не возвращаются
-      const cr = CG.r, st = 2 * cr + 1, nb = Math.floor((bx1 - bx0 - 4) / st), keep = S.logs.length ? S.logs.filter((q) => !q.lost).length : S.cargo; S.logs = [];
-      for (let i = 0; i < keep; i++) { const top = i >= nb, k = top ? i - nb : i, lx = bx0 + cr + 2.5 + k * st + (top ? st / 2 : 0), ly = fy - cr - 0.2 - (top ? cr * 1.82 : 0);
-        S.logs.push({ b: P.addBody(W, P.body({ x: x + lx, y: y + ly, m: CG.m, I: CG.I, e: CG.e, group: 'log', kind: 'log', cc: true, mu: CG.mu, lin: 0.9995, ang: 0.98, circles: [{ x: 0, y: 0, r: cr }] })), lost: false, out: 0 }); }
+      // прицеп: рама с кузовом на сцепке за грузовиком, колёса катятся свободно
+      S.trailer = null; S.twheels = []; S.twj = [];
+      if (TR) {
+        const hb2 = TR.bed / 2, tx0 = x + TR.hx - TR.tx, tc = [{ x: -hb2 - 2, y: 12, r: 11, mu: 0.05 }];
+        for (let cx = -hb2 + 14; cx <= hb2 + 34; cx += 30) tc.push({ x: cx, y: C.belly - 12, r: 12, mu: 0.05 }); // низ рамы и дышло — скользкие: прицеп на гребне не держит
+        S.trailer = P.addBody(W, P.body({ x: tx0, y, m: TR.m, I: TR.m * (0.3 * TR.len) * (0.3 * TR.len), group: 'truck', kind: 'trailer', rad: TR.len, mu: 0.3, lin: 0.9997, ang: 0.997, circles: tc, segs: nLogs ? [[-hb2, fy, hb2, fy], [hb2, fy, hb2, fy - S.stakeH - 14], [-hb2, fy, -hb2, fy - S.stakeH]] : [] }));
+        const kt = ((TR.m + 2.5) / 8) * (2 / NT) * C.suspK;
+        for (const lx of TR.ax) { const w = P.addBody(W, P.body({ x: tx0 + lx, y: y + C.hW + 2, m: 0.5 * C.wm, I: 0.5 * C.wI, group: 'truck', kind: 'twheel', mu: 1.0, circles: [{ x: 0, y: 0, r: WR }], ang: 0.999 }));
+          S.twheels.push(w); S.twj.push(P.wheelJoint(W, S.trailer, w, { lx, ly: C.ly, rest: C.rest, k: 1150 * kt, c: 70 * kt / Math.sqrt(C.suspK), lo: 10, hi: 44 })); }
+        if (TR.rod) P.rodJoint(W, S.truck, TR.hx, TR.hy, S.trailer, TR.tx - TR.rod, TR.ty, TR.rod); else P.hitchJoint(W, S.truck, TR.hx, TR.hy, S.trailer, TR.tx, TR.ty); // двухосный стоит на своих колёсах: дышло только тянет, на грузовик не давит
+      }
+      S.allw = S.wheels.concat(S.twheels);
+      // груз: нижний ряд и верхний; сначала заполняется кузов грузовика, остальное — в прицеп. Потерянное не возвращается
+      const cr = CG.r, st = 2 * cr + 1, nb = Math.floor((bx1 - bx0 - 4) / st), spT = spaceTruck(C, kind), nbt = TR ? Math.floor((TR.bed - 4) / st) : 0, keep = S.logs.length ? S.logs.filter((q) => !q.lost).length : S.cargo; S.logs = [];
+      for (let i = 0; i < keep; i++) { const onT = i >= spT && !!TR, j = onT ? i - spT : i, n0 = onT ? nbt : nb, top = j >= n0, k = top ? j - n0 : j, lx = (onT ? -TR.bed / 2 : bx0) + cr + 2.5 + k * st + (top ? st / 2 : 0), ly = fy - cr - 0.2 - (top ? cr * 1.82 : 0);
+        S.logs.push({ b: P.addBody(W, P.body({ x: (onT ? S.trailer.x : x) + lx, y: y + ly, m: CG.m, I: CG.I, e: CG.e, group: 'log', kind: 'log', cc: true, mu: CG.mu, lin: 0.9995, ang: 0.98, circles: [{ x: 0, y: 0, r: cr }] })), lost: false, out: 0 }); }
       S.rope = null; S.ropeA = null; S.state = 'play'; S.deadT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false; S.stuckT = 0; S.wetT = 0; S.clog.fill(0);
     };
-    const startX = poly[0][0] + 320;
+    const startX = poly[0][0] + 320 + (TR ? TR.len : 0); // с прицепом встаём дальше от края: он тоже должен поместиться
     S.respawn = () => {
       const p = S.cp || { x: startX, fuel: C.tank };
       S.spawn(p.x, S.groundAt(p.x)); S.fuel = Math.max(p.fuel, 0.5 * C.tank); // после возврата в баке не меньше половины: застрять в круге «кончилось топливо» нельзя
@@ -174,9 +192,9 @@
 
     // силы грязи и воды — после тяжести, до решения контактов
     function soft(dt) {
-      const T = S.truck, Mall = T.m + S.wheels.reduce((a, w) => a + w.m, 0), pr = C.PR[S.press]; let R = 0; S.inMud = 0; S.belly = false; S.wade = 0; S.soil = '';
+      const T = S.truck, Mall = T.m + S.wheels.reduce((a, w) => a + w.m, 0), pr = C.PR[S.press]; let R = 0, Rt = 0; S.inMud = 0; S.belly = false; S.wade = 0; S.soil = '';
       if (++slumpN >= 12) { slumpN = 0; slump(); }
-      S.wheels.forEach((w, i) => {
+      S.allw.forEach((w, i) => {
         S.sunk[i] = 0; S.slip[i] = 0; w.mu = 1 - 0.8 * S.clog[i]; // забитые шины скользят и на твёрдом
         const z = zoneAt(L, w.x);
         if (!z) { const sp = Math.max(0, (Math.abs(w.w) * WR) / 650 - 0.55); S.clog[i] = Math.max(0, S.clog[i] - sp * sp * 2.4 * dt); return; } // на твёрдом грязь слетает с колёс, только если их раскрутить: на пониженной не слетит
@@ -194,7 +212,7 @@
         if (S.state === 'play') { if (Math.abs(sv) > 150) dig(z, w.x, Math.min(0.012 * Math.abs(sv), 6) * dt * z.digK, sv > 0 ? 1 : -1); press(z, w.x, 0.4 * sub); } // буксуешь — закапываешься; просто проехал — остался след
         S.clog[i] = Math.min(1, S.clog[i] + z.stick * C.clogK * e * (0.1 + 0.4 * Math.min(1, Math.abs(sv) / 300) + 0.25 * Math.min(1, Math.abs(w.vx) / 300)) * dt * 0.42); // липкий грунт забивает протектор
         // на скорости грязь тормозит сильнее (с разгона далеко не уедешь), а песок — слабее: по нему надо идти ходом
-        const q = clamp(sub / (0.5 * WR), 0, 1.6); R += z.res * e * q * q * (1 + rut / 70) * (1 - 0.5 * Math.min(1, pk / (0.35 * sub + 1))) * Math.max(0.5, 1 + (z.spd * Math.abs(w.vx)) / 400); // чем глубже сидит колесо, тем тяжелее (вдвое глубже — вчетверо); по следу переднего колеса заднему вдвое легче
+        const q = clamp(sub / (0.5 * WR), 0, 1.6), rw = z.res * e * q * q * (1 + rut / 70) * (1 - 0.5 * Math.min(1, pk / (0.35 * sub + 1))) * Math.max(0.5, 1 + (z.spd * Math.abs(w.vx)) / 400); if (i < NW) R += rw; else Rt += 0.6 * rw; // колёса прицепа катятся по следу грузовика и не гребут — тормозят слабее // чем глубже сидит колесо, тем тяжелее (вдвое глубже — вчетверо); по следу переднего колеса заднему вдвое легче
       });
       // брюхо легло на грязь: кузов держит, колёса разгружены, тянет назад
       for (const c of T.circles) {
@@ -210,9 +228,10 @@
         T.w -= (C.hW * T.m * k) / T.I; // грязь держит за колёса, а не за кузов: тормозит на уровне мостов, поэтому машину не задирает носом вверх
         S.dirt = Math.min(1, S.dirt + 0.05 * dt * (1 + S.inMud));
       }
+      if (Rt > 0 && S.trailer) { const B = S.trailer, Mt = B.m + S.twheels.reduce((q, w) => q + w.m, 0) + 0.5 * S.logs.length * CG.m, dv = (Rt / Mt) * dt, k = Math.abs(B.vx) <= dv ? -B.vx : -Math.sign(B.vx) * dv; for (const q of [B, ...S.twheels]) q.vx += k; } // грязь держит прицеп за колёса
       // вода: тормозит, чуть держит на плаву и отмывает
-      for (const q of [T, ...S.wheels]) { const wz = waterAt(q.x); if (!wz) continue; const r = q === T ? 34 : WR, s = clamp((q.y + r - wz.y) / (2 * r), 0, 1); if (s > 0) { q.vx *= 1 - (q === T ? 4 : 2.2) * s * dt; q.vy *= 1 - 1.2 * s * dt; q.vy -= P.G * 0.22 * s * dt; if (q !== T) { S.wade = Math.max(S.wade, s); S.dirt = Math.max(0, S.dirt - 0.12 * s * dt); } } }
-      S.wheels.forEach((w, i) => { const wz = waterAt(w.x); if (wz && w.y + WR > wz.y + 4) S.clog[i] = Math.max(0, S.clog[i] - 0.9 * dt); }); // в броду шины промываются
+      for (const q of [T, ...S.wheels].concat(S.trailer ? [S.trailer, ...S.twheels] : [])) { const wz = waterAt(q.x); if (!wz) continue; const body = q === T || q === S.trailer, r = body ? 34 : WR, s = clamp((q.y + r - wz.y) / (2 * r), 0, 1); if (s > 0) { q.vx *= 1 - (body ? 4 : 2.2) * s * dt; q.vy *= 1 - 1.2 * s * dt; q.vy -= P.G * 0.22 * s * dt; if (q.kind === 'wheel') { S.wade = Math.max(S.wade, s); S.dirt = Math.max(0, S.dirt - 0.12 * s * dt); } } }
+      S.allw.forEach((w, i) => { const wz = waterAt(w.x); if (wz && w.y + WR > wz.y + 4) S.clog[i] = Math.max(0, S.clog[i] - 0.9 * dt); }); // в броду шины промываются
     }
 
     // один шаг 1/120 с; inp = { gas, brake, winch (держать), awd, lock, low (включено/выключено) }
@@ -247,6 +266,11 @@
         else if (br) { if (fwd > 70) { j.brake = 110000; j.maxT = 0; } else { j.speed = -sp * 0.55; j.maxT = drv ? (fwd > -40 ? Math.max(tq, C.tqLow) : tq) * 0.8 : 0; } } // задняя передача короткая: с места тянет как пониженная
         else { j.speed = 0; j.maxT = drv ? 7000 : 0; }
       });
+      if (S.trailer) { // прицеп: тормозит вместе с грузовиком; сцепка не даёт сложиться больше чем на ~45°
+        for (const j of S.twj) { j.maxT = 0; j.brake = !play ? (S.state === 'win' ? 160000 : 0) : br && fwd > 70 ? 60000 : 0; }
+        const B = S.trailer; let da = B.a - T.a; da -= Math.round(da / (2 * Math.PI)) * 2 * Math.PI; const ov = Math.abs(da) - 0.8;
+        if (ov > 0) { const q = (Math.sign(da) * ov * 90 + (B.w - T.w) * 6) * dt; B.w -= q; T.w += q * (B.I / T.I); }
+      }
       // топливо: полный привод, блокировка и пониженная жгут больше; буксуешь на месте — жжёшь впустую
       const rate = C.burn * pr.bn * (S.awd ? F_AWD : 1) * (S.lock ? F_LOCK : 1) * (S.low ? F_LOW : 1);
       S.range = (S.fuel / (0.1 + rate)) * sp * WR * 0.8; // на сколько хватит в этом режиме, px
@@ -267,7 +291,7 @@
       S.hung = bel && !S.inMud; // сел брюхом на твёрдое (гребень, край канавы)
       if (S.state !== 'play') { if (S.state === 'win') S.wonT += P.DT; return; }
       // груз: бревно, которое вывалилось из кузова и не вернулось за секунду, потеряно
-      if (S.logs.length) { const [bx0, bx1, fy] = C.bed; let n = 0; for (const q of S.logs) { if (q.lost) continue; const [lx, ly] = P.local(T, q.b.x, q.b.y), inBed = lx > bx0 - 14 && lx < bx1 + 6 && ly < fy + 6 && ly > fy - 90; q.out = inBed ? 0 : q.out + P.DT; if (q.out > 1) { q.lost = true; S.events.push({ e: 'log' }); } else n++; } S.cargo = n; }
+      if (S.logs.length) { const [bx0, bx1, fy] = C.bed; let n = 0; for (const q of S.logs) { if (q.lost) continue; const [lx, ly] = P.local(T, q.b.x, q.b.y); let inBed = lx > bx0 - 14 && lx < bx1 + 6 && ly < fy + 6 && ly > fy - 90; if (!inBed && S.trailer) { const [tx, ty] = P.local(S.trailer, q.b.x, q.b.y); inBed = tx > -TR.bed / 2 - 14 && tx < TR.bed / 2 + 6 && ty < fy + 6 && ty > fy - 90; } q.out = inBed ? 0 : q.out + P.DT; if (q.out > 1) { q.lost = true; S.events.push({ e: 'log' }); } else n++; } S.cargo = n; }
       S.flipT = Math.cos(T.a) < 0 ? S.flipT + P.DT : 0;
       // мотор заливает, когда передние колёса стоят в воде глубже, чем берёт грузовик («Брод до …» в гараже). Правило по глубине, а не по наклону:
       // указатель «брод 0,9 м» и число в гараже сравниваются напрямую, и клюнуть носом на въезде не страшно
@@ -326,13 +350,13 @@
     { id: 'creek', name: ['Melons across the creek', 'Арбузы через ручей'], cargo: 'melon', pay: 50, need: [['awd', 1], ['low', 1]], build: mk((b) => { // нужна пониженная: брод, песок с хода, гребёнка (арбузы прыгают), крутой подъём
       b.sign(-170, 'ford', 0.9).ford(800, 49).flat(500).cp(-300).sign(-190, 'soil', 'sand').mud(1300, ZONES.sand).flat(500).can(-150).cp(-300);
       b.bump(70, 15).flat(190).bump(70, 15).flat(190).bump(70, 15).flat(500).cp(-300).sign(-170, 'climb', 28).slope(1400, 620).flat(900).cp(-300).sign(-170, 'crest', 0.55).crest(240, 55); }) },
-    { id: 'pit', name: ['Barrels to the clay pit', 'Бочки в карьер'], cargo: 'barrel', pay: 110, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // нужна блокировка: глина, подъём после неё, средняя грязь — а бочки тяжёлые
+    { id: 'pit', name: ['Barrels to the clay pit', 'Бочки в карьер'], cargo: 'barrel', pay: 150, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // нужна блокировка: глина, подъём после неё, средняя грязь — а бочки тяжёлые
       b.sign(-190, 'soil', 'clay').mud(1000, ZONES.clay).flat(700).cp(-560).sign(-170, 'climb', 28).slope(1400, 620).flat(500).can(-150).cp(-300);
       b.sign(-190, 'soil', 'medium').mud(1200, ZONES.medium).flat(500).can(-150).cp(-300).slope(700, -300).flat(300).sign(-170, 'ford', 0.9).ford(700, 49); }) },
     { id: 'mill', name: ['Logs past the mill ford', 'Брёвна через брод у мельницы'], cargo: 'log', pay: 75, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['lift', 1, 'ford']], build: mk((b) => { // нужен лифт, колёса или шноркель: брод 1,1 м; потом липкая грязь
       b.sign(-190, 'soil', 'sand').mud(1000, ZONES.sand).flat(500).cp(-300).sign(-170, 'ford', 1.1).ford(800, 60).flat(500).can(-150).cp(-300);
       b.sign(-190, 'soil', 'sticky').mud(1200, ZONES.sticky).flat(900).cp(-300).sign(-170, 'crest', 0.8).crest(300, 80).flat(500).can(-150).sign(-170, 'climb', 28).slope(1400, 620); }) },
-    { id: 'bog', name: ['Barrels across the peat bog', 'Бочки через торфяник'], cargo: 'barrel', pay: 190, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // торф с лебёдкой, глубокий брод с илом, глина перед подъёмом
+    { id: 'bog', name: ['Barrels across the peat bog', 'Бочки через торфяник'], cargo: 'barrel', pay: 260, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // торф с лебёдкой, глубокий брод с илом, глина перед подъёмом
       b.sign(-190, 'soil', 'clay').mud(900, ZONES.clay).flat(600).cp(-460).sign(-170, 'climb', 28).slope(1400, 620).flat(500).can(-150).cp(-300);
       b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(300).slope(600, 200).flat(500).can(-150).cp(-300);
       b.sign(-190, 'soil', 'peat').tree(500).tree(1050).tree(1600).tree(2150).tree(2500).can(1100).mud(1900, ZONES.peat); }) },    // ---------- район 2, «Болота»: грунты идут слоями, без твёрдой дороги между ними. Проходится, но туго ----------
@@ -344,14 +368,14 @@
       b.sign(-170, 'ford', 0.7).ford(600, 38).sign(-30, 'soil', 'sand').mud(900, ZONES.sand).flat(260).bump(70, 15).flat(190).bump(70, 15).flat(190).bump(70, 15).flat(200).cp(-120);
       b.sign(-150, 'soil', 'sand').mud(700, ZONES.sand).flat(300).sign(-170, 'climb', 20).slope(1400, 420).flat(500).cp(-300);
       b.sign(-170, 'ford', 1.5).ford(800, 51, ZONES.silt).sign(-30, 'soil', 'soft').mud(600, ZONES.soft); }) },
-    { id: 'wetclay', r: 1, name: ['Barrels over wet clay', 'Бочки по размокшей глине'], cargo: 'barrel', pay: 200, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // глина — липкая — глина, и после каждой глины подъём
+    { id: 'wetclay', r: 1, name: ['Barrels over wet clay', 'Бочки по размокшей глине'], cargo: 'barrel', pay: 280, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // глина — липкая — глина, и после каждой глины подъём
       b.sign(-190, 'soil', 'clay').mud(600, ZONES.clay).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).sign(-30, 'soil', 'clay').mud(500, ZONES.clay).flat(600).sign(-170, 'climb', 24).slope(1400, 520).flat(900).can(-600).cp(-700);
       b.sign(-170, 'crest', 0.55).crest(240, 55).flat(500).cp(-300).sign(-190, 'soil', 'medium').mud(700, ZONES.medium).sign(-30, 'soil', 'clay').mud(400, ZONES.clay).flat(300).can(-150).sign(-170, 'climb', 20).slope(1400, 420); }) },
     { id: 'windows', r: 1, name: ['Logs across the bog windows', 'Брёвна через топь с окнами'], cargo: 'log', pay: 130, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['winch', 1, 'opt']], build: mk((b) => { // торф — островок — болото — островок — торф: без лебёдки никак, а она жжёт топливо
       b.sign(-190, 'soil', 'peat').tree(280).tree(720).tree(980).mud(700, ZONES.peat).flat(280).can(-140).cp(-200);
       b.sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1080).mud(800, ZONES.swamp).flat(280).can(-140).cp(-200);
       b.sign(-190, 'soil', 'peat').tree(300).tree(750).tree(1150).tree(1500).mud(900, ZONES.peat).sign(-30, 'soil', 'sticky').mud(400, ZONES.sticky); }) },
-    { id: 'twofords', r: 1, name: ['Barrels across two fords', 'Бочки через два брода'], cargo: 'barrel', pay: 240, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // из брода в вязкую грязь, второй брод — с вязким дном, за ним липкая и подъём
+    { id: 'twofords', r: 1, name: ['Barrels across two fords', 'Бочки через два брода'], cargo: 'barrel', pay: 340, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // из брода в вязкую грязь, второй брод — с вязким дном, за ним липкая и подъём
       b.sign(-170, 'ford', 1.1).ford(800, 60).sign(-30, 'soil', 'medium').mud(600, ZONES.medium).flat(400).cp(-250);
       b.sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).sign(-30, 'soil', 'sticky').mud(700, ZONES.sticky).flat(600).can(-300).cp(-450).sign(-170, 'climb', 24).slope(1400, 520); }) },
     { id: 'longhaul', r: 1, name: ['The long haul to the sawmill', 'Большой рейс на лесопилку'], cargo: 'log', pay: 150, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // всё сразу и подряд: длинный рейс, топливо в обрез
@@ -362,5 +386,5 @@
   ];
 
   const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }];
-  root.MudSide = { create, spec, capOf, spaceOf, payT, REGIONS, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
+  root.MudSide = { create, spec, capOf, spaceOf, spaceTruck, payT, ENG_T, TR_T, REGIONS, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
 })(typeof window !== 'undefined' ? window : globalThis);
