@@ -77,7 +77,7 @@ for i in range(nf):
     for j, c in enumerate(CNTS):
         n = int(c[k])
         cx = W * txs[j]
-        lead = len(CNTS) > 1 and n > max(int(cc[k]) for jj, cc in enumerate(CNTS) if jj != j) and fr >= E - 3
+        lead = len(CNTS) > 1 and n > max(int(cc[k]) for jj, cc in enumerate(CNTS) if jj != j) and fr >= int(os.environ.get('WFROM', E - 3))
         col = tuple(json.loads(os.environ.get('WCOL', '[20,150,60]'))) if lead else COL   # к концу лидер — зелёным
         txt = f"{n:,}"
         tw = dr.textlength(txt, font=fb)
