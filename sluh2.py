@@ -506,6 +506,9 @@ SC = [  # (ключ, как назвать, единица, «больше — �
     ("sib", "свистящие и шипящие", "Гц", "с, ш острее", "с, ш глуше"),
     ("fscale", "размер голоса (форманты)", "%", "голос «мельче» (форманты выше)", "голос «крупнее» (форманты ниже)"),
 ]
+# меньше этого отличие не считаем слышным, даже если сам образец на своих фразах отличается ещё меньше
+MINFL = {"f0": .5, "range": 1.0, "mob": 3.0, "fin": 1.0, "rate": .3, "pause_share": 4.0, "int_range": 1.5, "hnr": 1.5, "cpps": 1.0, "jitter": .3, "shimmer": 1.0,
+         "bright": 2.0, "air": 3.0, "low": 1.5, "tilt": .8, "top": 1.5, "gop": .04, "finlen": .25, "s_dur": .2, "s_f0": .8, "s_int": 1.5, "sib": 500.0, "fscale": 3.0}
 VEC = [("ecapa", "узнаватель 1 (ECAPA)", 1), ("wavlm", "узнаватель 2 (WavLM)", 1), ("resem", "узнаватель 3 (resemblyzer)", 1),
        ("mel", "тембр по звукам", -1), ("ppg", "произношение звуков", -1), ("ltas", "общий спектр", -1), ("vsp", "гласные (F1–F2)", -1)]
 
@@ -585,9 +588,10 @@ def warp(A, B):
             y = detr(np.interp(LG + sft, lmc, vb))
             acc[j] += w * float(x @ y) / (nx * (np.linalg.norm(y) + 1e-9))
         tot += w
-    if not tot:
+    j = int(np.argmax(acc))
+    if not tot or j in (0, len(SHIFTS) - 1):          # упёрлось в край поиска — огибающие слишком разные, сдвигом не описать
         return float("nan")
-    return 100 * (math.exp(float(SHIFTS[int(np.argmax(acc))])) - 1)
+    return 100 * (math.exp(float(SHIFTS[j])) - 1)
 
 
 def bands(A, B):
@@ -826,7 +830,7 @@ def final():
                     R[k].append(D[k])
         fl = {}
         for k, *_ in SC:
-            fl[k] = float(np.percentile(np.abs(R[k]), 95)) if len(R[k]) >= 4 else float("nan")
+            fl[k] = max(float(np.percentile(np.abs(R[k]), 95)), MINFL.get(k, 0.0)) if len(R[k]) >= 4 else MINFL.get(k, float("nan"))
         for k, _, sgn in VEC:
             if len(R[k]) >= 4:
                 fl[k] = float(np.percentile(R[k], 5 if sgn > 0 else 95)); fl[k + "_m"] = float(np.mean(R[k]))
@@ -934,6 +938,25 @@ def final():
         md += ["Ближайшие к образцу из всего набора (всё вместе; меньше — ближе): " +
                ", ".join(f"{i.split('@')[0]} {v:.2f}" for v, i, _ in near[:8]) + ".", ""]
         RES["groups"][gname]["nearest"] = [[i, round(v, 3)] for v, i, _ in near[:15]]
+
+    # ---------- дикторы модели Барсика: кто из свободных к ним ближе всего (как есть, без движка мультика)
+    raw = [tv for tv in ("xenia@syn", "kseniya@syn", "eugene@syn", "baya@syn", "aidar@syn") if tv in PR]
+    if raw:
+        md += ["## Дикторы модели Барсика и самые близкие к ним свободные дикторы (как есть, одни и те же фразы)", "",
+               "Узнаватель 1 (ECAPA); в скобках — узнаватель 3 и тембр по звукам, дБ.", ""]
+        RES["raw_near"] = {}
+        for tv in raw:
+            T = PR[tv]; fl, _ = floor(tv, 10, T["ceil_i"], reps=20)
+            rows = []
+            for i in byi:
+                if i.startswith("cis:") and len(byi[i]) >= 5:
+                    D = pair(T, PI[i], ci=T["ceil_i"])
+                    rows.append((D["ecapa"], D["resem"], D["wavlm"], D["mel"], i))
+            rows.sort(reverse=True)
+            md.append(f"- **{tv.split('@')[0]}** ({T['f0_hz']:.0f} Гц; сам с собой {fl['ecapa_m']:.2f}, тембр {fl['mel']:.1f} дБ): " +
+                      ", ".join(f"{i[4:].split('@')[0]} {e:.2f} ({r:.2f}; {m:.1f})" for e, r, w, m, i in rows[:6]))
+            RES["raw_near"][tv] = [[i, round(e, 3), round(r, 3), round(w, 3), round(m, 2)] for e, r, w, m, i in rows]
+        md.append("")
 
     # ---------- произношение: модель Барсика (v5_ru) против свободной (v5_cis) на одних и тех же фразах
     ru = [v for v in PR if v.split("@")[0] in ("xenia", "kseniya", "eugene", "aidar", "baya")]
