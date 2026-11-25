@@ -1,36 +1,36 @@
 # Скан: search:ball escape rings satisfying
-Проверено: 2026-11-24 06:54 UTC · HTTP 200 · найдено 28
+Проверено: 2026-11-25 06:54 UTC · HTTP 200 · найдено 28
 Ссылка: https://www.youtube.com/results?search_query=ball%20escape%20rings%20satisfying
 
 | # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |
 |---|---|---|---|---|---|---|
 | 1 | 86000000 | ? | ? | bouncyball (@bouncyball-z8c, 303000) | ? | Will the ball escape 5 million rings? #asmr #adhd #satisfying #ball #bounce #bouncingball |
-| 2 | 3529 | 17 ч | 4917 | Let Math Play (@letmathplay, 7) | ? | Can One Ball Escape 100 Rainbow Rings? 🌈⚪ |
-| 3 | 207000 | ? | ? | He Fei (@HeFei-f2e, 12800) | ? | Can the ball escape?#asmr #satisfying #satisfyingvideo |
-| 4 | 12625 | 20 ч | 15227 | Mado Studio (@MadoStudioVisuals, 48) | ? | Can a Ball Escape 1,000,000 Spinning Rings? #Satisfying #Shorts |
-| 5 | 723 | 4 ч | 4781 | Satisfying Sims (@SatisfyingSims-1, 219) | ? | Can the ball escape 14 rings? 🤯 #shorts |
-| 6 | 195677 | ? | ? | bouncyball (@bouncyball-z8c, 303000) | 2:28 | Will the bouncing ball escape 500000 rings? #asmr #adhd #satisfying #ball #bounce #bouncin |
-| 7 | 114 | 60 дн | 1 | The Bouncing Ball (@TheBouncingBallOfficial, 4620) | 20:01 | Can These Balls Escape the Rotating Rings? / 20 Min Satisfying Physics #1 |
-| 8 | 256 | 30 дн | 8 | Bounce Lab Daily (@BounceLabDaily, 159) | 10:16 | Can the Ball Escape 100 Rings? (Satisfying Physics Simulation) |
-| 9 | 28428 | 44 ч | 15544 | Loop escape (@Loopezcape, 71) | ? | Can the ball escape 150 rings? 😳 #satisfying |
-| 10 | 186 | ? | ? | Shape Simulator (@ShapeSimulator, ?) | ? | Can This Ball Escape the Ring Trap? #satisfying #ball #physics #shorts |
-| 11 | 2600 | ? | ? | NEON LOOP (@neonloop_sim, ?) | ? | Can the Ball Escape All 12 Rings? #satisfying #oddlysatisfying #physics |
-| 12 | 705 | ? | ? | Battle Ball Arena (@BattleBallArenaShorts, ?) | ? | It has to escape 5,000,000 rings 😳 #shorts #asmr #adhd #satisfying #ball #bounce #bouncing |
-| 13 | 28000 | ? | ? | Ultra Balls (@Satysfyingballs, ?) | ? | Will the ball escape from the rings? #satisfyingvideo #satisfying #bouncingball |
-| 14 | 1200 | ? | ? | Ball Escape Lab (@BallEscapeLab-v2q, ?) | ? | Can a giant ball escape 8 rings? #shorts |
-| 15 | 2500 | ? | ? | Bouncenetic (@Bouncenetic, ?) | ? | Can the ball escape all 12 rings? 🤯 #satisfying |
-| 16 | 238000 | ? | ? | ? (@?, ?) | ? | Will the ball escape 60 million rings? #asmr #adhd #satisfying #ball #bounce #bouncingball |
-| 17 | 3344 | 20 ч | 4033 | ? (@?, 71) | ? | Can the ball escape 1500 rings? 😱 #shorts |
-| 18 | 1000 | ? | ? | ? (@?, ?) | ? | Can the ball escape 24 rings? 😱 #satisfying #shorts |
-| 19 | 26000 | ? | ? | ? (@?, ?) | ? | Will the Ball Escape the Rings? |
-| 20 | 1000 | ? | ? | ? (@?, ?) | ? | Can This Ball Escape All 12 Rings? 😳 #satisfying #music #odlysatisfying |
-| 21 | 25000000 | ? | ? | ? (@?, ?) | ? | Can the ball escape or not #simulation #viral #satisfying |
-| 22 | 1500 | ? | ? | ? (@?, ?) | ? | Will it escape all 8 rings? 👀 #satisfying |
-| 23 | 1200 | ? | ? | ? (@?, ?) | ? | Can One Ball Escape 10 Spinning Rings? #satisfying #shorts |
-| 24 | 2700 | ? | ? | ? (@?, ?) | ? | Can This Ball Escape All 10 Rings? #satisfying |
-| 25 | 1600 | ? | ? | ? (@?, ?) | ? | Can the Ball Escape 100 Million Rings? 😱 #satisfying #asmr #bouncingball #physics #physics |
-| 26 | 4900 | ? | ? | ? (@?, ?) | ? | Can the Ball Escape All 10 Rings? #shorts #satisfying |
-| 27 | 9100 | ? | ? | ? (@?, ?) | ? | Can the ball escape all 10 rings? #satisfying #physics #simulation |
-| 28 | 1600 | ? | ? | ? (@?, ?) | ? | Can the ball escape all 4 rings?  #satisfying #simulation #bouncyball #physics #puzzle |
+| 2 | 5824 | 55 ч | 2545 | Loop escape (@Loopezcape, 79) | ? | Can the ball escape 800 rings? 😳 #satisfying |
+| 3 | 1320 | 6 ч | 4896 | EchoShapes (@EchoShapesz, 147) | ? | How fast can 1 Ball escape the 360° Ring?  #satisfying |
+| 4 | 1136 | 4 ч | 6970 | Ink & Latent (@InkAndLatent, 14) | ? | 9 Rings. One Ball. Can It Escape Them All? |
+| 5 | 2672 | 4 дн | 651 | Bouncenetic (@Bouncenetic, 75) | ? | Can the ball escape all 12 rings? 🤯 #satisfying |
+| 6 | 195810 | ? | ? | bouncyball (@bouncyball-z8c, 303000) | 2:28 | Will the bouncing ball escape 500000 rings? #asmr #adhd #satisfying #ball #bounce #bouncin |
+| 7 | 257 | 30 дн | 8 | Bounce Lab Daily (@BounceLabDaily, 159) | 10:16 | Can the Ball Escape 100 Rings? (Satisfying Physics Simulation) |
+| 8 | 115 | 60 дн | 1 | The Bouncing Ball (@TheBouncingBallOfficial, 4620) | 20:01 | Can These Balls Escape the Rotating Rings? / 20 Min Satisfying Physics #1 |
+| 9 | 34245 | 65 ч | 12710 | Ultra Balls (@Satysfyingballs, 420) | ? | Will the ball escape from the rings? #satisfyingvideo #satisfying #bouncingball |
+| 10 | 1000 | ? | ? | BounceLoop1 (@BounceLoop1-v, ?) | ? | Can This Ball Escape All 12 Rings? 😳 #satisfying #music #odlysatisfying |
+| 11 | 1000 | ? | ? | Ballivio (@Ballivio-satisfy, ?) | ? | Will the Ball Escape 1000 Rings? 💀 #satisfying #simulation |
+| 12 | 207000 | ? | ? | He Fei (@HeFei-f2e, ?) | ? | Can the ball escape?#asmr #satisfying #satisfyingvideo |
+| 13 | 217000 | ? | ? | bouncyball (@bouncyball-z8c, 303000) | ? | Will the ball escape 45 million rings? #asmr #adhd #satisfying #ball #bounce #bouncingball |
+| 14 | 30239 | 68 ч | 10687 | Loop escape (@Loopezcape, 79) | ? | Can the ball escape 150 rings? 😳 #satisfying |
+| 15 | 1200 | ? | ? | Bouncify (@Bouncify-i9t, ?) | ? | Can 1 Ball Escape 10 Spinning Rings? 🟢#shorts #satisfying |
+| 16 | 3100 | ? | ? | ? (@?, ?) | ? | Can the ball escape all 4 rings? / Smooth Ball Escape #shorts |
+| 17 | 2600 | ? | ? | ? (@?, ?) | ? | Can the Ball Escape All 12 Rings? #satisfying #oddlysatisfying #physics |
+| 18 | 5200 | ? | ? | ? (@?, ?) | ? | Can the Ball Escape All 10 Rings? #shorts #satisfying |
+| 19 | 1000 | ? | ? | ? (@?, ?) | ? | Ball escape circle 🎹 Für Elise vs 10 rings |
+| 20 | 26957 | 50 ч | 12907 | ? (@?, 14) | ? | Will the Ball Escape the Rings? |
+| 21 | 2500 | ? | ? | ? (@?, ?) | ? | WILL THE BALL ESCAPE ALL 5 SPINNING RINGS? 🌀👀 #10 #shorts #satisfying |
+| 22 | 1400 | ? | ? | ? (@?, ?) | ? | Can they escape all 10 rings? Every escape adds a ball #satisfying #shorts |
+| 23 | 3400 | ? | ? | ? (@?, ?) | ? | Every Ring the Ball Escapes Brings It Closer to Freedom #shorts |
+| 24 | 1800 | ? | ? | ? (@?, ?) | ? | Can the ball escape all 4 rings? Every bounce is a note #shorts #oddlysatisfying #simulati |
+| 25 | 4600 | ? | ? | ? (@?, ?) | ? | 30 rings, one ball, 40 seconds. Can it escape the circles? #shorts |
+| 26 | 707 | ? | ? | ? (@?, ?) | ? | Can the ball escape 15 accelerating rings in 30 seconds? #Shorts |
+| 27 | 25000000 | ? | ? | ? (@?, ?) | ? | Can the ball escape or not #simulation #viral #satisfying |
+| 28 | 1700 | ? | ? | ? (@?, ?) | ? | Will the Ball Escape All 7 Rings?  #satisfying  #simulation |
 
-Хэштеги у первых 30: #satisfying ×21, #shorts ×9, #asmr ×6, #bouncingball ×6, #ball ×5, #physics ×5, #adhd ×4, #bounce ×4, #simulation ×3, #satisfyingvideo ×2, #1 ×1, #oddlysatisfying ×1, #music ×1, #odlysatisfying ×1, #viral ×1, #physicssimulation ×1, #bouncyball ×1, #puzzle ×1
+Хэштеги у первых 30: #satisfying ×18, #shorts ×9, #asmr ×4, #bouncingball ×4, #simulation ×4, #adhd ×3, #ball ×3, #bounce ×3, #satisfyingvideo ×2, #oddlysatisfying ×2, #1 ×1, #music ×1, #odlysatisfying ×1, #physics ×1, #10 ×1, #viral ×1
