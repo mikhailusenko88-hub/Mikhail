@@ -19,6 +19,21 @@ BASE = {"n4": ("g03", "low"), "eugene": ("g03", "low"), "xenia": ("ru_zhadyra", 
 NPC = int(os.environ.get("NPC", "24"))
 
 
+CEN = np.geomspace(120, 14000, 28)
+SPECW = float(os.environ.get("SPEC", "0"))             # вес долгого спектра (яркость, «воздух») в мерке; 0 — как в первых кругах
+PITCHTOL = float(os.environ.get("PITCHTOL", "2.0"))    # сколько полутонов от образца не штрафуется
+
+
+def band_vec(x48, f0=0.0):
+    """Долгий спектр фразы по третям октавы, дБ; общий уровень (200–4000 Гц) убран, полосы ниже основного тона не считаются."""
+    import sluh2
+    fq, p = sluh2.power_spec([np.asarray(x48, dtype=np.float64)], 48000)
+    v = np.array([10 * np.log10(p[(fq >= c / 2 ** (1 / 6)) & (fq <= c * 2 ** (1 / 6))].mean() + 1e-20) for c in CEN])
+    v = v - v[(CEN > 200) & (CEN < 4000)].mean()
+    v[CEN < 0.9 * f0] = np.nan
+    return v
+
+
 class Lab:
     def __init__(self, target):
         import torch, sluh2, svoy2, svoy_bars, svoy_kot3 as K3
@@ -44,6 +59,8 @@ class Lab:
         self.Tk = {k: np.array(v) for k, v in E.items()}             # по фразам
         self.T = {k: self.norm(np.mean(v, 0)) for k, v in E.items()}
         self.f0t = float(np.median(f0))
+        self.Tb = [band_vec(w, self.f0t) for w in self.tw]
+        self.ex, self.rate = None, "medium"               # манера при подборе тембра (sluh_man.py), если задана MAN=<темп>
         del ru
         self.net = svoy2.Net(svoy2.CIS)
         net = self.net
@@ -62,6 +79,11 @@ class Lab:
             w = {r: {b: 1.0} for r in ("dp", "pp", "spe")}
         self.base_rows = net.build(w)
         self.texts = {}
+        mf = f"{OUT}/man_{target}_1_{os.environ.get('MAN', '')}.json"
+        if os.environ.get("MAN") and os.path.exists(mf):
+            pr = json.load(open(mf, encoding="utf-8")); k, wn = pr["keys"], pr["win"]
+            self.ex = {k["pp"]: np.array(wn["pp"]), k["dp"]: np.array(wn["dp"]), "coef": float(wn["coef"])}; self.rate = pr["rate"]
+            log("манера при подборе:", mf, {x: wn.get(x) for x in ("score", "mel", "ritm", "dur")})
         log("образец", target, f"{self.f0t:.0f} Гц; дикторов в основе", len(names), "осей", NPC, "доля разброса", round(float((sv[:NPC] ** 2).sum() / (sv ** 2).sum()), 3))
 
     norm = staticmethod(lambda v: v / (np.linalg.norm(v) + 1e-9))
@@ -101,19 +123,24 @@ class Lab:
     def score(self, row, idx):
         """Близость к образцу на фразах idx: сравнение по тем же фразам + штраф за высоту дальше ±2 полутонов."""
         E = {k: [] for k in REF}
-        f0 = []
+        f0, sd = [], []
         for i in idx:
-            x = self.to16(self.say(row, self.ph[i]))
+            a = self.say(row, self.ph[i], self.ex, self.rate)
+            x = self.to16(a)
             e = self.S.embeds(x)
             for k in E:
                 E[k].append(e[k])
             f0.append(self.f0(x))
+            d = band_vec(a.numpy() if hasattr(a, "numpy") else a, self.f0t) - self.Tb[i]
+            sd.append(float(np.sqrt(np.nanmean(d ** 2))))
         sims = {k: float(self.norm(np.mean(v, 0)) @ self.norm(self.Tk[k][idx].mean(0))) for k, v in E.items()}
         pos = {k: (sims[k] - o) / (s - o) for k, (s, o) in REF.items()}
         close = 0.5 * pos["ecapa"] + 0.25 * pos["wavlm"] + 0.25 * pos["resem"]
         fm = float(np.median(f0)) if f0 else 0.0
         dst = abs(12 * np.log2(max(fm, 1) / self.f0t))
-        return close - 0.03 * max(0.0, dst - 2.0), {"close": round(close, 4), "sims": {k: round(v, 3) for k, v in sims.items()}, "f0": round(fm, 1)}
+        spec = float(np.mean(sd))
+        return close - 0.03 * max(0.0, dst - PITCHTOL) - SPECW * max(0.0, spec - 1.5), {"close": round(close, 4), "sims": {k: round(v, 3) for k, v in sims.items()},
+                                                                                            "f0": round(fm, 1), "spec": round(spec, 2)}
 
     def quality(self, row):
         """Не мусор ли: слова (распознаватель), естественность (UTMOS), чёткость — на трёх фразах."""
@@ -121,7 +148,7 @@ class Lab:
         mt, ut = [], []
         for i in (1, 3, 6):
             p = f"tmp/q_{i}.wav"
-            a = self.say(row, self.ph[i]); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p)
+            a = self.say(row, self.ph[i], self.ex, self.rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p)
             try:
                 mt.append(SL.heard_match(p, self.ph[i])[1]); ut.append(SL.utmos(SL.load(p, 16000)))
             except Exception:
@@ -204,7 +231,7 @@ def main(target, seed, gens):
     for j, i in enumerate((0, 3, 6)):
         p = f"tmp/t_{j}.wav"; g.save_wav(L.tw[i], p); parts.append(p)
     for j, i in enumerate((0, 3, 6)):
-        p = f"tmp/w_{j}.wav"; a = L.say(np.array(win["spe"]), L.ph[i]); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p); parts.append(p)
+        p = f"tmp/w_{j}.wav"; a = L.say(np.array(win["spe"]), L.ph[i], L.ex, L.rate); g.save_wav(a.numpy() if hasattr(a, "numpy") else a, p); parts.append(p)
     lst = "tmp/list.txt"
     open(lst, "w").write("".join(f"file '{os.path.abspath(p)}'\n" for p in parts))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-c:a", "libmp3lame", "-q:a", "3",

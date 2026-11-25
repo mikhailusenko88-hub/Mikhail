@@ -45,6 +45,9 @@ jobs:
           export NPC=$(rq npc); export NPC=${NPC:-24}
           export SIGMA=$(rq sigma); export SIGMA=${SIGMA:-0.35}
           export TAG=$(rq tag)
+          export SPEC=$(rq spec); export SPEC=${SPEC:-0}
+          export PITCHTOL=$(rq pitchtol); export PITCHTOL=${PITCHTOL:-2.0}
+          export MAN=$(rq man)
           python sluh_opt.py ${{ matrix.target }} ${{ matrix.seed }} $(rq gens)
         env:
           GITHUB_TOKEN: ${{ github.token }}
