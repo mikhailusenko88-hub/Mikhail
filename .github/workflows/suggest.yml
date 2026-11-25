@@ -1,0 +1,19 @@
+name: suggest
+# Подсказки поиска YouTube по странам — для главного запроса в названиях на языке дубляжа. Запрос: suggest-request.txt (строки «hl gl запрос»)
+on:
+  push:
+    branches: [golos-en]
+    paths: ['suggest-request.txt']
+permissions:
+  contents: write
+jobs:
+  suggest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p out_suggest && python3 suggest.py
+      - run: |
+          git config user.name dub; git config user.email dub@users.noreply.github.com
+          git add out_suggest && git commit -qm "suggest" || echo nothing
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done
