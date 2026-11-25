@@ -21,7 +21,7 @@
   // грузоподъёмность, т — сколько сборка довозит через самые тяжёлые заказы (карьер, размокшая глина, два брода). Подобрано прогоном 90 сборок:
   // рама +1,4 т за шаг; форсировка +1 т за ступень (с 6-й — по 0,6); третий мост +0,7 / +4,2 / +6,3 т (короткая / длинная / длинная+); короткая рама больше 7,7 т не тянет — задирает нос;
   // прицеп места добавляет, а сам отнимает: тележка 2,1 т, большой 3,5 т (его колёса не ведущие, в гору и в грязи он обуза)
-  const ENG_T = (e) => Math.min(e, 5) + 0.6 * Math.max(0, e - 5), TR_T = [0, 2.1, 3.5];
+  const ENG_T = (e) => Math.min(e, 4) + 1.4 * Math.max(0, e - 4), TR_T = [0, +(root.__TR1 || 3.5), +(root.__TR2 || 1.2)]; // ступени 6–8 дают по 1,4 т: под них и сделан большой прицеп с ведущими мостами (см. spec)
   const payT = (C) => { const b = C.b, p = 2.1 + 1.4 * b.base + ENG_T(b.eng) + (b.axles === 3 ? [0.7, 4.2, 6.3][b.base] : 0); return Math.max(0.7, Math.round(10 * ((b.base ? p : Math.min(p, 7.7)) - (C.tr ? TR_T[b.trailer] : 0))) / 10); };
   const capOf = (C, kind) => Math.max(1, Math.min(spaceOf(C, kind), Math.floor(payT(C) / (CARGO[kind] || CARGO.log).m + 1e-6))); // сколько штук можно взять: по месту и по весу
   // топливо — настоящее ограничение: аккуратный рейс доезжает с небольшим запасом, буксование, лебёдка и всё включённое «на всякий случай» — нет
@@ -45,10 +45,10 @@
       suspK: [0.68, 1, 1.5][b.susp], bellyMu: b.skid ? 0.12 : 0.6, bellyDrag: b.skid ? 0.45 : 1, clogK: [1.35, 1, 0.45][b.tires], // подвеска; защита днища скользит; как быстро забивается протектор
       bed: [xr + 6, xf - 132, BELLY - 16], cap: Math.min([9, 11, 13][b.base], 2 * Math.floor((xf - 132 - xr - 6 - 4) / 21) - 1), // кузов: задний край, передний край, пол; сколько брёвен входит (длинная база везёт больше)
       grip: tire.mud, float: (WR / 27) * (b.tires === 2 ? 1.12 : 1), // как колесо гребёт в грязи и как грязь его держит
-      burn: FUEL_K * (1 + 0.06 * b.eng) * tire.burn * Math.sqrt(WR / 27) * (b.axles === 3 ? 1.15 : 1) * Math.sqrt(m / 8) * (1 + 0.05 * b.trailer),
-      tank: 60 + 35 * b.tank, intake, mast: [xf - 2, 6], wrange: b.winch ? 1150 : 800, reel: b.winch ? 210 : 150,
+      burn: FUEL_K * (1 + 0.06 * b.eng) * tire.burn * Math.sqrt(WR / 27) * (b.axles === 3 ? 1.15 : 1) * Math.sqrt(m / 8) * (1 + [0, 0.05, 0.15][b.trailer]),
+      tank: 60 + 35 * b.tank + (b.base && b.axles === 3 ? [0, 30, 50][b.trailer] : 0), intake, /* на прицепе — запасной бак: автопоезд ест больше */ mast: [xf - 2, 6], wrange: b.winch ? 1150 : 800, reel: b.winch ? 210 : 150,
       // прицеп: своя рама на сцепке, свой кузов и свои колёса (не ведущие). Даёт место под груз, а тянуть его — мотору
-      tr: b.trailer && b.base ? Object.assign({ hx: xr - 2, hy: 34, ty: 34 }, [null, { bed: 90, m: 0.6, ax: [-8], tx: 91, len: 146 }, { bed: 150, m: 1, ax: [-40, 26], tx: 121, len: 206, rod: 40 }][b.trailer]) : null, // на короткую раму прицеп не ставится: с ним её задирает на месте
+      tr: b.trailer && b.base && b.axles === 3 ? Object.assign({ hx: xr - 2, hy: 34, ty: 34 }, [null, { bed: 117, m: 0.7, ax: [-10], tx: 104.5, len: 173, load: 3 }, { bed: 231, m: 1.3, ax: [-60, 60], tx: 161.5, len: 287, rod: 40, drive: 0.25, load: 8 }][b.trailer]) : null, // прицеп — только на длинную раму с тремя мостами: короткую он задирает на месте, а 4×4 с тележкой встаёт в липкой грязи с третью груза
     };
   }
 
@@ -156,22 +156,27 @@
       // прицеп: рама с кузовом на сцепке за грузовиком, колёса катятся свободно
       S.trailer = null; S.twheels = []; S.twj = [];
       if (TR) {
-        const hb2 = TR.bed / 2, tx0 = x + TR.hx - TR.tx, tc = [{ x: -hb2 - 2, y: 12, r: 11, mu: 0.05 }];
+        const hb2 = TR.bed / 2, Hx = x + TR.hx, Hy = y + TR.hy, tc = [{ x: -hb2 - 2, y: 12, r: 11, mu: 0.05 }]; let ta = 0;
+        for (let it = 0; it < 5; it++) { const cx = Hx - TR.tx * Math.cos(ta) + TR.ty * Math.sin(ta); ta = Math.asin(clamp((Hy - TR.ty * Math.cos(ta) - (S.groundAt(cx) - C.hW - WR - 2)) / TR.tx, -0.5, 0.5)); } // прицеп ставим по земле под ним: за отметкой может быть спуск, подъём или брод
+        const tcs = Math.cos(ta), tsn = Math.sin(ta), tx0 = Hx - TR.tx * tcs + TR.ty * tsn, ty0 = Hy - TR.tx * tsn - TR.ty * tcs, tw = (lx, ly) => [tx0 + lx * tcs - ly * tsn, ty0 + lx * tsn + ly * tcs];
         for (let cx = -hb2 + 14; cx <= hb2 + 34; cx += 30) tc.push({ x: cx, y: C.belly - 12, r: 12, mu: 0.05 }); // низ рамы и дышло — скользкие: прицеп на гребне не держит
-        S.trailer = P.addBody(W, P.body({ x: tx0, y, m: TR.m, I: TR.m * (0.3 * TR.len) * (0.3 * TR.len), group: 'truck', kind: 'trailer', rad: TR.len, mu: 0.3, lin: 0.9997, ang: 0.997, circles: tc, segs: nLogs ? [[-hb2, fy, hb2, fy], [hb2, fy, hb2, fy - S.stakeH - 14], [-hb2, fy, -hb2, fy - S.stakeH]] : [] }));
-        const kt = ((TR.m + 2.5) / 8) * (2 / NT) * C.suspK;
-        for (const lx of TR.ax) { const w = P.addBody(W, P.body({ x: tx0 + lx, y: y + C.hW + 2, m: 0.5 * C.wm, I: 0.5 * C.wI, group: 'truck', kind: 'twheel', mu: 1.0, circles: [{ x: 0, y: 0, r: WR }], ang: 0.999 }));
+        S.trailer = P.addBody(W, P.body({ x: tx0, y: ty0, a: ta, m: TR.m, I: TR.m * (0.3 * TR.len) * (0.3 * TR.len), group: 'truck', kind: 'trailer', rad: TR.len, mu: 0.3, lin: 0.9997, ang: 0.997, circles: tc, segs: nLogs ? [[-hb2, fy, hb2, fy], [hb2, fy, hb2, fy - S.stakeH - 14], [-hb2, fy, -hb2, fy - S.stakeH]] : [] }));
+        const tCargo = Math.max(0, (S.logs.length ? S.logs.filter((q) => !q.lost).length : S.cargo) - spaceTruck(C, kind)) * CG.m; // сколько тонн ляжет в прицеп
+        const kt = ((TR.m + clamp(tCargo, 0.25 * TR.load, TR.load)) / 8) * (2 / NT) * C.suspK; // рессоры прицепа — под тот груз, что в нём: лёгкие арбузы не скачут на рессорах под бочки. Жёстче расчётных нельзя: лёгкое колесо на слишком жёсткой рессоре выбрасывает груз
+        for (const lx of TR.ax) { const [wx, wy] = tw(lx, C.hW + 2), w = P.addBody(W, P.body({ x: wx, y: wy, m: 0.5 * C.wm, I: 0.5 * C.wI, group: 'truck', kind: 'twheel', mu: 1.0, circles: [{ x: 0, y: 0, r: WR }], ang: 0.999 }));
           S.twheels.push(w); S.twj.push(P.wheelJoint(W, S.trailer, w, { lx, ly: C.ly, rest: C.rest, k: 1150 * kt, c: 70 * kt / Math.sqrt(C.suspK), lo: 10, hi: 44 })); }
         if (TR.rod) P.rodJoint(W, S.truck, TR.hx, TR.hy, S.trailer, TR.tx - TR.rod, TR.ty, TR.rod); else P.hitchJoint(W, S.truck, TR.hx, TR.hy, S.trailer, TR.tx, TR.ty); // двухосный стоит на своих колёсах: дышло только тянет, на грузовик не давит
       }
       S.allw = S.wheels.concat(S.twheels);
       // груз: нижний ряд и верхний; сначала заполняется кузов грузовика, остальное — в прицеп. Потерянное не возвращается
       const cr = CG.r, st = 2 * cr + 1, nb = Math.floor((bx1 - bx0 - 4) / st), spT = spaceTruck(C, kind), nbt = TR ? Math.floor((TR.bed - 4) / st) : 0, keep = S.logs.length ? S.logs.filter((q) => !q.lost).length : S.cargo; S.logs = [];
-      for (let i = 0; i < keep; i++) { const onT = i >= spT && !!TR, j = onT ? i - spT : i, n0 = onT ? nbt : nb, top = j >= n0, k = top ? j - n0 : j, lx = (onT ? -TR.bed / 2 : bx0) + cr + 2.5 + k * st + (top ? st / 2 : 0), ly = fy - cr - 0.2 - (top ? cr * 1.82 : 0);
-        S.logs.push({ b: P.addBody(W, P.body({ x: (onT ? S.trailer.x : x) + lx, y: y + ly, m: CG.m, I: CG.I, e: CG.e, group: 'log', kind: 'log', cc: true, mu: CG.mu, lin: 0.9995, ang: 0.98, circles: [{ x: 0, y: 0, r: cr }] })), lost: false, out: 0 }); }
-      S.rope = null; S.ropeA = null; S.state = 'play'; S.deadT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false; S.stuckT = 0; S.wetT = 0; S.clog.fill(0);
+      for (let i = 0; i < keep; i++) { const onT = i >= spT && !!TR, j = onT ? i - spT : i, n0 = onT ? nbt : nb, top = j >= n0, k = top ? j - n0 : j, lx = onT ? TR.bed / 2 - cr - 2.5 - k * st - (top ? st / 2 : 0) : bx0 + cr + 2.5 + k * st + (top ? st / 2 : 0), // прицеп грузим от дышла: неполный груз давит на сцепку, а не задирает грузовик
+        ly = fy - cr - 0.2 - (top ? cr * 1.82 : 0);
+        const [gx, gy2] = onT ? P.wpt(S.trailer, lx, ly) : [x + lx, y + ly];
+        S.logs.push({ b: P.addBody(W, P.body({ x: gx, y: gy2, m: CG.m, I: CG.I, e: CG.e, group: 'log', kind: 'log', cc: true, mu: CG.mu, lin: 0.9995, ang: 0.98, circles: [{ x: 0, y: 0, r: cr }] })), lost: false, out: 0 }); }
+      S.rope = null; S.ropeA = null; S.state = 'play'; S.deadT = 0; S.flipT = 0; S.wonT = 0; S.grounded = false; S.stuckT = 0; S.wetT = 0; S.clog.fill(0); S.park = true; // ручник: после старта и возврата стоим, пока игрок не тронул управление — гружёный автопоезд не скатывается назад в грязь
     };
-    const startX = poly[0][0] + 320 + (TR ? TR.len : 0); // с прицепом встаём дальше от края: он тоже должен поместиться
+    const startX = Math.max(poly[0][0] + 320 + (TR ? TR.len : 0), Math.min(20, L.mud.length ? L.mud[0].x0 - 560 : 20)); // грузовик стартует на одном и том же месте с прицепом и без: прицеп встаёт позади, разгон до первой грязи не съедается
     S.respawn = () => {
       const p = S.cp || { x: startX, fuel: C.tank };
       S.spawn(p.x, S.groundAt(p.x)); S.fuel = Math.max(p.fuel, 0.5 * C.tank); // после возврата в баке не меньше половины: застрять в круге «кончилось топливо» нельзя
@@ -253,7 +258,7 @@
         else hookOff(); // подтянулись к дереву — трос отцепляется сам; держишь кнопку дальше — цепляется за следующее
       }
       // мотор: задние мосты всегда, передний — с полным приводом; пониженная — больше тяги, меньше скорость
-      const g = play && inp.gas && S.fuel > 0, br = play && !g && inp.brake;
+      const g = play && inp.gas && S.fuel > 0, br = play && !g && inp.brake; if (inp.gas || inp.brake || inp.winch) S.park = false;
       const [fx, fy] = P.wvec(T, 1, 0), fwd = T.vx * fx + T.vy * fy, sp = (S.low ? C.spLow : C.spHigh) * pr.sp, tq = S.low ? C.tqLow : C.tqHigh;
       // сел на брюхо на твёрдом: назад съехать можно всегда, а вперёд — только если нос уже перевалил и смотрит вниз. Рама скользит, водитель раскачивает
       const offF = S.hung && g && T.a > 0.06, off = S.fuel > 0 && (offF || (S.hung && br && fwd <= 70)), offD = offF ? 1 : -1;
@@ -262,12 +267,17 @@
       S.wj.forEach((j, i) => {
         const drv = i < NW - 1 || S.awd; j.brake = 0;
         if (!play) { j.brake = S.state === 'win' ? 160000 : 0; j.maxT = 0; return; }
+        if (S.park) { j.brake = 160000; j.maxT = 0; return; }
         if (g) { j.speed = sp; j.maxT = drv ? tq : 0; }
         else if (br) { if (fwd > 70) { j.brake = 110000; j.maxT = 0; } else { j.speed = -sp * 0.55; j.maxT = drv ? (fwd > -40 ? Math.max(tq, C.tqLow) : tq) * 0.8 : 0; } } // задняя передача короткая: с места тянет как пониженная
         else { j.speed = 0; j.maxT = drv ? 7000 : 0; }
       });
       if (S.trailer) { // прицеп: тормозит вместе с грузовиком; сцепка не даёт сложиться больше чем на ~45°
-        for (const j of S.twj) { j.maxT = 0; j.brake = !play ? (S.state === 'win' ? 160000 : 0) : br && fwd > 70 ? 60000 : 0; }
+        const B0 = S.trailer; let slack = 1; // дышло на двух шарнирах под толчком складывается, и прицеп наезжает на грузовик. Поэтому: упор (как буфер) и привод прицепа только пока дышло вытянуто — прицеп везёт себя сам, но грузовик не толкает
+        if (TR.rod) { const [hxw, hyw] = P.wpt(T, TR.hx, TR.hy), dx = B0.x - hxw, dy = B0.y - hyw, d = Math.hypot(dx, dy) || 1, dmin = TR.tx - 8; slack = clamp((d - dmin) / 6, 0, 1);
+          if (d < dmin) { const nx = dx / d, ny = dy / d, vr = (B0.vx - T.vx) * nx + (B0.vy - T.vy) * ny, jj = Math.max(0, (dmin - d) * 40 - vr), kb = T.m / (T.m + B0.m), kt2 = 1 - kb; B0.vx += nx * jj * kb; B0.vy += ny * jj * kb; T.vx -= nx * jj * kt2; T.vy -= ny * jj * kt2; } }
+        const td = TR.drive && S.awd ? TR.drive * slack : 0; // большой прицеп — активный: с полным приводом его мосты тоже гребут (четверть тяги колеса грузовика на каждое колесо)
+        for (const j of S.twj) { j.maxT = 0; if (td && g) { j.speed = sp; j.maxT = tq * td; } else if (td && br && fwd <= 70 && S.fuel > 0) { j.speed = -sp * 0.55; j.maxT = tq * td * 0.8; } j.brake = !play ? (S.state === 'win' ? 160000 : 0) : S.park ? 160000 : br && fwd > 70 ? 60000 : 0; }
         const B = S.trailer; let da = B.a - T.a; da -= Math.round(da / (2 * Math.PI)) * 2 * Math.PI; const ov = Math.abs(da) - 0.8;
         if (ov > 0) { const q = (Math.sign(da) * ov * 90 + (B.w - T.w) * 6) * dt; B.w -= q; T.w += q * (B.I / T.I); }
       }
@@ -321,7 +331,7 @@
   // ---------- маршруты ----------
   // Полигон: по одному препятствию каждого вида, перед каждым — указатель и отметка. Одной сборкой всё не взять: что помогает в одном месте, мешает в другом, а топливо общее.
   function polygon() {
-    const b = Route().start(-300, 600).mark(140, 'garage').flat(1000);
+    const b = Route().start(-700, 600).mark(540, 'garage').flat(1400);
     b.sign(-190, 'soil', 'soft').mud(900, ZONES.soft).flat(900).can(-350).cp(-400);                         // мягкая грязь: разминка
     b.sign(-170, 'crest', 0.55).crest(240, 55).flat(700).can(-350).cp(-400);                                // гребень: длинная база садится брюхом
     b.sign(-170, 'ford', 0.9).ford(800, 49).flat(500).can(-350).cp(-400);                                   // брод 0,9 м: проходят все
@@ -339,7 +349,7 @@
   }
 
   // ---------- заказы: от простого к трудному; каждый следующий требует новой детали ----------
-  const mk = (f) => () => { const b = Route().start(-300, 600).mark(140, 'garage').flat(900); f(b); b.flat(500).mark(420, 'mill').flat(400).fin(0).end(); return b.S; };
+  const mk = (f) => () => { const b = Route().start(-700, 600).mark(540, 'garage').flat(1300); f(b); b.flat(500).mark(420, 'mill').flat(400).fin(0).end(); return b.S; };
   const CONTRACTS = [
     { id: 'village', name: ['Firewood for the village', 'Дрова в деревню'], cargo: 'log', pay: 25, need: [], build: mk((b) => { // задний привод: мелкая грязь, пологий холм, мелкий брод, пара ухабов
       b.sign(-190, 'soil', 'shallow').mud(700, ZONES.shallow).flat(500).cp(-300).hill(900, 90).flat(400).cp(-250);

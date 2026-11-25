@@ -2,7 +2,7 @@
 /* Грязь, вид сбоку — рисование и управление, версия 2. Мир рисует объёмный вид Hook Truck (r3d.js); здесь — гараж-конструктор, свой грузовик
    (каждая деталь видна), живая грязь (колея остаётся), вода с вешками, указатели, брызги и дым, кнопки. Правая рука — газ и назад, левая — остальное. */
 (function () {
-  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.2';
+  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.3';
   const cv = document.getElementById('c'), ctx = cv.getContext('2d'), glc = document.getElementById('gl');
   const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '') || /[?&]ru\b/.test(location.search);
   const T = RU ? {
@@ -23,18 +23,18 @@
       ctis: ['Без подкачки: давление ставишь в гараже на весь рейс.', 'Подкачка: кнопка ШИНЫ спускает колёса на ходу — перед песком и торфом — и накачивает обратно.'],
       gear: ['Тяговая пара: тяга +25%, скорость −20%.', 'Средняя пара.', 'Скоростная пара: скорость +20%, тяга −18% — на подъёмах и в липком не вытянет.'],
       winch: ['Лебёдка: трос 15 м. Тянет от мотора — жжёт топливо, без топлива не работает.', 'Лебёдка с длинным тросом: 21 м и тянет быстрее. Топливо жжёт так же.'],
-      trailer: ['Без прицепа: везёшь только в кузове.', 'Тележка: ещё один кузов — плюс 7 брёвен или 5 бочек. Сама отнимает 2,1 т от «Груз до»: окупается с форсировкой от 4-й ступени.', 'Большой прицеп: плюс 11 брёвен или 9 бочек, отнимает 3,5 т. Для сильного мотора — от 6-й ступени или 6×6.'],
+      trailer: ['Без прицепа: везёшь только в кузове.', 'Тележка: +9 брёвен или 7 бочек, запасной бак 30 л. Висит на грузовике мёртвым весом: чем сильнее мотор, тем полнее её грузишь.', 'Большой прицеп: +19 брёвен или 15 бочек, запасной бак 50 л. Мосты ведущие — гребут, пока включён полный привод. Каждая ступень мотора с 5-й — ещё две бочки.'],
       paint: ['Краска — на проходимость не влияет, зато красиво.'],
       base: ['Короткая база: легко переваливает гребни, но на крутом подъёме задирает нос. Прицеп на неё не ставится.', 'Длинная база: груза больше, в гору устойчива. Тяжелее в грязи. Гребни бери с хода — медленно сядет брюхом.', 'Очень длинная база: груза ещё больше. Тяжёлая — с полным кузовом нужна форсировка. Гребни только с хода.'],
       lift: ['Без лифта: устойчив, но брюхо низко и брод мелкий.', 'Лифт +1: брюхо и брод выше на 17 см.', 'Лифт +2: ещё выше — но на самом крутом подъёме опрокидывает.'],
       wheel: ['Малые колёса: вся тяга на земле, но тонут в грязи.', 'Средние: тонут меньше, брод глубже; в гору тяги меньше.', 'Большие: почти не тонут, но в гору без мотора не идут и жгут топливо.'],
-      axles: ['4×4: легче и экономнее.', '6×6: гребёт тремя мостами, не встаёт на дыбы и везёт больше — особенно с длинной рамой. Тяжелее и прожорливее.'],
+      axles: ['4×4: легче и экономнее.', '6×6: гребёт тремя мостами, не встаёт на дыбы и везёт больше — особенно с длинной рамой. Только он тянет прицеп. Тяжелее и прожорливее.'],
       tires: ['Дорожные шины: быстрее и экономнее, в грязи скользят.', 'Универсальные шины: середина.', 'Грязевые шины: цепляют в грязи; на твёрдом медленнее, расход больше.'],
       eng: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((v) => (v ? `Форсировка ${v} из 8: тяга +${12 * Math.min(v, 5) + 7 * Math.max(0, v - 5)}%, везёт на ${String(Math.round(10 * M.ENG_T(v)) / 10).replace('.', ',')} т больше, расход +${6 * v}%.${v >= 6 ? ' Короткую раму на подъёме задирает — бери длинную.' : ''}` : 'Мотор заводской: экономный, но тяжёлый груз в гору и в грязи не тянет.')),
       snorkel: ['Без шноркеля: вода выше капота — мотор заглохнет.', 'Шноркель: воздух берётся с крыши, глубокий брод не страшен.'],
       tank: ['Бак 60 л.', 'Бак 95 л: дальше едешь, чуть тяжелее.'],
     },
-    sClear: 'Клиренс', sFord: 'Брод до', sPull: 'Тяга', sRange: 'Запас хода', sLoad: 'Груз до', tapBuy: 'Нажми зелёную кнопку ещё раз — купишь.', tapAd: (n) => `Не хватает ${n} монет: нажми жёлтую кнопку — доберёшь за рекламу.`, tapNo: (n) => `Не хватает ${n} монет — подзаработай на заказах.`, trNeed: 'Прицеп ставится только на длинную раму: короткую с ним задирает. Сначала вкладка «Шасси» — длинная или длинная+.', m: 'м', over: (t) => `Больше не увезёт: грузоподъёмность ${t} т. Форсируй мотор, удлиняй раму или ставь 6×6.`,
+    sClear: 'Клиренс', sFord: 'Брод до', sPull: 'Тяга', sRange: 'Запас хода', sLoad: 'Груз до', tapBuy: 'Нажми зелёную кнопку ещё раз — купишь.', tapAd: (n) => `Не хватает ${n} монет: нажми жёлтую кнопку — доберёшь за рекламу.`, tapNo: (n) => `Не хватает ${n} монет — подзаработай на заказах.`, trNeed: 'Прицеп тянет только длинная рама с тремя мостами: короткую с ним задирает, а 4×4 встаёт в липкой грязи. Сначала вкладка «Шасси» — длинная рама и 6×6.', gain: (a, b) => `Полный рейс: ${a} → ${b} ¤ (${b > a ? '+' : '−'}${Math.abs(b - a)}).`, gainLoss: 'С этим мотором прицеп отнимает больше, чем даёт.', gainSpace: 'Заработок не вырастет: кузов и так полон — нужен прицеп побольше.', gainWeight: 'Заработок не вырастет: груз упирается в вес — нужен мотор сильнее.', gainAx: 'Сам заработка не прибавит — зато с ним можно цеплять прицеп.', mx: 'макс', m: 'м', over: (t) => `Больше не увезёт: грузоподъёмность ${t} т. Форсируй мотор, удлиняй раму или ставь 6×6.`,
     awd: '4×4', lock: 'БЛОК', low: 'ПОНИЖ', winch: 'ЛЕБЁДКА', ahead: 'Впереди', soil: { shallow: 'мелкая грязь', soft: 'мягкая грязь', medium: 'грязь', sticky: 'липкая грязь', swamp: 'болото', sand: 'песок', clay: 'глина', peat: 'торф' }, crest: 'гребень', ford: 'брод', climb: 'подъём',
     hClog: 'Шины забиты: на твёрдом разгонись на обычной передаче — слетит. Или промой в броду', hSand: 'Песок: не буксуй. Назад по своему следу и с хода — или спусти шины',
     hAwd: 'Буксуешь? Включи 4×4', hLock: 'Не гребёт? Включи БЛОК', hLow: 'Закапываешься или мало тяги? Включи ПОНИЖ', hWinch: 'Держи ЛЕБЁДКУ — подтянет к дереву', hBack: 'Сдай назад и возьми с разгона', hHung: 'Сел брюхом. Назад и с разгона — или нужен клиренс: в гараж', hHungL: 'Сел брюхом. Сдай назад и бери с разгона, без ПОНИЖ', hHungF: 'Сел брюхом, но нос уже перевалил. Газу — сползёшь вперёд', crestRun: ' — бери с хода', hGar: 'Не проходит? Загляни в гараж: продолжишь с отметки',
@@ -63,18 +63,18 @@
       ctis: ['No inflation system: pressure is set in the garage for the whole trip.', 'Inflation system: the TIRES button airs down on the move — before sand and peat — and back up.'],
       gear: ['Pull gearing: pull +25%, speed −20%.', 'Medium gearing.', 'Speed gearing: speed +20%, pull −18% — struggles on climbs and in sticky mud.'],
       winch: ['Winch: 15 m cable. Engine-driven: it burns fuel and will not work on an empty tank.', 'Long-cable winch: 21 m and pulls faster. Burns fuel just the same.'],
-      trailer: ['No trailer: you haul only what fits the bed.', 'Cart: one more bed — 7 more logs or 5 barrels. It takes 2.1 t off the payload itself: pays off from tune stage 4.', 'Big trailer: 11 more logs or 9 barrels, takes 3.5 t off. For a strong engine — tune stage 6 or 6×6.'],
+      trailer: ['No trailer: you haul only what fits the bed.', 'Cart: +9 logs or 7 barrels, a 30 L spare tank. It hangs on the truck as dead weight: the stronger the engine, the fuller you load it.', 'Big trailer: +19 logs or 15 barrels, a 50 L spare tank. Driven axles — they dig in while all-wheel drive is on. Each tune stage from 5 adds two more barrels.'],
       paint: ['Paint: no effect on off-road ability, but it looks good.'],
       base: ['Short wheelbase: rolls over crests, but lifts its nose on steep climbs. It cannot take a trailer.', 'Long wheelbase: carries more, steady uphill. Heavier in mud. Take crests at speed — go slow and it high-centers.', 'Extra long: carries the most. Heavy — a full load needs engine tuning. Crests at speed only.'],
       lift: ['No lift: stable, but low belly and shallow fording.', 'Lift +1: belly and fording depth 17 cm higher.', 'Lift +2: higher still — but tips over on the steepest climb.'],
       wheel: ['Small wheels: all the pull reaches the ground, but they sink in mud.', 'Medium: sink less, ford deeper; less pull uphill.', 'Large: barely sink, but need a bigger engine uphill and burn fuel.'],
-      axles: ['4×4: lighter and thriftier.', '6×6: three axles dig in, it never rears up and carries more — most of all on a long frame. Heavier and thirstier.'],
+      axles: ['4×4: lighter and thriftier.', '6×6: three axles dig in, it never rears up and carries more — most of all on a long frame. Only a 6×6 can pull a trailer. Heavier and thirstier.'],
       tires: ['Road tires: faster and thriftier, slippery in mud.', 'All-terrain tires: the middle ground.', 'Mud tires: bite in mud; slower on firm ground, thirstier.'],
       eng: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((v) => (v ? `Tune ${v} of 8: pull +${12 * Math.min(v, 5) + 7 * Math.max(0, v - 5)}%, carries ${Math.round(10 * M.ENG_T(v)) / 10} t more, fuel use +${6 * v}%.${v >= 6 ? ' A short frame rears up on climbs — go long.' : ''}` : 'Stock engine: thrifty, but weak with a heavy load uphill and in mud.')),
       snorkel: ['No snorkel: water above the hood stalls the engine.', 'Snorkel: air comes from the roof, deep fords are fine.'],
       tank: ['60 L tank.', '95 L tank: more range, a bit heavier.'],
     },
-    sClear: 'Clearance', sFord: 'Fords up to', sPull: 'Pull', sRange: 'Range', sLoad: 'Carries', tapBuy: 'Tap the green button again to buy.', tapAd: (n) => `Short by ${n} coins: tap the yellow button to top up with an ad.`, tapNo: (n) => `Short by ${n} coins — earn more on contracts.`, trNeed: 'A trailer needs a long frame: a short one rears up with it. Go to Chassis first — long or long+.', m: 'm', over: (t) => `That is all it can carry: payload ${t} t. Tune the engine, lengthen the frame or fit 6×6.`,
+    sClear: 'Clearance', sFord: 'Fords up to', sPull: 'Pull', sRange: 'Range', sLoad: 'Carries', tapBuy: 'Tap the green button again to buy.', tapAd: (n) => `Short by ${n} coins: tap the yellow button to top up with an ad.`, tapNo: (n) => `Short by ${n} coins — earn more on contracts.`, trNeed: 'A trailer needs a long frame with three axles: a short frame rears up, and a 4×4 bogs down in sticky mud. Chassis tab first — long frame and 6×6.', gain: (a, b) => `Full run: ${a} → ${b} ¤ (${b > a ? '+' : '−'}${Math.abs(b - a)}).`, gainLoss: 'With this engine the trailer costs more payload than it adds.', gainSpace: 'No extra earnings: the bed is already full — get a bigger trailer.', gainWeight: 'No extra earnings: the load is capped by weight — tune the engine.', gainAx: 'Earns nothing by itself — but it lets you hitch a trailer.', mx: 'max', m: 'm', over: (t) => `That is all it can carry: payload ${t} t. Tune the engine, lengthen the frame or fit 6×6.`,
     awd: '4×4', lock: 'LOCK', low: 'LOW', winch: 'WINCH', ahead: 'Ahead', soil: { shallow: 'shallow mud', soft: 'soft mud', medium: 'mud', sticky: 'sticky mud', swamp: 'swamp', sand: 'sand', clay: 'clay', peat: 'peat' }, crest: 'crest', ford: 'ford', climb: 'climb',
     hClog: 'Tires clogged: on firm ground speed up in high range to shed it. Or wash them in a ford', hSand: 'Sand: don\'t spin. Back up along your track and take a run — or air down',
     hAwd: 'Wheels spinning? Switch on 4×4', hLock: 'No bite? Switch on LOCK', hLow: 'Digging in or no pull? Switch on LOW', hWinch: 'Hold WINCH — it pulls you to the tree', hBack: 'Back up and take a run at it', hHung: 'High-centered. Back up and take a run — or get more clearance in the garage', hHungL: 'High-centered. Back up and take a run at it, LOW off', hHungF: 'High-centered, but the nose is over. Gas — you will slide forward', crestRun: ' — take it at speed', hGar: 'No way through? Visit the garage: you continue from the checkpoint',
@@ -126,11 +126,20 @@
   try { const q = JSON.parse(localStorage.getItem('mud4.save') || 'null'); if (q && q.build) { save = Object.assign(save, q); save.build = Object.assign({}, START, q.build); } } catch (e) { /* */ }
   const persist = () => { try { localStorage.setItem('mud4.save', JSON.stringify(save)); localStorage.setItem('mud3.build', JSON.stringify(build)); } catch (e) { /* */ } };
   let newKey = '', fuelLvl = 2; // подсказка про только что купленную кнопку; ступень предупреждения о топливе
-  let career = true, cur = -1, sel = -1, reg = 0, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9;
+  let career = true, cur = -1, sel = -1, reg = 0, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9; let shownNote = '';
   const kindOf = (i) => (career && i >= 0 ? M.CONTRACTS[i].cargo : 'log'), capNow = () => M.capOf(M.spec(save.build), kindOf(Math.max(0, sel)));
   const optIdx = (k, v) => PARTS.find((q) => q[0] === k)[1].indexOf(v), priceOf = (k, v) => (PRICE[k] ? PRICE[k][optIdx(k, v)] : 0);
   const owns = (k, v) => !career || !priceOf(k, v) || START[k] === v || (save.own[k] || []).includes(v), BD = () => (career ? save.build : build);
   const unlocked = (i) => i === 0 || (save.stars[M.CONTRACTS[i - 1].id] || 0) > 0;
+  const bestRun = (bd) => { const C = M.spec(bd); let best = 0, kind = 'log'; M.CONTRACTS.forEach((c, i) => { const g = unlocked(i) ? M.capOf(C, c.cargo) * c.pay : 0; if (g > best) { best = g; kind = c.cargo; } }); return [best, kind, C]; };
+  const GAINK = ['base', 'axles', 'eng', 'trailer'];
+  function gainNote(k, v) { // примеряешь раму, мосты, мотор или прицеп — видно, сколько монет это прибавит к полному рейсу, или почему не прибавит
+    if (!career || GAINK.indexOf(k) < 0) return '';
+    const a = bestRun(save.build)[0], [b, kind, C] = bestRun(Object.assign({}, save.build, { [k]: v }));
+    if (b > a) return T.gain(a, b); if (b < a) return T.gain(a, b) + (k === 'trailer' ? ' ' + T.gainLoss : '');
+    if (k === 'axles' && v === 3 && !C.tr) return T.gainAx;
+    return M.spaceOf(C, kind) * M.CARGO[kind].m <= M.payT(C) + 1e-6 ? T.gainSpace : T.gainWeight;
+  }
   const regOf = () => { const n = M.CONTRACTS.findIndex((c) => !(save.stars[c.id] > 0)), k = n < 0 ? M.CONTRACTS.length - 1 : n; return Math.max(0, M.REGIONS.findIndex((r) => k >= r.from && k < r.from + r.n)); }; // район следующего недовезённого заказа
   let S = null, SV = null, mode = 'menu', resume = null, rebuilds = 0, note = T.intro, buildKey = 1, tab = 0;
   const sw = { awd: false, lock: false, low: false, soft: false }, keys = {}, ptrs = new Map(), dbg = { freeze: false };
@@ -366,7 +375,7 @@
     // груз — настоящие тела: лежит поперёк кузова, катается и вылетает. Один вид груза — два-три объекта на все штуки сразу
     const cargoI = {};
     function cargoMeshes(kind) {
-      const T3 = A.T, r = M.CARGO[kind].r, out = [], add = (geos, col) => { const m = new T3.InstancedMesh(merge(T3, geos), lam(col), 26); m.count = 0; m.frustumCulled = false; m.castShadow = true; A.scene.add(m); out.push(m); };
+      const T3 = A.T, r = M.CARGO[kind].r, out = [], add = (geos, col) => { const m = new T3.InstancedMesh(merge(T3, geos), lam(col), 48); m.count = 0; m.frustumCulled = false; m.castShadow = true; A.scene.add(m); out.push(m); };
       const cyl = (rad, len, seg, z = 0) => { const g = new T3.CylinderGeometry(rad, rad, len, seg); g.rotateX(Math.PI / 2); g.translate(0, 0, z); return g; }, disc = (rad, x, y, z, seg = 10) => { const g = new T3.CircleGeometry(rad, seg); g.translate(x, y, z); return g; };
       if (kind === 'melon') {
         add([new T3.SphereGeometry(r, 14, 10)], '#43a047');
@@ -456,7 +465,7 @@
   function flip(k) { if (mode !== 'play' || paused || S.state !== 'play' || !(k === 'soft' ? S.cfg.b.ctis : S.cfg.b[k])) return; sw[k] = !sw[k]; tone(sw[k] ? 760 : 420, 0.07, 0.12); }
   function setPart(k, v) {
     const nt = k === 'paint' ? T.n.paint[0] : T.n[k][optIdx(k, v)], bd = BD(), had = pend; tab = PARTS.find((q) => q[0] === k)[2]; note = nt;
-    if (k === 'trailer' && v > 0 && !bd.base) { note = T.trNeed; tone(200, 0.12, 0.1); return; } // на короткую раму прицеп не ставится
+    if (k === 'trailer' && v > 0 && (!bd.base || bd.axles !== 3)) { note = T.trNeed; tone(200, 0.12, 0.1); return; } // прицеп — только на длинную раму с тремя мостами
     if (!owns(k, v)) { pend = { k, v, t: realT }; newSim(); tone(520, 0.05, 0.08); return; } // не куплено — примеряем и предлагаем купить
     pend = null; if (bd[k] === v) { if (had) newSim(); return; } bd[k] = v; persist(); newSim(); tone(660, 0.06, 0.1);
   }
@@ -470,6 +479,7 @@
     else if (id.slice(0, 4) === 'reg:') { reg = +id.slice(4); tone(520, 0.05, 0.08); }
     else if (id.slice(0, 2) === 'c:') { const i = +id.slice(2); if (unlocked(i)) { sel = i; nlogs = Math.ceil(capNow() / 2); newSim(); tone(660, 0.06, 0.1); } else tone(200, 0.12, 0.1); }
     else if (id === 'lg-' || id === 'lg+') { nlogs = clamp(nlogs + (id === 'lg+' ? 1 : -1), 1, capNow()); newSim(); tone(600, 0.04, 0.08); }
+    else if (id === 'lg=') { nlogs = capNow(); newSim(); tone(720, 0.05, 0.08); }
     else if (id === 'tow') tow(false);
     else if (id === 'rescue') { if (mode === 'play') { if (S.state === 'dead') S.respawn(); else S.rescue(); } } else if (id === 'retry') { if (S.state === 'dead') S.respawn(); } else if (id === 'mute') muted = !muted;
     else if (id[0] === 'p') { const [, k, v] = id.split(':'); setPart(k, +v); } else if (id.slice(0, 4) === 'tab:') { tab = +id.slice(4); tone(540, 0.05, 0.08); } else if (TOG.includes(id)) flip(id); else return false;
@@ -523,7 +533,7 @@
   function drawGarage() {
     const pn = panel(T.garage), { top, small, L } = pn, c = S.cfg, bd = BD(); let { x0, ww, view } = pn;
     // покупка там же, где нажал: первое нажатие — примерка, кнопка детали сама становится зелёной «Купить»; второе нажатие по ней — покупка
-    const pb = career && pend ? pend : null, prc = pb ? priceOf(pb.k, pb.v) : 0, okB = !!pb && save.coins >= prc, nearB = !!pb && !okB && save.coins >= prc / 2, noteT = !pb ? note : (okB ? T.tapBuy : nearB ? T.tapAd(prc - save.coins) : T.tapNo(prc - save.coins)) + ' ' + note;
+    const pb = career && pend ? pend : null, prc = pb ? priceOf(pb.k, pb.v) : 0, okB = !!pb && save.coins >= prc, nearB = !!pb && !okB && save.coins >= prc / 2, gn = pb ? gainNote(pb.k, pb.v) : '', noteT = !pb ? note : (gn ? gn + ' ' : '') + (okB ? (gn ? '' : T.tapBuy + ' ') : (nearB ? T.tapAd(prc - save.coins) : T.tapNo(prc - save.coins)) + ' ') + note; shownNote = noteT; // есть строка про заработок — «нажми ещё раз» не повторяем: на кнопке и так «Купить»
     const buyBtn = (b, big) => { b.id = okB ? 'buy' : nearB ? 'adcoins' : b.id; ctx.fillStyle = okB ? '#43a047' : '#f9a825'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = 'rgba(0,0,0,0.16)'; rr(b.x, b.y + b.h - 5, b.w, 5, 4); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const t1 = okB ? T.buyPart : '▶ ' + T.topUp; font(Math.min(big, b.h * 0.34, (b.w * 1.55) / t1.length), 900); ctx.fillText(t1, b.x + b.w / 2, b.y + b.h * 0.34, b.w - 4); font(Math.min(big - 1, b.h * 0.3), 900); fillC('¤ ' + (okB ? prc : prc - save.coins), b.x + b.w / 2, b.y + b.h * 0.68, b.w - 4); };
     // сводка: четыре числа, которые сравниваешь с указателями на дороге. При примерке видно, что изменится: зелёное — лучше, красное — хуже
     const sv = statsOf(c), s0 = pend ? statsOf(M.spec(bd)) : sv, sf = [(v) => fmt(v, 2) + ' ' + T.m, (v) => fmt(v, 2) + ' ' + T.m, (v) => Math.round(v) + '%', (v) => Math.round(v) + ' ' + T.m, (v) => fmt(v) + ' ' + T.tn];
@@ -532,7 +542,7 @@
     const tabBtn = (i, x, yy, w, h) => { const n = T.tabs[i], b = { id: 'tab:' + i, x, y: yy, w, h }, on = tab === i; buttons.push(b); ctx.fillStyle = on ? '#37474f' : '#eceff1'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = on ? '#fff' : '#546e7a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; font(Math.min(16, (w * 1.7) / n.length), 900); ctx.fillText(n, b.x + w / 2, b.y + h / 2 + 1, w - 6); };
     let y = top + 10;
     if (L) { // телефон лёжа: числа и подсказка — слева под грузовиком, вкладки — столбиком, а вся высота справа отдана крупным кнопкам деталей
-      const cw = pn.px - 16, nl0 = lines(noteT, cw - 20, 12, 700).slice(0, 4), ch = 78 + (nl0.length ? nl0.length * 15 + 8 : 0), cy0 = H2 - 8 - ch;
+      const cw = pn.px - 16, nl0 = lines(noteT, cw - 20, 12, 700).slice(0, 5), ch = 78 + (nl0.length ? nl0.length * 15 + 8 : 0), cy0 = H2 - 8 - ch;
       ctx.fillStyle = 'rgba(255,253,247,0.95)'; rr(8, cy0, cw, ch, 14); ctx.fill();
       for (let i = 0; i < 5; i++) stat(i, 8 + (cw / 3) * ((i % 3) + 0.5), cy0 + 6 + Math.floor(i / 3) * 35, cw / 3 - 8, 10.5, 16, 24);
       ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; font(12, 700); nl0.forEach((q, i) => ctx.fillText(q, 18, cy0 + 86 + i * 15, cw - 20));
@@ -576,7 +586,7 @@
       });
       y += rh;
     }
-    const gy = H2 - 8 - goH - 10, nl = lines(noteT, ww - 8, small ? 12 : 14, 700).slice(0, 4), ny = Math.max(y + 4, gy - noteH); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; if (!L) nl.forEach((q, i) => ctx.fillText(q, x0, ny + 10 + i * (small ? 15 : 18), ww));
+    const gy = H2 - 8 - goH - 10, lhN = small ? 15 : 18, nl = lines(noteT, ww - 8, small ? 12 : 14, 700).slice(0, clamp(Math.floor((gy - y - 10) / lhN), 4, 6)), ny = Math.max(y + 4, gy - Math.max(noteH, nl.length * lhN + 6)); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; if (!L) nl.forEach((q, i) => ctx.fillText(q, x0, ny + 10 + i * (small ? 15 : 18), ww));
     const fs = small ? 15 : 18;
     if (career) {
       { const b1 = { id: 'menu', x: x0, y: gy, w: ww, h: goH }; buttons.push(b1); btn(b1, '◀ ' + T.toMenu, pb ? '#78909c' : '#43a047', false, small ? 18 : 22); }
@@ -631,9 +641,9 @@
         const fx = fixText(fordFix(fordPx(df))), wl = lines(`⚠ ${T.deep(fmt(df.val), fmt(S.cfg.ford / PX, 2))}. ${fx ? T.deepFix + ': ' + fx + '.' : ''}`, ww - 20, small ? 12 : 13, 800).slice(0, 3), wh = wl.length * (small ? 15 : 17) + 12;
         ctx.fillStyle = '#ffebee'; rr(x0, y - 4, ww, wh, 10); ctx.fill(); ctx.fillStyle = '#c62828'; wl.forEach((q, i) => ctx.fillText(q, x0 + 10, y + 9 + i * (small ? 15 : 17), ww - 20)); y += wh + (small ? 4 : 8);
       } else { ctx.fillStyle = '#2e7d32'; font(small ? 12 : 13, 800); ctx.fillText('✓ ' + T.ready, x0, y + 5, ww); y += small ? 18 : 22; }
-      cargoIcon(c.cargo, x0 + 13, y + 22, 13); ctx.fillStyle = '#37474f'; font(small ? 15 : 17, 900); ctx.fillText(`${T.cg[c.cargo]}: ${n} ${T.of} ${cap}`, x0 + 34, y + 14, ww - 160);
-      ctx.fillStyle = '#78909c'; font(small ? 11 : 12, 800); const payT = M.payT(S.cfg), byW = n >= cap && cap < M.spaceOf(S.cfg, c.cargo); ctx.fillText(`${T.wt} ${fmt(n * CG.m)} ${T.of} ${fmt(payT)} ${T.tn}`, x0 + 34, y + 33, ww - 160);
-      const bm = { id: 'lg-', x: x0 + ww - 116, y, w: 52, h: 44 }, bp = { id: 'lg+', x: x0 + ww - 56, y, w: 52, h: 44 }; buttons.push(bm, bp); btn(bm, '−', n > 1 ? '#546e7a' : '#cfd8dc', false, 26); btn(bp, '+', n < cap ? '#546e7a' : '#cfd8dc', false, 26); y += small ? 50 : 56; ctx.textAlign = 'left';
+      cargoIcon(c.cargo, x0 + 13, y + 22, 13); ctx.fillStyle = '#37474f'; font(small ? 15 : 17, 900); ctx.fillText(`${T.cg[c.cargo]}: ${n} ${T.of} ${cap}`, x0 + 34, y + 14, ww - 216);
+      ctx.fillStyle = '#78909c'; font(small ? 11 : 12, 800); const payT = M.payT(S.cfg), byW = n >= cap && cap < M.spaceOf(S.cfg, c.cargo); ctx.fillText(`${T.wt} ${fmt(n * CG.m)} ${T.of} ${fmt(payT)} ${T.tn}`, x0 + 34, y + 33, ww - 216);
+      const bm = { id: 'lg-', x: x0 + ww - 116, y, w: 52, h: 44 }, bp = { id: 'lg+', x: x0 + ww - 56, y, w: 52, h: 44 }; const bx = { id: 'lg=', x: x0 + ww - 176, y, w: 52, h: 44 }; buttons.push(bm, bp, bx); btn(bm, '−', n > 1 ? '#546e7a' : '#cfd8dc', false, 26); btn(bp, '+', n < cap ? '#546e7a' : '#cfd8dc', false, 26); btn(bx, T.mx, n < cap ? '#2e7d32' : '#cfd8dc', false, 14); y += small ? 50 : 56; ctx.textAlign = 'left'; // «макс» — полный кузов одним нажатием: с прицепом это два с лишним десятка штук
       const nl = (gy - y > (adv ? 150 : 110) ? lines(byW ? T.over(fmt(payT)) : T.cgN[c.cargo], ww - 4, small ? 12 : 13, 700).slice(0, 2) : []); ctx.fillStyle = byW ? '#e65100' : '#546e7a'; nl.forEach((q, i) => ctx.fillText(q, x0, y + 7 + i * (small ? 15 : 17), ww)); y += nl.length * (small ? 15 : 17) + (small ? 8 : 12);
       ctx.fillStyle = '#ef6c00'; font(small ? 16 : 19, 900); fillC(`${T.payL}: ${n} × ¤ ${c.pay} = ¤ ${n * c.pay}`, x0, y + 8, ww); y += small ? 22 : 28;
       if (y + 16 < gy) { ctx.fillStyle = '#90a4ae'; font(small ? 11 : 13, 700); ctx.fillText(T.fuelL, x0, y + 8, ww); }
@@ -768,6 +778,6 @@
     if (use3d) R3.draw(SV, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl: lvlKey, duo: false, shake: 0, gas: inp.gas && !S.inMud && !S.wade, gasOn: inp.gas && S.fuel > 0, oy, theme: 2 });
     if (mode === 'win' && S.wonT > 0.9) { if (career && res) drawWinC(); else drawWin(); } else if (S.state === 'dead' && S.deadT > 0.9) drawFail(); else if (paused) drawPause(); else drawHud(inp);
   }
-  window.__mud = { get S() { return S; }, sw, keys, dbg, get mode() { return mode; }, get buttons() { return buttons; }, get build() { return BD(); }, get save() { return save; }, get career() { return career; }, get res() { return res; }, get paused() { return paused; }, press, setPart, start, toGarage, toMenu, flip };
+  window.__mud = { get S() { return S; }, sw, keys, dbg, get mode() { return mode; }, get buttons() { return buttons; }, get build() { return BD(); }, get save() { return save; }, get career() { return career; }, get res() { return res; }, get paused() { return paused; }, press, setPart, start, toGarage, toMenu, flip, get note() { return shownNote; }, gainNote };
   requestAnimationFrame(frame);
 })();
