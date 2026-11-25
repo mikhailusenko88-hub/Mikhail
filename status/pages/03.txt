@@ -1,57 +1,19 @@
-URL: https://formadesignspb.ru
+URL: https://crm.nashdekor.ru/api/outbox/status/b020b11c-c73d-42e5-b17a-e1dafb46cd1e
 КОД: 200
 ЗАГОЛОВКИ:
-Server: ddos-guard
+Server: nginx
+Date: Wed, 25 Nov 2026 06:25:15 GMT
+Content-Type: application/json
+Content-Length: 67
 Connection: close
-Set-Cookie: __ddg8_=cpFJajCZ5dRiDzgM; Domain=.formadesignspb.ru; Path=/; Expires=Wed, 25-Nov-2026 06:42:04 GMT
-Set-Cookie: __ddg10_=1795587724; Domain=.formadesignspb.ru; Path=/; Expires=Wed, 25-Nov-2026 06:42:04 GMT
-Set-Cookie: __ddg9_=20.220.118.2; Domain=.formadesignspb.ru; Path=/; Expires=Wed, 25-Nov-2026 06:42:04 GMT
-Set-Cookie: __ddg1_=kl3hSuOfQyBz8jPLsdOv; Domain=.formadesignspb.ru; HttpOnly; Path=/; Expires=Thu, 25-Nov-2027 06:22:04 GMT
-Date: Wed, 25 Nov 2026 06:22:05 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 191645
-Last-Modified: Tue, 27 Oct 2026 11:07:09 GMT
-ETag: "6ae085dd-2ec9d"
-Strict-Transport-Security: max-age=63072000
-Content-Security-Policy: default-src https: wss:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline' https:; img-src https: data:; font-src https: data:; media-src https: data:; object-src https:; frame-src * data:; child-src *; frame-ancestors 'self' https://*.yandex.ru;
-Cache-Control: private, max-age=0, must-revalidate
-Accept-Ranges: bytes
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
 
-Студия дизайна интерьеров FORMA 
- Главная 
- Проекты 
- Этапы работы 
- Услуги 
- Отзывы 
- Контакты 
- Вместе с вами создадим уникальный, продуманный дизайн для вашей души!
- Студия дизайна интерьеров
- F O R M A
- — команда квалифицированных и амбициозных дизайнеров-архитекторов, которые влюблены в свое дело. Каждый проект для нас особенный, ведь не бывает одинаковых пожеланий заказчиков и представлений об идеальном доме. Мы внимательно прислушиваемся ко всем пожеланиям и создаем дом вашей мечты. 
- Проектируем в г. Санкт-Петербурге и предпочитаем создавать лаконичные, функциональные и комфортные для проживания пространства. 
- Другие примеры выполненных проектов 
- Пример Полного Дизайн-проекта с чертежами и визуализациями
- Заявка на консультацию
- Ваше сообщение успешно отправлено!
- Отправить 
- Студия дизайна интерьеров FORMA
- Сайт от wfolio
+{"error":"","sent_at":"2026-11-25T09:23:06+03:00","status":"sent"}
 
 ССЫЛКИ:
-/
-/assets/folio/desktop/vendor/space-f1c23ccfdce1a7142ccaf00de5c2c8cd4843c40e8c83a335aae0f776d9e67ee4.css
-/comments
-/contacts
-/etapy-raboty
-/favicon.ico
-/services
-/zhk-alekseevskiy-kvartal
-https://fonts.gstatic.com
-https://formadesignspb.ru
-https://i.wfolio.ru/x/2liGxMhJRjilwq8i78-UqUQhWuyd2Txo/Bfr4IhqIYMdCt4KtbnJpus7p820tDfC-/Fksw7xkPWDlBsK9k44z39YgO3wVFF1OT/1G3lik6IPFhwzYINlKm6OuQmZLVSHfE7/KcNX1ZjEYI3FsuLjE7Nvxg.png
-https://i.wfolio.ru/x/nPyk9X8szP5j_Qqbh-YedmQ5zB9l-5jC/n2giKg88XC_zlnwvvxWOtqj6Ki94S45r/ZJXyhtDRKgjjze-K4r6bJ2WDdtsbgOrv/0098aL26v-IOjbsRndx_u7fg8mXFKqu9/HpCKNhhx0mv3rDE6dRz9jg.png
-https://t.me/designspbforma
-https://wa.me/79319680144
-https://wfolio.ru/edit?page=1721907&amp;s=0DoPgwxZ
-https://wfolio.ru?utm_campaign=branding&amp;source=formadesignspb.ru
-https://www.instagram.com/forma__spb/
