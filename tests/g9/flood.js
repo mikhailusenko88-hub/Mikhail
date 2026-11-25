@@ -18,7 +18,7 @@ const SIZES = { phone: [390, 844, true], land: [844, 390, true], small: [360, 64
     await p.evaluate(() => { window.__mud.sw.awd = true; window.__mud.keys.ArrowRight = true; });
     await p.waitForFunction(() => window.__mud.S.state === 'dead', null, { timeout: 60000 }).catch(() => log.push('не залило'));
     await p.waitForTimeout(4000); log.push('после залива (4 с): ' + JSON.stringify(await st())); await p.screenshot({ path: path.join(OUT, name + '-w2fail.png') });
-    await tap('gar'); await p.waitForTimeout(700); await p.screenshot({ path: path.join(OUT, name + '-w3garage.png') }); await tap('p:lift:1'); await tap('cont');
+    await tap('gar'); await p.waitForTimeout(700); await p.screenshot({ path: path.join(OUT, name + '-w3garage.png') }); await tap('tab:0'); await tap('p:lift:1'); await tap('cont');
     await p.waitForFunction((fx) => window.__mud.S.truck.x > fx + 100 || window.__mud.S.state === 'dead', fordX, { timeout: 90000 }).catch(() => log.push('не доехал'));
     log.push('с лифтом: ' + JSON.stringify(await st()) + ' конец брода ' + Math.round(fordX)); await p.screenshot({ path: path.join(OUT, name + '-w4pass.png') });
     console.log(name + '\n  ' + log.join('\n  ') + '\n  ' + (errs.length ? errs.slice(0, 4).join(' | ') : 'без ошибок'));

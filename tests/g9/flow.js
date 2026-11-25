@@ -12,13 +12,13 @@ const SIZES = { phone: [390, 844, true], land: [844, 390, true], desk: [1280, 72
     await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud, null, { timeout: 60000 }); await p.waitForTimeout(1500);
     const tap = async (id) => { const q = await p.evaluate((id) => { const b = window.__mud.buttons.find((b) => b.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!q) { log.push('нет кнопки ' + id); return; } if (touch) await p.touchscreen.tap(q[0], q[1]); else await p.mouse.click(q[0], q[1]); await p.waitForTimeout(500); };
     const st = () => p.evaluate(() => { const m = window.__mud, S = m.S; return { mode: m.mode, x: Math.round(S.truck.x), cp: S.cp ? Math.round(S.cp.x) : 0, fuel: Math.round(S.fuel), b: [m.build.base, m.build.lift, m.build.wheel, m.build.axles, m.build.tires, m.build.snorkel].join('') }; });
-    await tap('p:lift:1'); await tap('p:tires:2'); await tap('p:snorkel:1'); log.push('детали: ' + JSON.stringify(await st()));
+    await tap('p:lift:1'); await tap('tab:1'); await tap('p:tires:2'); await tap('tab:2'); await tap('p:snorkel:1'); log.push('детали: ' + JSON.stringify(await st()));
     await tap('go'); log.push('в рейс: ' + JSON.stringify(await st()));
     // доезжаем до первой отметки без кадров ожидания: шаги считаем в странице
     await p.evaluate(() => { const m = window.__mud, S = m.S; m.dbg.freeze = true; let n = 0; while (!S.cp && n++ < 120 * 40) S.step({ gas: true, awd: true }); m.dbg.freeze = false; });
     await p.waitForTimeout(1200); await p.screenshot({ path: path.join(OUT, name + '-f1cp.png') }); log.push('отметка: ' + JSON.stringify(await st()));
     await tap('gar'); await p.waitForTimeout(800); await p.screenshot({ path: path.join(OUT, name + '-f2garage-resume.png') }); log.push('гараж: ' + JSON.stringify(await st()));
-    await tap('p:wheel:1'); await tap('cont'); await p.waitForTimeout(900); log.push('с отметки: ' + JSON.stringify(await st()));
+    await tap('tab:1'); await tap('p:wheel:1'); await tap('cont'); await p.waitForTimeout(900); log.push('с отметки: ' + JSON.stringify(await st()));
     // к финишу: ставим отметку перед лесопилкой и едем
     await p.evaluate(() => { const m = window.__mud, S = m.S; m.dbg.freeze = true; S.cp = { x: S.L.fin - 700, y: S.groundAt(S.L.fin - 700), fuel: 20 }; S.respawn(); m.dbg.freeze = false; m.keys.ArrowRight = true; });
     await p.waitForFunction(() => window.__mud.mode === 'win', null, { timeout: 90000 }).catch(() => log.push('не дождался финиша'));

@@ -1,9 +1,9 @@
 // быстрая сетка для настройки грязи: зона × режим × сборка; топливо не кончается
 global.window = global; require('../../g8-hook3d/physics.js'); require('../../g9-mud/mud2d.js');
 const M = global.MudSide, Z = M.ZONES;
-const B = { 'обыч': {}, 'дорож': { tires: 0 }, 'грязев': { tires: 2 }, 'кол1': { wheel: 1 }, 'кол2': { wheel: 2 }, '6×6': { axles: 3 }, 'лифт2': { lift: 2 }, 'длин': { base: 1 }, 'кол1+гряз': { wheel: 1, tires: 2 }, '6×6+гряз': { axles: 3, tires: 2 }, 'кол2+гряз+6×6': { wheel: 2, tires: 2, axles: 3 } };
+const B = { 'обыч': {}, 'дорож': { tires: 0 }, 'грязев': { tires: 2 }, 'кол1': { wheel: 1 }, 'кол2': { wheel: 2 }, '6×6': { axles: 3 }, 'спущ': { press: 0 }, 'накач': { press: 2 }, 'кол1+спущ': { wheel: 1, press: 0 }, 'гряз+спущ': { tires: 2, press: 0 }, 'защита': { skid: 1 }, 'кол2+гряз+6×6': { wheel: 2, tires: 2, axles: 3 } };
 const MO = { '2': {}, '4': { awd: 1 }, '4L': { awd: 1, low: 1 }, '4B': { awd: 1, lock: 1 }, '4LB': { awd: 1, low: 1, lock: 1 } };
-const zones = (process.argv[2] || 'soft,medium,sticky,swamp').split(','), len = +(process.argv[3] || 1500);
+const zones = (process.argv[2] || 'soft,medium,sticky,swamp,sand,clay,peat').split(','), len = +(process.argv[3] || 1500);
 console.log(''.padEnd(13) + Object.keys(B).map((n) => n.padEnd(8)).join(''));
 for (const zn of zones) for (const mn in MO) {
   let row = (zn + ' ' + mn).padEnd(13);
