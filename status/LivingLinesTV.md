@@ -1,16 +1,16 @@
 # Живые строки  (@LivingLinesTV)
-Проверено: 2026-11-25 06:54 UTC
+Проверено: 2026-11-25 08:43 UTC
 
 - Страница канала: HTTP 200; ID: UCuufuU5RCswqp9N1HE0NZlw
 - Шапка: 70 подписчиков · 61 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-25 06:00 · 53 просм. · 5 МЫСЛЕЙ О НАСТОЯЩЕЙ ДРУЖБЕ ✨ Эмерсон, Бэкон, Сервантес #shorts · hGPoNYtGCJM
-- 2026-11-24 16:00 · 64 просм. · Не имей сто рублей, а имей сто друзей ✨ Russian proverb + 2 more #shorts · o-V5Xpb4TL0
+- 2026-11-25 06:00 · 216 просм. · 5 МЫСЛЕЙ О НАСТОЯЩЕЙ ДРУЖБЕ ✨ Эмерсон, Бэкон, Сервантес #shorts · hGPoNYtGCJM
+- 2026-11-24 16:00 · 105 просм. · Не имей сто рублей, а имей сто друзей ✨ Russian proverb + 2 more #shorts · o-V5Xpb4TL0
 - 2026-11-24 11:00 · 540 просм. · Красота спасёт мир ✨ Words to keep | Fyodor Dostoevsky #shorts · bC2jTVFy8fI
-- 2026-11-24 06:00 · 1122 просм. · С ВОЗРАСТОМ ПОНИМАЕШЬ: 5 простых истин ✨ Достоевский, Сенека, Толстой #shorts · gzOUMngm3s0
+- 2026-11-24 06:00 · 1148 просм. · С ВОЗРАСТОМ ПОНИМАЕШЬ: 5 простых истин ✨ Достоевский, Сенека, Толстой #shorts · gzOUMngm3s0
 - 2026-11-23 16:00 · 513 просм. · Краткость — сестра таланта ✨ Anton Chekhov + 2 more #shorts · tnvNc0_bUBg
-- 2026-11-23 11:00 · 587 просм. · Утро вечера мудренее ✨ Words to keep | Russian proverb #shorts · 5UvxweDjAsk
+- 2026-11-23 11:00 · 591 просм. · Утро вечера мудренее ✨ Words to keep | Russian proverb #shorts · 5UvxweDjAsk
 - 2026-11-23 06:00 · 1447 просм. · 5 ПОСЛОВИЦ, ПРОВЕРЕННЫХ ВЕКАМИ ✨ казахская и русская мудрость #shorts · QxAl5X8AERw
 - 2026-11-22 16:00 · 598 просм. · Нет очарования, равного нежности сердца ✨ Jane Austen + 2 more #shorts · 8KpO2gs114I
 - 2026-11-22 11:00 · 543 просм. · Человек — это звучит гордо ✨ Words to keep | Maxim Gorky #shorts · IHLQCd08RCc
@@ -22,12 +22,12 @@
 - 2026-11-20 11:00 · 759 просм. · На свете счастья нет, но есть покой и воля ✨ Words to keep | Alexander Pushkin #shorts · fGe6Vnlo_qQ
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 53 просмотра · 5 МЫСЛЕЙ О НАСТОЯЩЕЙ ДРУЖБЕ ✨ Эмерсон, Бэкон, Сервантес #shorts · hGPoNYtGCJM
-- 7 просмотров · Не имей сто рублей, а имей сто друзей ✨ Russian proverb + 2 more #shorts · o-V5Xpb4TL0
+- 216 просмотров · 5 МЫСЛЕЙ О НАСТОЯЩЕЙ ДРУЖБЕ ✨ Эмерсон, Бэкон, Сервантес #shorts · hGPoNYtGCJM
+- 105 просмотров · Не имей сто рублей, а имей сто друзей ✨ Russian proverb + 2 more #shorts · o-V5Xpb4TL0
 - 553 просмотра · Красота спасёт мир ✨ Words to keep | Fyodor Dostoevsky #shorts · bC2jTVFy8fI
 - 1,1 тыс. просмотров · С ВОЗРАСТОМ ПОНИМАЕШЬ: 5 простых истин ✨ Достоевский, Сенека, Толстой #shorts · gzOUMngm3s0
 - 513 просмотров · Краткость — сестра таланта ✨ Anton Chekhov + 2 more #shorts · tnvNc0_bUBg
-- 587 просмотров · Утро вечера мудренее ✨ Words to keep | Russian proverb #shorts · 5UvxweDjAsk
+- 591 просмотр · Утро вечера мудренее ✨ Words to keep | Russian proverb #shorts · 5UvxweDjAsk
 - 1,4 тыс. просмотров · 5 ПОСЛОВИЦ, ПРОВЕРЕННЫХ ВЕКАМИ ✨ казахская и русская мудрость #shorts · QxAl5X8AERw
 - 598 просмотров · Нет очарования, равного нежности сердца ✨ Jane Austen + 2 more #shorts · 8KpO2gs114I
 - 543 просмотра · Человек — это звучит гордо ✨ Words to keep | Maxim Gorky #shorts · IHLQCd08RCc

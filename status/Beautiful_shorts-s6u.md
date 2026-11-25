@@ -1,12 +1,12 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-25 06:54 UTC
+Проверено: 2026-11-25 08:43 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 237 подписчиков · 150 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-24 21:03 · 1449 просм. · 3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr · 1tZcFYIjxJk
-- 2026-11-23 18:43 · 2461 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
+- 2026-11-23 18:43 · 2478 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
 - 2026-11-22 17:31 · 1358 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
 - 2026-11-21 20:22 · 1206 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
 - 2026-11-20 18:12 · 2866 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
