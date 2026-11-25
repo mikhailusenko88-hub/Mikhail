@@ -135,7 +135,7 @@ def short(yt, a, rel, num, it, body_when, last, pe):
 def main():
     a = request_line()
     mode = a[0] if a else ""
-    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb", "kanal", "sbornik", "delete"):
+    if mode not in ("check", "draft", "plan", "short", "cancel", "stats", "lang", "retime", "thumb", "kanal", "sbornik", "delete", "list"):
         return finish([f"НЕ ПОНЯЛ строку publish.txt: {' '.join(a)}"])
     if mode in ("draft", "plan", "short"):
         rel, num = a[1], a[2]
@@ -165,6 +165,10 @@ def main():
                        "последний: " + (f"{vids[0]['title'][:70]} — {vids[0]['views']} просмотров, категория {vids[0]['category']}, для детей: {vids[0]['kids']}" if vids else "—")])
     if mode == "cancel":
         return finish([f"ОТМЕНА {a[1]}: {yt.cancel(a[1])}"])
+    if mode == "list":                                         # 25.11.2026: все ролики канала (id, название, длина, доступ, просмотры) — youtube/all.json
+        vids = yt.last_videos(50)
+        os.makedirs(OUT, exist_ok=True); json.dump(vids, open(f"{OUT}/all.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        return finish([f"СПИСОК РОЛИКОВ: {len(vids)} — youtube/all.json"])
     if mode == "delete":                                       # 25.11.2026, «да» Михаила: delete [--dry] <id> … — только закрытые дубли без таймера и без просмотров, у которых есть живой двойник
         dry = "--dry" in a
         ids = [x for x in a[1:] if not x.startswith("--")]
