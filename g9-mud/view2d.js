@@ -22,7 +22,7 @@
       press: ['Низкое давление: шина шире — меньше тонет в песке и торфе, лучше гребёт. На твёрдом медленнее, расход больше.', 'Среднее давление.', 'Высокое давление: быстро и экономно по твёрдому, но в мягком режет грунт.'],
       ctis: ['Без подкачки: давление ставишь в гараже на весь рейс.', 'Подкачка: кнопка ШИНЫ спускает колёса на ходу — перед песком и торфом — и накачивает обратно.'],
       gear: ['Тяговая пара: тяга +25%, скорость −20%.', 'Средняя пара.', 'Скоростная пара: скорость +20%, тяга −18% — на подъёмах и в липком не вытянет.'],
-      winch: ['Лебёдка: трос 15 м.', 'Лебёдка с длинным тросом: 21 м и тянет быстрее.'],
+      winch: ['Лебёдка: трос 15 м. Тянет от мотора — жжёт топливо, без топлива не работает.', 'Лебёдка с длинным тросом: 21 м и тянет быстрее. Топливо жжёт так же.'],
       paint: ['Краска — на проходимость не влияет, зато красиво.'],
       base: ['Короткая база: легко переваливает гребни, но на крутом подъёме задирает нос.', 'Длинная база: в гору устойчива, но садится брюхом на гребне и тяжелее в грязи.'],
       lift: ['Без лифта: устойчив, но брюхо низко и брод мелкий.', 'Лифт +1: брюхо и брод выше на 17 см.', 'Лифт +2: ещё выше — но на самом крутом подъёме опрокидывает.'],
@@ -37,7 +37,10 @@
     awd: '4×4', lock: 'БЛОК', low: 'ПОНИЖ', winch: 'ЛЕБЁДКА', ahead: 'Впереди', soil: { shallow: 'мелкая грязь', soft: 'мягкая грязь', medium: 'грязь', sticky: 'липкая грязь', swamp: 'болото', sand: 'песок', clay: 'глина', peat: 'торф' }, crest: 'гребень', ford: 'брод', climb: 'подъём',
     hClog: 'Шины забиты: на твёрдом разгонись на обычной передаче — слетит. Или промой в броду', hSand: 'Песок: не буксуй. Назад по своему следу и с хода — или спусти шины',
     hAwd: 'Буксуешь? Включи 4×4', hLock: 'Не гребёт? Включи БЛОК', hLow: 'Закапываешься или мало тяги? Включи ПОНИЖ', hWinch: 'Держи ЛЕБЁДКУ — подтянет к дереву', hBack: 'Сдай назад и возьми с разгона', hHung: 'Сел брюхом. Назад и с разгона — или нужен клиренс: в гараж', hGar: 'Не проходит? Загляни в гараж: продолжишь с отметки',
-    hFuel: 'Топлива мало: выключай лишнее на твёрдой дороге', dFuel: 'Топливо кончилось', dWater: 'Мотор залило', dFlip: 'Перевернулся', cp: 'Отметка', can: '+30 топлива',
+    hFuel: 'Топлива мало: выключай лишнее на твёрдой дороге', hFuelLow: 'Топлива меньше четверти: не буксуй, ищи канистру', hFuelEnd: 'Топливо на исходе!',
+    mech: 'Механик', ready: 'Грузовик готов к этому заказу', buyPart: 'Купить', fitPart: 'Поставить', needC: (part, n, have) => `Нужно: ${part} — ¤ ${n}, у тебя ¤ ${have}. Подзаработай на прошлых заказах`,
+    why: { awd: 'без полного привода здесь встанешь в грязи и на подъёме', low: 'без пониженной крутой подъём не взять', lock: 'без блокировки в этой грязи колёса буксуют впустую', tires: 'на дорожных шинах из липкой грязи не выехать', tank: 'дорога длинная, одного бака может не хватить' },
+    hNew: { awd: 'Новая кнопка 4×4 слева: включай в грязи и в гору. На твёрдой дороге выключай — жжёт топливо', lock: 'Новая кнопка БЛОК: включай только в грязи', low: 'Новая кнопка ПОНИЖ: для крутых подъёмов и вязкой грязи. Едет медленно, топлива жжёт больше' }, dFuel: 'Топливо кончилось', dWater: 'Мотор залило', dFlip: 'Перевернулся', cp: 'Отметка', can: `+${M.CAN} л топлива`,
     tWater: (d, f, fix) => `Здесь брод ${d} м, а этот грузовик берёт ${f} м. На скорости не проскочить: зальёт всё равно. ${fix ? 'Хватит одного: ' + fix + '.' : 'Нужен шноркель.'}`, deep: (d, f) => `Брод ${d} м глубже, чем берёт грузовик (${f} м)`, deepFix: 'Хватит одного', tWaterG: (d, f, fix) => `Брод ${d} м, а грузовик берёт ${f} м. ${fix ? 'Хватит одного: ' + fix + '.' : 'Нужен шноркель.'}`, hDeep: (d, f) => `Стой! Впереди брод ${d} м, грузовик берёт ${f} м. На скорости не проскочить — нужна другая сборка`, orW: 'или', wheelsW: 'колёса', tFuel: 'На твёрдой дороге выключай 4×4, БЛОК и ПОНИЖ — они жгут топливо. Или поставь в гараже бак побольше.', tFlip: 'На крутом подъёме помогает длинная база или 6×6. Лифт мешает.', retry: 'Ещё раз', warn: (d, f) => `Брод ${d} м — грузовик берёт ${f} м!`,
     win: 'Полигон пройден!', s1: 'Доехал', s2: 'Без возвратов', s3: 'Топлива ≥ 20%', time: 'Время', fuel: 'Топливо', again: 'Ещё раз', toGar: 'В гараж',
     keys: '→ газ   ← назад   ·   1 — 4×4   2 — блок   3 — пониж   ·   Пробел — лебёдка   ·   R — на отметку   ·   G — гараж', sec: 'с',
@@ -58,7 +61,7 @@
       press: ['Low pressure: a wider tire sinks less in sand and peat and bites better. Slower and thirstier on firm ground.', 'Medium pressure.', 'High pressure: fast and thrifty on firm ground, but cuts into soft soil.'],
       ctis: ['No inflation system: pressure is set in the garage for the whole trip.', 'Inflation system: the TIRES button airs down on the move — before sand and peat — and back up.'],
       gear: ['Pull gearing: pull +25%, speed −20%.', 'Medium gearing.', 'Speed gearing: speed +20%, pull −18% — struggles on climbs and in sticky mud.'],
-      winch: ['Winch: 15 m cable.', 'Long-cable winch: 21 m and pulls faster.'],
+      winch: ['Winch: 15 m cable. Engine-driven: it burns fuel and will not work on an empty tank.', 'Long-cable winch: 21 m and pulls faster. Burns fuel just the same.'],
       paint: ['Paint: no effect on off-road ability, but it looks good.'],
       base: ['Short wheelbase: rolls over crests, but lifts its nose on steep climbs.', 'Long wheelbase: steady uphill, but high-centers on crests and is heavier in mud.'],
       lift: ['No lift: stable, but low belly and shallow fording.', 'Lift +1: belly and fording depth 17 cm higher.', 'Lift +2: higher still — but tips over on the steepest climb.'],
@@ -73,7 +76,10 @@
     awd: '4×4', lock: 'LOCK', low: 'LOW', winch: 'WINCH', ahead: 'Ahead', soil: { shallow: 'shallow mud', soft: 'soft mud', medium: 'mud', sticky: 'sticky mud', swamp: 'swamp', sand: 'sand', clay: 'clay', peat: 'peat' }, crest: 'crest', ford: 'ford', climb: 'climb',
     hClog: 'Tires clogged: on firm ground speed up in high range to shed it. Or wash them in a ford', hSand: 'Sand: don\'t spin. Back up along your track and take a run — or air down',
     hAwd: 'Wheels spinning? Switch on 4×4', hLock: 'No bite? Switch on LOCK', hLow: 'Digging in or no pull? Switch on LOW', hWinch: 'Hold WINCH — it pulls you to the tree', hBack: 'Back up and take a run at it', hHung: 'High-centered. Back up and take a run — or get more clearance in the garage', hGar: 'No way through? Visit the garage: you continue from the checkpoint',
-    hFuel: 'Low fuel: switch helpers off on firm road', dFuel: 'Out of fuel', dWater: 'Engine flooded', dFlip: 'Rolled over', cp: 'Checkpoint', can: '+30 fuel',
+    hFuel: 'Low fuel: switch helpers off on firm road', hFuelLow: 'Under a quarter tank: no wheelspin, look for a jerry can', hFuelEnd: 'Fuel almost gone!',
+    mech: 'Mechanic', ready: 'The truck is ready for this contract', buyPart: 'Buy', fitPart: 'Fit', needC: (part, n, have) => `You need: ${part} — ¤ ${n}, you have ¤ ${have}. Earn more on earlier contracts`,
+    why: { awd: 'without all-wheel drive you will stall in mud and on the climb', low: 'without low range the steep climb is out of reach', lock: 'without the diff lock the wheels just spin in this mud', tires: 'road tires will not get out of sticky mud', tank: 'the road is long, one tank may not be enough' },
+    hNew: { awd: 'New 4×4 button on the left: use it in mud and uphill. Off on firm road — it burns fuel', lock: 'New LOCK button: use it only in mud', low: 'New LOW button: for steep climbs and deep mud. Slow, and burns more fuel' }, dFuel: 'Out of fuel', dWater: 'Engine flooded', dFlip: 'Rolled over', cp: 'Checkpoint', can: `+${M.CAN} L of fuel`,
     tWater: (d, f, fix) => `This ford is ${d} m deep and this truck can take ${f} m. Speed will not help: it floods anyway. ${fix ? 'Any one of these is enough: ' + fix + '.' : 'You need a snorkel.'}`, deep: (d, f) => `The ${d} m ford is deeper than the truck can take (${f} m)`, deepFix: 'Any one is enough', tWaterG: (d, f, fix) => `The ford is ${d} m, the truck takes ${f} m. ${fix ? 'Any one is enough: ' + fix + '.' : 'You need a snorkel.'}`, hDeep: (d, f) => `Stop! A ${d} m ford ahead, the truck takes ${f} m. Speed will not help — change the build`, orW: 'or', wheelsW: 'wheels', tFuel: 'On firm road switch off 4×4, LOCK and LOW — they burn fuel. Or fit a bigger tank in the garage.', tFlip: 'On steep climbs a long wheelbase or 6×6 helps. Lift hurts.', retry: 'Try again', warn: (d, f) => `Ford ${d} m — the truck takes ${f} m!`,
     win: 'Proving ground cleared!', s1: 'Finished', s2: 'No returns', s3: 'Fuel ≥ 20%', time: 'Time', fuel: 'Fuel', again: 'Again', toGar: 'Garage',
     keys: '→ gas   ← reverse   ·   1 — 4×4   2 — lock   3 — low   ·   Space — winch   ·   R — checkpoint   ·   G — garage', sec: 's',
@@ -117,6 +123,7 @@
   let save = { coins: 0, own: {}, build: Object.assign({}, START), stars: {} };
   try { const q = JSON.parse(localStorage.getItem('mud4.save') || 'null'); if (q && q.build) { save = Object.assign(save, q); save.build = Object.assign({}, START, q.build); } } catch (e) { /* */ }
   const persist = () => { try { localStorage.setItem('mud4.save', JSON.stringify(save)); localStorage.setItem('mud3.build', JSON.stringify(build)); } catch (e) { /* */ } };
+  let newKey = '', fuelLvl = 2; // подсказка про только что купленную кнопку; ступень предупреждения о топливе
   let career = true, cur = -1, sel = -1, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9;
   const kindOf = (i) => (career && i >= 0 ? M.CONTRACTS[i].cargo : 'log'), capNow = () => M.capOf(M.spec(save.build), kindOf(Math.max(0, sel)));
   const optIdx = (k, v) => PARTS.find((q) => q[0] === k)[1].indexOf(v), priceOf = (k, v) => (PRICE[k] ? PRICE[k][optIdx(k, v)] : 0);
@@ -138,18 +145,29 @@
     return out;
   }
   const fixText = (fx) => (fx.length > 1 ? fx.slice(0, -1).map((q) => q[0]).join(', ') + ' ' + T.orW + ' ' + fx[fx.length - 1][0] : fx.length ? fx[0][0] : '');
+  // совет механика: первая деталь, без которой выбранный заказ не проехать, — чтобы новичку не разбираться во всём гараже
+  const partName = (k, v) => { const vals = PARTS.find((q) => q[0] === k)[1]; return vals.length === 2 ? T.p[k] : `${T.p[k]} ${T.o[k][vals.indexOf(v)]}`; };
+  function advice() {
+    const i = sel >= 0 ? sel : cur; if (!career || i < 0) return null; const bd = save.build;
+    for (const [k, v, kind] of M.CONTRACTS[i].need || []) {
+      if (bd[k] >= v) continue; const df = kind === 'ford' ? deepFord() : null; if (kind === 'ford' && !df) continue;
+      return { k, v, price: priceOf(k, v), own: owns(k, v), opt: kind === 'opt', why: df ? T.deep(fmt(df.val), fmt(S.cfg.ford / PX, 2)).toLowerCase() : T.why[k] };
+    }
+    return null;
+  }
   const fordPx = (sg) => { const w = S.L.water.find((q) => q.x1 > sg.x), z = w && S.L.mud.find((q) => q.wet && q.x0 > w.x0 && q.x1 < w.x1); return w ? w.depth + (z ? z.d : 0) : sg.val * PX; }; // настоящая глубина брода за указателем: вода плюс ил
   const tooDeep = (sg) => sg.kind === 'ford' && fordPx(sg) > S.cfg.ford; // то же сравнение, по которому заливает мотор
   const deepFord = () => S.L.signs.filter(tooDeep).sort((a, b) => b.val - a.val)[0]; // самый глубокий брод маршрута, который эта сборка не берёт
   const fordHere = () => { const w = S.L.water.find((q) => S.truck.x > q.x0 - 300 && S.truck.x < q.x1 + 300), z = w && S.L.mud.find((q) => q.wet && q.x0 > w.x0 && q.x1 < w.x1); return (w ? w.depth : 0) + (z ? z.d : 0); }; // глубина брода, в котором стоит грузовик: вода плюс ил
   function failTip() { const dpx = fordHere(); return S.why === 'water' ? T.tWater(fmt(dpx / PX), fmt(S.cfg.ford / PX, 2), fixText(fordFix(dpx))) : S.why === 'fuel' ? T.tFuel : T.tFlip; }
-  function toGarage(keep) { let tip = mode === 'play' && S.state === 'dead' ? failTip() : null; if (tip && S.why === 'water') { const dpx = fordHere(), fx = fordFix(dpx); tab = fx.some((q) => q[1] === 'lift') ? 0 : 3; tip = T.tWaterG(fmt(dpx / PX), fmt(S.cfg.ford / PX, 2), fixText(fx)); } paused = false; resume = !career && keep && S.cp ? { x: S.cp.x, y: S.cp.y } : null; pend = null; mode = 'garage'; newSim(); if (tip) note = tip; camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
+  function toGarage(keep) { let tip = mode === 'play' && S.state === 'dead' ? failTip() : null; if (tip && S.why === 'water') { const dpx = fordHere(), fx = fordFix(dpx); tab = fx.some((q) => q[1] === 'lift') ? 0 : 3; tip = T.tWaterG(fmt(dpx / PX), fmt(S.cfg.ford / PX, 2), fixText(fx)); } paused = false; resume = !career && keep && S.cp ? { x: S.cp.x, y: S.cp.y } : null; pend = null; mode = 'garage'; newSim(); if (tip) note = tip; else { const a = advice(); if (a) { note = `${T.mech}: ${a.why}. ${partName(a.k, a.v)}${a.own ? '' : ' — ' + a.price}.`; tab = PARTS.find((q) => q[0] === a.k)[2]; } } camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
   function toMenu(keep) { career = true; cur = -1; if (!keep) sel = -1; paused = false; pend = null; res = null; resume = null; mode = 'menu'; newSim(); camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
   function buy() { if (!pend) return; const pr = priceOf(pend.k, pend.v); if (save.coins < pr) { tone(200, 0.15, 0.12); return; } save.coins -= pr; (save.own[pend.k] = save.own[pend.k] || []).push(pend.v); save.build[pend.k] = pend.v; pend = null; persist(); newSim(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); }
   function start(fromCp) {
     if (career) { cur = sel >= 0 ? sel : cur; fromCp = false; } pend = null; res = null; paused = false; adTow = 0; newSim(); sw.awd = sw.lock = sw.low = sw.soft = false;
     if (fromCp && resume) { S.cp = { x: resume.x, y: resume.y, fuel: S.cfg.tank }; S.respawn(); rebuilds++; } else rebuilds = 0;
-    S.events.length = 0; mode = 'play'; camX = S.truck.x + 200; camY = S.truck.y - 70; ptrs.clear(); toast = null;
+    S.events.length = 0; mode = 'play'; camX = S.truck.x + 200; camY = S.truck.y - 70; ptrs.clear(); toast = null; fuelLvl = 2;
+    save.seen = save.seen || {}; newKey = career ? ['awd', 'lock', 'low'].find((k) => S.cfg.b[k] && !save.seen[k]) || '' : ''; if (newKey) { save.seen[newKey] = 1; persist(); }
   }
   // рейс закончен: считаем деньги и звёзды
   function finish() {
@@ -429,6 +447,7 @@
     if (id === 'go') start(false); else if (id === 'cont') start(true); else if (id === 'gar') toGarage(mode === 'play'); else if (id === 'again') start(false);
     else if (id === 'menu') toMenu(mode === 'garage' && career); else if (id === 'pause') { if (mode === 'play' && S.state === 'play') paused = true; } else if (id === 'resume') paused = false; else if (id === 'quit') toMenu(true);
     else if (id === 'towad') adReward(() => tow(true)); else if (id === 'x2') adReward(() => { if (res && !res.doubled) { res.doubled = true; save.coins += res.total; persist(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); } });
+    else if (id === 'adv') { const a = advice(); if (a && (a.own || save.coins >= a.price)) { if (!a.own) { save.coins -= a.price; (save.own[a.k] = save.own[a.k] || []).push(a.v); } save.build[a.k] = a.v; persist(); newSim(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); } else tone(200, 0.15, 0.12); }
     else if (id === 'adcoins') adReward(() => { if (pend) { save.coins = Math.max(save.coins, priceOf(pend.k, pend.v)); persist(); tone(990, 0.14, 0.12); } });
     else if (id === 'poly') { career = false; cur = -1; sel = -1; toGarage(false); } else if (id === 'buy') buy(); else if (id === 'unsel') { sel = -1; newSim(); }
     else if (id.slice(0, 2) === 'c:') { const i = +id.slice(2); if (unlocked(i)) { sel = i; nlogs = Math.ceil(capNow() / 2); newSim(); tone(660, 0.06, 0.1); } else tone(200, 0.12, 0.1); }
@@ -481,7 +500,7 @@
     if (career) { const t = '¤ ' + save.coins; font(18); const tw = ctx.measureText(String(save.coins)).width + 48, cx = (L ? px : W) - tw - 10; ctx.fillStyle = 'rgba(0,0,0,0.5)'; rr(cx, 12, tw, 38, 19); ctx.fill(); ctx.fillStyle = '#ffe082'; ctx.textAlign = 'center'; fillC(t, cx + tw / 2, 32); } // монеты
     return { L, x0: px + (L ? 12 : 20), ww: (L ? pw : W - 16) - 24, top, small, view: { px: L ? px / 2 : W / 2, py: L ? H2 * 0.56 : top * 0.62, zw: L ? px : W, zh: L ? H2 : top } };
   }
-  const statsOf = (c) => { const pr = c.PR[c.b.press]; return [c.clear / PX, c.ford / PX, (100 * c.tqLow / c.WR) / (264000 / 27), ((c.tank / (0.1 + c.burn * pr.bn * 1.35)) * c.spHigh * pr.sp * c.WR * 0.8) / PX]; };
+  const statsOf = (c) => { const pr = c.PR[c.b.press]; return [c.clear / PX, c.ford / PX, (100 * c.tqLow / c.WR) / (264000 / 27), ((c.tank / (0.1 + c.burn * pr.bn * M.F_AWD)) * c.spHigh * pr.sp * c.WR * 0.8) / PX]; };
   function drawGarage() {
     const { x0, ww, top, small, view } = panel(T.garage), c = S.cfg, bd = BD();
     // сводка: четыре числа, которые сравниваешь с указателями на дороге. При примерке видно, что изменится: зелёное — лучше, красное — хуже
@@ -492,7 +511,7 @@
     const th = small ? 32 : 38, tw = (ww - 18) / 4; // вкладки
     T.tabs.forEach((n, i) => { const b = { id: 'tab:' + i, x: x0 + i * (tw + 6), y, w: tw, h: th }, on = tab === i; buttons.push(b); ctx.fillStyle = on ? '#37474f' : '#eceff1'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = on ? '#fff' : '#546e7a'; ctx.textAlign = 'center'; font(Math.min(15, (tw * 1.7) / n.length), 900); ctx.fillText(n, b.x + tw / 2, b.y + th / 2 + 1, tw - 6); });
     y += th + 8;
-    const goH = small ? 46 : 56, noteH = small ? 48 : 60, rows = PARTS.filter((q) => q[2] === tab), rh = Math.min(52, (H2 - 8 - y - goH - noteH - 22) / 5), lw = Math.min(124, ww * 0.31);
+    const goH = small ? 46 : 56, noteH = small ? 48 : 60, fine = !career || (save.stars.creek || 0) > 0, rows = PARTS.filter((q) => q[2] === tab && (fine || !['press', 'susp', 'gear'].includes(q[0]))), rh = Math.min(52, (H2 - 8 - y - goH - noteH - 22) / 5), lw = Math.min(124, ww * 0.31);
     for (const [k, vals] of rows) {
       if (k === 'paint') { // краска — кружки с цветом
         const bw = Math.min(rh - 6, (ww - 5 * 8) / 6);
@@ -555,14 +574,20 @@
       const chips = [], badC = new Set(), df = deepFord(); for (const sg of S.L.signs) { const t = sg.kind === 'ford' ? T.ford + ' ' + fmt(sg.val) + ' ' + T.m : sg.kind === 'soil' ? T.soil[sg.val] : sg.kind === 'crest' ? T.crest : T.climb; if (!chips.includes(t)) chips.push(t); if (tooDeep(sg)) badC.add(t); }
       let cx = x0; font(small ? 11 : 13, 800); const chH = small ? 22 : 25; for (const t of chips) { const tw = ctx.measureText(t).width + 18; if (cx + tw > x0 + ww) { cx = x0; y += chH + 4; } ctx.fillStyle = badC.has(t) ? '#c62828' : '#eceff1'; rr(cx, y, tw, chH, 12); ctx.fill(); ctx.fillStyle = badC.has(t) ? '#fff' : '#455a64'; ctx.fillText(t, cx + 9, y + chH / 2 + 1); cx += tw + 6; }
       y += chH + (small ? 8 : 14);
-      if (df) { // брод глубже, чем берёт эта сборка: говорим до выезда и сразу — что поставить
+      const adv = advice(); // что поставить: одна деталь, цена и кнопка — в гараж идти не обязательно
+      if (adv) {
+        const can = adv.own || save.coins >= adv.price, bhA = small ? 34 : 40, col = adv.opt ? '#ef6c00' : '#c62828', wl = lines(`🔧 ${T.mech}: ${adv.why}.` + (can ? '' : ' ' + T.needC(partName(adv.k, adv.v), adv.price, save.coins)), ww - 20, small ? 12 : 13, 800).slice(0, 3), lhA = small ? 15 : 17, wh = wl.length * lhA + 12 + (can ? bhA + 8 : 0);
+        ctx.fillStyle = adv.opt ? '#fff3e0' : '#ffebee'; rr(x0, y - 4, ww, wh, 10); ctx.fill(); ctx.fillStyle = col; ctx.textAlign = 'left'; wl.forEach((q, i) => fillC(q, x0 + 10, y + 9 + i * lhA, ww - 20));
+        if (can) { const bA = { id: 'adv', x: x0 + 10, y: y + wl.length * lhA + 6, w: ww - 20, h: bhA }; buttons.push(bA); btn(bA, adv.own ? `${T.fitPart}: ${partName(adv.k, adv.v)}` : `${T.buyPart}: ${partName(adv.k, adv.v)} — ¤ ${adv.price}`, '#43a047', false, small ? 14 : 16); ctx.textAlign = 'left'; }
+        y += wh + (small ? 4 : 8);
+      } else if (df) { // брод глубже, чем берёт сборка, а в списке заказа этого нет (полигон или своя сборка)
         const fx = fixText(fordFix(fordPx(df))), wl = lines(`⚠ ${T.deep(fmt(df.val), fmt(S.cfg.ford / PX, 2))}. ${fx ? T.deepFix + ': ' + fx + '.' : ''}`, ww - 20, small ? 12 : 13, 800).slice(0, 3), wh = wl.length * (small ? 15 : 17) + 12;
         ctx.fillStyle = '#ffebee'; rr(x0, y - 4, ww, wh, 10); ctx.fill(); ctx.fillStyle = '#c62828'; wl.forEach((q, i) => ctx.fillText(q, x0 + 10, y + 9 + i * (small ? 15 : 17), ww - 20)); y += wh + (small ? 4 : 8);
-      }
+      } else { ctx.fillStyle = '#2e7d32'; font(small ? 12 : 13, 800); ctx.fillText('✓ ' + T.ready, x0, y + 5, ww); y += small ? 18 : 22; }
       cargoIcon(c.cargo, x0 + 13, y + 22, 13); ctx.fillStyle = '#37474f'; font(small ? 15 : 17, 900); ctx.fillText(`${T.cg[c.cargo]}: ${n} ${T.of} ${cap}`, x0 + 34, y + 14, ww - 160);
       ctx.fillStyle = '#78909c'; font(small ? 11 : 12, 800); ctx.fillText(`${T.wt} ${fmt(n * CG.m)} ${T.tn}`, x0 + 34, y + 33, ww - 160);
       const bm = { id: 'lg-', x: x0 + ww - 116, y, w: 52, h: 44 }, bp = { id: 'lg+', x: x0 + ww - 56, y, w: 52, h: 44 }; buttons.push(bm, bp); btn(bm, '−', n > 1 ? '#546e7a' : '#cfd8dc', false, 26); btn(bp, '+', n < cap ? '#546e7a' : '#cfd8dc', false, 26); y += small ? 50 : 56; ctx.textAlign = 'left';
-      const nl = lines(T.cgN[c.cargo], ww - 4, small ? 12 : 13, 700).slice(0, 2); ctx.fillStyle = '#546e7a'; nl.forEach((q, i) => ctx.fillText(q, x0, y + 7 + i * (small ? 15 : 17), ww)); y += nl.length * (small ? 15 : 17) + (small ? 8 : 12);
+      const nl = (gy - y > (adv ? 150 : 110) ? lines(T.cgN[c.cargo], ww - 4, small ? 12 : 13, 700).slice(0, 2) : []); ctx.fillStyle = '#546e7a'; nl.forEach((q, i) => ctx.fillText(q, x0, y + 7 + i * (small ? 15 : 17), ww)); y += nl.length * (small ? 15 : 17) + (small ? 8 : 12);
       ctx.fillStyle = '#ef6c00'; font(small ? 16 : 19, 900); fillC(`${T.payL}: ${n} × ¤ ${c.pay} = ¤ ${n * c.pay}`, x0, y + 8, ww); y += small ? 22 : 28;
       if (y + 16 < gy) { ctx.fillStyle = '#90a4ae'; font(small ? 11 : 13, 700); ctx.fillText(T.fuelL, x0, y + 8, ww); }
       const w3 = (ww - 16) / 3, b0 = { id: 'unsel', x: x0, y: gy, w: w3 * 0.6, h: goH }, b1 = { id: 'gar', x: x0 + w3 * 0.6 + 8, y: gy, w: w3 * 1.05, h: goH }, b2 = { id: 'go', x: x0 + w3 * 1.65 + 16, y: gy, w: ww - w3 * 1.65 - 16, h: goH }; buttons.push(b0, b1, b2);
@@ -581,7 +606,8 @@
   function hint() {
     if (S.state === 'dead') return [S.why === 'fuel' ? T.dFuel : S.why === 'water' ? T.dWater : T.dFlip, 'rgba(183,28,28,0.88)'];
     const nf = S.L.signs.find((q) => q.x + 200 > S.truck.x && q.x - 700 < S.truck.x && tooDeep(q)); if (nf && S.depth < 6) return [T.hDeep(fmt(nf.val), fmt(S.cfg.ford / PX, 2)), Math.sin(realT * 6) > 0 ? 'rgba(198,40,40,0.95)' : 'rgba(230,81,0,0.95)'];
-    if (toast && realT - toast.t < 1.6) return [toast.s, toast.bad ? 'rgba(183,28,28,0.9)' : 'rgba(46,125,50,0.88)'];
+    if (toast && realT - toast.t < (toast.long ? 3.2 : 1.6)) return [toast.s, toast.bad ? 'rgba(183,28,28,0.9)' : 'rgba(46,125,50,0.88)'];
+    if (newKey && S.t < 7 && S.stuckT < 1) return [T.hNew[newKey], 'rgba(21,101,192,0.94)'];
     if (S.hung && S.stuckT > 0.8) return [T.hHung, 'rgba(230,81,0,0.92)'];
     if (S.soil === 'sand' && S.stuckT > 1 && !sw.soft && S.cfg.b.press > 0) return [T.hSand, 'rgba(230,81,0,0.92)'];
     if (S.inMud === 0 && Math.max(...S.clog) > 0.6 && S.wade === 0) return [T.hClog, S.stuckT > 0.6 ? 'rgba(230,81,0,0.92)' : 'rgba(0,0,0,0.5)'];
@@ -671,6 +697,7 @@
       if (mode === 'play') inp = input();
       acc += dt; let n = 0; while (acc >= P.DT && n < 8) { S.step(idle ? {} : inp); acc -= P.DT; n++; }
       if (idle) S.fuel = S.cfg.tank;
+      if (mode === 'play' && S.state === 'play') { const fk = S.fuel / S.cfg.tank; if (fk > 0.3) fuelLvl = 2; else if (fk < 0.1 && fuelLvl > 0) { fuelLvl = 0; toast = { s: T.hFuelEnd, t: realT, bad: true, long: true }; tone(300, 0.25, 0.14); } else if (fk < 0.25 && fuelLvl > 1) { fuelLvl = 1; toast = { s: T.hFuelLow, t: realT, bad: true, long: true }; tone(360, 0.2, 0.12); } }
       for (const e of S.events) {
         if (idle) continue;
         if (e.e === 'cp') { toast = { s: T.cp, t: realT }; tone(880, 0.1, 0.1); } else if (e.e === 'can') { toast = { s: T.can, t: realT }; tone(990, 0.14, 0.12); }
