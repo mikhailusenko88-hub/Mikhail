@@ -1,5 +1,5 @@
 // Правило грузоподъёмности с прицепами и 8 ступенями мотора: сборка с полным разрешённым кузовом бочек должна доехать на трёх самых тяжёлых заказах.
-// Сборка поздней игры: лифт 1, шноркель, большой бак. node tests/g9/payload2.js [база] — по одной базе, чтобы гонять параллельно
+// Сборка поздней игры: лифт 1, шноркель, большой бак. Заказы — все четыре с бочками. node tests/g9/payload2.js [база] — по одной базе, чтобы гонять параллельно
 global.window = global; require('../../g8-hook3d/physics.js'); require('../../g9-mud/mud2d.js'); const M = global.MudSide;
 const A = { awd: 1, low: 1, lock: 1, tires: 1, snorkel: 1, lift: 1, tank: 1 };
 function drive(c, build, cargo) {
@@ -12,7 +12,7 @@ function drive(c, build, cargo) {
     S.step(inp); t += 1 / 120; S.events.length = 0; if (S.stuckT > 8 || hangs > 4) break; }
   return S.state === 'win' ? '' : (S.state === 'dead' ? S.why : 'встал') + '@' + Math.round(S.truck.x / 54);
 }
-const CT = ['pit', 'wetclay', 'twofords'].map((id) => M.CONTRACTS.find((q) => q.id === id)); let bad = 0, all = 0;
+const CT = ['pit', 'bog', 'wetclay', 'twofords'].map((id) => M.CONTRACTS.find((q) => q.id === id)); let bad = 0, all = 0;
 for (const base of process.argv[2] ? [+process.argv[2]] : [0, 1, 2]) for (const axles of [2, 3]) for (const trailer of [0, 1, 2]) { const row = [];
   for (const eng of [0, 2, 4, 5, 6, 8]) { const bd = Object.assign({}, A, { base, axles, eng, trailer }), C = M.spec(bd), cap = M.capOf(C, 'barrel'), f = CT.map((c) => drive(c, bd, cap)).map((q, i) => (q ? CT[i].id + ':' + q : '')).filter(Boolean); all++; if (f.length) bad++;
     row.push(`ф${eng}: ${cap} боч (${M.payT(C)} т)${f.length ? ' ✗ ' + f.join(',') : ''}`); }
