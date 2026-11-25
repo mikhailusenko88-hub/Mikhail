@@ -12,7 +12,7 @@ LOGO = {"hi": ("बारसिक", "बिल्ला"), "en": ("Barsik", "th
         "fr": ("Barsik", "le Chat"), "ar": ("بارسيك", "القط")}
 
 
-def make_logo(big, small):
+def make_logo(big, small, rtl=False):
     def logo(img, k=1.0):
         L = Image.new('RGBA', (680 * S, 300 * S), (0, 0, 0, 0))
         f1, f2 = C.font(64 * S), C.font(96 * S)
@@ -26,6 +26,8 @@ def make_logo(big, small):
             C.outlined_text(L, xy, t, f, (255, 190, 40, 255), (110, 52, 14, 255), 7 * S, shadow=False, grad=((255, 226, 92), (246, 128, 22)))
         d = ImageDraw.Draw(L)   # лапка после мелкой строки, как у «Кот»
         px, py, r = 78 * S + d.textlength(small, font=f1) + 30 * S, 150 * S, 15 * S
+        if rtl:   # справа налево: слово кончается слева — лапка там же (справа она закрывала букву «ر» в «بارسيك»)
+            px, py = 78 * S - 34 * S, 168 * S
         col, oc = (246, 128, 22, 255), (110, 52, 14, 255)
         for grow, fl in ((4 * S, 'white'), (0, None)):
             for (dx, dy, rr) in ((0, 14, 1.05), (-17, -6, .5), (-6, -17, .5), (8, -17, .5), (19, -6, .5)):
@@ -52,7 +54,7 @@ if lang == 'ar':   # арабский: справа налево, буквы с�
     C.font = lambda px: ImageFont.truetype(AR, int(px * float(os.environ.get('AR_K', '0.9'))), layout_engine=ImageFont.Layout.RAQM)
     _place = A.place          # знак вопроса в кадре — арабский «؟» (латинского «?» в арабском шрифте нет)
     A.place = lambda cv, it, el: _place(cv, dict(it, mark='؟') if it.get('mark') == '?' else it, el)
-C.logo = make_logo(*LOGO[lang])
+C.logo = make_logo(*LOGO[lang], rtl=(lang == 'ar'))
 _pill, _banner = C.pill, C.banner
 C.pill = lambda img, t: _pill(img, series)
 K = 1.3 if lang == 'hi' else 1.0   # буквы деванагари ниже латиницы — свиток крупнее
