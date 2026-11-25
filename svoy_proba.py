@@ -180,8 +180,9 @@ def main(target, pin=False):
             pr = json.load(open(f, encoding="utf-8"))
             found.append((os.path.basename(f)[:-5], np.array(pr["win"]["spe"], dtype=float), pr["win"]["score"]))
         found.sort(key=lambda x: -x[2])
-        late = [f for f in found if f[0][-1] in "bc"]              # вторые и третьи круги (у третьего в оценке ещё и спектр, сравнивать оценки кругов нельзя)
-        found = late[:4] if late else found[:3]
+        late = [f for f in found if f[0][-1] in "bcd"]             # круги 2–4 (с третьего в оценке ещё и спектр — оценки кругов между собой не сравнивать)
+        last = [f for f in late if f[0][-1] == "d"]
+        found = (last + [f for f in late if f[0][-1] != "d"][:2]) if late else found[:3]
         mans = [("основа", None, "medium")]
         for f in sorted(glob.glob(f"{OUT}/man_{target}_*.json")):
             pr = json.load(open(f, encoding="utf-8"))
