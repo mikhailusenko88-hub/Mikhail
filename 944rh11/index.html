@@ -24,6 +24,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);overflow:hidde
   display:flex;flex-direction:column;gap:8px}
 @media (min-width:900px){#app{flex-direction:row}.bar{width:400px;max-height:none;height:100%;border-top:0;border-left:1px solid var(--line)}}
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+[hidden]{display:none!important}
 .lbl{font-size:12px;color:var(--muted);min-width:74px}
 .note{font-size:12.5px;margin:0;color:var(--muted);line-height:1.35}
 .sum{font-size:13px;font-weight:600;line-height:1.4;margin:0;padding:7px 9px;border-left:3px solid var(--accent);background:rgba(47,111,143,.09);border-radius:4px}
@@ -55,6 +56,7 @@ select{font:13px var(--f-ui);padding:6px 8px;border:1px solid var(--line);border
     <p class="sum" id="sum"></p>
     <div class="row"><span class="lbl">Планировка</span><span class="row" id="segLay"></span></div>
     <div class="row"><span class="lbl">Материал</span><span class="row" id="segMat"></span></div>
+    <div class="row" id="rowFl"><span class="lbl">Рифление</span><span class="row" id="segFl"></span></div>
     <p class="note" id="note"></p>
     <div class="row"><span class="lbl">Цвет для</span><select id="tgt" aria-label="Что красим"></select></div>
     <div class="sw" id="sw"></div>
@@ -212,11 +214,20 @@ const LAYS={
   top:[[0,0,600,800],[600,0,2200,600],[2200,600,600,1000]], splash:{back:2800,left:800,right:1600}, cam:[[1.4,1.85,4.3],[1.4,1.15,0.7]],
   zones:[[0,0,600,800,'у холодильника 80 см'],[1180,0,600,600,'60 см'],[1780,0,1020,600,'рабочая зона 1 м + угол'],[2200,1180,600,420,'42 см']]}
 };
-const MATV={A:{name:'А · МДФ в плёнке',note:'Фасады — МДФ в матовой плёнке ПВХ, верхние — рифлёные; видимые боковины — тоже МДФ; корпус — белая ЛДСП.'},
+const MATV={A:{name:'А · МДФ в плёнке',note:'Фасады — МДФ в матовой плёнке ПВХ; видимые боковины — тоже МДФ; корпус — белая ЛДСП.'},
             B:{name:'Б · ЛДСП',note:'Всё из ЛДСП Egger: фасады гладкие, корпус белый. Рифление на ЛДСП не делается.'}};
 
+// рифление фасадов (только МДФ): какие фасады рифлёные
+const FLV={photo:{name:'Как на фото',note:'рифлёные верхние над столешницей, остальное гладкое.'},
+  up:{name:'Весь верх',note:'все верхние шкафы рифлёные, низ гладкий.'},
+  upPen:{name:'Верх + пенал',note:'верхние и пенал с холодильником рифлёные, низ гладкий.'},
+  all:{name:'Всё рифлёное',note:'все фасады рифлёные — и верх, и низ.'},
+  low:{name:'Низ рифлёный',note:'низ и пенал рифлёные, верх гладкий.'},
+  none:{name:'Всё гладкое',note:'все фасады гладкие.'}};
+function flEff(code,orig){const up=/^[ВС]/.test(code),pen=/^П/.test(code);
+  switch(state.flute||'photo'){case 'up':return up;case 'upPen':return up||pen;case 'all':return true;case 'low':return !up;case 'none':return false;default:return orig}}
 // ---------- состояние (выбор клиента сохраняется в его браузере)
-const DEF={lay:1,mat:'A',all:{c:'#f2f1ec',n:'Белый W1100'},low:null,up:null,mods:{},top:{c:'#8c8a86',n:'Бетон серый'},splash:{c:'#c4c1bc',n:'Бетон светлый'},frame:{c:'#1d1d1d',n:'Чёрный'}};
+const DEF={lay:1,mat:'A',flute:'photo',all:{c:'#f2f1ec',n:'Белый W1100'},low:null,up:null,mods:{},top:{c:'#8c8a86',n:'Бетон серый'},splash:{c:'#c4c1bc',n:'Бетон светлый'},frame:{c:'#1d1d1d',n:'Чёрный'}};
 let state=JSON.parse(JSON.stringify(DEF));
 try{const s=JSON.parse(localStorage.getItem('p1007')||'null');if(s&&s.all)state=Object.assign(state,s)}catch(e){}
 function save(){try{localStorage.setItem('p1007',JSON.stringify(state))}catch(e){}}
@@ -286,14 +297,14 @@ const ZONE_MAT=new THREE.MeshBasicMaterial({color:0x4fbf74,transparent:true,opac
 const FRONTS=[], VIS=[], FRAMES=[], EDGE=new THREE.LineBasicMaterial({color:0x8f8f8a,transparent:true,opacity:0.5});
 function frontMesh(mod,w,h,fluted,name){
   const g=new THREE.BoxGeometry(w*S,h*S,FT*S);
-  if(fluted){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*w/26)}
+  {const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*w/26)} // шаг рифления 26 мм — на любом фасаде, включается выбором
   const m=new THREE.Mesh(g,MATS.white); m.userData.front={mod,fluted}; m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),EDGE));
   FRONTS.push(m); applyFront(m); mod.hasFront=true;
   
   return m;
 }
 function applyFront(m){const {mod,fluted}=m.userData.front, M=mod.mats;
-  const face=(state.mat==='A'&&fluted)?M.flute:M.front, back=state.mat==='A'?MATS.inner:M.front;
+  const face=(state.mat==='A'&&flEff(mod.code,fluted))?M.flute:M.front, back=state.mat==='A'?MATS.inner:M.front;
   m.material=[M.front,M.front,M.front,M.front,face,back]}
 function visPanel(mod,x,y,w,h,d,outer,parent){const m=box(w,h,d,x,y,0,MATS.white,parent||mod.g);m.userData.vis={mod,outer};VIS.push(m);applyVis(m);return m}
 function applyVis(m){const {mod,outer}=m.userData.vis, M=mod.mats.front, inn=state.mat==='A'?MATS.white:M;
@@ -622,10 +633,13 @@ function drawSel(){const L=LAYS[state.lay];const parts=[`Фасады: ${state.a
 function seg(el,items,cur,on){el.innerHTML='';items.forEach(([v,n])=>{const b=document.createElement('button');b.textContent=n;b.setAttribute('aria-pressed',String(v)===String(cur));b.onclick=()=>on(v);el.appendChild(b)})}
 function setLayout(id){const prev=state.lay;state.lay=+id;Object.keys(LAYS).forEach(k=>{LAYS[k].root.visible=(+k===state.lay)});save();refresh();if(LAYS[prev].cam||LAYS[state.lay].cam)V3D()}
 function setMat(v){state.mat=v;applyAll();save();refresh()}
+function setFl(v){state.flute=v;applyAll();save();refresh()}
 function refresh(){
   seg(document.getElementById('segLay'),Object.keys(LAYS).map(k=>[k,LAYS[k].name]),state.lay,setLayout);
   seg(document.getElementById('segMat'),Object.keys(MATV).map(k=>[k,MATV[k].name]),state.mat,setMat);
-  document.getElementById('note').textContent=LAYS[state.lay].note+' '+MATV[state.mat].note;
+  seg(document.getElementById('segFl'),Object.keys(FLV).map(k=>[k,FLV[k].name]),state.flute||'photo',setFl);
+  document.getElementById('rowFl').hidden=state.mat!=='A';
+  document.getElementById('note').textContent=LAYS[state.lay].note+' '+MATV[state.mat].note+(state.mat==='A'?' Рифление: '+FLV[state.flute||'photo'].note:'');
   document.getElementById('sum').textContent=LAYS[state.lay].sum;
   drawTargets();drawSw();drawSel();drawTab();
   
