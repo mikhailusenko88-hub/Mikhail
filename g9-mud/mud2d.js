@@ -73,12 +73,12 @@
   const edge = (z, x) => sst(0, 170, x - z.x0) * sst(0, 170, z.x1 - x); // края грязи пологие: въезжаешь постепенно
 
   function create(routeFn, o) {
-    const C = spec(o && o.build), b = C.b, WR = C.WR, NW = C.ax.length;
+    const C = spec(o && o.build), b = C.b, WR = C.WR, NW = C.ax.length, manual = !!(o && o.manual); // manual — после аварии игра сама не возвращает: решает игрок
     const S = {
       L: null, W: null, truck: null, wheels: [], wj: [], rope: null, ropeA: null, target: null, cfg: C, WR,
       state: 'play', t: 0, deadT: 0, why: '', grounded: false, wallTouch: false, flipT: 0, wonT: 0, pullOn: false,
       cp: null, attempts: 1, rescues: 0, events: [], awd: false, lock: false, low: false, fuel: C.tank, range: 0,
-      slip: new Array(NW).fill(0), sunk: new Array(NW).fill(0), inMud: 0, belly: false, hung: false, stuckT: 0, wetT: 0, wade: 0, dirt: 0, rutV: 0,
+      slip: new Array(NW).fill(0), sunk: new Array(NW).fill(0), depth: 0, inMud: 0, belly: false, hung: false, stuckT: 0, wetT: 0, wade: 0, dirt: 0, rutV: 0,
     };
     S.L = (typeof routeFn === 'number' ? root.MudSide.routes[routeFn].build : routeFn)();
     const L = S.L, poly = L.polys[0];
@@ -187,7 +187,7 @@
     // один шаг 1/120 с; inp = { gas, brake, winch (держать), awd, lock, low (включено/выключено) }
     S.step = (inp) => {
       const dt = P.DT, T = S.truck;
-      if (S.state === 'dead') { S.deadT += dt; if (S.deadT > 1.7) S.respawn(); }
+      if (S.state === 'dead') { S.deadT += dt; if (!manual && S.deadT > 1.7) S.respawn(); }
       const play = S.state === 'play';
       S.awd = !!inp.awd && !!b.awd; S.lock = !!inp.lock && !!b.lock; S.low = !!inp.low && !!b.low;
       // лебёдка: держишь — трос цепляется за ближайшее дерево впереди и тянет; отпустил — отцепился
@@ -230,11 +230,12 @@
       S.hung = bel && !S.inMud; // сел брюхом на твёрдое (гребень, край канавы)
       if (S.state !== 'play') { if (S.state === 'win') S.wonT += P.DT; return; }
       S.flipT = Math.cos(T.a) < 0 ? S.flipT + P.DT : 0;
-      // воздухозаборник под водой — мотор глохнет
-      const [ix, iy] = P.wpt(T, C.ax[NW - 1] - 6, C.intake), wz = waterAt(ix);
-      S.wetT = wz && iy > wz.y ? S.wetT + P.DT : Math.max(0, S.wetT - 2 * P.DT);
+      // мотор заливает, когда передние колёса стоят в воде глубже, чем берёт грузовик («Брод до …» в гараже). Правило по глубине, а не по наклону:
+      // указатель «брод 0,9 м» и число в гараже сравниваются напрямую, и клюнуть носом на въезде не страшно
+      const fw = S.wheels[NW - 1], wz = waterAt(fw.x); S.depth = wz ? Math.max(0, fw.y + WR - wz.y) : 0;
+      S.wetT = S.depth > C.ford ? S.wetT + P.DT : Math.max(0, S.wetT - 2 * P.DT);
       S.stuckT = inp.gas && S.fuel > 0 && Math.abs(T.vx) < 28 && (S.grounded || bel) && !S.rope ? S.stuckT + P.DT : Math.max(0, S.stuckT - 3 * P.DT);
-      if (S.flipT > 1.6) die('flip'); else if (S.wetT > 0.35) die('water'); else if (S.fuel <= 0 && Math.abs(T.vx) < 30) die('fuel');
+      if (S.flipT > 1.6) die('flip'); else if (S.wetT > 0.4) die('water'); else if (S.fuel <= 0 && Math.abs(T.vx) < 30) die('fuel');
       for (const c of L.cps) if (T.x > c.x && (!S.cp || S.cp.x < c.x) && S.grounded) { S.cp = { x: c.x, y: c.y, fuel: S.fuel }; S.events.push({ e: 'cp' }); }
       if (T.x > L.fin && S.grounded) { S.state = 'win'; S.wonT = 0; hookOff(); S.events.push({ e: 'win' }); }
     }
@@ -259,7 +260,7 @@
     b.sign(-170, 'ford', 1.1).ford(800, 60).flat(500).cp(-400);                                  // брод 1,1 м: лифт, колёса или шноркель
     b.sign(-190, 'mud', 3).mud(1300, ZONES.sticky).flat(500).can(-120).cp(-420);                 // липкая грязь: всё включить
     b.sign(-170, 'crest', 0.8).crest(300, 80).flat(600).cp(-400);                                // высокий гребень
-    b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 81, ZONES.silt).flat(300).slope(600, 200).flat(400).cp(-400); // глубокий брод с илом: только шноркель
+    b.slope(600, -200).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(300).slope(600, 200).flat(400).cp(-400); // брод с илом: воды метр и ила полметра — на указателе честные 1,5 м; шноркель или лифт +2 с большими колёсами
     b.sign(-190, 'mud', 4).tree(500).tree(1050).tree(1600).tree(2150).mud(1900, ZONES.swamp);    // болото: лебёдка или вездеход
     b.flat(500).mark(420, 'mill').flat(400).fin(0).end();
     return b.S;

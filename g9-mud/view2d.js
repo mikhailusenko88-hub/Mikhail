@@ -22,7 +22,8 @@
     sClear: 'Клиренс', sFord: 'Брод до', sPull: 'Тяга', sRange: 'Запас хода', m: 'м',
     awd: '4×4', lock: 'БЛОК', low: 'ПОНИЖ', winch: 'ЛЕБЁДКА', ahead: 'Впереди', mud: ['мягкая грязь', 'грязь', 'липкая грязь', 'болото'], crest: 'гребень', ford: 'брод', climb: 'подъём',
     hAwd: 'Буксуешь? Включи 4×4', hLock: 'Не гребёт? Включи БЛОК', hLow: 'Закапываешься или мало тяги? Включи ПОНИЖ', hWinch: 'Держи ЛЕБЁДКУ — подтянет к дереву', hBack: 'Сдай назад и возьми с разгона', hHung: 'Сел брюхом. Назад и с разгона — или нужен клиренс: в гараж', hGar: 'Не проходит? Загляни в гараж: продолжишь с отметки',
-    hFuel: 'Топлива мало: выключай лишнее на твёрдой дороге', dFuel: 'Топливо кончилось', dWater: 'Мотор залило: брод глубже, чем берёт грузовик', dFlip: 'Перевернулся', cp: 'Отметка', can: '+30 топлива',
+    hFuel: 'Топлива мало: выключай лишнее на твёрдой дороге', dFuel: 'Топливо кончилось', dWater: 'Мотор залило', dFlip: 'Перевернулся', cp: 'Отметка', can: '+30 топлива',
+    tWater: (d, f) => `Здесь брод ${d} м, а этот грузовик берёт ${f} м. В гараже поставь лифт, колёса побольше или шноркель — и продолжишь с отметки.`, tFuel: 'На твёрдой дороге выключай 4×4, БЛОК и ПОНИЖ — они жгут топливо. Или поставь в гараже бак побольше.', tFlip: 'На крутом подъёме помогает длинная база или 6×6. Лифт мешает.', retry: 'Ещё раз', warn: (d, f) => `Брод ${d} м — грузовик берёт ${f} м!`,
     win: 'Полигон пройден!', s1: 'Доехал', s2: 'Без возвратов', s3: 'Топлива ≥ 20%', time: 'Время', fuel: 'Топливо', again: 'Ещё раз', toGar: 'В гараж',
     keys: '→ газ   ← назад   ·   1 — 4×4   2 — блок   3 — пониж   ·   Пробел — лебёдка   ·   R — на отметку   ·   G — гараж', sec: 'с',
   } : {
@@ -42,7 +43,8 @@
     sClear: 'Clearance', sFord: 'Fords up to', sPull: 'Pull', sRange: 'Range', m: 'm',
     awd: '4×4', lock: 'LOCK', low: 'LOW', winch: 'WINCH', ahead: 'Ahead', mud: ['soft mud', 'mud', 'sticky mud', 'swamp'], crest: 'crest', ford: 'ford', climb: 'climb',
     hAwd: 'Wheels spinning? Switch on 4×4', hLock: 'No bite? Switch on LOCK', hLow: 'Digging in or no pull? Switch on LOW', hWinch: 'Hold WINCH — it pulls you to the tree', hBack: 'Back up and take a run at it', hHung: 'High-centered. Back up and take a run — or get more clearance in the garage', hGar: 'No way through? Visit the garage: you continue from the checkpoint',
-    hFuel: 'Low fuel: switch helpers off on firm road', dFuel: 'Out of fuel', dWater: 'Engine flooded: the ford is deeper than the truck can take', dFlip: 'Rolled over', cp: 'Checkpoint', can: '+30 fuel',
+    hFuel: 'Low fuel: switch helpers off on firm road', dFuel: 'Out of fuel', dWater: 'Engine flooded', dFlip: 'Rolled over', cp: 'Checkpoint', can: '+30 fuel',
+    tWater: (d, f) => `This ford is ${d} m deep and this truck can take ${f} m. In the garage fit a lift, bigger wheels or a snorkel — then continue from the checkpoint.`, tFuel: 'On firm road switch off 4×4, LOCK and LOW — they burn fuel. Or fit a bigger tank in the garage.', tFlip: 'On steep climbs a long wheelbase or 6×6 helps. Lift hurts.', retry: 'Try again', warn: (d, f) => `Ford ${d} m — the truck takes ${f} m!`,
     win: 'Proving ground cleared!', s1: 'Finished', s2: 'No returns', s3: 'Fuel ≥ 20%', time: 'Time', fuel: 'Fuel', again: 'Again', toGar: 'Garage',
     keys: '→ gas   ← reverse   ·   1 — 4×4   2 — lock   3 — low   ·   Space — winch   ·   R — checkpoint   ·   G — garage', sec: 's',
   };
@@ -63,12 +65,13 @@
   const sw = { awd: false, lock: false, low: false }, keys = {}, ptrs = new Map(), dbg = { freeze: false };
   let realT = 0, last = performance.now(), acc = 0, camX = 0, camY = 0, Z = 0.5, buttons = [], toast = null, muted = false;
   function newSim() {
-    S = M.create(0, { build }); buildKey++;
+    S = M.create(0, { build, manual: true }); buildKey++;
     // для картинки земля в грязи рисуется по твёрдому дну — сверху лежит живая грязь, которую продавливают колёса
     const L = S.L, xs = new Set(L.polys[0].map((q) => q[0])); for (const z of L.mud) { for (let x = z.x0; x <= z.x1; x += 45) xs.add(x); xs.add(z.x1); }
     SV = Object.create(S); SV.L = Object.assign({}, L, { polys: [[...xs].sort((a, b) => a - b).map((x) => [x, S.bedAt(x)])] });
   }
-  function toGarage(keep) { resume = keep && S.cp ? { x: S.cp.x, y: S.cp.y } : null; mode = 'garage'; newSim(); camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
+  function failTip() { const w = S.L.water.find((q) => S.truck.x > q.x0 - 300 && S.truck.x < q.x1 + 300), z = w && S.L.mud.find((q) => q.wet && q.x0 > w.x0 && q.x1 < w.x1); return S.why === 'water' ? T.tWater(fmt(((w ? w.depth : 0) + (z ? z.d : 0)) / PX), fmt(S.cfg.ford / PX, 2)) : S.why === 'fuel' ? T.tFuel : T.tFlip; }
+  function toGarage(keep) { const tip = mode === 'play' && S.state === 'dead' ? failTip() : null; resume = keep && S.cp ? { x: S.cp.x, y: S.cp.y } : null; mode = 'garage'; newSim(); if (tip) note = tip; camX = S.truck.x; camY = S.truck.y; ptrs.clear(); }
   function start(fromCp) {
     newSim(); sw.awd = sw.lock = sw.low = false;
     if (fromCp && resume) { S.cp = { x: resume.x, y: resume.y, fuel: S.cfg.tank }; S.respawn(); rebuilds++; } else rebuilds = 0;
@@ -77,11 +80,18 @@
   newSim(); camX = S.truck.x; camY = S.truck.y;
 
   // ---------- объёмная сцена: свои предметы поверх мира Hook Truck ----------
-  let truckM = null, wheelsM = [], axM = [], paint = [], truckKey = 0, lastDirt = -1, mudM = [], lastRut = -1, canM = [], waterTop = [], blobs = [], drops = [], smoke = [], pAcc = 0, stackL = [0, 0];
+  let truckM = null, wheelsM = [], axM = [], paint = [], flagM = null, cloudsM = [], sunM = null, splat = [], puddles = [], mist = [], foam = [], trackI = null, trackN = 0, tyreMud = 0, trackX = 0, truckKey = 0, lastDirt = -1, mudM = [], lastRut = -1, canM = [], waterTop = [], blobs = [], drops = [], smoke = [], pAcc = 0, stackL = [0, 0];
   if (use3d) {
     const A = R3.api, lam = (h, o) => A.lam(h, o);
     const mk = (geo, mat, x, y, z, par, sh = true) => { const m = new A.T.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = sh; par.add(m); return m; };
-    // много мелких деталей одного цвета склеиваем в один объект: грузовик рисуется за десяток вызовов, а не за сотню
+    // много мелких деталей одного цвета склеиваем в один объект: грузовик и придорожные мелочи рисуются за десяток вызовов, а не за сотни
+    function bucket(T3) {
+      const bk = new Map();
+      return {
+        put(geo, mat, x, y, z, rx, rz) { if (rx) geo.rotateX(rx); if (rz) geo.rotateZ(rz); geo.translate(x, y, z); let q = bk.get(mat); if (!q) bk.set(mat, (q = [])); q.push(geo); },
+        flush(par, noSh) { const out = []; for (const [mat, geos] of bk) { const m = new T3.Mesh(merge(T3, geos), mat); m.castShadow = !(noSh && noSh.has(mat)) && !mat.transparent; par.add(m); out.push(m); } bk.clear(); return out; },
+      };
+    }
     function merge(T3, geos) {
       let n = 0; const gs = geos.map((g) => { const q = g.index ? g.toNonIndexed() : g; n += q.attributes.position.count; return q; }), pos = new Float32Array(n * 3), nor = new Float32Array(n * 3); let o = 0;
       for (const g of gs) { pos.set(g.attributes.position.array, o); nor.set(g.attributes.normal.array, o); o += g.attributes.position.count * 3; g.dispose(); }
@@ -94,8 +104,7 @@
       const pm = (h) => { const m = lam(h); paint.push({ m, base: m.color.clone() }); return m; };
       const red = pm('#ff5a36'), dark = pm('#c63b1f'), fr = pm('#455a64'), blk = pm('#263238'), grey = pm('#90a4ae'), woodA = pm('#8d6e63'), woodB = pm('#795548'), fur = lam('#e8892f'), capM = lam('#ffb300');
       const gl = new T3.MeshLambertMaterial({ color: A.C('#b3e5fc'), transparent: true, opacity: 0.32 }), lamp = new T3.MeshBasicMaterial({ color: A.C('#fff59d') });
-      const bk = new Map(), put = (geo, mat, x, y, z, rx, rz) => { if (rx) geo.rotateX(rx); if (rz) geo.rotateZ(rz); geo.translate(x, y, z); let q = bk.get(mat); if (!q) bk.set(mat, (q = [])); q.push(geo); };
-      const flush = (par) => { for (const [mat, geos] of bk) { const m = new T3.Mesh(merge(T3, geos), mat); m.castShadow = mat !== gl && mat !== lamp; par.add(m); } bk.clear(); };
+      const white = pm('#fafafa'), amber = new T3.MeshBasicMaterial({ color: A.C('#ffb300') }), mudS = lam('#4a2f1c'), BK = bucket(T3), put = BK.put, noSh = new Set([gl, lamp, amber]), flush = (par) => BK.flush(par, noSh);
       const bx = (w, h, d, mat, x, y, z) => put(new T3.BoxGeometry(w, h, d), mat, x, y, z);
       const g = (truckM = new T3.Group()); sc.add(g);
       const yF = -(c.belly - 10), xf = c.xf, cabX1 = xf - 64, cabX0 = cabX1 - 60, cm = (cabX0 + cabX1) / 2, fa = c.ax[c.ax.length - 1];
@@ -116,7 +125,16 @@
       put(new T3.CylinderGeometry(11, 11, b.tank ? 76 : 46, 8), grey, (c.ax[0] + fa) / 2 - 10, yF - 16, 40, 0, Math.PI / 2); // бак под рамой
       const hx = cm + 4, hy = yF + 52;                                                                                       // Барсик за рулём
       put(new T3.SphereGeometry(14, 12, 9), fur, hx, hy, 12); for (const z of [4, 20]) put(new T3.ConeGeometry(5, 10, 4), fur, hx - 2, hy + 14, z); put(new T3.CylinderGeometry(10, 12, 6, 10), capM, hx, hy + 11, 12);
+      for (let k = 0; k < 4; k++) bx(2, 4, 58, blk, xf - 5.5, yF + 9 + k * 7, 0);                                         // решётка радиатора
+      for (const z of [-43.8, 43.8]) { bx(52, 5, 1.5, white, xf - 35, yF + 24, z); bx(1.5, 26, 1.5, dark, cm - 9, yF + 15, z * 1.035); bx(16, 2.5, 2, blk, cm + 12, yF + 23, z * 1.04); }
+      for (const z of [-50, 50]) { bx(4, 12, 7, blk, cabX1 + 2, yF + 46, z); bx(3, 24, 24, blk, c.ax[0] - WR - 8, -(c.hW - 4), z); } // зеркала, брызговики
+      for (const z of [-30, 0, 30]) bx(5, 4, 8, amber, cabX1 - 7, yF + 78, z);                                             // огни на крыше
+      put(new T3.CylinderGeometry(1, 1, 64, 4), blk, cabX0 + 7, yF + 106, 36);                                              // антенна
       flush(g);
+      flagM = mk(new T3.PlaneGeometry(24, 13), new T3.MeshBasicMaterial({ color: A.C('#ff6d00'), side: T3.DoubleSide }), cabX0 - 5, yF + 130, 36, g, false); flagM.geometry.translate(-12, 0, 0); flagM.position.x = cabX0 + 7;
+      // грязь налипает пятнами в три захода: чем дольше месишь, тем больше
+      let sd = 7; const rn = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+      splat = [0, 1, 2].map(() => { for (let k = 0; k < 9; k++) { const a = rn(), x = a < 0.4 ? bx0 + rn() * bl : a < 0.7 ? cabX0 + rn() * 60 : xf - 62 + rn() * 54, y = yF + (a < 0.4 ? 8 + rn() * 14 : 2 + rn() * 30), r = 4 + rn() * 6, q = new T3.IcosahedronGeometry(r, 0); q.scale(1.3, 1, 0.22); put(q, mudS, x, y, 46.2); } const m = flush(g)[0]; m.castShadow = false; m.visible = false; return m; });
       // колёса: шина с грунтозацепами по виду шин — одной «шестернёй», диск; мост и стойка (с лифтом её видно)
       const lug = [0, 8, 10][b.tires], lh = [0, 4, 7][b.tires], sh = new T3.Shape();
       if (lug) for (let k = 0; k < lug * 4; k++) { const a = (k / (lug * 4)) * Math.PI * 2, r = WR + ((k & 3) < 2 ? lh : 0); if (k) sh.lineTo(Math.cos(a) * r, Math.sin(a) * r); else sh.moveTo(r, 0); }
@@ -167,13 +185,55 @@
         return { zi, n, pos, col, g, zf: ZF + 2, zb: -ROAD - 8 }; // чуть ближе передней стенки земли, чтобы они не мерцали друг сквозь друга
       });
       lastRut = -1;
+      // тайга живёт: столбы с проводами, камыши у бродов, пеньки, штабеля, столбики, лужи после дождя, туман в низинах
+      const BK = bucket(T3); let sd = 4242; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+      const xA = L.polys[0][0][0] + 200, xB = L.fin + 700, inW = (x, p) => L.water.some((w) => x > w.x0 - p && x < w.x1 + p), firm = (x) => !inW(x, 90) && !L.mud.some((z) => x > z.x0 - 70 && x < z.x1 + 70), flatAt = (x) => Math.abs(S.groundAt(x + 45) - S.groundAt(x - 45)) < 12;
+      const poleM = lam('#6d4c41'), reedM = lam('#5a9a32'), headM = lam('#5d4037'), stumpM = lam('#7b5a3a'), topM = lam('#d9bc8c'), logB = lam('#8d6e63'), postM = lam('#fafafa'), capM = lam('#263238');
+      const pudM = new T3.MeshBasicMaterial({ color: q.C('#b5e0fa'), transparent: true, opacity: 0.85 }), wp = [];
+      for (let x = xA; x < xB; x += 640) { if (inW(x, 50)) continue; const gy = -S.bedAt(x), z = -ROAD - 130; BK.put(new T3.CylinderGeometry(5, 6, 250, 6), poleM, x, gy + 125, z); BK.put(new T3.BoxGeometry(8, 6, 76), poleM, x, gy + 234, z); wp.push([x, gy + 240]); }
+      const wl = []; for (let i = 1; i < wp.length; i++) { const a = wp[i - 1], b = wp[i], n = 6; for (const z of [-ROAD - 100, -ROAD - 160]) for (let k = 0; k < n; k++) { const t0 = k / n, t1 = (k + 1) / n, sg = (t) => 4 * 30 * t * (1 - t); wl.push(a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0 - sg(t0), z, a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1 - sg(t1), z); } }
+      const wg = new T3.BufferGeometry(); wg.setAttribute('position', new T3.Float32BufferAttribute(wl, 3)); lvlG.add(new T3.LineSegments(wg, new T3.LineBasicMaterial({ color: q.C('#455a64') })));
+      for (const w of L.water) for (const [xa, xb] of [[w.x0 + 10, w.x0 + 190], [w.x1 - 190, w.x1 - 10]]) for (let i = 0; i < 30; i++) { // камыши по берегам
+        const x = xa + rnd() * (xb - xa), z = rnd() < 0.55 ? -ROAD - 14 - rnd() * 260 : ROAD + 8 + rnd() * (ZF - ROAD - 16), gy = -S.groundAt(x), hh = 44 + rnd() * 44;
+        BK.put(new T3.CylinderGeometry(1.4, 1.9, hh, 4), reedM, x, gy + hh / 2, z); if (rnd() < 0.65) BK.put(new T3.CylinderGeometry(3.3, 3.3, 14, 5), headM, x, gy + hh - 3, z);
+      }
+      puddles = [];
+      for (let x = xA; x < xB; x += 140 + rnd() * 170) {
+        if (rnd() < 0.55 && !inW(x, 30)) { const z = -ROAD - 34 - rnd() * 340, r = 9 + rnd() * 9, gy = -S.bedAt(x); BK.put(new T3.CylinderGeometry(r, r * 1.15, 14, 7), stumpM, x, gy + 7, z); BK.put(new T3.CylinderGeometry(r * 0.85, r * 0.85, 1.6, 7), topM, x, gy + 14.6, z); }
+        if (firm(x) && flatAt(x) && rnd() < 0.5) { const r = 30 + rnd() * 26, g = new T3.CircleGeometry(r, 10); g.rotateX(-Math.PI / 2); g.scale(1, 1, 0.7); BK.put(g, pudM, x, -S.groundAt(x) + 0.9, (rnd() - 0.5) * 60); puddles.push({ x, r, t: -9 }); }
+      }
+      for (let x = Math.ceil(xA / 540) * 540; x < xB; x += 540) if (firm(x)) { const gy = -S.groundAt(x); BK.put(new T3.BoxGeometry(7, 26, 7), postM, x, gy + 13, ROAD + 24); BK.put(new T3.BoxGeometry(7.2, 7, 7.2), capM, x, gy + 29, ROAD + 24); }
+      for (let x = xA + 700; x < xB; x += 2300 + rnd() * 900) if (firm(x) && flatAt(x)) { const gy = -S.groundAt(x); [[0, 0], [23, 0], [46, 0], [11.5, 20], [34.5, 20], [23, 40]].forEach(([dx, dy], i) => { BK.put(new T3.CylinderGeometry(11, 11, 130, 8), i & 1 ? stumpM : logB, x + dx, gy + 11 + dy, -ROAD - 90, Math.PI / 2); BK.put(new T3.CylinderGeometry(8.5, 8.5, 1.5, 8), topM, x + dx, gy + 11 + dy, -ROAD - 24.5, Math.PI / 2); }); }
+      // облака над дорогой (плывут двумя стаями) и тёплое солнце в дымке
+      const cloudM = new T3.MeshLambertMaterial({ color: q.C('#ffffff'), emissive: q.C('#9fb6c4'), fog: false });
+      cloudsM = [0, 1].map((gi) => { for (let x = xA - 1500 + gi * 500; x < xB + 2500; x += 1000 + rnd() * 700) { const gy = -S.bedAt(clamp(x, xA, xB)) + 640 + rnd() * 520, z = -1500 - rnd() * 2600, sc = 1.6 + rnd() * 1.6; for (const [dx, dy, r] of [[0, 0, 60], [62, -8, 46], [-58, -10, 42], [22, 26, 44], [-24, 22, 36]]) { const g = new T3.IcosahedronGeometry(r * sc, 1); g.scale(1.25, 0.8, 1); BK.put(g, cloudM, x + dx * sc, gy + dy * sc, z); } } const m = BK.flush(lvlG)[0]; m.castShadow = false; m.frustumCulled = false; return { m, v: 9 + gi * 7 }; });
+      { const cs = document.createElement('canvas'); cs.width = cs.height = 128; const g = cs.getContext('2d'), gr = g.createRadialGradient(64, 64, 4, 64, 64, 64); gr.addColorStop(0, 'rgba(255,250,225,1)'); gr.addColorStop(0.18, 'rgba(255,244,200,0.75)'); gr.addColorStop(0.5, 'rgba(255,236,170,0.22)'); gr.addColorStop(1, 'rgba(255,236,170,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+        sunM = new T3.Mesh(new T3.PlaneGeometry(2600, 2600), new T3.MeshBasicMaterial({ map: new T3.CanvasTexture(cs), transparent: true, depthWrite: false, fog: false, blending: T3.AdditiveBlending })); sunM.renderOrder = 0; sunM.frustumCulled = false; lvlG.add(sunM); }
+      BK.flush(lvlG);
+      // туман: три полупрозрачные ленты за дорогой, идут вдоль рельефа и медленно плывут
+      const cn = document.createElement('canvas'); cn.width = 8; cn.height = 64; { const g = cn.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 64); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 8, 64); }
+      const mt = new T3.CanvasTexture(cn);
+      mist = [[-420, 0.17, 150, 45], [-1150, 0.24, 230, 85]].map(([z, op, hh, off], i) => {
+        const pos = [], uv = [], idx = []; let n = 0;
+        for (let x = xA - 2500; x <= xB + 2500; x += 180, n++) { const gy = -S.bedAt(clamp(x, xA, xB)) + off + Math.sin(x / 700 + i * 2) * 40; pos.push(x, gy - hh / 2, z, x, gy + hh / 2, z); uv.push(0, 0, 0, 1); if (n) { const a = (n - 1) * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); } }
+        const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T3.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+        const m = new T3.Mesh(g, new T3.MeshBasicMaterial({ map: mt, transparent: true, opacity: op, depthWrite: false, fog: false, side: T3.DoubleSide })); m.renderOrder = 1; m.frustumCulled = false; lvlG.add(m); return { m, v: 5 + i * 3 };
+      });
+      // вода: светлая плёнка по поверхности и полоски пены, которые сносит течением
+      foam = []; const foamM = new T3.MeshBasicMaterial({ color: q.C('#ffffff'), transparent: true, opacity: 0.7 });
+      for (const w of L.water) {
+        const sh = new T3.Mesh(new T3.PlaneGeometry(w.x1 - w.x0 - 6, ZF + ROAD + 300), new T3.MeshBasicMaterial({ color: q.C('#e1f5fe'), transparent: true, opacity: 0.22, depthWrite: false })); sh.rotation.x = -Math.PI / 2; sh.position.set((w.x0 + w.x1) / 2, -w.y + 1.2, (ZF - ROAD - 300) / 2); sh.renderOrder = 4; lvlG.add(sh); waterTop.push({ m: sh, y: sh.position.y });
+        for (let k = 0; k < 5; k++) { const f = new T3.Mesh(new T3.BoxGeometry(34 + rnd() * 50, 1, 4), foamM); f.position.set(w.x0 + 90 + rnd() * (w.x1 - w.x0 - 180), -w.y + 2, ZF - 6 - k * 34); f.renderOrder = 5; lvlG.add(f); foam.push({ m: f, w, v: 12 + rnd() * 18 }); }
+      }
       const sc = A.scene;
+      if (!trackI) { const tg = new T3.PlaneGeometry(26, 24); tg.rotateX(-Math.PI / 2); trackI = new T3.InstancedMesh(tg, new T3.MeshBasicMaterial({ color: q.C('#3b2616'), transparent: true, opacity: 0.6, depthWrite: false }), 80); trackI.count = 0; trackI.frustumCulled = false; trackI.renderOrder = 2; sc.add(trackI); }
       if (!blobs.length) {
         for (let i = 0; i < 30; i++) { const m = new T3.Mesh(new T3.IcosahedronGeometry(1, 0), lam('#4a2f1c')); m.visible = false; sc.add(m); blobs.push({ m, life: 0, v: [0, 0, 0], r: 1 }); }
         for (let i = 0; i < 18; i++) { const m = new T3.Mesh(new T3.IcosahedronGeometry(1, 0), new T3.MeshBasicMaterial({ color: q.C('#e1f5fe'), transparent: true, opacity: 0.8 })); m.visible = false; sc.add(m); drops.push({ m, life: 0, v: [0, 0, 0], r: 1 }); }
         for (let i = 0; i < 12; i++) { const m = new T3.Mesh(new T3.IcosahedronGeometry(1, 1), new T3.MeshBasicMaterial({ color: q.C('#78909c'), transparent: true, opacity: 0.5, depthWrite: false })); m.visible = false; sc.add(m); smoke.push({ m, life: 0, v: [0, 0, 0], r: 1 }); }
       }
     };
+    const dum = new A.T.Object3D(); let trackKey = 0;
     const MUD_A = [0.125, 0.06, 0.028], MUD_B = [0.04, 0.02, 0.01]; // свежая грязь и продавленная, мокрая (цвета — до освещения)
     function updMud() {
       const L = S.L;
@@ -198,7 +258,22 @@
         const ly = P.local(tr, w.x, w.y)[1], gap = Math.max(2, ly - (c.belly - 10)), q = axM[i]; q.G.position.set(w.x, -w.y, 0); q.G.rotation.z = -tr.a; q.st.scale.y = gap; q.st.position.y = gap / 2;
       });
       if (Math.abs(S.dirt - lastDirt) > 0.02) { lastDirt = S.dirt; const mc = A.C('#5b3d27'); for (const q of paint) q.m.color.copy(q.base).lerp(mc, S.dirt * 0.72); } // грязь налипает, вода смывает
+      splat.forEach((m, i) => { m.visible = S.dirt > 0.18 + i * 0.26; });
+      if (flagM) flagM.rotation.y = Math.sin(realT * 9) * 0.45 - clamp(tr.vx / 900, -0.6, 0.6);
       if (lastRut !== S.rutV + buildKey * 1e6) { lastRut = S.rutV + buildKey * 1e6; updMud(); }
+      // с грязными колёсами на твёрдой дороге остаются следы — и постепенно сходят на нет
+      if (trackKey !== buildKey) { trackKey = buildKey; trackN = 0; trackI.count = 0; tyreMud = 0; }
+      const rw = S.wheels[0];
+      if (S.sunk[0] > 3) { tyreMud = 1; trackX = rw.x; } else if (tyreMud > 0.05 && S.grounded && Math.abs(rw.x - trackX) > 24 && !S.waterAt(rw.x)) {
+        trackX = rw.x; const gy = -S.groundAt(rw.x) + 1.1;
+        for (const z of [-50, 50]) { dum.position.set(rw.x, gy, z); dum.rotation.set(0, 0, Math.atan2(S.groundAt(rw.x - 12) - S.groundAt(rw.x + 12), 24)); dum.scale.set(1, 1, 0.4 + 0.6 * tyreMud); dum.updateMatrix(); trackI.setMatrixAt(trackN % 80, dum.matrix); trackN++; }
+        trackI.count = Math.min(80, trackN); trackI.instanceMatrix.needsUpdate = true; tyreMud -= 0.028;
+      } else if (S.waterAt(rw.x)) tyreMud = 0;
+      for (const pd of puddles) if (realT - pd.t > 0.5) for (const w of S.wheels) if (Math.abs(w.x - pd.x) < pd.r && Math.abs(w.vx) > 70 && S.grounded) { pd.t = realT; for (let k = 0; k < 6; k++) emit(drops, w.x + (Math.random() - 0.5) * 30, -w.y - WR + 4, (Math.random() - 0.5) * 80, [(Math.random() - 0.5) * 260 + w.vx * 0.2, 150 + Math.random() * 190, (Math.random() - 0.5) * 220], 3 + Math.random() * 4, 0.5); break; }
+      for (const q of mist) { q.m.position.x += q.v * dt; if (q.m.position.x > 700) q.m.position.x -= 700; }
+      for (const q of cloudsM) { q.m.position.x += q.v * dt; if (q.m.position.x > 1400) q.m.position.x -= 1400; }
+      if (sunM) sunM.position.set(tr.x + 1500, -tr.y + 1500, -6500);
+      for (const f of foam) { f.m.position.x += f.v * dt; if (f.m.position.x > f.w.x1 - 70) f.m.position.x = f.w.x0 + 70; }
       S.L.cans.forEach((cn, i) => { if (canM[i]) { canM[i].visible = !cn.got; canM[i].rotation.y = realT * 2; } });
       for (const wt of waterTop) wt.m.position.y = wt.y + Math.sin(realT * 1.7 + wt.y) * 1.2;
       // брызги грязи, воды и дым из трубы
@@ -226,14 +301,14 @@
   function setPart(k, v) { if (build[k] === v) { note = T.n[k][PARTS.find((q) => q[0] === k)[1].indexOf(v)]; return; } build[k] = v; note = T.n[k][PARTS.find((q) => q[0] === k)[1].indexOf(v)]; try { localStorage.setItem('mud2.build', JSON.stringify(build)); } catch (e) { /* */ } newSim(); tone(660, 0.06, 0.1); }
   function press(id) {
     if (id === 'go') start(false); else if (id === 'cont') start(true); else if (id === 'gar') toGarage(mode === 'play'); else if (id === 'again') start(false);
-    else if (id === 'rescue') { if (mode === 'play') S.rescue(); } else if (id === 'mute') muted = !muted;
+    else if (id === 'rescue') { if (mode === 'play') { if (S.state === 'dead') S.respawn(); else S.rescue(); } } else if (id === 'retry') { if (S.state === 'dead') S.respawn(); } else if (id === 'mute') muted = !muted;
     else if (id[0] === 'p') { const [, k, v] = id.split(':'); setPart(k, +v); } else if (TOG.includes(id)) flip(id); else return false;
     return true;
   }
   addEventListener('keydown', (e) => {
     if (e.repeat) return; keys[e.code] = true; audio();
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
-    if (mode === 'play') { if (e.code === 'Digit1' || e.code === 'KeyQ') flip('awd'); else if (e.code === 'Digit2' || e.code === 'KeyE') flip('lock'); else if (e.code === 'Digit3' || e.code === 'ShiftLeft') flip('low'); else if (e.code === 'KeyR') S.rescue(); else if (e.code === 'KeyG') toGarage(true); }
+    if (mode === 'play') { if (e.code === 'Digit1' || e.code === 'KeyQ') flip('awd'); else if (e.code === 'Digit2' || e.code === 'KeyE') flip('lock'); else if (e.code === 'Digit3' || e.code === 'ShiftLeft') flip('low'); else if (e.code === 'KeyR' || (e.code === 'Enter' && S.state === 'dead')) { if (S.state === 'dead') S.respawn(); else S.rescue(); } else if (e.code === 'KeyG') toGarage(true); }
     else if (e.code === 'Enter') { if (mode === 'garage') start(!!resume); else start(false); }
   });
   addEventListener('keyup', (e) => { keys[e.code] = false; });
@@ -269,14 +344,14 @@
     let y = top + 10; const sw4 = ww / 4;
     stats.forEach(([n, v], i) => { ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#78909c'; font(small ? 10 : 12, 800); ctx.fillText(n, x0 + sw4 * (i + 0.5), y + 8, sw4 - 6); ctx.fillStyle = '#263238'; font(small ? 16 : 19); ctx.fillText(v, x0 + sw4 * (i + 0.5), y + (small ? 26 : 30), sw4 - 6); });
     y += small ? 40 : 48;
-    const goH = small ? 46 : 56, noteH = small ? 34 : 44, rh = Math.min(48, (H2 - 8 - y - goH - noteH - 22) / PARTS.length), lw = Math.min(110, ww * 0.27);
+    const goH = small ? 46 : 56, noteH = small ? 48 : 58, rh = Math.min(48, (H2 - 8 - y - goH - noteH - 22) / PARTS.length), lw = Math.min(110, ww * 0.27);
     for (const [k, vals] of PARTS) {
       ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#37474f'; font(Math.min(16, rh * 0.4), 900); ctx.fillText(T.p[k], x0, y + rh / 2, lw - 6);
       const bw = (ww - lw - (vals.length - 1) * 6) / vals.length;
       vals.forEach((v, i) => { const b = { id: `p:${k}:${v}`, x: x0 + lw + i * (bw + 6), y: y + 3, w: bw, h: rh - 6 }, on = build[k] === v; buttons.push(b); ctx.fillStyle = on ? '#fb8c00' : '#cfd8dc'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = on ? '#fff' : '#455a64'; ctx.textAlign = 'center'; font(Math.min(15, rh * 0.36, (bw * 1.6) / Math.max(3, T.o[k][i].length)), 900); ctx.fillText(T.o[k][i], b.x + b.w / 2, b.y + b.h / 2 + 1, b.w - 6); });
       y += rh;
     }
-    const nl = lines(note, ww - 8, small ? 12 : 14, 700).slice(0, 2); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; nl.forEach((q, i) => ctx.fillText(q, x0, y + 12 + i * (small ? 15 : 18), ww));
+    const nl = lines(note, ww - 8, small ? 12 : 14, 700).slice(0, 3); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; nl.forEach((q, i) => ctx.fillText(q, x0, y + 12 + i * (small ? 15 : 18), ww));
     const gy = H2 - 8 - goH - 10;
     if (resume) { const hw = (ww - 8) / 2, b1 = { id: 'cont', x: x0, y: gy, w: hw, h: goH }, b2 = { id: 'go', x: x0 + hw + 8, y: gy, w: hw, h: goH }; buttons.push(b1, b2); btn(b1, '▶ ' + T.cont, '#43a047', false, small ? 15 : 18); btn(b2, '↺ ' + T.anew, '#78909c', false, small ? 15 : 18); }
     else { const b1 = { id: 'go', x: x0, y: gy, w: ww, h: goH }; buttons.push(b1); btn(b1, '▶ ' + T.go, '#43a047', false, small ? 20 : 24); }
@@ -287,7 +362,7 @@
 
   function layout() {
     const sm = Math.min(W, H2) < 430, g = sm ? 8 : 12, bw = sm ? 86 : 104, bh = sm ? 74 : 86, by = H2 - bh - g - 4, th = sm ? 50 : 56, c = S.cfg.b;
-    buttons = [{ id: 'gas', x: W - bw - g, y: by, w: bw, h: bh }, { id: 'brake', x: W - bw * 2 - g * 2, y: by, w: bw, h: bh }, { id: 'gar', x: W - 58, y: 10, w: 48, h: 44 }, { id: 'rescue', x: W - 112, y: 10, w: 48, h: 44 }, { id: 'mute', x: W - 166, y: 10, w: 48, h: 44 }];
+    buttons = [{ id: 'gas', x: W - bw - g, y: by, w: bw, h: bh }, { id: 'brake', x: W - bw * 2 - g * 2, y: by, w: bw, h: bh }, { id: 'gar', x: W - 116, y: 10, w: 106, h: 44 }, { id: 'rescue', x: W - 168, y: 10, w: 46, h: 44 }, { id: 'mute', x: W - 220, y: 10, w: 46, h: 44 }];
     const tg = TOG.filter((k) => c[k]), one = W - (bw * 2 + g * 3) - g >= 130 + tg.length * 70;               // лёжа всё в один ряд слева, стоя — лебёдка внизу, переключатели над ней
     if (one) { const ww = sm ? 112 : 130, tw = Math.min(sm ? 70 : 86, (W - (bw * 2 + g * 3) - g - ww - 8 - tg.length * 6) / Math.max(1, tg.length)); buttons.push({ id: 'winch', x: g, y: by, w: ww, h: bh }); tg.forEach((k, i) => buttons.push({ id: k, x: g + ww + 8 + i * (tw + 6), y: by, w: tw, h: bh })); }
     else { const ww = W - (bw * 2 + g * 3) - g, tw = (W - g * 2 - (tg.length - 1) * 6) / Math.max(1, tg.length); buttons.push({ id: 'winch', x: g, y: by, w: ww, h: bh }); tg.forEach((k, i) => buttons.push({ id: k, x: g + i * (tw + 6), y: by - th - 10, w: tw, h: th })); }
@@ -300,9 +375,11 @@
     if (S.fuel < 0.22 * S.cfg.tank && S.inMud === 0 && (sw.awd || sw.lock || sw.low)) return [T.hFuel, 'rgba(0,0,0,0.5)'];
     return null;
   }
+  let vig = null;
+  function vignette() { if (!vig || vig.width !== W || vig.height !== H2) { vig = document.createElement('canvas'); vig.width = W; vig.height = H2; const g = vig.getContext('2d'), r = Math.hypot(W, H2) / 2, gr = g.createRadialGradient(W / 2, H2 * 0.48, r * 0.55, W / 2, H2 * 0.48, r * 1.02); gr.addColorStop(0, 'rgba(10,20,10,0)'); gr.addColorStop(1, 'rgba(10,20,10,0.3)'); g.fillStyle = gr; g.fillRect(0, 0, W, H2); } ctx.drawImage(vig, 0, 0); }
   function drawHud(inp) {
-    layout();
-    const fw = Math.min(190, W * 0.4), fx = 12, fy = 14, k = S.fuel / S.cfg.tank, c = S.cfg;
+    layout(); vignette();
+    const fw = Math.min(190, W - 244), fx = 12, fy = 14, k = S.fuel / S.cfg.tank, c = S.cfg;
     ctx.fillStyle = 'rgba(0,0,0,0.4)'; rr(fx, fy, fw, 24, 12); ctx.fill(); ctx.fillStyle = k < 0.22 ? '#e53935' : k < 0.45 ? '#ffb300' : '#7cb342'; rr(fx + 3, fy + 3, Math.max(8, (fw - 6) * k), 18, 9); ctx.fill();
     font(13); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText('⛽ ' + Math.round(k * 100) + '%  ≈ ' + Math.round(S.range / PX) + ' ' + T.m, fx + 10, fy + 13); // запас хода в этом режиме: включил привод — цифра упала
     // мосты: серое — не ведёт, зелёное — держит, красное — буксует
@@ -310,13 +387,21 @@
     S.wheels.forEach((w, i) => { const drv = i < n - 1 || S.awd; ctx.fillStyle = !drv ? '#90a4ae' : S.slip[i] > 150 || (inp.gas && S.stuckT > 0.4) ? '#ff5252' : '#69f0ae'; ctx.beginPath(); ctx.arc(wx + 18 + (i * (wl - 36)) / Math.max(1, n - 1), wy + 19, 7, 0, 7); ctx.fill(); });
     // что впереди: ближайший указатель и сколько до него
     const nx = S.L.signs.find((s) => s.x > S.truck.x - 60 && s.x < S.truck.x + 2200);
-    if (nx) { const d = Math.max(0, Math.round((nx.x + 200 - S.truck.x) / PX)), t = `${T.ahead}: ${nx.kind === 'ford' ? T.ford + ' ' + fmt(nx.val) + ' ' + T.m : nx.kind === 'mud' ? T.mud[nx.val - 1] : nx.kind === 'crest' ? T.crest : T.climb}${d > 2 ? ' · ' + d + ' ' + T.m : ''}`; font(13, 800); const tw = ctx.measureText(t).width + 22, tx = wx + wl + 8; ctx.fillStyle = 'rgba(0,0,0,0.4)'; rr(tx, wy + 2, Math.min(tw, W - tx - 8), 26, 13); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText(t, tx + 11, wy + 16, W - tx - 30); }
+    if (nx) { const d = Math.max(0, Math.round((nx.x + 200 - S.truck.x) / PX)), deep = nx.kind === 'ford' && nx.val * PX > c.ford + 1, t = deep ? '⚠ ' + T.warn(fmt(nx.val), fmt(c.ford / PX, 2)) + (d > 2 ? ' · ' + d + ' ' + T.m : '') : `${T.ahead}: ${nx.kind === 'ford' ? T.ford + ' ' + fmt(nx.val) + ' ' + T.m : nx.kind === 'mud' ? T.mud[nx.val - 1] : nx.kind === 'crest' ? T.crest : T.climb}${d > 2 ? ' · ' + d + ' ' + T.m : ''}`; font(13, 800); const tw = ctx.measureText(t).width + 22, tx = wx + wl + 8; ctx.fillStyle = deep ? (Math.sin(realT * 6) > 0 ? 'rgba(198,40,40,0.95)' : 'rgba(230,81,0,0.95)') : 'rgba(0,0,0,0.4)'; rr(tx, wy + 2, Math.min(tw, W - tx - 8), 26, 13); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText(t, tx + 11, wy + 16, W - tx - 30); }
     btn(B('gas'), '▶', '#43a047', inp.gas); btn(B('brake'), '◀', '#e53935', inp.brake);
     btn(B('winch'), '⚓ ' + T.winch, S.target || S.rope ? '#5c6bc0' : '#78909c', inp.winch);
-    TOG.forEach((q) => { const b = B(q); if (b) btn(b, T[q], sw[q] ? '#fb8c00' : '#546e7a', sw[q]); });
-    for (const [id, ch] of [['gar', '🔧'], ['rescue', '↺'], ['mute', muted ? '🔇' : '🔊']]) { const b = B(id); ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill(); ctx.fillStyle = '#fff'; font(21); ctx.textAlign = 'center'; ctx.fillText(ch, b.x + b.w / 2, b.y + b.h / 2 + 1); }
+    TOG.forEach((q) => { const b = B(q); if (!b) return; btn(b, T[q], sw[q] ? '#fb8c00' : '#546e7a', sw[q]); ctx.fillStyle = sw[q] ? '#b9f6ca' : 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.arc(b.x + b.w - 11, b.y + 11 + (sw[q] ? 3 : 0), 4.5, 0, 7); ctx.fill(); }); // лампочка: включено
+    for (const [id, ch] of [['gar', '🔧 ' + T.garage], ['rescue', '↺'], ['mute', muted ? '🔇' : '🔊']]) { const b = B(id); ctx.fillStyle = id === 'gar' ? 'rgba(239,108,0,0.92)' : 'rgba(0,0,0,0.34)'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill(); ctx.fillStyle = '#fff'; font(id === 'gar' ? 16 : 21); ctx.textAlign = 'center'; ctx.fillText(ch, b.x + b.w / 2, b.y + b.h / 2 + 1, b.w - 8); }
     const h = hint(); if (h) bubble(h[0], wy + 40, h[1]);
     if (!matchMedia('(pointer: coarse)').matches && !ptrs.size && S.t < 14 && !rebuilds) { font(13, 800); const tw = Math.min(ctx.measureText(T.keys).width + 36, W - 16), ky = h ? wy + 96 : wy + 40; ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(W / 2 - tw / 2, ky, tw, 30, 15); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(T.keys, W / 2, ky + 15, tw - 24); }
+  }
+  function drawFail() {
+    ctx.fillStyle = 'rgba(40,10,10,0.4)'; ctx.fillRect(0, 0, W, H2);
+    const w = Math.min(W - 24, 470), tip = lines(failTip(), w - 44, Math.min(W, H2) < 430 ? 15 : 17, 700), h = Math.min(H2 - 16, 150 + tip.length * 23), x = W / 2 - w / 2, y = Math.max(8, H2 / 2 - h / 2 - 20);
+    ctx.fillStyle = '#fffdf7'; rr(x, y, w, h, 22); ctx.fill(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#c62828'; font(25); ctx.fillText(S.why === 'fuel' ? T.dFuel : S.why === 'water' ? T.dWater : T.dFlip, W / 2, y + 36, w - 24);
+    ctx.fillStyle = '#37474f'; font(Math.min(W, H2) < 430 ? 15 : 17, 700); tip.forEach((q, i) => ctx.fillText(q, W / 2, y + 74 + i * 23, w - 30));
+    const bw = (w - 60) / 2, by = y + h - 70, b1 = { id: 'gar', x: x + 24, y: by, w: bw, h: 54 }, b2 = { id: 'retry', x: x + 36 + bw, y: by, w: bw, h: 54 }; buttons = [b1, b2]; btn(b1, '🔧 ' + T.toGar, '#fb8c00', false, 18); btn(b2, '↺ ' + T.retry, '#78909c', false, 18);
   }
   function star5(x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, q = i & 1 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * q, y + Math.sin(a) * q); } ctx.closePath(); ctx.fill(); }
   function drawWin() {
@@ -350,7 +435,7 @@
     const tr = S.truck, port = !land();
     if (mode === 'garage') {
       const g = drawGarage(), zg = Math.min(g.zw / (S.cfg.len + 190), g.zh / 330); camX = tr.x; camY = tr.y;
-      if (use3d) R3.draw(SV, { camX, camY, Z: zg, W, H: H2, DPR, t: realT, lvl: 1, duo: false, shake: 0, gas: false, gasOn: false, theme: 0, g: { tilt: 0.14, yaw: 0.42, px: g.px, py: g.py } });
+      if (use3d) R3.draw(SV, { camX, camY, Z: zg, W, H: H2, DPR, t: realT, lvl: 1, duo: false, shake: 0, gas: false, gasOn: false, theme: 2, g: { tilt: 0.14, yaw: 0.42, px: g.px, py: g.py } });
       return;
     }
     // камера: ближе, когда ползёшь в грязи; дальше на скорости
@@ -358,8 +443,8 @@
     camX += (tr.x + (port ? 110 : 240) - camX) * Math.min(1, dt * 4); camY += (tr.y - 70 - camY) * Math.min(1, dt * 3);
     // земля под колёсами встаёт чуть выше кнопок — на любом экране грузовик виден целиком
     layout(); const yb = Math.min(...buttons.filter((q) => q.y > H2 / 2).map((q) => q.y)), oy = clamp((yb - 30 - (S.cfg.hW + S.WR) * Z) / H2 - 0.5 - (70 * Z) / H2, -0.2, 0.3);
-    if (use3d) R3.draw(SV, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl: 1, duo: false, shake: 0, gas: inp.gas && !S.inMud && !S.wade, gasOn: inp.gas && S.fuel > 0, oy, theme: 0 });
-    if (mode === 'win' && S.wonT > 0.9) drawWin(); else drawHud(inp);
+    if (use3d) R3.draw(SV, { camX, camY, Z, W, H: H2, DPR, t: realT, lvl: 1, duo: false, shake: 0, gas: inp.gas && !S.inMud && !S.wade, gasOn: inp.gas && S.fuel > 0, oy, theme: 2 });
+    if (mode === 'win' && S.wonT > 0.9) drawWin(); else if (S.state === 'dead' && S.deadT > 0.9) drawFail(); else drawHud(inp);
   }
   window.__mud = { get S() { return S; }, sw, keys, dbg, get mode() { return mode; }, get buttons() { return buttons; }, get build() { return build; }, press, setPart, start, toGarage, flip };
   requestAnimationFrame(frame);

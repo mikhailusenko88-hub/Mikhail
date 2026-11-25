@@ -13,12 +13,14 @@
   const lam = (h, o) => new T.MeshLambertMaterial(Object.assign({ color: C(h) }, o || {}));
   const bas = (h, o) => new T.MeshBasicMaterial(Object.assign({ color: C(h) }, o || {}));
 
-  // вид серии: 0 — луг, 1 — каньон (песок, красные скалы, тёплое небо)
+  // вид серии: 0 — луг, 1 — каньон (песок, красные скалы, тёплое небо), 2 — тайга после дождя (игра про бездорожье: тёмная зелень, грунтовка, ельник, дымка)
   const TH = [
     { g: ['#86cf52', '#7ac448', '#e8c896', '#dfbc87', '#a8794a', '#96693d', '#58a332', '#b8824c', '#7a4e2a', '#3d2817'], tree: [['#4caf50', '#69c06d'], ['#2f8f57', '#3da56a'], '#8d5a2b'], treeP: 0.72, rocks: ['#9aa0a6', '#84898f'], tuft: '#4f9a2e', flw: ['#ffffff', '#ffeb3b', '#ff80ab'],
       ridge: [['#9cc0dc', '#bcd8ea'], ['#86b99a', '#acd3b8'], ['#69ab63', '#86c079']], sky: ['#3ea6f4', '#9fdafc', '#e9f8ff'], fog: '#d3ecfb' },
     { g: ['#e3a85c', '#d99b4f', '#f4e2bd', '#ecd6a8', '#b9683a', '#a65a30', '#c47f3d', '#c2703c', '#8e4a26', '#4a2414'], tree: [['#9aa33f', '#b6bb52'], ['#5f9148', '#77a85a'], '#7a5230'], treeP: 0.34, rocks: ['#c98a5a', '#b3744a'], tuft: '#b9a44a', flw: ['#fff3c4', '#ffb74d', '#ff8a65'],
       ridge: [['#e2a67c', '#f0c6a2'], ['#d18658', '#e3a57d'], ['#c06f41', '#d68d5f']], sky: ['#4aa3e8', '#ffd9a8', '#ffeede'], fog: '#f7dfc6' },
+    { g: ['#5cab47', '#52a03f', '#b48c62', '#a98159', '#8b8f86', '#7b8077', '#3b8431', '#8a5a34', '#5c3b22', '#2c1b10'], tree: [['#a6cf5a', '#c3df7e'], ['#1f7d4c', '#2f9762'], '#6b4a2f'], treeP: 0.86, round: 0.2, rocks: ['#8f958c', '#7a8078'], tuft: '#2f7d2a', flw: ['#ffffff', '#fff176', '#ce93d8'],
+      ridge: [['#9cc8ec', '#c4e0f5'], ['#69b0c9', '#96cddb'], ['#52a674', '#7cc293']], sky: ['#2f8fe6', '#8fd2fb', '#fff0cc'], fog: '#dcf0fc' },
   ], skyC = {};
   function skyTex(k) {
     if (!skyC[k]) { const sk = document.createElement('canvas'); sk.width = 4; sk.height = 256; const g = sk.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256), c = TH[k].sky; gr.addColorStop(0, c[0]); gr.addColorStop(0.55, c[1]); gr.addColorStop(1, c[2]); g.fillStyle = gr; g.fillRect(0, 0, 4, 256); skyC[k] = new T.CanvasTexture(sk); skyC[k].encoding = T.sRGBEncoding; }
@@ -252,7 +254,7 @@
     par.add(g); return g;
   }
   function tree(A, x, y, z, s, rnd, P) {
-    const round = rnd() < 0.42, tc = P.tree[round ? 0 : 1], g1 = C(tc[0]), g2 = C(tc[1]);
+    const round = rnd() < (P.round === undefined ? 0.42 : P.round), tc = P.tree[round ? 0 : 1], g1 = C(tc[0]), g2 = C(tc[1]);
     addGeo(A, GEO('trunk', () => new T.CylinderGeometry(7, 9, 50, 6)), x, y + 25 * s, z, s, s, s, C(P.tree[2]));
     if (round) { const ico = GEO('ico', () => new T.IcosahedronGeometry(40, 0)); addGeo(A, ico, x, y + 82 * s, z, s, s, s, g1); addGeo(A, ico, x + 24 * s, y + 62 * s, z + 14 * s, s * 0.6, s * 0.6, s * 0.6, g2); }
     else { const cone = GEO('cone', () => new T.ConeGeometry(44, 84, 7)); addGeo(A, cone, x, y + 80 * s, z, s, s, s, g1); addGeo(A, cone, x, y + 124 * s, z, s * 0.72, s * 0.72, s * 0.72, g2); }
