@@ -1,7 +1,0 @@
-URL: https://reroom-interiors.ru/contacts/
-КОД: ошибка: <urlopen error [Errno -2] Name or service not known>
-ЗАГОЛОВКИ:
-
-
-
-ССЫЛКИ:
