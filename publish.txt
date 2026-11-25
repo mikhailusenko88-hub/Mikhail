@@ -1,2 +1,2 @@
-# 25.11 — перезаливка 37: Shorts из 37h
-short 37h 37 2026-11-27T16:30 --again
+# 25.11 — удалить старые версии 36f/37g после перезаливки (проба)
+delete --dry W2Aaf9OEKEQ 7y9nKRoGU5Q 6yBYiyfdcc4 4yS2JnxdSSs
