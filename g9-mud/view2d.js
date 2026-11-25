@@ -130,7 +130,7 @@
   const kindOf = (i) => (career && i >= 0 ? M.CONTRACTS[i].cargo : 'log'), capNow = () => M.capOf(M.spec(save.build), kindOf(Math.max(0, sel)));
   const optIdx = (k, v) => PARTS.find((q) => q[0] === k)[1].indexOf(v), priceOf = (k, v) => (PRICE[k] ? PRICE[k][optIdx(k, v)] : 0);
   const owns = (k, v) => !career || !priceOf(k, v) || START[k] === v || (save.own[k] || []).includes(v), BD = () => (career ? save.build : build);
-  const unlocked = (i) => i === 0 || (save.stars[M.CONTRACTS[i - 1].id] || 0) > 0;
+  const ALL = /[?&]all\b/.test(location.search), unlocked = (i) => ALL || i === 0 || (save.stars[M.CONTRACTS[i - 1].id] || 0) > 0; // ?all в адресе — все заказы открыты (для показа новых трасс; сохранение не трогает)
   const bestRun = (bd) => { const C = M.spec(bd); let best = 0, kind = 'log'; M.CONTRACTS.forEach((c, i) => { const g = unlocked(i) ? M.capOf(C, c.cargo) * c.pay : 0; if (g > best) { best = g; kind = c.cargo; } }); return [best, kind, C]; };
   const GAINK = ['base', 'axles', 'eng', 'trailer'];
   function gainNote(k, v) { // примеряешь раму, мосты, мотор или прицеп — видно, сколько монет это прибавит к полному рейсу, или почему не прибавит
