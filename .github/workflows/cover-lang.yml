@@ -1,0 +1,39 @@
+name: cover-lang
+# Обложка серии на языке дубляжа (та же картинка, надписи на языке): oblozhka_lang.py. Запрос — cover-request.txt (см. cover_lang_run.py).
+on:
+  push:
+    branches: [golos-en]
+    paths: ['cover-request.txt']
+permissions:
+  contents: write
+jobs:
+  cover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Шрифты и Pillow
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-inter fonts-noto-core fonts-noto-extra fonts-freefont-ttf
+          pip install -q pillow
+          python3 -c "from PIL import features; print('raqm', features.check('raqm'))"
+          fc-list | grep -i "kufi\|Inter-Black\|InterDisplay-Black\|Inter.*Black" | head -8
+      - name: Скрипты обложек (ветка studio) и элементы сборки
+        run: |
+          L=$(grep -v '^#' cover-request.txt | head -1); set -- $L; BUILD=$1; N=$2
+          mkdir -p w
+          git fetch -q --depth 1 origin studio
+          git archive FETCH_HEAD afisha.py compose.py covers/$N covers/31 | tar -x -C w
+          cp oblozhka_lang.py w/
+          gh release download "studio-$BUILD" -R ${{ github.repository }} -p elementy.zip -D w
+          ls w w/covers/$N
+      - name: Обложки
+        run: python3 cover_lang_run.py
+      - name: В ветку
+        if: always()
+        run: |
+          git config user.name dub; git config user.email dub@users.noreply.github.com
+          git add out_cover 2>/dev/null && git commit -qm "обложки на языках: $(grep -v '^#' cover-request.txt | head -1)" || echo nothing
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done

@@ -8,7 +8,8 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import afisha as A
 import compose as C
 S = C.S
-LOGO = {"hi": ("बारसिक", "बिल्ला"), "en": ("Barsik", "the Cat"), "es": ("Barsik", "el Gato"), "pt": ("Barsik", "o Gato"), "de": ("Barsik", "der Kater")}
+LOGO = {"hi": ("बारसिक", "बिल्ला"), "en": ("Barsik", "the Cat"), "es": ("Barsik", "el Gato"), "pt": ("Barsik", "o Gato"), "de": ("Barsik", "der Kater"),
+        "fr": ("Barsik", "le Chat"), "ar": ("بارسيك", "القط")}
 
 
 def make_logo(big, small):
@@ -42,6 +43,13 @@ if lang == 'hi':   # у Inter нет деванагари: FreeSans Bold (сво
     from PIL import ImageFont
     HI = '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf'
     C.font = lambda px: ImageFont.truetype(HI, int(px), layout_engine=ImageFont.Layout.RAQM)
+if lang == 'ar':   # арабский: справа налево, буквы соединяет raqm; у Inter арабских букв нет — Noto Kufi Arabic (OFL), запасные — Noto Sans Arabic, DejaVu
+    import glob
+    from PIL import ImageFont
+    AR = [f for pat in ('NotoKufiArabic-Black.ttf', 'NotoKufiArabic-ExtraBold.ttf', 'NotoKufiArabic-Bold.ttf', 'NotoSansArabic-Black.ttf', 'NotoSansArabic-Bold.ttf', 'DejaVuSans-Bold.ttf')
+          for f in glob.glob('/usr/share/fonts/**/' + pat, recursive=True)][0]
+    print('арабский шрифт:', AR)
+    C.font = lambda px: ImageFont.truetype(AR, int(px * float(os.environ.get('AR_K', '0.86'))), layout_engine=ImageFont.Layout.RAQM)
 C.logo = make_logo(*LOGO[lang])
 _pill, _banner = C.pill, C.banner
 C.pill = lambda img, t: _pill(img, series)
