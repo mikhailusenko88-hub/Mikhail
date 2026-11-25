@@ -1,3 +1,14 @@
-# домен [IP сервера] — проверка DNS (16.11 21:17 МСК, у Михаила сайт то открывается, то нет)
-nashdekor.ru 185.60.134.150
-crm.nashdekor.ru 185.60.134.150
+# домен — адреса Rutube (загрузка и видео) для списка «напрямую» в Amnezia (25.11)
+upload.rutube.ru
+uploader.rutube.ru
+u.rutube.ru
+studio.rutube.ru
+api.rutube.ru
+s3.rutube.ru
+storage.rutube.ru
+bl.rutube.ru
+cdn.rutube.ru
+video.rutube.ru
+static.rutube.ru
+pic.rutube.ru
+rutube.ru
