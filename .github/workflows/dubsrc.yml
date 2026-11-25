@@ -1,0 +1,62 @@
+name: dubsrc
+# Исходники для дубляжа из готового ролика (серии из телефона): строка в dubsrc-request.txt — «<имя> <источник>»,
+# источник: release:<тег>/<файл> (файл релиза) или branch:<ветка>/<путь> (файл в ветке, например dub-src).
+# Итог: релиз studio-<имя> с dub.zip (как у студии) и ep-<имя>-540.mp4, разбор реплик — dubsrc/<имя>/ в этой ветке.
+on:
+  push:
+    branches: [golos-en]
+    paths: ['dubsrc-request.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  src:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/huggingface
+            ~/.cache/torch
+            ~/.cache/ecapa
+          key: dubsrc-cache-v1
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q demucs faster-whisper speechbrain librosa scikit-learn soundfile
+      - name: Источник
+        id: s
+        run: |
+          L=$(grep -v '^#' dubsrc-request.txt | head -1); set -- $L; NAME=$1; SRC=$2
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          mkdir -p src
+          case "$SRC" in
+            release:*) R=${SRC#release:}; gh release download "${R%%/*}" -R ${{ github.repository }} -p "${R#*/}" -D src ;;
+            branch:*) B=${SRC#branch:}; BR=${B%%/*}; P=${B#*/}; git fetch -q --depth 1 origin "$BR" && git show "FETCH_HEAD:$P" > "src/$(basename "$P")" ;;
+          esac
+          ls -la src; echo "file=src/$(ls src | head -1)" >> $GITHUB_OUTPUT
+      - name: Разбор
+        run: python dubsrc.py "${{ steps.s.outputs.name }}" "${{ steps.s.outputs.file }}"
+      - name: Релиз
+        run: |
+          N="${{ steps.s.outputs.name }}"; F="${{ steps.s.outputs.file }}"; W="tmp_dubsrc/$N"
+          if ffprobe -v error -select_streams v:0 -show_entries stream=codec_type -of csv=p=0 "$F" | grep -q video; then
+            ffmpeg -y -loglevel error -i "$F" -vf scale=-2:540 -c:v libx264 -crf 26 -preset veryfast -c:a aac -b:a 128k -movflags +faststart "$W/ep-$N-540.mp4"; fi
+          gh release create "studio-$N" --target golos-en --prerelease --title "Исходники для дубляжа: $N" --notes "Из готового ролика: голоса отделены от музыки (demucs), реплики — распознаванием. dubsrc/$N в ветке golos-en." >/dev/null 2>&1 || true
+          gh release upload "studio-$N" --clobber "$W/dub.zip" $(ls "$W/ep-$N-540.mp4" 2>/dev/null)
+      - name: Разбор — в ветку
+        if: always()
+        run: |
+          git config user.name dubsrc; git config user.email dubsrc@users.noreply.github.com
+          git add dubsrc/${{ steps.s.outputs.name }}/clusters.json dubsrc/${{ steps.s.outputs.name }}/lines.json dubsrc/${{ steps.s.outputs.name }}/lines.txt 2>/dev/null || true
+          git commit -qm "dubsrc ${{ steps.s.outputs.name }}" || echo nothing
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep 5; done

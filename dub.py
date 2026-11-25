@@ -98,6 +98,11 @@ def main():
         zipfile.ZipFile(os.path.join(src_dir, "dub.zip")).extractall(src_dir)
     dd = os.path.join(src_dir, "dub")
     L = json.load(open(os.path.join(dd, "lines.json"), encoding="utf-8"))
+    rn = G.get("rename", {}).get(NAME) or {}   # серии из телефона (dubsrc.py): кластер голоса S1…Sk → имя героя; «-» — не переводить (песня, шум)
+    for ln in L["lines"]:
+        if rn.get(ln["name"]) == "-":
+            ln["vocal"] = True
+        ln["name"] = rn.get(ln["name"], ln["name"]) if rn.get(ln["name"]) != "-" else ln["name"]
     ep = G.get("builds", {}).get(NAME, NAME)
     P = json.load(open(f"perevod/{ep}.json", encoding="utf-8"))
     T = P[LANG]
