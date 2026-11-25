@@ -51,9 +51,16 @@ def contour(x48, sr=48000):
     return {"f": fc, "e": ec, "dur": dur, "f0": float(np.median(f[v])), "sd": float(np.std(st)), "voiced": float(v.mean())}
 
 
-def pool_phrases(n):
-    """Фразы из запаса бота, которых нет ни в подборе тембра, ни в пробе (phrases24)."""
+HERO = {"xenia": "Барсик", "kseniya": "Рон"}
+
+
+def pool_phrases(n, hero=None):
+    """Фразы из запаса бота, которых нет ни в подборе тембра, ни в пробе (phrases24). Для героя — его реплики из серий 35–39
+    (hero_lines.json; семь проверочных реплик пробы golosa в подбор не входят): в мультике много восклицаний и вопросов, а в запасе бота их нет."""
     import re, sluh2
+    if hero:
+        ls = json.load(open("hero_lines.json", encoding="utf-8"))[hero]
+        return ls[::max(1, len(ls) // n)][:n] if len(ls) > n else ls
     used = set(sluh2.phrases24())
     B = json.load(open("bank/bank.json", encoding="utf-8"))
     ls = [l for s in B["scripts"] for l in s["lines"] if not re.search(r"\d", l) and 35 < len(l) < 95 and "—" not in l and ":" not in l and l not in used]
@@ -93,7 +100,11 @@ def main(target, seed, rate, gens):
     PH, TWall = list(L.ph), list(L.tw)
     if POOL:
         import svoy_bars, svoy_kot3 as K3
-        extra_ph = pool_phrases(POOL + 10)
+        hero = HERO.get(target) if os.environ.get("HEROPOOL") == "1" else None
+        extra_ph = pool_phrases(POOL + 10, hero)
+        if hero:
+            PH, TWall = [], []                 # герою — только его реплики
+            log("фразы героя:", hero, len(extra_ph))
         ru = svoy2.Net(svoy2.RU)
         if target == "n4":
             ru.put(ru.build(svoy_bars.W4)); spk = svoy2.SLOT[svoy2.RU]

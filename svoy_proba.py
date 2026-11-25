@@ -68,6 +68,10 @@ def main(target, pin=False):
     keys = {r: k for k, (r, _) in net.tabs.items()}
     ph = sluh2.phrases24()
     held = [ph[i] for i in HELD if i < len(ph)]
+    hero = sluh_man.HERO.get(target)
+    if hero and os.path.exists("hero_lines.json"):          # герою проверка — на его репликах из мультика (семь проверочных, в подбор не входили)
+        tst = json.load(open("hero_lines.json", encoding="utf-8")).get(hero + "@test", [])
+        held = (tst + held)[:len(held)] if len(tst) >= 6 else held
     ru = svoy2.Net(svoy2.RU)
     if target == "n4":
         ru.put(ru.build(svoy_bars.W4)); spk = svoy2.SLOT[svoy2.RU]

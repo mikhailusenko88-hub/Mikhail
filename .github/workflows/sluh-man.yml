@@ -43,7 +43,9 @@ jobs:
       - run: |
           rq() { grep -o "$1=[0-9a-z.]*" sluh-man-request.txt | head -1 | cut -d= -f2; }
           export POOL=$(rq pool); export POOL=${POOL:-0}
-          python sluh_man.py ${{ matrix.target }} 1 ${{ matrix.rate }} $(rq gens)
+          export HEROPOOL=$(rq heropool)
+          ONLY=$(grep -o 'only=[a-z0-9,]*' sluh-man-request.txt | head -1 | cut -d= -f2)      # only=xenia,kseniya — остальные образцы не пересчитывать
+          case ",${ONLY:-${{ matrix.target }}}," in *",${{ matrix.target }},"*) python sluh_man.py ${{ matrix.target }} 1 ${{ matrix.rate }} $(rq gens);; *) echo "пропуск ${{ matrix.target }}";; esac
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-artifact@v4
