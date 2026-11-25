@@ -1,5 +1,2 @@
-Проверка: 2026-11-22 15:51 UTC
-200 153344 application/json http://89.126.192.214:8080/mebel/s9kbars/serii.json
-200 19848 text/html http://89.126.192.214:8080/mebel/s9kbars/index.html
-200 223691 image/jpeg http://89.126.192.214:8080/mebel/s9kbars/serii/36/cover.jpg
-200 187246 image/jpeg http://89.126.192.214:8080/mebel/s9kbars/serii/37/cover.jpg
+Проверка: 2026-11-25 07:49 UTC
+200 184865 application/json http://89.126.192.214:8080/mebel/s9kbars/serii.json
