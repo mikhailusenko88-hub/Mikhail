@@ -46,10 +46,12 @@ if lang == 'hi':   # у Inter нет деванагари: FreeSans Bold (сво
 if lang == 'ar':   # арабский: справа налево, буквы соединяет raqm; у Inter арабских букв нет — Noto Kufi Arabic (OFL), запасные — Noto Sans Arabic, DejaVu
     import glob
     from PIL import ImageFont
-    AR = [f for pat in ('NotoKufiArabic-Black.ttf', 'NotoKufiArabic-ExtraBold.ttf', 'NotoKufiArabic-Bold.ttf', 'NotoSansArabic-Black.ttf', 'NotoSansArabic-Bold.ttf', 'DejaVuSans-Bold.ttf')
-          for f in glob.glob('/usr/share/fonts/**/' + pat, recursive=True)][0]
+    pats = os.environ.get('AR_FONT', 'NotoSansArabic-Black.ttf,NotoSansArabic-ExtraBold.ttf,NotoSansArabic-Bold.ttf,NotoKufiArabic-Bold.ttf,DejaVuSans-Bold.ttf').split(',')
+    AR = [f for pat in pats for f in glob.glob('/usr/share/fonts/**/' + pat, recursive=True)][0]
     print('арабский шрифт:', AR)
-    C.font = lambda px: ImageFont.truetype(AR, int(px * float(os.environ.get('AR_K', '0.86'))), layout_engine=ImageFont.Layout.RAQM)
+    C.font = lambda px: ImageFont.truetype(AR, int(px * float(os.environ.get('AR_K', '0.9'))), layout_engine=ImageFont.Layout.RAQM)
+    _place = A.place          # знак вопроса в кадре — арабский «؟» (латинского «?» в арабском шрифте нет)
+    A.place = lambda cv, it, el: _place(cv, dict(it, mark='؟') if it.get('mark') == '?' else it, el)
 C.logo = make_logo(*LOGO[lang])
 _pill, _banner = C.pill, C.banner
 C.pill = lambda img, t: _pill(img, series)
