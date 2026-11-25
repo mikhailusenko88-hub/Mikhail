@@ -94,6 +94,9 @@ def main(target, seed, rate, gens):
         pr = json.load(open(f, encoding="utf-8"))
         if pr["win"].get("close", pr["win"]["score"]) > best_sc:
             best_sc, spe, src = pr["win"].get("close", pr["win"]["score"]), np.array(pr["win"]["spe"], dtype=float), os.path.basename(f)
+    if os.environ.get("SPEFILE"):                 # тембр задан прямо (оценки разных кругов между собой не сравнимы)
+        src = os.environ["SPEFILE"].replace("TARGET", target) + ".json"
+        spe = np.array(json.load(open(f"{OUT}/{src}", encoding="utf-8"))["win"]["spe"], dtype=float); best_sc = None
     log("тембр:", src, best_sc)
     # фразы: восемь из подбора тембра + запас бота; последние десять — только для проверки (подбор их не видит)
     POOL = int(os.environ.get("POOL", "0"))
@@ -160,7 +163,7 @@ def main(target, seed, rate, gens):
         agg = {k: round(float(np.mean([p[k] for p in parts if k in p])), 3) for k in ("mel", "ritm", "dur", "razmah", "rms")} if any(parts) else {}
         pt = 12 * np.log2(float(np.median(f0)) / f0t) if f0 else 9.0
         agg["pt"] = round(float(pt), 2)
-        return float(np.mean(S)) - 0.05 * max(0.0, abs(pt) - 0.3), agg       # средняя высота — как у образца (±0,3 полутона без штрафа)
+        return float(np.mean(S)) - float(os.environ.get("PITCHW", "0.05")) * max(0.0, abs(pt) - 0.3), agg       # средняя высота — как у образца (±0,3 полутона без штрафа)
 
     all8 = VAL                                    # полная оценка — на фразах проверки
     # старты: основа и манера каждого готового диктора

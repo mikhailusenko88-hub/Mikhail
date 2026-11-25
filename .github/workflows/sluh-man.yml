@@ -44,6 +44,8 @@ jobs:
           rq() { grep -o "$1=[0-9a-z.]*" sluh-man-request.txt | head -1 | cut -d= -f2; }
           export POOL=$(rq pool); export POOL=${POOL:-0}
           export HEROPOOL=$(rq heropool)
+          export PITCHW=$(rq pitchw); export PITCHW=${PITCHW:-0.05}
+          export SPEFILE=$(grep -o 'spefile=[A-Za-z0-9_]*' sluh-man-request.txt | head -1 | cut -d= -f2)
           ONLY=$(grep -o 'only=[a-z0-9,]*' sluh-man-request.txt | head -1 | cut -d= -f2)      # only=xenia,kseniya — остальные образцы не пересчитывать
           case ",${ONLY:-${{ matrix.target }}}," in *",${{ matrix.target }},"*) python sluh_man.py ${{ matrix.target }} 1 ${{ matrix.rate }} $(rq gens);; *) echo "пропуск ${{ matrix.target }}";; esac
         env:
