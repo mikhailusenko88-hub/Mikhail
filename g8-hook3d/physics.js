@@ -123,6 +123,10 @@
   P.pinJoint = (W, b, lx, ly, px, py) => { const j = { t: 'pin', b, lx, ly, px, py }; W.joints.push(j); return j; };
   // трос: точка тела (lx,ly) к точке мира (px,py), не длиннее len; только тянет, не толкает
   P.ropeJoint = (W, b, lx, ly, px, py, len) => { const j = { t: 'rope', b, lx, ly, px, py, len, acc: 0, taut: false }; W.joints.push(j); return j; };
+  // сцепка двух тел: точка тела a (ax,ay) держится в точке тела b (bx,by) — прицеп за грузовиком
+  P.hitchJoint = (W, a, ax, ay, b, bx, by) => { const j = { t: 'hitch', a, ax, ay, b, bx, by }; W.joints.push(j); return j; };
+  // жёсткая тяга длиной len между точками двух тел (дышло на двух шарнирах): тянет и толкает вдоль себя, вверх-вниз свободна
+  P.rodJoint = (W, a, ax, ay, b, bx, by, len) => { const j = { t: 'rod', a, ax, ay, b, bx, by, len }; W.joints.push(j); return j; };
 
   function prepJoint(j) {
     if (j.t === 'wheel') {
@@ -148,6 +152,18 @@
       const k11 = b.im + b.iI * ry * ry, k12 = -b.iI * rx * ry, k22 = b.im + b.iI * rx * rx, det = k11 * k22 - k12 * k12 || 1;
       j.i11 = k22 / det; j.i12 = -k12 / det; j.i22 = k11 / det;
       j.cx = b.x + rx - j.px; j.cy = b.y + ry - j.py;
+    } else if (j.t === 'hitch') {
+      const A = j.a, B = j.b, [rax, ray] = P.wvec(A, j.ax, j.ay), [rbx, rby] = P.wvec(B, j.bx, j.by);
+      j.rax = rax; j.ray = ray; j.rbx = rbx; j.rby = rby;
+      const k11 = A.im + B.im + A.iI * ray * ray + B.iI * rby * rby, k12 = -A.iI * rax * ray - B.iI * rbx * rby, k22 = A.im + B.im + A.iI * rax * rax + B.iI * rbx * rbx, det = k11 * k22 - k12 * k12 || 1;
+      j.i11 = k22 / det; j.i12 = -k12 / det; j.i22 = k11 / det;
+      j.cx = A.x + rax - B.x - rbx; j.cy = A.y + ray - B.y - rby;
+    } else if (j.t === 'rod') {
+      const A = j.a, B = j.b, [rax, ray] = P.wvec(A, j.ax, j.ay), [rbx, rby] = P.wvec(B, j.bx, j.by);
+      const dx = A.x + rax - B.x - rbx, dy = A.y + ray - B.y - rby, d = Math.hypot(dx, dy) || 1e-6;
+      j.rax = rax; j.ray = ray; j.rbx = rbx; j.rby = rby; j.nx = dx / d; j.ny = dy / d;
+      const ca = cross(rax, ray, j.nx, j.ny), cb = cross(rbx, rby, j.nx, j.ny);
+      j.m = 1 / (A.im + B.im + A.iI * ca * ca + B.iI * cb * cb); j.bias = (BETA / P.DT) * (d - j.len);
     } else if (j.t === 'rope') {
       const b = j.b, [rx, ry] = P.wvec(b, j.lx, j.ly);
       const dx = b.x + rx - j.px, dy = b.y + ry - j.py, d = Math.hypot(dx, dy) || 1e-6;
@@ -187,6 +203,15 @@
       const bx = -(BETA / P.DT) * j.cx - vx, by = -(BETA / P.DT) * j.cy - vy;
       const px = j.i11 * bx + j.i12 * by, py = j.i12 * bx + j.i22 * by;
       imp(b, j.rx, j.ry, px, py);
+    } else if (j.t === 'hitch') {
+      const A = j.a, B = j.b, [vax, vay] = vel(A, j.rax, j.ray), [vbx, vby] = vel(B, j.rbx, j.rby);
+      const bx = -(BETA / P.DT) * j.cx - (vax - vbx), by = -(BETA / P.DT) * j.cy - (vay - vby);
+      const px = j.i11 * bx + j.i12 * by, py = j.i12 * bx + j.i22 * by;
+      imp(A, j.rax, j.ray, px, py); imp(B, j.rbx, j.rby, -px, -py);
+    } else if (j.t === 'rod') {
+      const A = j.a, B = j.b, [vax, vay] = vel(A, j.rax, j.ray), [vbx, vby] = vel(B, j.rbx, j.rby);
+      const l = -((vax - vbx) * j.nx + (vay - vby) * j.ny + j.bias) * j.m;
+      imp(A, j.rax, j.ray, j.nx * l, j.ny * l); imp(B, j.rbx, j.rby, -j.nx * l, -j.ny * l);
     } else if (j.t === 'rope') {
       const b = j.b, [vx, vy] = vel(b, j.rx, j.ry);
       const vn = vx * j.nx + vy * j.ny;

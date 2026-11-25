@@ -2,17 +2,17 @@
 /* Грязь, вид сбоку — рисование и управление, версия 2. Мир рисует объёмный вид Hook Truck (r3d.js); здесь — гараж-конструктор, свой грузовик
    (каждая деталь видна), живая грязь (колея остаётся), вода с вешками, указатели, брызги и дым, кнопки. Правая рука — газ и назад, левая — остальное. */
 (function () {
-  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.0';
+  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.2';
   const cv = document.getElementById('c'), ctx = cv.getContext('2d'), glc = document.getElementById('gl');
   const RU = /^(ru|uk|be|kk)/i.test(navigator.language || '') || /[?&]ru\b/.test(location.search);
   const T = RU ? {
     garage: 'Гараж', go: 'В рейс', cont: 'С отметки', anew: 'С начала', intro: 'Собери грузовик под полигон. Что помогает в грязи, мешает в гору — а топливо общее.',
-    p: { awd: 'Полный привод', lock: 'Блокировка', low: 'Пониженная', base: 'База', lift: 'Лифт', wheel: 'Размер', axles: 'Мосты', tires: 'Шины', eng: 'Форсировка', snorkel: 'Шноркель', tank: 'Бак', susp: 'Подвеска', skid: 'Защита днища', press: 'Давление', ctis: 'Подкачка', gear: 'Главная пара', winch: 'Лебёдка', paint: 'Краска' },
+    p: { awd: 'Полный привод', lock: 'Блокировка', low: 'Пониженная', base: 'База', lift: 'Лифт', wheel: 'Размер', axles: 'Мосты', tires: 'Шины', eng: 'Форсировка', snorkel: 'Шноркель', tank: 'Бак', susp: 'Подвеска', skid: 'Защита днища', press: 'Давление', ctis: 'Подкачка', gear: 'Главная пара', winch: 'Лебёдка', trailer: 'Прицеп', paint: 'Краска' },
     tabs: ['Шасси', 'Колёса', 'Привод', 'Прочее'], soft: 'ШИНЫ',
     cg: { log: 'Брёвна', barrel: 'Бочки', melon: 'Арбузы' }, cgN: { log: 'Обычный груз. Чем больше берёшь, тем тяжелее в грязи и в гору.', barrel: 'Тяжёлые: в грязи и в гору машина тянет хуже. На ухабах с разгона вылетают.', melon: 'Лёгкие и прыгают: через ухабы — медленно.' },
     pause: 'Пауза', resume: 'Дальше', towTo: 'Тягач к флажку', towFree: 'Тягач бесплатно', quit: 'Бросить рейс', noPay: 'Груз не довезён', opened: 'Открыт заказ', hTow: 'Не вылезти? ❚❚ — тягач к флажку. Или брось рейс и поставь другую деталь', lit: 'л', x2: 'Удвоить', topUp: 'Добрать', wt: 'вес', tn: 'т',
     menu: 'Заказы', poly: 'Полигон: проба деталей, без груза', ver: 'проба', perLog: 'за штуку', lockedC: 'Сначала довези предыдущий заказ', logsN: 'Груз', payL: 'Оплата', fuelL: 'Топливо — 1 монета за литр, тягач — 60', back: 'Назад', tow: 'Тягач', giveUp: 'Бросить рейс', toMenu: 'К заказам', buyFor: 'Купить за', lack: 'Не хватает', rDeliv: 'Довёз', rFuel: 'Топливо', rTotal: 'Итого', cs: ['Довёз', 'Полный кузов', 'Без тягача'], winC: 'Заказ выполнен!', logLost: 'Груз упал!', of: 'из',
-    o: { awd: ['нет', 'есть'], lock: ['нет', 'есть'], low: ['нет', 'есть'], base: ['короткая', 'длинная', 'длинная+'], lift: ['нет', '+1', '+2'], wheel: ['малые', 'средние', 'большие'], axles: ['4×4', '6×6'], tires: ['дорожные', 'универс.', 'грязевые'], eng: ['0', '1', '2', '3', '4', '5'], snorkel: ['нет', 'есть'], tank: ['60 л', '95 л'], susp: ['мягкая', 'средняя', 'жёсткая'], skid: ['нет', 'есть'], press: ['низкое', 'среднее', 'высокое'], ctis: ['нет', 'есть'], gear: ['тяговая', 'средняя', 'скоростная'], winch: ['15 м', '21 м'] },
+    o: { awd: ['нет', 'есть'], lock: ['нет', 'есть'], low: ['нет', 'есть'], base: ['короткая', 'длинная', 'длинная+'], lift: ['нет', '+1', '+2'], wheel: ['малые', 'средние', 'большие'], axles: ['4×4', '6×6'], tires: ['дорожные', 'универс.', 'грязевые'], eng: ['0', '1', '2', '3', '4', '5', '6', '7', '8'], trailer: ['нет', 'тележка', 'большой'], snorkel: ['нет', 'есть'], tank: ['60 л', '95 л'], susp: ['мягкая', 'средняя', 'жёсткая'], skid: ['нет', 'есть'], press: ['низкое', 'среднее', 'высокое'], ctis: ['нет', 'есть'], gear: ['тяговая', 'средняя', 'скоростная'], winch: ['15 м', '21 м'] },
     n: {
       awd: ['Задний привод: дёшево и экономно, но в грязи и в гору слабо.', 'Полный привод: кнопка 4×4 — тянут все колёса. Расход больше.'],
       lock: ['Без блокировки: в грязи одно колесо моста буксует впустую.', 'Блокировка: кнопка БЛОК — в грязи гребут оба колеса моста.'],
@@ -23,17 +23,18 @@
       ctis: ['Без подкачки: давление ставишь в гараже на весь рейс.', 'Подкачка: кнопка ШИНЫ спускает колёса на ходу — перед песком и торфом — и накачивает обратно.'],
       gear: ['Тяговая пара: тяга +25%, скорость −20%.', 'Средняя пара.', 'Скоростная пара: скорость +20%, тяга −18% — на подъёмах и в липком не вытянет.'],
       winch: ['Лебёдка: трос 15 м. Тянет от мотора — жжёт топливо, без топлива не работает.', 'Лебёдка с длинным тросом: 21 м и тянет быстрее. Топливо жжёт так же.'],
+      trailer: ['Без прицепа: везёшь только в кузове.', 'Тележка: ещё один кузов — плюс 7 брёвен или 5 бочек. Сама отнимает 2,1 т от «Груз до»: окупается с форсировкой от 4-й ступени.', 'Большой прицеп: плюс 11 брёвен или 9 бочек, отнимает 3,5 т. Для сильного мотора — от 6-й ступени или 6×6.'],
       paint: ['Краска — на проходимость не влияет, зато красиво.'],
-      base: ['Короткая база: легко переваливает гребни, но на крутом подъёме задирает нос.', 'Длинная база: груза больше, в гору устойчива. Тяжелее в грязи. Гребни бери с хода — медленно сядет брюхом.', 'Очень длинная база: груза ещё больше. Тяжёлая — с полным кузовом нужна форсировка. Гребни только с хода.'],
+      base: ['Короткая база: легко переваливает гребни, но на крутом подъёме задирает нос. Прицеп на неё не ставится.', 'Длинная база: груза больше, в гору устойчива. Тяжелее в грязи. Гребни бери с хода — медленно сядет брюхом.', 'Очень длинная база: груза ещё больше. Тяжёлая — с полным кузовом нужна форсировка. Гребни только с хода.'],
       lift: ['Без лифта: устойчив, но брюхо низко и брод мелкий.', 'Лифт +1: брюхо и брод выше на 17 см.', 'Лифт +2: ещё выше — но на самом крутом подъёме опрокидывает.'],
       wheel: ['Малые колёса: вся тяга на земле, но тонут в грязи.', 'Средние: тонут меньше, брод глубже; в гору тяги меньше.', 'Большие: почти не тонут, но в гору без мотора не идут и жгут топливо.'],
-      axles: ['4×4: легче и экономнее.', '6×6: гребёт тремя мостами, не встаёт на дыбы и везёт на 6,3 т больше; тяжелее и прожорливее.'],
+      axles: ['4×4: легче и экономнее.', '6×6: гребёт тремя мостами, не встаёт на дыбы и везёт больше — особенно с длинной рамой. Тяжелее и прожорливее.'],
       tires: ['Дорожные шины: быстрее и экономнее, в грязи скользят.', 'Универсальные шины: середина.', 'Грязевые шины: цепляют в грязи; на твёрдом медленнее, расход больше.'],
-      eng: [0, 1, 2, 3, 4, 5].map((v) => (v ? `Форсировка ${v} из 5: тяга +${12 * v}%, везёт на ${String(Math.round(14 * v) / 10).replace('.', ',')} т больше, расход +${6 * v}%.` : 'Мотор заводской: экономный, но тяжёлый груз в гору и в грязи не тянет.')),
+      eng: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((v) => (v ? `Форсировка ${v} из 8: тяга +${12 * Math.min(v, 5) + 7 * Math.max(0, v - 5)}%, везёт на ${String(Math.round(10 * M.ENG_T(v)) / 10).replace('.', ',')} т больше, расход +${6 * v}%.${v >= 6 ? ' Короткую раму на подъёме задирает — бери длинную.' : ''}` : 'Мотор заводской: экономный, но тяжёлый груз в гору и в грязи не тянет.')),
       snorkel: ['Без шноркеля: вода выше капота — мотор заглохнет.', 'Шноркель: воздух берётся с крыши, глубокий брод не страшен.'],
       tank: ['Бак 60 л.', 'Бак 95 л: дальше едешь, чуть тяжелее.'],
     },
-    sClear: 'Клиренс', sFord: 'Брод до', sPull: 'Тяга', sRange: 'Запас хода', sLoad: 'Груз до', m: 'м', over: (t) => `Больше не увезёт: грузоподъёмность ${t} т. Форсируй мотор или ставь 6×6.`,
+    sClear: 'Клиренс', sFord: 'Брод до', sPull: 'Тяга', sRange: 'Запас хода', sLoad: 'Груз до', tapBuy: 'Нажми зелёную кнопку ещё раз — купишь.', tapAd: (n) => `Не хватает ${n} монет: нажми жёлтую кнопку — доберёшь за рекламу.`, tapNo: (n) => `Не хватает ${n} монет — подзаработай на заказах.`, trNeed: 'Прицеп ставится только на длинную раму: короткую с ним задирает. Сначала вкладка «Шасси» — длинная или длинная+.', m: 'м', over: (t) => `Больше не увезёт: грузоподъёмность ${t} т. Форсируй мотор, удлиняй раму или ставь 6×6.`,
     awd: '4×4', lock: 'БЛОК', low: 'ПОНИЖ', winch: 'ЛЕБЁДКА', ahead: 'Впереди', soil: { shallow: 'мелкая грязь', soft: 'мягкая грязь', medium: 'грязь', sticky: 'липкая грязь', swamp: 'болото', sand: 'песок', clay: 'глина', peat: 'торф' }, crest: 'гребень', ford: 'брод', climb: 'подъём',
     hClog: 'Шины забиты: на твёрдом разгонись на обычной передаче — слетит. Или промой в броду', hSand: 'Песок: не буксуй. Назад по своему следу и с хода — или спусти шины',
     hAwd: 'Буксуешь? Включи 4×4', hLock: 'Не гребёт? Включи БЛОК', hLow: 'Закапываешься или мало тяги? Включи ПОНИЖ', hWinch: 'Держи ЛЕБЁДКУ — подтянет к дереву', hBack: 'Сдай назад и возьми с разгона', hHung: 'Сел брюхом. Назад и с разгона — или нужен клиренс: в гараж', hHungL: 'Сел брюхом. Сдай назад и бери с разгона, без ПОНИЖ', hHungF: 'Сел брюхом, но нос уже перевалил. Газу — сползёшь вперёд', crestRun: ' — бери с хода', hGar: 'Не проходит? Загляни в гараж: продолжишь с отметки',
@@ -46,12 +47,12 @@
     keys: '→ газ   ← назад   ·   1 — 4×4   2 — блок   3 — пониж   ·   Пробел — лебёдка   ·   R — на отметку   ·   G — гараж', sec: 'с',
   } : {
     garage: 'Garage', go: 'Drive', cont: 'From checkpoint', anew: 'From start', intro: 'Build a truck for the proving ground. What helps in mud hurts on hills — and the fuel is shared.',
-    p: { awd: 'All-wheel drive', lock: 'Diff lock', low: 'Low range', base: 'Wheelbase', lift: 'Lift', wheel: 'Size', axles: 'Axles', tires: 'Tires', eng: 'Engine tune', snorkel: 'Snorkel', tank: 'Tank', susp: 'Suspension', skid: 'Skid plate', press: 'Pressure', ctis: 'Inflation', gear: 'Final drive', winch: 'Winch', paint: 'Paint' },
+    p: { awd: 'All-wheel drive', lock: 'Diff lock', low: 'Low range', base: 'Wheelbase', lift: 'Lift', wheel: 'Size', axles: 'Axles', tires: 'Tires', eng: 'Engine tune', snorkel: 'Snorkel', tank: 'Tank', susp: 'Suspension', skid: 'Skid plate', press: 'Pressure', ctis: 'Inflation', gear: 'Final drive', winch: 'Winch', trailer: 'Trailer', paint: 'Paint' },
     tabs: ['Chassis', 'Wheels', 'Drive', 'Other'], soft: 'TIRES',
     cg: { log: 'Logs', barrel: 'Barrels', melon: 'Melons' }, cgN: { log: 'Plain cargo. The more you take, the harder mud and climbs get.', barrel: 'Heavy: the truck pulls worse in mud and uphill. They fly out on bumps at speed.', melon: 'Light and bouncy: take bumps slowly.' },
     pause: 'Paused', resume: 'Resume', towTo: 'Tow to the flag', towFree: 'Free tow', quit: 'Give up', noPay: 'No cargo delivered', opened: 'New contract', hTow: 'Stuck for good? ❚❚ — tow to the flag. Or give up and fit another part', lit: 'L', x2: 'Double', topUp: 'Top up', wt: 'weight', tn: 't',
     menu: 'Contracts', poly: 'Proving ground: try parts, no cargo', ver: 'build', perLog: 'each', lockedC: 'Deliver the previous contract first', logsN: 'Cargo', payL: 'Pay', fuelL: 'Fuel — 1 coin per litre, tow — 60', back: 'Back', tow: 'Tow', giveUp: 'Give up', toMenu: 'Contracts', buyFor: 'Buy for', lack: 'Short by', rDeliv: 'Delivered', rFuel: 'Fuel', rTotal: 'Total', cs: ['Delivered', 'Full load', 'No tow'], winC: 'Contract done!', logLost: 'Cargo fell off!', of: 'of',
-    o: { awd: ['no', 'yes'], lock: ['no', 'yes'], low: ['no', 'yes'], base: ['short', 'long', 'long+'], lift: ['none', '+1', '+2'], wheel: ['small', 'medium', 'large'], axles: ['4×4', '6×6'], tires: ['road', 'all-terrain', 'mud'], eng: ['0', '1', '2', '3', '4', '5'], snorkel: ['no', 'yes'], tank: ['60 L', '95 L'], susp: ['soft', 'medium', 'stiff'], skid: ['no', 'yes'], press: ['low', 'medium', 'high'], ctis: ['no', 'yes'], gear: ['pull', 'medium', 'speed'], winch: ['15 m', '21 m'] },
+    o: { awd: ['no', 'yes'], lock: ['no', 'yes'], low: ['no', 'yes'], base: ['short', 'long', 'long+'], lift: ['none', '+1', '+2'], wheel: ['small', 'medium', 'large'], axles: ['4×4', '6×6'], tires: ['road', 'all-terrain', 'mud'], eng: ['0', '1', '2', '3', '4', '5', '6', '7', '8'], trailer: ['none', 'cart', 'big'], snorkel: ['no', 'yes'], tank: ['60 L', '95 L'], susp: ['soft', 'medium', 'stiff'], skid: ['no', 'yes'], press: ['low', 'medium', 'high'], ctis: ['no', 'yes'], gear: ['pull', 'medium', 'speed'], winch: ['15 m', '21 m'] },
     n: {
       awd: ['Rear-wheel drive: cheap and thrifty, weak in mud and uphill.', 'All-wheel drive: the 4×4 button — every wheel pulls. Burns more fuel.'],
       lock: ['No diff lock: in mud one wheel per axle spins uselessly.', 'Diff lock: the LOCK button — both wheels of an axle dig in mud.'],
@@ -62,17 +63,18 @@
       ctis: ['No inflation system: pressure is set in the garage for the whole trip.', 'Inflation system: the TIRES button airs down on the move — before sand and peat — and back up.'],
       gear: ['Pull gearing: pull +25%, speed −20%.', 'Medium gearing.', 'Speed gearing: speed +20%, pull −18% — struggles on climbs and in sticky mud.'],
       winch: ['Winch: 15 m cable. Engine-driven: it burns fuel and will not work on an empty tank.', 'Long-cable winch: 21 m and pulls faster. Burns fuel just the same.'],
+      trailer: ['No trailer: you haul only what fits the bed.', 'Cart: one more bed — 7 more logs or 5 barrels. It takes 2.1 t off the payload itself: pays off from tune stage 4.', 'Big trailer: 11 more logs or 9 barrels, takes 3.5 t off. For a strong engine — tune stage 6 or 6×6.'],
       paint: ['Paint: no effect on off-road ability, but it looks good.'],
-      base: ['Short wheelbase: rolls over crests, but lifts its nose on steep climbs.', 'Long wheelbase: carries more, steady uphill. Heavier in mud. Take crests at speed — go slow and it high-centers.', 'Extra long: carries the most. Heavy — a full load needs engine tuning. Crests at speed only.'],
+      base: ['Short wheelbase: rolls over crests, but lifts its nose on steep climbs. It cannot take a trailer.', 'Long wheelbase: carries more, steady uphill. Heavier in mud. Take crests at speed — go slow and it high-centers.', 'Extra long: carries the most. Heavy — a full load needs engine tuning. Crests at speed only.'],
       lift: ['No lift: stable, but low belly and shallow fording.', 'Lift +1: belly and fording depth 17 cm higher.', 'Lift +2: higher still — but tips over on the steepest climb.'],
       wheel: ['Small wheels: all the pull reaches the ground, but they sink in mud.', 'Medium: sink less, ford deeper; less pull uphill.', 'Large: barely sink, but need a bigger engine uphill and burn fuel.'],
-      axles: ['4×4: lighter and thriftier.', '6×6: three axles dig in, it never rears up and carries 6.3 t more; heavier and thirstier.'],
+      axles: ['4×4: lighter and thriftier.', '6×6: three axles dig in, it never rears up and carries more — most of all on a long frame. Heavier and thirstier.'],
       tires: ['Road tires: faster and thriftier, slippery in mud.', 'All-terrain tires: the middle ground.', 'Mud tires: bite in mud; slower on firm ground, thirstier.'],
-      eng: [0, 1, 2, 3, 4, 5].map((v) => (v ? `Tune ${v} of 5: pull +${12 * v}%, carries ${Math.round(14 * v) / 10} t more, fuel use +${6 * v}%.` : 'Stock engine: thrifty, but weak with a heavy load uphill and in mud.')),
+      eng: [0, 1, 2, 3, 4, 5, 6, 7, 8].map((v) => (v ? `Tune ${v} of 8: pull +${12 * Math.min(v, 5) + 7 * Math.max(0, v - 5)}%, carries ${Math.round(10 * M.ENG_T(v)) / 10} t more, fuel use +${6 * v}%.${v >= 6 ? ' A short frame rears up on climbs — go long.' : ''}` : 'Stock engine: thrifty, but weak with a heavy load uphill and in mud.')),
       snorkel: ['No snorkel: water above the hood stalls the engine.', 'Snorkel: air comes from the roof, deep fords are fine.'],
       tank: ['60 L tank.', '95 L tank: more range, a bit heavier.'],
     },
-    sClear: 'Clearance', sFord: 'Fords up to', sPull: 'Pull', sRange: 'Range', sLoad: 'Carries', m: 'm', over: (t) => `That is all it can carry: payload ${t} t. Tune the engine or fit 6×6.`,
+    sClear: 'Clearance', sFord: 'Fords up to', sPull: 'Pull', sRange: 'Range', sLoad: 'Carries', tapBuy: 'Tap the green button again to buy.', tapAd: (n) => `Short by ${n} coins: tap the yellow button to top up with an ad.`, tapNo: (n) => `Short by ${n} coins — earn more on contracts.`, trNeed: 'A trailer needs a long frame: a short one rears up with it. Go to Chassis first — long or long+.', m: 'm', over: (t) => `That is all it can carry: payload ${t} t. Tune the engine, lengthen the frame or fit 6×6.`,
     awd: '4×4', lock: 'LOCK', low: 'LOW', winch: 'WINCH', ahead: 'Ahead', soil: { shallow: 'shallow mud', soft: 'soft mud', medium: 'mud', sticky: 'sticky mud', swamp: 'swamp', sand: 'sand', clay: 'clay', peat: 'peat' }, crest: 'crest', ford: 'ford', climb: 'climb',
     hClog: 'Tires clogged: on firm ground speed up in high range to shed it. Or wash them in a ford', hSand: 'Sand: don\'t spin. Back up along your track and take a run — or air down',
     hAwd: 'Wheels spinning? Switch on 4×4', hLock: 'No bite? Switch on LOCK', hLow: 'Digging in or no pull? Switch on LOW', hWinch: 'Hold WINCH — it pulls you to the tree', hBack: 'Back up and take a run at it', hHung: 'High-centered. Back up and take a run — or get more clearance in the garage', hHungL: 'High-centered. Back up and take a run at it, LOW off', hHungF: 'High-centered, but the nose is over. Gas — you will slide forward', crestRun: ' — take it at speed', hGar: 'No way through? Visit the garage: you continue from the checkpoint',
@@ -84,9 +86,9 @@
     win: 'Proving ground cleared!', s1: 'Finished', s2: 'No returns', s3: 'Fuel ≥ 20%', time: 'Time', fuel: 'Fuel', again: 'Again', toGar: 'Garage',
     keys: '→ gas   ← reverse   ·   1 — 4×4   2 — lock   3 — low   ·   Space — winch   ·   R — checkpoint   ·   G — garage', sec: 's',
   };
-  const PARTS = [['base', [0, 1, 2], 0], ['lift', [0, 1, 2], 0], ['axles', [2, 3], 0], ['susp', [0, 1, 2], 0], ['skid', [0, 1], 0], ['wheel', [0, 1, 2], 1], ['tires', [0, 1, 2], 1], ['press', [0, 1, 2], 1], ['ctis', [0, 1], 1], ['awd', [0, 1], 2], ['lock', [0, 1], 2], ['low', [0, 1], 2], ['eng', [0, 1, 2, 3, 4, 5], 2], ['gear', [0, 1, 2], 2], ['tank', [0, 1], 3], ['snorkel', [0, 1], 3], ['winch', [0, 1], 3], ['paint', [0, 1, 2, 3, 4, 5], 3]];
+  const PARTS = [['base', [0, 1, 2], 0], ['lift', [0, 1, 2], 0], ['axles', [2, 3], 0], ['susp', [0, 1, 2], 0], ['skid', [0, 1], 0], ['wheel', [0, 1, 2], 1], ['tires', [0, 1, 2], 1], ['press', [0, 1, 2], 1], ['ctis', [0, 1], 1], ['awd', [0, 1], 2], ['lock', [0, 1], 2], ['low', [0, 1], 2], ['eng', [0, 1, 2, 3, 4, 5, 6, 7, 8], 2], ['gear', [0, 1, 2], 2], ['tank', [0, 1], 3], ['snorkel', [0, 1], 3], ['winch', [0, 1], 3], ['trailer', [0, 1, 2], 3], ['paint', [0, 1, 2, 3, 4, 5], 3]];
   // цены в заказах (на полигоне всё бесплатно); настройки — давление, подвеска, главная пара — бесплатны всегда
-  const PRICE = { awd: [0, 150], low: [0, 200], lock: [0, 250], tires: [0, 120, 350], wheel: [0, 300, 700], lift: [0, 250, 600], base: [0, 300, 700], axles: [0, 1200], skid: [0, 200], ctis: [0, 500], eng: [0, 150, 250, 400, 600, 900], tank: [0, 250], snorkel: [0, 300], winch: [0, 250], paint: [0, 0, 100, 100, 100, 100] }, TOW = 60;
+  const PRICE = { awd: [0, 150], low: [0, 200], lock: [0, 250], tires: [0, 120, 450], wheel: [0, 400, 1500], lift: [0, 250, 900], base: [0, 600, 2000], axles: [0, 3000], skid: [0, 200], ctis: [0, 900], eng: [0, 150, 350, 800, 1400, 2400, 4000, 6500, 10000], tank: [0, 250], snorkel: [0, 300], winch: [0, 250], trailer: [0, 4000, 9000], paint: [0, 0, 100, 100, 100, 100] }, TOW = 60;
   const START = Object.assign({}, M.DEF, { awd: 0, lock: 0, low: 0, tires: 0 });
   const PAINTS = [['#ff5a36', '#c63b1f'], ['#fbc02d', '#c49000'], ['#43a047', '#2e7d32'], ['#1e88e5', '#1565c0'], ['#eceff1', '#b0bec5'], ['#7c8b3a', '#5a6628']];
   const SOILC = { mud: '#4a2f1c', sand: '#d9b25c', clay: '#8e3f1f', peat: '#1f1812' };
@@ -181,7 +183,7 @@
   if (!(save.seen && save.seen.first) && !save.coins && !Object.keys(save.stars || {}).length) { sel = 0; nlogs = Math.ceil(capNow() / 2); start(false); } // самый первый запуск — сразу в рейс, меню подождёт
 
   // ---------- объёмная сцена: свои предметы поверх мира Hook Truck ----------
-  let truckM = null, wheelsM = [], axM = [], paint = [], flagM = null, cloudsM = [], sunM = null, murkM = null, splat = [], puddles = [], mist = [], foam = [], trackI = null, trackN = 0, tyreMud = 0, trackX = 0, truckKey = 0, lastDirt = -1, mudM = [], lastRut = -1, canM = [], waterTop = [], blobs = [], drops = [], smoke = [], dustP = [], pAcc = 0, stackL = [0, 0];
+  let truckM = null, trailerM = null, barM = null, wheelsM = [], axM = [], paint = [], flagM = null, cloudsM = [], sunM = null, murkM = null, splat = [], puddles = [], mist = [], foam = [], trackI = null, trackN = 0, tyreMud = 0, trackX = 0, truckKey = 0, lastDirt = -1, mudM = [], lastRut = -1, canM = [], waterTop = [], blobs = [], drops = [], smoke = [], dustP = [], pAcc = 0, stackL = [0, 0];
   if (use3d) {
     const A = R3.api, lam = (h, o) => A.lam(h, o);
     const mk = (geo, mat, x, y, z, par, sh = true) => { const m = new A.T.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = sh; par.add(m); return m; };
@@ -199,7 +201,7 @@
       const out = new T3.BufferGeometry(); out.setAttribute('position', new T3.BufferAttribute(pos, 3)); out.setAttribute('normal', new T3.BufferAttribute(nor, 3)); return out;
     }
     function buildTruck() {
-      const T3 = A.T, sc = A.scene, c = S.cfg, b = c.b, WR = c.WR, old = [truckM, ...wheelsM, ...axM.map((q) => q.G)];
+      const T3 = A.T, sc = A.scene, c = S.cfg, b = c.b, WR = c.WR, old = [truckM, trailerM, ...wheelsM, ...axM.map((q) => q.G)];
       for (const o of old) if (o) { sc.remove(o); o.traverse((q) => { if (q.geometry) q.geometry.dispose(); }); }
       paint = []; lastDirt = -1; truckKey = buildKey;
       const pm = (h) => { const m = lam(h); paint.push({ m, base: m.color.clone() }); return m; };
@@ -242,10 +244,21 @@
       // грязь налипает пятнами в три захода: чем дольше месишь, тем больше
       let sd = 7; const rn = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
       splat = [0, 1, 2].map(() => { for (let k = 0; k < 9; k++) { const a = rn(), x = a < 0.4 ? bx0 + rn() * bl : a < 0.7 ? cabX0 + rn() * 60 : xf - 62 + rn() * 54, y = yF + (a < 0.4 ? 8 + rn() * 14 : 2 + rn() * 30), r = 4 + rn() * 6, q = new T3.IcosahedronGeometry(r, 0); q.scale(1.3, 1, 0.22); put(q, mudS, x, y, 46.2); } const m = flush(g)[0]; m.castShadow = false; m.visible = false; return m; });
+      // прицеп: рама, кузов со стойками по высоте груза, дышло к сцепке
+      trailerM = null; if (barM) { sc.remove(barM); barM.geometry.dispose(); barM = null; }
+      if (c.tr) { const TR = c.tr, h2 = TR.bed / 2, tg = (trailerM = new T3.Group()); sc.add(tg);
+        bx(TR.bed + 8, 8, 56, fr, 0, yF - 4, 0); bx(TR.bed, 6, 92, dark, 0, yF + 3, 0); for (const z of [-45, 45]) bx(TR.bed, 5, 4, dark, 0, yF + 8.5, z);
+        bx(4, fh, 92, dark, h2 - 2, yF + 6 + fh / 2, 0); for (const z of [-45, 45]) { bx(5, stk, 5, fr, -h2 + 2.5, yF + 6 + stk / 2, z); bx(5, fh, 5, fr, h2 - 5, yF + 6 + fh / 2, z); }
+        for (const q of [0.5, 1]) bx(3, 3.5, 92, fr, -h2 + 2.5, yF + 6 + stk * q - 2, 0);
+        if (TR.rod) bx(TR.tx - TR.rod - h2 + 6, 6, 10, fr, (h2 + TR.tx - TR.rod) / 2, -TR.ty, 0); else { bx(TR.tx - h2 + 6, 6, 10, fr, (h2 + TR.tx) / 2, -TR.ty, 0); put(new T3.CylinderGeometry(5, 5, 14, 8), grey, TR.tx, -TR.ty, 0); }
+        for (const z of [-34, 34]) { bx(3, 8, 14, amber, -h2 - 4, yF - 2, z); bx(3, 22, 24, blk, -h2 - 3, -(c.hW - 6), z * 1.45); }
+        for (const lx of TR.ax) for (const z of [-50, 50]) bx(2 * WR + 12, 4, 22, dark, lx, -(c.hW - WR - 11), z);
+        flush(tg);
+        if (TR.rod) barM = mk(new T3.BoxGeometry(TR.rod, 5, 8), fr, 0, 0, 0, sc, false); }
       // колёса: шина с грунтозацепами по виду шин — одной «шестернёй», диск; мост и стойка (с лифтом её видно)
       const lug = [0, 8, 10][b.tires], lh = [0, 4, 7][b.tires], sh = new T3.Shape();
       if (lug) for (let k = 0; k < lug * 4; k++) { const a = (k / (lug * 4)) * Math.PI * 2, r = WR + ((k & 3) < 2 ? lh : 0); if (k) sh.lineTo(Math.cos(a) * r, Math.sin(a) * r); else sh.moveTo(r, 0); }
-      wheelsM = S.wheels.map(() => {
+      wheelsM = S.allw.map(() => {
         const G = new T3.Group(); sc.add(G);
         for (const z of [-50, 50]) {
           if (lug) put(new T3.ExtrudeGeometry(sh, { depth: 26, bevelEnabled: false, curveSegments: 1 }), blk, 0, 0, z - 13); else put(new T3.CylinderGeometry(WR, WR, 26, 18), blk, 0, 0, z, Math.PI / 2);
@@ -256,7 +269,7 @@
         const rg = new T3.Mesh(merge(T3, [ra, rb]), mudS); rg.visible = false; G.add(rg); G.userData.ring = rg; // грязевой «бублик»: растёт, когда протектор забивается
         return G;
       });
-      axM = S.wheels.map(() => { const G = new T3.Group(); sc.add(G); mk(new T3.BoxGeometry(11, 11, 96), fr, 0, 0, 0, G, false); return { G, st: mk(new T3.BoxGeometry(9, 1, 9), fr, 0, 0, 0, G, false) }; });
+      axM = S.allw.map(() => { const G = new T3.Group(); sc.add(G); mk(new T3.BoxGeometry(11, 11, 96), fr, 0, 0, 0, G, false); return { G, st: mk(new T3.BoxGeometry(9, 1, 9), fr, 0, 0, 0, G, false) }; });
     }
     function sign(q, s) { // указатель: что впереди
       const T3 = A.T, cn = document.createElement('canvas'); cn.width = 192; cn.height = 128; const g = cn.getContext('2d');
@@ -353,7 +366,7 @@
     // груз — настоящие тела: лежит поперёк кузова, катается и вылетает. Один вид груза — два-три объекта на все штуки сразу
     const cargoI = {};
     function cargoMeshes(kind) {
-      const T3 = A.T, r = M.CARGO[kind].r, out = [], add = (geos, col) => { const m = new T3.InstancedMesh(merge(T3, geos), lam(col), 13); m.count = 0; m.frustumCulled = false; m.castShadow = true; A.scene.add(m); out.push(m); };
+      const T3 = A.T, r = M.CARGO[kind].r, out = [], add = (geos, col) => { const m = new T3.InstancedMesh(merge(T3, geos), lam(col), 26); m.count = 0; m.frustumCulled = false; m.castShadow = true; A.scene.add(m); out.push(m); };
       const cyl = (rad, len, seg, z = 0) => { const g = new T3.CylinderGeometry(rad, rad, len, seg); g.rotateX(Math.PI / 2); g.translate(0, 0, z); return g; }, disc = (rad, x, y, z, seg = 10) => { const g = new T3.CircleGeometry(rad, seg); g.translate(x, y, z); return g; };
       if (kind === 'melon') {
         add([new T3.SphereGeometry(r, 14, 10)], '#43a047');
@@ -388,14 +401,15 @@
       A.truck.visible = false; for (const g of A.wheels) g.visible = false;
       if (truckKey !== buildKey) buildTruck();
       const tr = S.truck, c = S.cfg, WR = c.WR; truckM.position.set(tr.x, -tr.y, 0); truckM.rotation.z = -tr.a;
-      S.wheels.forEach((w, i) => {
+      if (trailerM && S.trailer) { trailerM.position.set(S.trailer.x, -S.trailer.y, 0); trailerM.rotation.z = -S.trailer.a; if (barM) { const TR = c.tr, a = P.wpt(tr, TR.hx, TR.hy), q = P.wpt(S.trailer, TR.tx - TR.rod, TR.ty); barM.position.set((a[0] + q[0]) / 2, -(a[1] + q[1]) / 2, 0); barM.rotation.z = Math.atan2(-(a[1] - q[1]), a[0] - q[0]); } }
+      S.allw.forEach((w, i) => { const bd = i < S.wheels.length ? tr : S.trailer;
         wheelsM[i].position.set(w.x, -w.y, 0); wheelsM[i].rotation.z = -w.a;
         const rg = wheelsM[i].userData.ring, cl = S.clog[i]; rg.visible = cl > 0.12; if (rg.visible) { const sc = 0.84 + 0.16 * cl; rg.scale.set(sc, sc, 1); }
-        const ly = P.local(tr, w.x, w.y)[1], gap = Math.max(2, ly - (c.belly - 10)), q = axM[i]; q.G.position.set(w.x, -w.y, 0); q.G.rotation.z = -tr.a; q.st.scale.y = gap; q.st.position.y = gap / 2;
+        const ly = P.local(bd, w.x, w.y)[1], gap = Math.max(2, ly - (c.belly - 10)), q = axM[i]; q.G.position.set(w.x, -w.y, 0); q.G.rotation.z = -bd.a; q.st.scale.y = gap; q.st.position.y = gap / 2;
       });
       const kd = S.logs.length ? S.kind : ''; if (kd && !cargoI[kd]) cargoI[kd] = cargoMeshes(kd);
-      for (const k in cargoI) for (const m of cargoI[k]) m.count = k === kd ? Math.min(13, S.logs.length) : 0;
-      if (kd) { S.logs.forEach((q, i) => { if (i > 12) return; dum.position.set(q.b.x, -q.b.y, 0); dum.rotation.set(0, 0, -q.b.a); dum.scale.set(1, 1, 1); dum.updateMatrix(); for (const m of cargoI[kd]) m.setMatrixAt(i, dum.matrix); }); for (const m of cargoI[kd]) m.instanceMatrix.needsUpdate = true; }
+      for (const k in cargoI) for (const m of cargoI[k]) m.count = k === kd ? Math.min(26, S.logs.length) : 0;
+      if (kd) { S.logs.forEach((q, i) => { if (i > 25) return; dum.position.set(q.b.x, -q.b.y, 0); dum.rotation.set(0, 0, -q.b.a); dum.scale.set(1, 1, 1); dum.updateMatrix(); for (const m of cargoI[kd]) m.setMatrixAt(i, dum.matrix); }); for (const m of cargoI[kd]) m.instanceMatrix.needsUpdate = true; }
       if (Math.abs(S.dirt - lastDirt) > 0.02) { lastDirt = S.dirt; const mc = A.C('#5b3d27'); for (const q of paint) q.m.color.copy(q.base).lerp(mc, S.dirt * 0.72); } // грязь налипает, вода смывает
       splat.forEach((m, i) => { m.visible = S.dirt > 0.18 + i * 0.26; });
       if (flagM) flagM.rotation.y = Math.sin(realT * 9) * 0.45 - clamp(tr.vx / 900, -0.6, 0.6);
@@ -442,7 +456,8 @@
   function flip(k) { if (mode !== 'play' || paused || S.state !== 'play' || !(k === 'soft' ? S.cfg.b.ctis : S.cfg.b[k])) return; sw[k] = !sw[k]; tone(sw[k] ? 760 : 420, 0.07, 0.12); }
   function setPart(k, v) {
     const nt = k === 'paint' ? T.n.paint[0] : T.n[k][optIdx(k, v)], bd = BD(), had = pend; tab = PARTS.find((q) => q[0] === k)[2]; note = nt;
-    if (!owns(k, v)) { pend = { k, v }; newSim(); tone(520, 0.05, 0.08); return; } // не куплено — примеряем и предлагаем купить
+    if (k === 'trailer' && v > 0 && !bd.base) { note = T.trNeed; tone(200, 0.12, 0.1); return; } // на короткую раму прицеп не ставится
+    if (!owns(k, v)) { pend = { k, v, t: realT }; newSim(); tone(520, 0.05, 0.08); return; } // не куплено — примеряем и предлагаем купить
     pend = null; if (bd[k] === v) { if (had) newSim(); return; } bd[k] = v; persist(); newSim(); tone(660, 0.06, 0.1);
   }
   function press(id) {
@@ -451,7 +466,7 @@
     else if (id === 'towad') adReward(() => tow(true)); else if (id === 'x2') adReward(() => { if (res && !res.doubled) { res.doubled = true; save.coins += res.total; persist(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); } });
     else if (id === 'adv') { const a = advice(); if (a && (a.own || save.coins >= a.price)) { if (!a.own) { save.coins -= a.price; (save.own[a.k] = save.own[a.k] || []).push(a.v); } save.build[a.k] = a.v; persist(); newSim(); tone(880, 0.1, 0.12); tone(1320, 0.2, 0.1); } else tone(200, 0.15, 0.12); }
     else if (id === 'adcoins') adReward(() => { if (pend) { save.coins = Math.max(save.coins, priceOf(pend.k, pend.v)); persist(); tone(990, 0.14, 0.12); } });
-    else if (id === 'poly') { career = false; cur = -1; sel = -1; toGarage(false); } else if (id === 'buy') buy(); else if (id === 'unsel') { sel = -1; newSim(); }
+    else if (id === 'poly') { career = false; cur = -1; sel = -1; toGarage(false); } else if (id === 'buy') { if (pend && realT - (pend.t || 0) > 0.25) buy(); } else if (id === 'unsel') { sel = -1; newSim(); }
     else if (id.slice(0, 4) === 'reg:') { reg = +id.slice(4); tone(520, 0.05, 0.08); }
     else if (id.slice(0, 2) === 'c:') { const i = +id.slice(2); if (unlocked(i)) { sel = i; nlogs = Math.ceil(capNow() / 2); newSim(); tone(660, 0.06, 0.1); } else tone(200, 0.12, 0.1); }
     else if (id === 'lg-' || id === 'lg+') { nlogs = clamp(nlogs + (id === 'lg+' ? 1 : -1), 1, capNow()); newSim(); tone(600, 0.04, 0.08); }
@@ -507,6 +522,9 @@
   const statsOf = (c) => { const pr = c.PR[c.b.press]; return [c.clear / PX, c.ford / PX, (100 * c.tqLow / c.WR) / (264000 / 27), ((c.tank / (0.1 + c.burn * pr.bn * M.F_AWD)) * c.spHigh * pr.sp * c.WR * 0.8) / PX, M.payT(c)]; };
   function drawGarage() {
     const pn = panel(T.garage), { top, small, L } = pn, c = S.cfg, bd = BD(); let { x0, ww, view } = pn;
+    // покупка там же, где нажал: первое нажатие — примерка, кнопка детали сама становится зелёной «Купить»; второе нажатие по ней — покупка
+    const pb = career && pend ? pend : null, prc = pb ? priceOf(pb.k, pb.v) : 0, okB = !!pb && save.coins >= prc, nearB = !!pb && !okB && save.coins >= prc / 2, noteT = !pb ? note : (okB ? T.tapBuy : nearB ? T.tapAd(prc - save.coins) : T.tapNo(prc - save.coins)) + ' ' + note;
+    const buyBtn = (b, big) => { b.id = okB ? 'buy' : nearB ? 'adcoins' : b.id; ctx.fillStyle = okB ? '#43a047' : '#f9a825'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = 'rgba(0,0,0,0.16)'; rr(b.x, b.y + b.h - 5, b.w, 5, 4); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; const t1 = okB ? T.buyPart : '▶ ' + T.topUp; font(Math.min(big, b.h * 0.34, (b.w * 1.55) / t1.length), 900); ctx.fillText(t1, b.x + b.w / 2, b.y + b.h * 0.34, b.w - 4); font(Math.min(big - 1, b.h * 0.3), 900); fillC('¤ ' + (okB ? prc : prc - save.coins), b.x + b.w / 2, b.y + b.h * 0.68, b.w - 4); };
     // сводка: четыре числа, которые сравниваешь с указателями на дороге. При примерке видно, что изменится: зелёное — лучше, красное — хуже
     const sv = statsOf(c), s0 = pend ? statsOf(M.spec(bd)) : sv, sf = [(v) => fmt(v, 2) + ' ' + T.m, (v) => fmt(v, 2) + ' ' + T.m, (v) => Math.round(v) + '%', (v) => Math.round(v) + ' ' + T.m, (v) => fmt(v) + ' ' + T.tn];
     const NM = [T.sClear, T.sFord, T.sPull, T.sRange, T.sLoad];
@@ -514,11 +532,11 @@
     const tabBtn = (i, x, yy, w, h) => { const n = T.tabs[i], b = { id: 'tab:' + i, x, y: yy, w, h }, on = tab === i; buttons.push(b); ctx.fillStyle = on ? '#37474f' : '#eceff1'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); ctx.fillStyle = on ? '#fff' : '#546e7a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; font(Math.min(16, (w * 1.7) / n.length), 900); ctx.fillText(n, b.x + w / 2, b.y + h / 2 + 1, w - 6); };
     let y = top + 10;
     if (L) { // телефон лёжа: числа и подсказка — слева под грузовиком, вкладки — столбиком, а вся высота справа отдана крупным кнопкам деталей
-      const cw = pn.px - 16, nl0 = lines(note, cw - 20, 12, 700).slice(0, 3), ch = 78 + (nl0.length ? nl0.length * 15 + 8 : 0), cy0 = H2 - 8 - ch;
+      const cw = pn.px - 16, nl0 = lines(noteT, cw - 20, 12, 700).slice(0, 4), ch = 78 + (nl0.length ? nl0.length * 15 + 8 : 0), cy0 = H2 - 8 - ch;
       ctx.fillStyle = 'rgba(255,253,247,0.95)'; rr(8, cy0, cw, ch, 14); ctx.fill();
       for (let i = 0; i < 5; i++) stat(i, 8 + (cw / 3) * ((i % 3) + 0.5), cy0 + 6 + Math.floor(i / 3) * 35, cw / 3 - 8, 10.5, 16, 24);
       ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; font(12, 700); nl0.forEach((q, i) => ctx.fillText(q, 18, cy0 + 86 + i * 15, cw - 20));
-      const zh = Math.max(110, (cy0 - 40) * 1.2), zg = Math.min(pn.px / (c.len + 190), zh / 330); view = { px: pn.px / 2, py: Math.max(52, Math.min(56 + (cy0 - 56) * 0.58, cy0 - 10 - 78 * zg)), zw: pn.px, zh };
+      const zh = Math.max(110, (cy0 - 40) * 1.2), zg = Math.min(pn.px / (c.len + (c.tr ? c.tr.len : 0) + 190), zh / 330); view = { px: pn.px / 2, py: Math.max(52, Math.min(56 + (cy0 - 56) * 0.58, cy0 - 10 - 78 * zg)), zw: pn.px, zh };
       const tw = Math.min(96, ww * 0.21), n = T.tabs.length, th = (H2 - 8 - 10 - y - (n - 1) * 6) / n;
       for (let i = 0; i < n; i++) tabBtn(i, x0, y + i * (th + 6), tw, th);
       x0 += tw + 10; ww -= tw + 10;
@@ -529,11 +547,12 @@
       for (let i = 0; i < 4; i++) tabBtn(i, x0 + i * (tw + 6), y, tw, th);
       y += th + 8;
     }
-    const goH = small ? 46 : 56, noteH = L ? 0 : small ? 48 : 60, fine = !career || (save.stars.creek || 0) > 0, rows = PARTS.filter((q) => q[2] === tab && (fine || !['press', 'susp', 'gear'].includes(q[0]))), rh = Math.min(L ? 60 : 52, (H2 - 8 - y - goH - noteH - (L ? 14 : 22)) / 5), lw = Math.min(124, ww * 0.31);
+    const goH = small ? 46 : 56, noteH = L ? 0 : small ? 62 : 76, fine = !career || (save.stars.creek || 0) > 0, rows = PARTS.filter((q) => q[2] === tab && (fine || !['press', 'susp', 'gear'].includes(q[0]))), rh = Math.min(L ? 60 : 52, (H2 - 8 - y - goH - noteH - (L ? 14 : 22)) / 5), lw = Math.min(124, ww * 0.31);
     for (const [k, vals] of rows) {
       if (k === 'paint') { // краска — кружки с цветом
-        const bw = Math.min(rh - 6, (ww - 5 * 8) / 6);
+        const bw = Math.min(rh - 6, (ww - 5 * 8 - 64) / 6); // справа от кружков — место под кнопку «Купить»
         vals.forEach((v, i) => { const b = { id: `p:paint:${v}`, x: x0 + i * (bw + 8), y: y + 3, w: bw, h: bw }, own = owns(k, v); buttons.push(b); ctx.globalAlpha = own ? 1 : 0.45; ctx.fillStyle = PAINTS[v][0]; rr(b.x, b.y, bw, bw, bw / 2); ctx.fill(); ctx.globalAlpha = 1; if (bd.paint === v || (pend && pend.k === k && pend.v === v)) { ctx.strokeStyle = bd.paint === v ? '#263238' : '#1e88e5'; ctx.lineWidth = 4; rr(b.x - 3, b.y - 3, bw + 6, bw + 6, bw / 2 + 3); ctx.stroke(); } });
+        if (pb && pb.k === 'paint' && (okB || nearB)) { const qx = x0 + 6 * (bw + 8), b = { id: 'p:paint:' + pb.v, x: qx, y: y + 3, w: x0 + ww - qx, h: rh - 6 }; buttons.push(b); buyBtn(b, 13); }
         y += rh; continue;
       }
       ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#37474f'; font(Math.min(L ? 17 : 16, rh * 0.36, (lw * 1.75) / T.p[k].length), 900); ctx.fillText(T.p[k], x0, y + rh / 2, lw - 6);
@@ -542,26 +561,25 @@
         for (let i = 0; i < n; i++) { ctx.fillStyle = i < lv ? '#fb8c00' : i < pv ? '#42a5f5' : '#cfd8dc'; rr(bx + (i * pw) / n, y + rh * 0.3, pw / n - 4, rh * 0.4, 5); ctx.fill(); }
         const bm = { id: `p:${k}:${Math.max(0, lv - 1)}`, x: x0 + ww - bq * 2 - 6, y: y + 3, w: bq, h: rh - 6 }, bp = { id: `p:${k}:${nx}`, x: x0 + ww - bq, y: y + 3, w: bq, h: rh - 6 }, own = owns(k, nx), top2 = lv >= n; buttons.push(bm, bp);
         ctx.fillStyle = lv > 0 ? '#cfd8dc' : '#eceff1'; rr(bm.x, bm.y, bm.w, bm.h, 10); ctx.fill(); ctx.fillStyle = lv > 0 ? '#455a64' : '#b0bec5'; ctx.textAlign = 'center'; font(Math.min(24, rh * 0.5)); ctx.fillText('−', bm.x + bq / 2, bm.y + bm.h / 2);
-        ctx.fillStyle = top2 ? '#eceff1' : pend && pend.k === k ? '#42a5f5' : '#fb8c00'; rr(bp.x, bp.y, bp.w, bp.h, 10); ctx.fill(); ctx.fillStyle = top2 ? '#b0bec5' : '#fff'; font(Math.min(own || top2 ? 24 : 17, rh * 0.5)); ctx.fillText(top2 ? '✓' : '+', bp.x + bq / 2, bp.y + bm.h / 2 + (own || top2 ? 0 : -7));
-        if (!own && !top2) { font(Math.min(12, rh * 0.26), 900); fillC('¤ ' + priceOf(k, nx), bp.x + bq / 2, bp.y + bm.h / 2 + 9, bq - 4); }
+        if (pb && pb.k === k && !own && !top2 && (okB || nearB)) buyBtn(bp, 13);
+        else { ctx.fillStyle = top2 ? '#eceff1' : pend && pend.k === k ? '#42a5f5' : '#fb8c00'; rr(bp.x, bp.y, bp.w, bp.h, 10); ctx.fill(); ctx.fillStyle = top2 ? '#b0bec5' : '#fff'; font(Math.min(own || top2 ? 24 : 17, rh * 0.5)); ctx.fillText(top2 ? '✓' : '+', bp.x + bq / 2, bp.y + bm.h / 2 + (own || top2 ? 0 : -7));
+          if (!own && !top2) { font(Math.min(12, rh * 0.26), 900); fillC('¤ ' + priceOf(k, nx), bp.x + bq / 2, bp.y + bm.h / 2 + 9, bq - 4); } }
         y += rh; continue;
       }
       const bw = (ww - lw - (vals.length - 1) * 6) / vals.length;
       vals.forEach((v, i) => {
         const b = { id: `p:${k}:${v}`, x: x0 + lw + i * (bw + 6), y: y + 3, w: bw, h: rh - 6 }, on = bd[k] === v, own = owns(k, v), pd = pend && pend.k === k && pend.v === v; buttons.push(b);
+        if (pd && pb && (okB || nearB)) { buyBtn(b, L ? 16 : 14); return; }
         ctx.fillStyle = on ? '#fb8c00' : own ? '#cfd8dc' : '#eceff1'; rr(b.x, b.y, b.w, b.h, 10); ctx.fill(); if (pd) { ctx.strokeStyle = '#1e88e5'; ctx.lineWidth = 3; rr(b.x + 1.5, b.y + 1.5, b.w - 3, b.h - 3, 9); ctx.stroke(); }
         ctx.fillStyle = on ? '#fff' : own ? '#455a64' : '#90a4ae'; ctx.textAlign = 'center'; font(Math.min(L ? 17 : 15, rh * 0.36, (bw * 1.6) / Math.max(3, T.o[k][i].length)), 900); ctx.fillText(T.o[k][i], b.x + b.w / 2, b.y + b.h / 2 + (own ? 1 : -rh * 0.14), b.w - 6);
         if (!own) { ctx.fillStyle = '#ef6c00'; font(Math.min(L ? 14 : 12, rh * 0.26), 900); fillC('¤ ' + priceOf(k, v), b.x + b.w / 2, b.y + b.h / 2 + Math.max(9, rh * 0.2), b.w - 4); } // цена некупленной детали
       });
       y += rh;
     }
-    const gy = H2 - 8 - goH - 10, nl = lines(note, ww - 8, small ? 12 : 14, 700).slice(0, 3), ny = Math.max(y + 4, gy - noteH); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; if (!L) nl.forEach((q, i) => ctx.fillText(q, x0, ny + 10 + i * (small ? 15 : 18), ww));
+    const gy = H2 - 8 - goH - 10, nl = lines(noteT, ww - 8, small ? 12 : 14, 700).slice(0, 4), ny = Math.max(y + 4, gy - noteH); ctx.fillStyle = '#546e7a'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; if (!L) nl.forEach((q, i) => ctx.fillText(q, x0, ny + 10 + i * (small ? 15 : 18), ww));
     const fs = small ? 15 : 18;
     if (career) {
-      if (pend) { // примерка: купить; если чуть не хватает — добрать за рекламу
-        const pr2 = priceOf(pend.k, pend.v), ok = save.coins >= pr2, near = !ok && save.coins >= pr2 / 2, hw = (ww - 8) * 0.64, b1 = { id: ok ? 'buy' : near ? 'adcoins' : 'none', x: x0, y: gy, w: hw, h: goH }, b2 = { id: 'menu', x: x0 + hw + 8, y: gy, w: ww - hw - 8, h: goH }; buttons.push(b1, b2);
-        btn(b1, ok ? `${T.buyFor} ¤ ${pr2}` : near ? `▶ ${T.topUp} ¤ ${pr2 - save.coins}` : `${T.lack} ¤ ${pr2 - save.coins}`, ok ? '#43a047' : near ? '#f9a825' : '#b0bec5', false, fs); btn(b2, '◀ ' + T.menu, '#78909c', false, fs);
-      } else { const b1 = { id: 'menu', x: x0, y: gy, w: ww, h: goH }; buttons.push(b1); btn(b1, '◀ ' + T.toMenu, '#43a047', false, small ? 18 : 22); }
+      { const b1 = { id: 'menu', x: x0, y: gy, w: ww, h: goH }; buttons.push(b1); btn(b1, '◀ ' + T.toMenu, pb ? '#78909c' : '#43a047', false, small ? 18 : 22); }
     } else {
       const mw = Math.min(120, ww * 0.3), b0 = { id: 'menu', x: x0, y: gy, w: mw, h: goH }; buttons.push(b0); btn(b0, '◀ ' + T.menu, '#78909c', false, fs - 2);
       if (resume) { const hw = (ww - mw - 16) / 2, b1 = { id: 'cont', x: x0 + mw + 8, y: gy, w: hw, h: goH }, b2 = { id: 'go', x: x0 + mw + 16 + hw, y: gy, w: hw, h: goH }; buttons.push(b1, b2); btn(b1, '▶ ' + T.cont, '#43a047', false, fs - 1); btn(b2, '↺ ' + T.anew, '#78909c', false, fs - 1); }
@@ -738,7 +756,7 @@
     if (eng) { const on = mode === 'play' && S.state === 'play' && !paused && !muted && !document.hidden, t = AC.currentTime, wsp = Math.abs(S.wheels[0].w) * S.WR; eng.o.frequency.setTargetAtTime(48 + 3 * S.cfg.b.eng + wsp * (sw.low ? 0.22 : 0.1) + (inp.gas ? 26 : 0), t, 0.08); eng.g.gain.setTargetAtTime(on ? 0.025 + (inp.gas ? 0.04 : 0) : 0, t, 0.1); }
     const tr = S.truck, port = !land();
     if (idle) {
-      const g = mode === 'menu' ? drawMenu() : drawGarage(), zg = Math.min(g.zw / (S.cfg.len + 190), g.zh / 330); camX = tr.x; camY = tr.y;
+      const g = mode === 'menu' ? drawMenu() : drawGarage(), tl = S.cfg.tr ? S.cfg.tr.len : 0, zg = Math.min(g.zw / (S.cfg.len + tl + 190), g.zh / 330); camX = tr.x - tl / 2; camY = tr.y;
       if (use3d) R3.draw(SV, { camX, camY, Z: zg, W, H: H2, DPR, t: realT, lvl: lvlKey, duo: false, shake: 0, gas: false, gasOn: false, theme: 2, g: { tilt: 0.14, yaw: 0.42, px: g.px, py: g.py } });
       return;
     }
