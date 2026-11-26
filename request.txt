@@ -1,10 +1,2 @@
-# 25.11 10:15 МСК кадры соседей и наших новых, Білесің бе? 10:00
-@bilesin_be_kz
-info:kqXjOqWvfwY
-info:oCicqnosClY
-info:5av4bORqDF0
-info:kPj5NWP1Wmg
-info:ld1ygaBLpms
-info:1tZcFYIjxJk
-info:hGPoNYtGCJM
-info:dxSzLbcBfRA
+# 26.11 09:54 МСК all — обход 26.11
+all
