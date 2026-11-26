@@ -3138,6 +3138,18 @@ function mediumFit(c, id, seg, lib, zk, cl) {   /* cl — крупный пла�
     for (const f of fr) for (const n of f.nb) { const q = proj(f, n, 0, D), [L, R] = edges(f, 0, D); ds.push((q.x + q.w - L + .06) / q.k, (q.x - q.w - L - .06) / q.k, (q.x - q.w - R - .06) / q.k, (q.x + q.w - R + .06) / q.k); }   // сосед слева/справа: убрать за край или взять целиком
     for (const d of ds) { if (Math.abs(d) > half * dMax) continue; const cc = cost(d, s); if (cc < best - 1e-6) { best = cc; fit.d = d; fit.s = s; fit.c = cc; } } }
   return fit; }
+/** 26.11.2026: герой лежит (упал, лёг) — крупный и средний план смотрят туда, где он лежит, а не туда, где была бы голова стоя.
+ *  37-я 0:05–0:07: Рон поскользнулся на льду, крупный план остался на высоте головы стоя — тело внизу кадра, мордочка со звёздочками у левого края. Теперь крупно — голова в середине кадра, камера чуть сверху;
+ *  средний — всё тело. Переход плавный (как сама поза: 0,35 с упасть, «встаёт» — обратно). MK3D.LIE_CAM = false — как было. */
+function lieK(st) { if (!st || MK3D.LIE_CAM === false) return 0; const p = st.persist, a = st.act || {};
+  if (p === 'fallen' || p === 'lie') return ease((st.pt || 0) / .35);
+  if (a.n === 'stand' && (st.prev === 'fallen' || st.prev === 'lie')) return 1 - ease(a.p || 0); return 0; }
+function lieCam(out, st, rg, close, side, hr, hy, zk) { const k = lieK(st); if (k < .01 || !rg || !rg.head || !rg.root) return out;
+  const hw = new THREE.Vector3(), rw = new THREE.Vector3(); rg.root.updateMatrixWorld(true); rg.head.getWorldPosition(hw); rg.root.getWorldPosition(rw);
+  if (!isFinite(hw.x) || !isFinite(hw.y)) return out;
+  const L = close ? { pos: new THREE.Vector3(hw.x + side * hr * .9, hw.y + hr * 1.6, hw.z + hr * 6.4 / zk), look: new THREE.Vector3(hw.x + side * hr * .15, hw.y - hr * .05, hw.z) }
+    : (() => { const cx = lerp(hw.x, rw.x, .45), cz = lerp(hw.z, rw.z, .45), cy = Math.max(.12, hw.y * .8), D = Math.max(hr * 11.5, hy * 1.9) / zk * .8; return { pos: new THREE.Vector3(cx + side * hr * 1.2, cy + hy * .45, cz + D), look: new THREE.Vector3(cx + side * hr * .3, cy, cz) }; })();
+  return { pos: out.pos.clone().lerp(L.pos, k), look: out.look.clone().lerp(L.look, k) }; }
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
   const ARCc = arcOf(S, lib);   /* камера знает настоящую глубину героя на полукруге: крупный и средний план не «наезжают» и не мельчат */
@@ -3154,8 +3166,9 @@ function camFor(c, S, seg, lib) {
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
     const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
-      return close ? (mf => { const up = Math.max(0, 1 - mf.s) * hr * 2.2; return { pos: new THREE.Vector3(x + side * hr * .9 + mf.d, hy - hr * .05 + up, z + hr * 6.4 / zk * mf.s), look: new THREE.Vector3(x + side * hr * .2 + mf.d, hy - hr * .32 + up, z) }; })(c.vert || MK3D.CLOSE_FIT === false ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk, true))
-        : (mf => { const sd = mf.side != null ? mf.side : side; return { pos: new THREE.Vector3(x + sd * hr * 1.6 + mf.d, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk * mf.s), look: new THREE.Vector3(x + sd * hr * .4 + mf.d, hy * .6, z) }; })(c.vert ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk)); }   // средний: края кадра — между героями
+      const out = close ? (mf => { const up = Math.max(0, 1 - mf.s) * hr * 2.2; return { pos: new THREE.Vector3(x + side * hr * .9 + mf.d, hy - hr * .05 + up, z + hr * 6.4 / zk * mf.s), look: new THREE.Vector3(x + side * hr * .2 + mf.d, hy - hr * .32 + up, z) }; })(c.vert || MK3D.CLOSE_FIT === false ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk, true))
+        : (mf => { const sd = mf.side != null ? mf.side : side; return { pos: new THREE.Vector3(x + sd * hr * 1.6 + mf.d, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk * mf.s), look: new THREE.Vector3(x + sd * hr * .4 + mf.d, hy * .6, z) }; })(c.vert ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk));   // средний: края кадра — между героями
+      return lieCam(out, S[id], rg, close, side, hr, hy, zk); }
     return { pos: new THREE.Vector3(x + side * (close ? .13 : .3), (close ? .78 : .8) * hh + (close ? .02 : .06), z + (close ? 1.15 : 2.15) * Math.max(.8, hh) / (c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1)), look: new THREE.Vector3(x + side * (close ? .03 : .08), (close ? .7 : .56) * hh, z) }; }
   // «группа» и «двое»: кадр подбирается с учётом глубины — кто ближе к зрителю, тот на экране шире; плоскость кадра — по средней глубине группы
   const frameFit = (list, pad, dmin, dmax, pts) => { const z0 = list.reduce((a, id) => a + pz(id), 0) / Math.max(1, list.length); let lo = 1e9, hi = -1e9, mid = 0, d = dmax;
