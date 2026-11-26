@@ -1,0 +1,2686 @@
+{
+ "summary": {
+  "build": "37i",
+  "lang": "en",
+  "n": 91,
+  "mos_src": 4.34,
+  "mos_vc": 4.15,
+  "mos_out": 4.01,
+  "by_hero": {
+   "Барсик": 4.32,
+   "Пик": 3.02,
+   "Рон": 4.07,
+   "Топа": 4.32,
+   "Филя": 3.82
+  },
+  "by_hero_src": {
+   "Барсик": 4.38,
+   "Пик": 3.66,
+   "Рон": 4.46,
+   "Топа": 4.45,
+   "Филя": 4.37
+  },
+  "clear": 96.3,
+  "q_yesno": 8,
+  "q_bad": [
+   6,
+   25,
+   33,
+   36,
+   45,
+   64,
+   114,
+   122
+  ],
+  "q_lost_by_vc": [
+   64
+  ],
+  "flat": [],
+  "fast": [
+   79,
+   109
+  ],
+  "minutes": 53.6
+ },
+ "rows": [
+  {
+   "i": 0,
+   "name": "Рон",
+   "text": "Look, here's our puddle. Now, splash!",
+   "ru": "Смотри́те, вот наша лужа. Сейчас — плюх!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.51,
+    "vc": 4.45,
+    "out": 4.45
+   },
+   "pitch": {
+    "src": {
+     "range": 21.9,
+     "end": -15.8,
+     "dur": 1.91
+    },
+    "out": {
+     "range": 9.8,
+     "end": 1.9,
+     "dur": 1.94
+    }
+   },
+   "heard": "Look here's our puddle, now splash.",
+   "clear": 100.0,
+   "sps": 3.6
+  },
+  {
+   "i": 2,
+   "name": "Рон",
+   "text": "Oh! No splash! It's hard!",
+   "ru": "Ой! Она не плюхает! Она твёрдая!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.15,
+    "out": 4.15
+   },
+   "pitch": {
+    "src": {
+     "range": 9.1,
+     "end": -20.6,
+     "dur": 1.35
+    },
+    "out": {
+     "range": 9.4,
+     "end": -9.1,
+     "dur": 1.35
+    }
+   },
+   "heard": "Oh no splash, it's hard.",
+   "clear": 100.0,
+   "sps": 3.3
+  },
+  {
+   "i": 4,
+   "name": "Барсик",
+   "text": "The puddle froze! Now it's ice!",
+   "ru": "Лужа замёрзла! Теперь это лёд!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.37,
+    "out": 4.37
+   },
+   "pitch": {
+    "src": {
+     "range": 19.1,
+     "end": -1.2,
+     "dur": 1.63
+    },
+    "out": {
+     "range": 7.4,
+     "end": -13.2,
+     "dur": 1.61
+    }
+   },
+   "heard": "The puddle froze, now it's ice.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 5,
+   "name": "Топа",
+   "text": "It shines like glass. And it's so slippery.",
+   "ru": "Блестит, как стекло. И скользкий-скользкий.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.46,
+    "out": 4.4
+   },
+   "pitch": {
+    "src": {
+     "range": 14.1,
+     "end": -3.6,
+     "dur": 2.52
+    },
+    "out": {
+     "range": 10.0,
+     "end": -7.7,
+     "dur": 2.51
+    }
+   },
+   "heard": "It shines like glass, and it's so slippery.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 6,
+   "name": "Рон",
+   "text": "Where's the water? Is it gone?",
+   "ru": "А где вода? Она пропала?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.52,
+    "vc": 4.43,
+    "out": 4.36
+   },
+   "pitch": {
+    "src": {
+     "range": 21.6,
+     "end": -18.3,
+     "dur": 1.6
+    },
+    "out": {
+     "range": 9.8,
+     "end": -8.5,
+     "dur": 1.7
+    }
+   },
+   "heard": "Where's the water? Is it gone?",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 7,
+   "name": "Барсик",
+   "text": "It's not gone. The water's here. It just got hard.",
+   "ru": "Никуда. Вода здесь. Только она стала твёрдой.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.52,
+    "vc": 4.46,
+    "out": 4.46
+   },
+   "pitch": {
+    "src": {
+     "range": 8.2,
+     "end": 6.6,
+     "dur": 2.5
+    },
+    "out": {
+     "range": 7.4,
+     "end": -13.2,
+     "dur": 2.67
+    }
+   },
+   "heard": "It's not gone, the water's here, it just got hard.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 8,
+   "name": "Топа",
+   "text": "Frost came at night. And froze the puddle.",
+   "ru": "Ночью пришёл мороз. И заморозил лужу.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.38,
+    "out": 4.38
+   },
+   "pitch": {
+    "src": {
+     "range": 7.1,
+     "end": -4.9,
+     "dur": 2.32
+    },
+    "out": {
+     "range": 9.6,
+     "end": -6.2,
+     "dur": 2.3
+    }
+   },
+   "heard": "Frost came at night and froze the puddle.",
+   "clear": 100.0,
+   "sps": 4.3
+  },
+  {
+   "i": 10,
+   "name": "Рон",
+   "text": "Smells like cold.",
+   "ru": "Пахнет… холодом.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.42,
+    "vc": 3.97,
+    "out": 3.97
+   },
+   "pitch": {
+    "src": {
+     "range": 18.9,
+     "end": -11.2,
+     "dur": 0.92
+    },
+    "out": {
+     "range": 10.7,
+     "end": -6.4,
+     "dur": 0.92
+    }
+   },
+   "heard": "Smells like cold.",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 15,
+   "name": "Филя",
+   "text": "Look, there's our snowman! He's still standing!",
+   "ru": "Смотри́те, вот наш снеговик! Он стои́т!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.36,
+    "out": 4.26
+   },
+   "pitch": {
+    "src": {
+     "range": 8.9,
+     "end": -0.2,
+     "dur": 2.3
+    },
+    "out": {
+     "range": 6.7,
+     "end": -8.9,
+     "dur": 2.31
+    }
+   },
+   "heard": "Look, there's our snowman. He's still standing.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 16,
+   "name": "Рон",
+   "text": "Snowy the Second! You didn't melt!",
+   "ru": "Снежок Второй! Ты не растаял!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.05,
+    "out": 4.05
+   },
+   "pitch": {
+    "src": {
+     "range": 19.8,
+     "end": 0.5,
+     "dur": 1.57
+    },
+    "out": {
+     "range": 9.7,
+     "end": -1.9,
+     "dur": 1.57
+    }
+   },
+   "heard": "Snowy the second, you didn't melt.",
+   "clear": 100.0,
+   "sps": 4.0
+  },
+  {
+   "i": 17,
+   "name": "Топа",
+   "text": "It was very cold last night. Snow doesn't melt in the cold.",
+   "ru": "Ночью было очень холодно. А в холоде снег не та́ет.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.41,
+    "out": 4.41
+   },
+   "pitch": {
+    "src": {
+     "range": 10.8,
+     "end": 2.8,
+     "dur": 3.14
+    },
+    "out": {
+     "range": 11.1,
+     "end": 1.6,
+     "dur": 3.01
+    }
+   },
+   "heard": "It was very cold last night. Snow doesn't melt in the cold.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 18,
+   "name": "Барсик",
+   "text": "Frost can't melt things. Frost freezes them.",
+   "ru": "Мороз растопить не может. Мороз — замораживает.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.37,
+    "out": 4.37
+   },
+   "pitch": {
+    "src": {
+     "range": 15.5,
+     "end": -3.1,
+     "dur": 2.68
+    },
+    "out": {
+     "range": 5.5,
+     "end": -14.6,
+     "dur": 2.65
+    }
+   },
+   "heard": "Frost can't melt things. Frost freezes them.",
+   "clear": 100.0,
+   "sps": 2.8
+  },
+  {
+   "i": 19,
+   "name": "Филя",
+   "text": "This was our puddle. And now it's a skating rink!",
+   "ru": "Это наша лужа. А теперь это каток!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.42,
+    "out": 4.02
+   },
+   "pitch": {
+    "src": {
+     "range": 9.0,
+     "end": -4.6,
+     "dur": 2.11
+    },
+    "out": {
+     "range": 8.7,
+     "end": -6.6,
+     "dur": 2.26
+    }
+   },
+   "heard": "This was our puddle, and now it's a skating rink.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 20,
+   "name": "Рон",
+   "text": "I'm skating! I'm the best skater!",
+   "ru": "Я катаюсь! Я лучше всех катаюсь!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 75.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.42,
+    "out": 4.42
+   },
+   "pitch": {
+    "src": {
+     "range": 9.1,
+     "end": -0.2,
+     "dur": 1.52
+    },
+    "out": {
+     "range": 9.6,
+     "end": -7.2,
+     "dur": 1.72
+    }
+   },
+   "heard": "I'm skating, I'm the best skater.",
+   "clear": 100.0,
+   "sps": 4.3
+  },
+  {
+   "i": 22,
+   "name": "Рон",
+   "text": "Oof. It's hard here too.",
+   "ru": "Ой. Тут тоже твёрдо.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.44,
+    "vc": 4.34,
+    "out": 4.34
+   },
+   "pitch": {
+    "src": {
+     "range": 7.8,
+     "end": -0.2,
+     "dur": 1.46
+    },
+    "out": {
+     "range": 14.6,
+     "end": -19.3,
+     "dur": 1.48
+    }
+   },
+   "heard": "Oof, it's hard here too.",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 25,
+   "name": "Топа",
+   "text": "Can I try too?",
+   "ru": "Можно я тоже попробую?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.49,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 8.2,
+     "end": -2.1,
+     "dur": 0.93
+    },
+    "out": {
+     "range": 9.5,
+     "end": -1.6,
+     "dur": 0.9
+    }
+   },
+   "heard": "Can I try too?",
+   "clear": 100.0,
+   "sps": 3.7
+  },
+  {
+   "i": 27,
+   "name": "Топа",
+   "text": "Whoa! My paws are sliding!",
+   "ru": "Ой! Лапы сами разъезжаются!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 60.0,
+   "mos": {
+    "src": 4.46,
+    "vc": 4.48,
+    "out": 4.48
+   },
+   "pitch": {
+    "src": {
+     "range": 7.3,
+     "end": 1.9,
+     "dur": 1.72
+    },
+    "out": {
+     "range": 7.1,
+     "end": -6.9,
+     "dur": 1.64
+    }
+   },
+   "heard": "Whoa, my paws are sliding.",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 28,
+   "name": "Барсик",
+   "text": "Hold on, Topa! Get up slowly.",
+   "ru": "Держись, Топа! Вставай потихоньку.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.52,
+    "vc": 4.43,
+    "out": 4.43
+   },
+   "pitch": {
+    "src": {
+     "range": 18.7,
+     "end": -3.3,
+     "dur": 1.64
+    },
+    "out": {
+     "range": 6.5,
+     "end": -3.5,
+     "dur": 1.8
+    }
+   },
+   "heard": "Hold on, Topa. Get up slowly.",
+   "clear": 100.0,
+   "sps": 4.0
+  },
+  {
+   "i": 29,
+   "name": "Филя",
+   "text": "Take tiny steps. Like a penguin!",
+   "ru": "Надо ходить маленькими шажками. Как пингвин!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.51,
+    "vc": 4.4,
+    "out": 4.4
+   },
+   "pitch": {
+    "src": {
+     "range": 9.8,
+     "end": -4.1,
+     "dur": 1.9
+    },
+    "out": {
+     "range": 7.5,
+     "end": -5.3,
+     "dur": 1.89
+    }
+   },
+   "heard": "Take tiny steps, like a penguin.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 30,
+   "name": "Барсик",
+   "text": "And no running on ice. You can fall.",
+   "ru": "А ещё на льду нельзя бегать. Можно упасть.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.35,
+    "out": 4.35
+   },
+   "pitch": {
+    "src": {
+     "range": 19.5,
+     "end": 3.2,
+     "dur": 2.12
+    },
+    "out": {
+     "range": 5.8,
+     "end": 0.8,
+     "dur": 2.12
+    }
+   },
+   "heard": "and no running on ice. You can fall.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 31,
+   "name": "Пик",
+   "text": "And we don't go on river ice. It can be thin.",
+   "ru": "И на речку не ходим. Там лёд бывает тонким.",
+   "speed": 0.88,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.06,
+    "vc": 3.27,
+    "out": 3.27
+   },
+   "pitch": {
+    "src": {
+     "range": 9.0,
+     "end": -2.3,
+     "dur": 2.57
+    },
+    "out": {
+     "range": 14.4,
+     "end": -10.6,
+     "dur": 2.57
+    }
+   },
+   "heard": "And we don't go on river ice. It can be thin.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 33,
+   "name": "Рон",
+   "text": "Knock knock! Puddle, are you home?",
+   "ru": "Тук-тук! Лужа, ты до́ма?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.39,
+    "vc": 4.28,
+    "out": 3.93
+   },
+   "pitch": {
+    "src": {
+     "range": 6.8,
+     "end": -15.0,
+     "dur": 1.66
+    },
+    "out": {
+     "range": 6.7,
+     "end": -2.6,
+     "dur": 1.76
+    }
+   },
+   "heard": "Knock knock, puddle are you home?",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 35,
+   "name": "Филя",
+   "text": "It won't open. It's frozen!",
+   "ru": "Она не откроет. Она замёрзла!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.41,
+    "vc": 3.27,
+    "out": 2.86
+   },
+   "pitch": {
+    "src": {
+     "range": 8.3,
+     "end": -2.2,
+     "dur": 1.44
+    },
+    "out": {
+     "range": 8.6,
+     "end": -17.1,
+     "dur": 1.44
+    }
+   },
+   "heard": "It won't open, it's frozen.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 36,
+   "name": "Топа",
+   "text": "Can we make ice ourselves? At home?",
+   "ru": "А можно сделать лёд самим? До́ма?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.36,
+    "out": 4.31
+   },
+   "pitch": {
+    "src": {
+     "range": 19.4,
+     "end": 0.3,
+     "dur": 2.04
+    },
+    "out": {
+     "range": 10.1,
+     "end": -7.3,
+     "dur": 2.04
+    }
+   },
+   "heard": "Can we make ice ourselves at home?",
+   "clear": 100.0,
+   "sps": 5.5
+  },
+  {
+   "i": 37,
+   "name": "Барсик",
+   "text": "Let's try! We need water and frost.",
+   "ru": "Давайте попробуем! Нужна вода и мороз.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.49,
+    "vc": 4.43,
+    "out": 4.43
+   },
+   "pitch": {
+    "src": {
+     "range": 9.9,
+     "end": 0.3,
+     "dur": 1.9
+    },
+    "out": {
+     "range": 4.2,
+     "end": -2.6,
+     "dur": 1.9
+    }
+   },
+   "heard": "Let's try, we need water and frost.",
+   "clear": 100.0,
+   "sps": 3.6
+  },
+  {
+   "i": 38,
+   "name": "Пик",
+   "text": "Here's a bowl. With water.",
+   "ru": "Вот миска. В ней вода.",
+   "speed": 1.136,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.38,
+    "vc": 3.73,
+    "out": 2.65
+   },
+   "pitch": {
+    "src": {
+     "range": 7.3,
+     "end": -3.0,
+     "dur": 1.04
+    },
+    "out": {
+     "range": 11.5,
+     "end": -5.2,
+     "dur": 1.24
+    }
+   },
+   "heard": "Here's a bowl with water.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 39,
+   "name": "Филя",
+   "text": "Water is wet. You can pour it in and out.",
+   "ru": "Вода мокрая. Её можно налить и вылить.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.28,
+    "out": 4.28
+   },
+   "pitch": {
+    "src": {
+     "range": 9.5,
+     "end": -9.9,
+     "dur": 2.05
+    },
+    "out": {
+     "range": 8.8,
+     "end": -1.9,
+     "dur": 2.16
+    }
+   },
+   "heard": "Water is wet, you can pour it in and out.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 40,
+   "name": "Рон",
+   "text": "Water, get hard! One, two, three!",
+   "ru": "Вода, стань твёрдой! Раз, два, три!",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.53,
+    "vc": 4.34,
+    "out": 4.26
+   },
+   "pitch": {
+    "src": {
+     "range": 10.0,
+     "end": -2.0,
+     "dur": 1.86
+    },
+    "out": {
+     "range": 9.2,
+     "end": -3.0,
+     "dur": 2.01
+    }
+   },
+   "heard": "Water get hard, one, two, three.",
+   "clear": 100.0,
+   "sps": 3.7
+  },
+  {
+   "i": 41,
+   "name": "Рон",
+   "text": "It didn't work. It won't listen to me.",
+   "ru": "Не получилось. Она меня не слушает.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.36,
+    "vc": 4.27,
+    "out": 3.92
+   },
+   "pitch": {
+    "src": {
+     "range": 18.9,
+     "end": -5.9,
+     "dur": 1.77
+    },
+    "out": {
+     "range": 9.6,
+     "end": -13.2,
+     "dur": 1.79
+    }
+   },
+   "heard": "It didn't work, it won't listen to me.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 45,
+   "name": "Рон",
+   "text": "What if I blow? Fff! Is it hard now?",
+   "ru": "А если подуть? Ффф! Стала твёрдая?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.39,
+    "vc": 3.82,
+    "out": 3.69
+   },
+   "pitch": {
+    "src": {
+     "range": 16.3,
+     "end": -3.5,
+     "dur": 2.35
+    },
+    "out": {
+     "range": 10.8,
+     "end": -8.7,
+     "dur": 2.36
+    }
+   },
+   "heard": "What if I blow, FFF, is it hard now?",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 47,
+   "name": "Филя",
+   "text": "No, Ron. You're warm!",
+   "ru": "Нет, Рон. Ты же тёплый!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.22,
+    "vc": 4.04,
+    "out": 3.06
+   },
+   "pitch": {
+    "src": {
+     "range": 6.7,
+     "end": 0.6,
+     "dur": 0.94
+    },
+    "out": {
+     "range": 9.6,
+     "end": -4.8,
+     "dur": 1.13
+    }
+   },
+   "heard": "No run, you're warmed.",
+   "clear": 60.0,
+   "sps": 3.8
+  },
+  {
+   "i": 48,
+   "name": "Барсик",
+   "text": "It's warm in the kitchen. Water won't freeze here.",
+   "ru": "На кухне тепло. Здесь вода не замёрзнет.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.49,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 7.1,
+     "end": -0.1,
+     "dur": 2.32
+    },
+    "out": {
+     "range": 6.2,
+     "end": -2.3,
+     "dur": 2.46
+    }
+   },
+   "heard": "It's warm in the kitchen. Water won't freeze here.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 49,
+   "name": "Пик",
+   "text": "We have to put it out in the cold. All night.",
+   "ru": "Надо поставить её на мороз. На всю ночь.",
+   "speed": 0.88,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.82,
+    "vc": 3.56,
+    "out": 3.56
+   },
+   "pitch": {
+    "src": {
+     "range": 16.1,
+     "end": -1.4,
+     "dur": 2.22
+    },
+    "out": {
+     "range": 10.4,
+     "end": -7.2,
+     "dur": 2.27
+    }
+   },
+   "heard": "We have to put it out in the cold. All night.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 50,
+   "name": "Топа",
+   "text": "Night is the coldest time.",
+   "ru": "Ночью мороз сильнее всего.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.4,
+    "out": 4.32
+   },
+   "pitch": {
+    "src": {
+     "range": 6.2,
+     "end": -3.3,
+     "dur": 1.39
+    },
+    "out": {
+     "range": 12.8,
+     "end": -7.3,
+     "dur": 1.37
+    }
+   },
+   "heard": "Night is the coldest time.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 51,
+   "name": "Рон",
+   "text": "Let me! I'll be careful!",
+   "ru": "Давайте я! Я осторожно!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.41,
+    "vc": 4.1,
+    "out": 4.1
+   },
+   "pitch": {
+    "src": {
+     "range": 7.6,
+     "end": 1.6,
+     "dur": 1.24
+    },
+    "out": {
+     "range": 9.5,
+     "end": -6.9,
+     "dur": 1.27
+    }
+   },
+   "heard": "Let me, I'll be careful.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 52,
+   "name": "Филя",
+   "text": "Don't spill it.",
+   "ru": "Только не разле́й.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.38,
+    "vc": 3.88,
+    "out": 3.88
+   },
+   "pitch": {
+    "src": {
+     "range": 9.0,
+     "end": -12.8,
+     "dur": 0.68
+    },
+    "out": {
+     "range": 7.2,
+     "end": -10.0,
+     "dur": 0.72
+    }
+   },
+   "heard": "Don't spill it.",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 53,
+   "name": "Рон",
+   "text": "There. Stay here, bowl. Wait for the frost.",
+   "ru": "Вот. Стой тут, миска. Жди мороз.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.4,
+    "out": 4.4
+   },
+   "pitch": {
+    "src": {
+     "range": 10.5,
+     "end": 2.7,
+     "dur": 2.02
+    },
+    "out": {
+     "range": 9.2,
+     "end": -5.3,
+     "dur": 2.16
+    }
+   },
+   "heard": "There, stay here, bowl. Wait for the frost.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 54,
+   "name": "Барсик",
+   "text": "Look, there's our snowman. He'll keep an eye on it.",
+   "ru": "Смотри́те, вот наш снеговик. Он будет за ней смотреть.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.49,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 9.3,
+     "end": -17.4,
+     "dur": 2.32
+    },
+    "out": {
+     "range": 16.8,
+     "end": -14.2,
+     "dur": 2.34
+    }
+   },
+   "heard": "Look, there's our snowman. He'll keep an eye on it.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 55,
+   "name": "Рон",
+   "text": "I'll guard it too. All night!",
+   "ru": "Я тоже буду сторожить. Всю ночь!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.41,
+    "vc": 4.15,
+    "out": 4.15
+   },
+   "pitch": {
+    "src": {
+     "range": 9.4,
+     "end": -4.6,
+     "dur": 1.67
+    },
+    "out": {
+     "range": 9.4,
+     "end": -5.1,
+     "dur": 1.69
+    }
+   },
+   "heard": "I'll guard it too, all night.",
+   "clear": 100.0,
+   "sps": 2.9
+  },
+  {
+   "i": 56,
+   "name": "Барсик",
+   "text": "Ron, it's frosty outside. Your nose will freeze.",
+   "ru": "Рон, на у́лице мороз. У тебя нос замёрзнет.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 4.52,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 19.6,
+     "end": 3.2,
+     "dur": 2.92
+    },
+    "out": {
+     "range": 6.6,
+     "end": -4.1,
+     "dur": 3.06
+    }
+   },
+   "heard": "Ron, it's frosty outside. Your nose will freeze.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 57,
+   "name": "Рон",
+   "text": "My nose is brave.",
+   "ru": "Мой нос храбрый.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.44,
+    "vc": 3.5,
+    "out": 3.5
+   },
+   "pitch": {
+    "src": {
+     "range": 7.0,
+     "end": -15.8,
+     "dur": 0.86
+    },
+    "out": {
+     "range": 8.5,
+     "end": -3.7,
+     "dur": 0.98
+    }
+   },
+   "heard": "My nose is brave.",
+   "clear": 100.0,
+   "sps": 5.1
+  },
+  {
+   "i": 59,
+   "name": "Филя",
+   "text": "Bless you!",
+   "ru": "Будь здоров!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.26,
+    "vc": 4.08,
+    "out": 3.61
+   },
+   "pitch": {
+    "src": {
+     "range": 11.0,
+     "end": 1.2,
+     "dur": 0.59
+    },
+    "out": {
+     "range": 6.7,
+     "end": 0.5,
+     "dur": 0.58
+    }
+   },
+   "heard": "Bless you.",
+   "clear": 100.0,
+   "sps": 2.9
+  },
+  {
+   "i": 60,
+   "name": "Рон",
+   "text": "Okay. My nose is cold. Let's go warm up.",
+   "ru": "Ладно. Носу холодно. Идёмте греться.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.51,
+    "vc": 4.31,
+    "out": 3.96
+   },
+   "pitch": {
+    "src": {
+     "range": 19.2,
+     "end": -3.0,
+     "dur": 2.5
+    },
+    "out": {
+     "range": 11.3,
+     "end": -8.7,
+     "dur": 2.65
+    }
+   },
+   "heard": "Okay, my nose is cold. Let's go warm up.",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 64,
+   "name": "Барсик",
+   "text": "Let's play a game. I say a word, and you say: is it hard or soft?",
+   "ru": "Давайте поиграем. Я скажу слово, а вы — твёрдое оно или мягкое.",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.51,
+    "vc": 4.48,
+    "out": 4.48
+   },
+   "pitch": {
+    "src": {
+     "range": 17.8,
+     "end": 13.0,
+     "dur": 3.7
+    },
+    "out": {
+     "range": 6.7,
+     "end": -1.4,
+     "dur": 3.81
+    }
+   },
+   "heard": "Let's play a game. I say a word and you say, is it hard or soft?",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 65,
+   "name": "Филя",
+   "text": "Okay!",
+   "ru": "Давай!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.11,
+    "vc": 3.88,
+    "out": 3.08
+   },
+   "pitch": {
+    "src": {
+     "range": 6.1,
+     "end": 1.1,
+     "dur": 0.47
+    },
+    "out": {
+     "range": 4.6,
+     "end": 1.1,
+     "dur": 0.47
+    }
+   },
+   "heard": "Okay.",
+   "clear": 100.0,
+   "sps": 3.4
+  },
+  {
+   "i": 66,
+   "name": "Барсик",
+   "text": "Pillow!",
+   "ru": "Подушка!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 0.0,
+   "mos": {
+    "src": 3.3,
+    "vc": 4.22,
+    "out": 4.22
+   },
+   "pitch": {
+    "src": {
+     "range": 7.1,
+     "end": 2.7,
+     "dur": 0.57
+    },
+    "out": {
+     "range": 6.1,
+     "end": 3.6,
+     "dur": 0.56
+    }
+   },
+   "heard": "Hello",
+   "clear": 0.0,
+   "sps": 2.7
+  },
+  {
+   "i": 67,
+   "name": "Топа",
+   "text": "Soft!",
+   "ru": "Мя́гкая!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.03,
+    "vc": 3.79,
+    "out": 3.79
+   },
+   "pitch": {
+    "src": {
+     "range": 6.0,
+     "end": -0.3,
+     "dur": 0.33
+    },
+    "out": {
+     "range": 6.5,
+     "end": -1.6,
+     "dur": 0.32
+    }
+   },
+   "heard": "It's soft.",
+   "clear": 100.0,
+   "sps": 1.7
+  },
+  {
+   "i": 68,
+   "name": "Барсик",
+   "text": "Stone!",
+   "ru": "Камень!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.37,
+    "vc": 4.0,
+    "out": 4.0
+   },
+   "pitch": {
+    "src": {
+     "range": 6.5,
+     "end": -0.9,
+     "dur": 0.34
+    },
+    "out": {
+     "range": 3.8,
+     "end": 1.1,
+     "dur": 0.33
+    }
+   },
+   "heard": "Stone.",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 69,
+   "name": "Филя",
+   "text": "Hard!",
+   "ru": "Твёрдый!",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.67,
+    "vc": 3.59,
+    "out": 3.04
+   },
+   "pitch": {
+    "src": {
+     "range": 6.4,
+     "end": 2.2,
+     "dur": 0.51
+    },
+    "out": {
+     "range": 5.7,
+     "end": 4.5,
+     "dur": 0.39
+    }
+   },
+   "heard": "Hard.",
+   "clear": 100.0,
+   "sps": 1.5
+  },
+  {
+   "i": 70,
+   "name": "Барсик",
+   "text": "Water in the bowl!",
+   "ru": "Вода в миске!",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 75.0,
+   "mos": {
+    "src": 4.35,
+    "vc": 4.26,
+    "out": 4.26
+   },
+   "pitch": {
+    "src": {
+     "range": 8.3,
+     "end": -16.0,
+     "dur": 0.77
+    },
+    "out": {
+     "range": 7.0,
+     "end": 1.4,
+     "dur": 0.72
+    }
+   },
+   "heard": "Water in the bowls.",
+   "clear": 75.0,
+   "sps": 4.7
+  },
+  {
+   "i": 71,
+   "name": "Рон",
+   "text": "It splashes!",
+   "ru": "Она плюхает!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.35,
+    "vc": 3.68,
+    "out": 3.68
+   },
+   "pitch": {
+    "src": {
+     "range": 20.0,
+     "end": 3.0,
+     "dur": 0.71
+    },
+    "out": {
+     "range": 9.3,
+     "end": 0.3,
+     "dur": 0.72
+    }
+   },
+   "heard": "It splashes.",
+   "clear": 100.0,
+   "sps": 3.3
+  },
+  {
+   "i": 76,
+   "name": "Барсик",
+   "text": "Snowball!",
+   "ru": "Снежок!",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.21,
+    "vc": 4.19,
+    "out": 4.19
+   },
+   "pitch": {
+    "src": {
+     "range": 19.2,
+     "end": 12.7,
+     "dur": 0.44
+    },
+    "out": {
+     "range": 5.2,
+     "end": 3.8,
+     "dur": 0.43
+    }
+   },
+   "heard": "snowball.",
+   "clear": 100.0,
+   "sps": 2.8
+  },
+  {
+   "i": 77,
+   "name": "Пик",
+   "text": "Cold!",
+   "ru": "Холодный!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.94,
+    "vc": 2.16,
+    "out": 2.16
+   },
+   "pitch": {
+    "src": {
+     "range": 7.0,
+     "end": 0.8,
+     "dur": 0.53
+    },
+    "out": {
+     "range": 6.1,
+     "end": 0.8,
+     "dur": 0.51
+    }
+   },
+   "heard": "It called.",
+   "clear": 0.0,
+   "sps": 1.4
+  },
+  {
+   "i": 79,
+   "name": "Филя",
+   "text": "That's no answer!",
+   "ru": "Это не ответ!",
+   "speed": 1.273,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.35,
+    "vc": 4.15,
+    "out": 3.86
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": 0.3,
+     "dur": 0.73
+    },
+    "out": {
+     "range": 18.0,
+     "end": -12.0,
+     "dur": 0.73
+    }
+   },
+   "heard": "That's no answer.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 80,
+   "name": "Барсик",
+   "text": "Ice!",
+   "ru": "Лёд!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.15,
+    "vc": 3.8,
+    "out": 3.8
+   },
+   "pitch": {
+    "src": {
+     "range": 4.7,
+     "end": 1.2,
+     "dur": 0.24
+    },
+    "out": {
+     "range": 3.5,
+     "end": 0.8,
+     "dur": 0.22
+    }
+   },
+   "heard": "ice",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 81,
+   "name": "Топа",
+   "text": "Hard! And slippery!",
+   "ru": "Твёрдый! И скользкий!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.34,
+    "out": 4.34
+   },
+   "pitch": {
+    "src": {
+     "range": 10.4,
+     "end": -0.0,
+     "dur": 1.02
+    },
+    "out": {
+     "range": 8.4,
+     "end": -1.0,
+     "dur": 1.01
+    }
+   },
+   "heard": "Hard and Slippery",
+   "clear": 100.0,
+   "sps": 4.0
+  },
+  {
+   "i": 82,
+   "name": "Пик",
+   "text": "And by morning, the water in the bowl may be hard.",
+   "ru": "А вода в миске утром, может быть, будет твёрдая.",
+   "speed": 0.976,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.43,
+    "vc": 3.3,
+    "out": 2.22
+   },
+   "pitch": {
+    "src": {
+     "range": 8.3,
+     "end": 1.1,
+     "dur": 2.15
+    },
+    "out": {
+     "range": 11.7,
+     "end": -8.7,
+     "dur": 2.47
+    }
+   },
+   "heard": "And by morning, the water in the bowl may be hard.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 84,
+   "name": "Топа",
+   "text": "And I'm off to bed. We'll find out in the morning.",
+   "ru": "А я пойду спать. Утром узнаем.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.3,
+    "out": 4.3
+   },
+   "pitch": {
+    "src": {
+     "range": 17.2,
+     "end": 1.5,
+     "dur": 2.53
+    },
+    "out": {
+     "range": 10.0,
+     "end": -0.5,
+     "dur": 2.44
+    }
+   },
+   "heard": "And I'm off to bed. We'll find out in the morning.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 85,
+   "name": "Барсик",
+   "text": "Look, here's the bowl!",
+   "ru": "Смотри́те, вот миска!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.29,
+    "out": 4.29
+   },
+   "pitch": {
+    "src": {
+     "range": 9.0,
+     "end": 1.0,
+     "dur": 0.95
+    },
+    "out": {
+     "range": 6.3,
+     "end": 2.8,
+     "dur": 0.91
+    }
+   },
+   "heard": "Look, here's the bowl.",
+   "clear": 100.0,
+   "sps": 4.6
+  },
+  {
+   "i": 86,
+   "name": "Рон",
+   "text": "The water froze! It's ice now!",
+   "ru": "Вода замёрзла! Теперь там лёд!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.41,
+    "out": 4.11
+   },
+   "pitch": {
+    "src": {
+     "range": 19.1,
+     "end": -17.2,
+     "dur": 1.67
+    },
+    "out": {
+     "range": 10.1,
+     "end": -20.2,
+     "dur": 1.79
+    }
+   },
+   "heard": "The water froze. It's ice now.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 87,
+   "name": "Филя",
+   "text": "Can I touch it? Ooh, so cold!",
+   "ru": "Можно потрогать? Ой, какой холодный!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 4.52,
+    "vc": 4.41,
+    "out": 4.41
+   },
+   "pitch": {
+    "src": {
+     "range": 8.9,
+     "end": -5.6,
+     "dur": 1.78
+    },
+    "out": {
+     "range": 7.6,
+     "end": -5.1,
+     "dur": 1.77
+    }
+   },
+   "heard": "Can I touch it? It was so cold.",
+   "clear": 85.7,
+   "sps": 3.5
+  },
+  {
+   "i": 88,
+   "name": "Рон",
+   "text": "Heavy. And cold!",
+   "ru": "Тяжёлая. И холодная!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.38,
+    "vc": 4.25,
+    "out": 4.25
+   },
+   "pitch": {
+    "src": {
+     "range": 19.8,
+     "end": -15.2,
+     "dur": 0.97
+    },
+    "out": {
+     "range": 11.1,
+     "end": -16.3,
+     "dur": 0.96
+    }
+   },
+   "heard": "heavy and cold.",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 89,
+   "name": "Филя",
+   "text": "Turn it over, Ron!",
+   "ru": "Переверни её, Рон!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.43,
+    "vc": 3.83,
+    "out": 3.83
+   },
+   "pitch": {
+    "src": {
+     "range": 8.1,
+     "end": -1.0,
+     "dur": 0.9
+    },
+    "out": {
+     "range": 10.1,
+     "end": -4.6,
+     "dur": 0.89
+    }
+   },
+   "heard": "Turn it over, run.",
+   "clear": 75.0,
+   "sps": 4.4
+  },
+  {
+   "i": 90,
+   "name": "Рон",
+   "text": "Nothing comes out! Not a drop!",
+   "ru": "Не выливается! Ни капельки!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.51,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 19.0,
+     "end": 2.6,
+     "dur": 1.6
+    },
+    "out": {
+     "range": 9.8,
+     "end": -6.0,
+     "dur": 1.71
+    }
+   },
+   "heard": "Nothing comes out, not a drop.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 91,
+   "name": "Пик",
+   "text": "Of course. It's hard. Like a stone.",
+   "ru": "Конечно. Он твёрдый. Как камень.",
+   "speed": 0.88,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.72,
+    "vc": 4.1,
+    "out": 3.3
+   },
+   "pitch": {
+    "src": {
+     "range": 7.4,
+     "end": -1.2,
+     "dur": 1.92
+    },
+    "out": {
+     "range": 10.3,
+     "end": -12.5,
+     "dur": 1.96
+    }
+   },
+   "heard": "Of course, it's hard like a stone.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 92,
+   "name": "Рон",
+   "text": "You can't drink it! Just crunch it!",
+   "ru": "Её не попьёшь! Только грызть!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.36,
+    "out": 4.36
+   },
+   "pitch": {
+    "src": {
+     "range": 10.8,
+     "end": -18.8,
+     "dur": 1.6
+    },
+    "out": {
+     "range": 10.1,
+     "end": -8.5,
+     "dur": 1.62
+    }
+   },
+   "heard": "You can't drink it, just crunch it.",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 97,
+   "name": "Топа",
+   "text": "We made ice ourselves! With the frost.",
+   "ru": "Мы сделали лёд сами! С морозом.",
+   "speed": 1.086,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.41,
+    "out": 4.41
+   },
+   "pitch": {
+    "src": {
+     "range": 20.7,
+     "end": 2.0,
+     "dur": 1.75
+    },
+    "out": {
+     "range": 8.1,
+     "end": 5.7,
+     "dur": 1.69
+    }
+   },
+   "heard": "We made ice ourselves with the frost.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 98,
+   "name": "Барсик",
+   "text": "What if we bring the ice inside?",
+   "ru": "А что будет, если лёд принести домой?",
+   "speed": 0.9,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.26,
+    "out": 4.26
+   },
+   "pitch": {
+    "src": {
+     "range": 9.1,
+     "end": 4.9,
+     "dur": 1.36
+    },
+    "out": {
+     "range": 8.4,
+     "end": -5.2,
+     "dur": 1.51
+    }
+   },
+   "heard": "What if we bring the ice inside?",
+   "clear": 100.0,
+   "sps": 5.9
+  },
+  {
+   "i": 99,
+   "name": "Филя",
+   "text": "Where it's warm? Let's go see!",
+   "ru": "В тепло? Пойдёмте проверим!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.35,
+    "out": 4.35
+   },
+   "pitch": {
+    "src": {
+     "range": 9.2,
+     "end": -16.0,
+     "dur": 1.4
+    },
+    "out": {
+     "range": 7.2,
+     "end": 7.7,
+     "dur": 1.48
+    }
+   },
+   "heard": "Where it's warm, let's go see.",
+   "clear": 100.0,
+   "sps": 4.3
+  },
+  {
+   "i": 100,
+   "name": "Рон",
+   "text": "There, ice. It's warm here.",
+   "ru": "Вот. Тут тепло, лёд.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.43,
+    "vc": 4.14,
+    "out": 4.14
+   },
+   "pitch": {
+    "src": {
+     "range": 6.7,
+     "end": -6.8,
+     "dur": 1.47
+    },
+    "out": {
+     "range": 9.5,
+     "end": -5.7,
+     "dur": 1.45
+    }
+   },
+   "heard": "They're ice, it's warm here.",
+   "clear": 83.3,
+   "sps": 5.1
+  },
+  {
+   "i": 101,
+   "name": "Топа",
+   "text": "And I'll warm up with some tea.",
+   "ru": "А я пока погреюсь чаем.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.44,
+    "vc": 3.98,
+    "out": 4.03
+   },
+   "pitch": {
+    "src": {
+     "range": 7.5,
+     "end": 1.6,
+     "dur": 1.23
+    },
+    "out": {
+     "range": 8.8,
+     "end": 2.2,
+     "dur": 1.22
+    }
+   },
+   "heard": "And I'll warm up with some tea.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 102,
+   "name": "Филя",
+   "text": "Look, the edge is already wet!",
+   "ru": "Смотри́те, по краю уже́ мокро!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.23,
+    "out": 3.47
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": 4.3,
+     "dur": 1.41
+    },
+    "out": {
+     "range": 5.5,
+     "end": 0.8,
+     "dur": 1.4
+    }
+   },
+   "heard": "Look, the edge is already wet.",
+   "clear": 100.0,
+   "sps": 5.2
+  },
+  {
+   "i": 103,
+   "name": "Пик",
+   "text": "It's melting. Soon it'll be water again.",
+   "ru": "Он тает. Скоро снова будет вода.",
+   "speed": 0.964,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.01,
+    "vc": 2.79,
+    "out": 2.79
+   },
+   "pitch": {
+    "src": {
+     "range": 8.3,
+     "end": -0.7,
+     "dur": 2.26
+    },
+    "out": {
+     "range": 14.1,
+     "end": -12.6,
+     "dur": 2.27
+    }
+   },
+   "heard": "It's melting. Soon it'll be water again.",
+   "clear": 100.0,
+   "sps": 4.2
+  },
+  {
+   "i": 104,
+   "name": "Рон",
+   "text": "I'll wait. Eyes open.",
+   "ru": "Я подожду. Глаза́ открыты.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.37,
+    "out": 3.98
+   },
+   "pitch": {
+    "src": {
+     "range": 6.8,
+     "end": 0.4,
+     "dur": 1.18
+    },
+    "out": {
+     "range": 10.3,
+     "end": -14.9,
+     "dur": 1.17
+    }
+   },
+   "heard": "I'll wait, eyes open.",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 105,
+   "name": "Филя",
+   "text": "Again.",
+   "ru": "Опять.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.28,
+    "vc": 3.64,
+    "out": 2.77
+   },
+   "pitch": {
+    "src": {
+     "range": 5.7,
+     "end": 0.9,
+     "dur": 0.43
+    },
+    "out": {
+     "range": 4.4,
+     "end": 2.0,
+     "dur": 0.43
+    }
+   },
+   "heard": "Again.",
+   "clear": 100.0,
+   "sps": 3.5
+  },
+  {
+   "i": 106,
+   "name": "Пик",
+   "text": "Here's the bowl. What's in it?",
+   "ru": "Вот миска. Что в ней?",
+   "speed": 0.966,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.6,
+    "vc": 3.87,
+    "out": 3.87
+   },
+   "pitch": {
+    "src": {
+     "range": 18.9,
+     "end": -4.9,
+     "dur": 1.17
+    },
+    "out": {
+     "range": 12.0,
+     "end": -5.9,
+     "dur": 1.2
+    }
+   },
+   "heard": "Here's the bowl. What's in it?",
+   "clear": 100.0,
+   "sps": 4.5
+  },
+  {
+   "i": 107,
+   "name": "Рон",
+   "text": "Water again! I can drink it!",
+   "ru": "Снова вода! Можно пить!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.23,
+    "out": 3.69
+   },
+   "pitch": {
+    "src": {
+     "range": 10.3,
+     "end": 2.3,
+     "dur": 1.42
+    },
+    "out": {
+     "range": 11.4,
+     "end": 0.7,
+     "dur": 1.52
+    }
+   },
+   "heard": "Water again, I can drink it.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 108,
+   "name": "Барсик",
+   "text": "In the frost, the water got hard. And in the warmth, it became water again.",
+   "ru": "На морозе вода стала твёрдой. А в тепле снова стала водой.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.49,
+    "vc": 4.44,
+    "out": 4.44
+   },
+   "pitch": {
+    "src": {
+     "range": 8.2,
+     "end": -1.8,
+     "dur": 4.05
+    },
+    "out": {
+     "range": 5.9,
+     "end": -2.4,
+     "dur": 4.04
+    }
+   },
+   "heard": "In the frost, the water got hard, and in the warmth, it became water again.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 109,
+   "name": "Филя",
+   "text": "Water is like Ron. Sometimes it runs, sometimes it stops.",
+   "ru": "Вода — как Рон. То бегает, то стои́т.",
+   "speed": 1.222,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.12,
+    "out": 4.12
+   },
+   "pitch": {
+    "src": {
+     "range": 8.4,
+     "end": -2.0,
+     "dur": 2.43
+    },
+    "out": {
+     "range": 7.4,
+     "end": -3.7,
+     "dur": 2.8
+    }
+   },
+   "heard": "Water is like Ron, sometimes it runs, sometimes it stops.",
+   "clear": 100.0,
+   "sps": 5.9
+  },
+  {
+   "i": 114,
+   "name": "Топа",
+   "text": "And the snowman? Is he still out in the cold?",
+   "ru": "А снеговик? Он всё ещё на морозе?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.39,
+    "out": 4.39
+   },
+   "pitch": {
+    "src": {
+     "range": 20.7,
+     "end": -0.8,
+     "dur": 2.19
+    },
+    "out": {
+     "range": 8.0,
+     "end": -0.9,
+     "dur": 2.27
+    }
+   },
+   "heard": "and the snowman, is he still out in the cold?",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 115,
+   "name": "Барсик",
+   "text": "Yes. While it's cold outside, he won't melt.",
+   "ru": "Да. Пока на у́лице холодно, он не раста́ет.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.45,
+    "vc": 4.36,
+    "out": 4.36
+   },
+   "pitch": {
+    "src": {
+     "range": 15.8,
+     "end": -13.6,
+     "dur": 2.17
+    },
+    "out": {
+     "range": 5.5,
+     "end": -10.8,
+     "dur": 2.24
+    }
+   },
+   "heard": "Yes, while it's cold outside, he won't melt.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 116,
+   "name": "Филя",
+   "text": "Frost makes ice. And warmth makes water.",
+   "ru": "Мороз делает лёд. А тепло́ делает воду.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.39,
+    "out": 4.39
+   },
+   "pitch": {
+    "src": {
+     "range": 16.8,
+     "end": 2.3,
+     "dur": 2.17
+    },
+    "out": {
+     "range": 9.2,
+     "end": -14.5,
+     "dur": 2.37
+    }
+   },
+   "heard": "Frost makes ice, and warmth makes water.",
+   "clear": 100.0,
+   "sps": 4.2
+  },
+  {
+   "i": 117,
+   "name": "Топа",
+   "text": "And bears make naps. Good night.",
+   "ru": "А медве́ди делают сон. Спокойной ночи.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.5,
+    "vc": 4.43,
+    "out": 4.43
+   },
+   "pitch": {
+    "src": {
+     "range": 20.1,
+     "end": -16.6,
+     "dur": 1.66
+    },
+    "out": {
+     "range": 9.5,
+     "end": -7.2,
+     "dur": 1.7
+    }
+   },
+   "heard": "and bears make naps. Good night.",
+   "clear": 100.0,
+   "sps": 3.7
+  },
+  {
+   "i": 121,
+   "name": "Рон",
+   "text": "Who draws on the windows at night?",
+   "ru": "А кто ночью рисует на окнах?",
+   "speed": 0.9,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.28,
+    "out": 4.08
+   },
+   "pitch": {
+    "src": {
+     "range": 9.5,
+     "end": 6.6,
+     "dur": 1.46
+    },
+    "out": {
+     "range": 7.5,
+     "end": -2.2,
+     "dur": 1.5
+    }
+   },
+   "heard": "Who draws on the windows at night?",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 122,
+   "name": "Филя",
+   "text": "Draws? On the windows?",
+   "ru": "Рисует? На окнах?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.33,
+    "out": 4.33
+   },
+   "pitch": {
+    "src": {
+     "range": 7.9,
+     "end": -6.5,
+     "dur": 0.91
+    },
+    "out": {
+     "range": 4.3,
+     "end": -5.2,
+     "dur": 1.0
+    }
+   },
+   "heard": "Draws on the windows.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 123,
+   "name": "Рон",
+   "text": "I saw it. White twigs and little stars.",
+   "ru": "Я видел. Белые веточки и звёздочки.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.38,
+    "out": 3.8
+   },
+   "pitch": {
+    "src": {
+     "range": 7.6,
+     "end": 4.4,
+     "dur": 2.08
+    },
+    "out": {
+     "range": 6.7,
+     "end": -2.0,
+     "dur": 2.21
+    }
+   },
+   "heard": "I saw it, white twigs and little stars.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 124,
+   "name": "Пик",
+   "text": "Maybe it's the frost? It comes when it's dark.",
+   "ru": "Может, это мороз? Он приходит, когда темно.",
+   "speed": 0.88,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.01,
+    "vc": 3.4,
+    "out": 3.4
+   },
+   "pitch": {
+    "src": {
+     "range": 19.1,
+     "end": -0.1,
+     "dur": 2.36
+    },
+    "out": {
+     "range": 11.5,
+     "end": -10.7,
+     "dur": 2.51
+    }
+   },
+   "heard": "Maybe it's the frost. It comes when it's dark.",
+   "clear": 100.0,
+   "sps": 4.0
+  },
+  {
+   "i": 125,
+   "name": "Топа",
+   "text": "Or the fir trees came to visit.",
+   "ru": "Или ёлки приходи́ли в гости.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.47,
+    "vc": 4.43,
+    "out": 4.34
+   },
+   "pitch": {
+    "src": {
+     "range": 8.4,
+     "end": 6.0,
+     "dur": 1.42
+    },
+    "out": {
+     "range": 8.4,
+     "end": 2.1,
+     "dur": 1.55
+    }
+   },
+   "heard": "or the fir trees came to visit.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 127,
+   "name": "Филя",
+   "text": "Fir trees can't walk, Topa!",
+   "ru": "Ёлки не ходят, Топа!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 83.3,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.35,
+    "out": 4.35
+   },
+   "pitch": {
+    "src": {
+     "range": 8.8,
+     "end": 1.7,
+     "dur": 1.37
+    },
+    "out": {
+     "range": 10.6,
+     "end": 2.1,
+     "dur": 1.37
+    }
+   },
+   "heard": "Fir trees can't walk Toba.",
+   "clear": 83.3,
+   "sps": 4.0
+  },
+  {
+   "i": 128,
+   "name": "Барсик",
+   "text": "What a mystery! Tomorrow morning, we'll check the window.",
+   "ru": "Вот это загадка! Завтра утром посмотрим на окно.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.48,
+    "vc": 4.31,
+    "out": 4.31
+   },
+   "pitch": {
+    "src": {
+     "range": 5.6,
+     "end": 1.7,
+     "dur": 2.65
+    },
+    "out": {
+     "range": 5.6,
+     "end": -13.0,
+     "dur": 2.65
+    }
+   },
+   "heard": "What a mystery. Tomorrow morning, we'll check the window.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 129,
+   "name": "Рон",
+   "text": "Did you like the cartoon? Ask mom or dad to like it and subscribe to the channel. See you in the next episode!",
+   "ru": "Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 4.54,
+    "vc": 4.16,
+    "out": 3.84
+   },
+   "pitch": {
+    "src": {
+     "range": 7.6,
+     "end": 0.2,
+     "dur": 6.42
+    },
+    "out": {
+     "range": 8.7,
+     "end": 0.1,
+     "dur": 6.55
+    }
+   },
+   "heard": "Did you like the cartoon? Ask mom or dad to like it and subscribe to the channel. See you in the next episode.",
+   "clear": 100.0,
+   "sps": 4.7
+  }
+ ]
+}
