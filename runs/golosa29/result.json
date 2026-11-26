@@ -25,7 +25,7 @@
   "name": "Кот Барсик - 99. Свои голоса Барсику и Рону — пятый круг паспорта по замерам golosa28",
   "path": "video/Кот Барсик - 99. Свои голоса Барсику и Рону — пятый круг паспорта по замерам golosa28.mp4",
   "frames": 3952,
-  "sec": 154,
+  "sec": 151,
   "ok": true,
   "err": ""
  },
@@ -36,7 +36,7 @@
   "voiceFb": 0,
   "made": {
    "app": "студия",
-   "ver": "6d69398",
+   "ver": "f5c5238",
    "intro": "after",
    "open": "new",
    "q": "std",
@@ -45,7 +45,7 @@
   },
   "perf": {
    "r": 7,
-   "e": 28,
+   "e": 27,
    "b": 3,
    "w": 1,
    "n": 3950,
@@ -58,7 +58,7 @@
   "ttsFail": 0,
   "voice": 43,
   "voiceFail": 0,
-  "voiceSec": 29,
+  "voiceSec": 24,
   "ttsSec": 0,
   "frames": 3952,
   "dialogs": [],
@@ -69,7 +69,7 @@
   "gain_db": 3.7
  },
  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
- "total_sec": 284,
+ "total_sec": 286,
  "mode": "обычное",
  "res": 1080,
  "fps": 25

@@ -35,16 +35,16 @@
   "peak_db": -1.4,
   "silences": []
  },
- "words_second_pass": 1,
+ "words_second_pass": 0,
  "words": {
-  "pct": 97.3,
+  "pct": 96.9,
   "lines": 43,
   "by_hero": {
    "Барсик": 100.0,
    "Мурзик": 97.8,
-   "Васька": 100.0,
-   "Рон": 97.1,
-   "Тузик": 91.4,
+   "Васька": 97.8,
+   "Рон": 94.3,
+   "Тузик": 94.3,
    "Рекс": 94.3
   },
   "worst": []
@@ -90,7 +90,7 @@
    "why": [
     "дрожит высота"
    ],
-   "clear_pct": 100.0
+   "clear_pct": 97.8
   },
   "Мурзик": {
    "f0": 226.0,
@@ -150,7 +150,7 @@
    "age": "детский",
    "pleasant": 5.0,
    "why": [],
-   "clear_pct": 97.1
+   "clear_pct": 94.3
   },
   "Тузик": {
    "f0": 283.0,
@@ -170,7 +170,7 @@
    "age": "детский",
    "pleasant": 5.0,
    "why": [],
-   "clear_pct": 91.4
+   "clear_pct": 94.3
   }
  },
  "voices_close": [
@@ -216,7 +216,7 @@
  "build": {
   "ok": true,
   "err": null,
-  "total_sec": 284,
+  "total_sec": 286,
   "mode": "обычное",
   "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
   "card": {
@@ -226,7 +226,7 @@
    "voiceFb": 0,
    "made": {
     "app": "студия",
-    "ver": "6d69398",
+    "ver": "f5c5238",
     "intro": "after",
     "open": "new",
     "q": "std",
@@ -235,7 +235,7 @@
    },
    "perf": {
     "r": 7,
-    "e": 28,
+    "e": 27,
     "b": 3,
     "w": 1,
     "n": 3950,
@@ -248,7 +248,7 @@
    "ttsFail": 0,
    "voice": 43,
    "voiceFail": 0,
-   "voiceSec": 29,
+   "voiceSec": 24,
    "ttsSec": 0,
    "frames": 3952,
    "dialogs": [],
