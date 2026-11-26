@@ -1,0 +1,30 @@
+name: max-lab
+# Лаборатория формата 3ds Max (.max): достать открытый читатель и образцы, проверить свои файлы.
+# Запуск: правка maxlab/run.txt. Результат — ветка maxlab (out/).
+on:
+  push:
+    branches: [domain-check]
+    paths: ['maxlab/run.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: max-lab
+  cancel-in-progress: false
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Достать читатель и образцы
+        run: bash maxlab/fetch.sh
+      - name: Свои файлы — проверка читателем (если есть)
+        run: |
+          if [ -f maxlab/check.sh ]; then bash maxlab/check.sh || true; fi
+      - name: Сохранить в ветку maxlab
+        run: |
+          git config user.name max-lab; git config user.email max-lab@users.noreply.github.com
+          mkdir -p /tmp/keep && cp -r out /tmp/keep/
+          git checkout --orphan maxlab-new && git rm -rfq . && cp -r /tmp/keep/out . && rm -f out/ext.html
+          git add out && git commit -qm "max-lab $(date -u +%F_%H:%M)" && git push -f origin HEAD:maxlab
