@@ -1,0 +1,73 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 99,
+  "title": "Свой Пик — темп как у нынешнего (второй круг)",
+  "scenes": 3,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Пуся: {\"speaker\":\"svoy_pik\",\"F\":1.32,\"P\":1.72,\"R\":1.2,\"T\":1.48,\"qrise\":3}",
+   "Пуша: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.48,\"qrise\":3}",
+   "Филя: НЕ ПРИМЕНЁН (нет героя)",
+   "Топа: НЕ ПРИМЕНЁН (нет героя)"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 99. Свой Пик — темп как у нынешнего (второй круг)",
+  "path": "video/Кот Барсик - 99. Свой Пик — темп как у нынешнего (второй круг).mp4",
+  "frames": 2016,
+  "sec": 70,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 80.61099999999999,
+  "video": "video/Кот Барсик - 99. Свой Пик — темп как у нынешнего (второй круг).mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "f5c5238",
+   "intro": "after",
+   "open": "new",
+   "q": "std",
+   "at": 22,
+   "text": "заставка: после завязки · начало: новое · качество: быстрое · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 5,
+   "e": 25,
+   "b": 3,
+   "w": 1,
+   "n": 2010,
+   "at": 2010,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 8,
+  "ttsFail": 0,
+  "voice": 14,
+  "voiceFail": 0,
+  "voiceSec": 15,
+  "ttsSec": 6,
+  "frames": 2016,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -18,
+  "lufs_out": -15.2,
+  "gain_db": 3
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 134,
+ "mode": "обычное",
+ "res": 1080,
+ "fps": 25
+}
