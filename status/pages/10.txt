@@ -1,0 +1,18 @@
+URL: https://online.metro-cc.ru/products/kastryulya-s-kr-emalchugun-275h13sm-63l-mpro
+КОД: 307
+ЗАГОЛОВКИ:
+Server: nginx
+Date: Thu, 26 Nov 2026 17:23:21 GMT
+Content-Type: text/html
+Content-Length: 164
+Connection: close
+Set-Cookie: bp_chl=6acf39359f2b542e1f28118b88e355cb; expires=Thu, 26-Nov-26 17:33:21 GMT; path=/; SameSite=Lax; HttpOnly; Secure
+Location: https://online.metro-cc.ru/products/kastryulya-s-kr-emalchugun-275h13sm-63l-mpro
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+Cache-Control: no-cache
+
+307 Temporary Redirect 
+ 307 Temporary Redirect
+ nginx
+
+ССЫЛКИ:

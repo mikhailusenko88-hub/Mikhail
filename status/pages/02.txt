@@ -1,19 +1,17 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/2180bee4-6c6e-472a-af1a-e854a21f1c9a
-КОД: 200
+URL: https://lenta.com/product/utyatnica-kuhni-rossii-chugunnaya-emal-ec002-kitajj-4l-886975/
+КОД: 401
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Thu, 26 Nov 2026 10:48:50 GMT
-Content-Type: application/json
-Content-Length: 67
+Server: QRATOR
+Date: Thu, 26 Nov 2026 17:22:24 GMT
+Content-Type: text/html
+Content-Length: 265
 Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+Set-Cookie: qrator_jsr=1795713744.828.EqWrO30HmdPxyifk-0njchrteme7kbfffaiat94mn5mntd0r2-00; Max-Age=300; Path=/;  Domain=.lenta.com;
 
-{"error":"","sent_at":"2026-11-26T13:47:05+03:00","status":"sent"}
+
 
 ССЫЛКИ:
+data:,

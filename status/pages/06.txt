@@ -1,0 +1,18 @@
+URL: https://www.perekrestok.ru/cat/452/p/kastrula-emalirovannaa-vivo-cugunnaa-29sm-s-kryskoj-4-8l-4087118
+КОД: 200
+ЗАГОЛОВКИ:
+Server: nginx
+Date: Thu, 26 Nov 2026 17:23:09 GMT
+Content-Type: text/html
+Content-Length: 2254
+Connection: close
+Vary: Accept-Encoding
+cache-control: no-cache
+expires: Thu, 26 Nov 2026 17:2308 GMT
+pragma: no-cache
+access-control-allow-origin: *
+X-SP-CRID: 385235957:1
+
+
+
+ССЫЛКИ:
