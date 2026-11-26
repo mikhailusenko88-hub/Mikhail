@@ -91,3 +91,4 @@
 | shorts | 2026-11-25 | 3 | UK vs Chile vs Guatemala | https://youtube.com/shorts/cGm9VQp4WvM | public (только Shorts) |
 | shorts | 2026-11-26 | 1 | Brazil vs Vietnam vs Italy | https://youtube.com/shorts/JIvXUmbhnqA | public (только Shorts) |
 | shorts | 2026-11-26 | 2 | Mexico vs Germany vs Ukraine | https://youtube.com/shorts/Y_YmMMSFvko | public (только Shorts) |
+| shorts | 2026-11-26 | 3 | Brazil vs UK vs Egypt | https://youtube.com/shorts/fMINMQRXyuI | public (только Shorts) |
