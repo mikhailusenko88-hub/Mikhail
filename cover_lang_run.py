@@ -2,7 +2,7 @@
 """Обложки серии на языках по запросу cover-request.txt (workflow cover-lang).
 Первая строка без «#»: «<сборка> <номер серии> <скрипт или план в covers/<номер>/>», дальше по строке на язык: «язык;СЕРИЯ N;ВОПРОС НА СВИТКЕ».
 Рядом (папка w/): afisha.py, compose.py, covers/ из ветки studio, el/ — элементы сборки. Итог — out_cover/<сборка>/cover_<язык>.jpg."""
-import os, subprocess, sys, zipfile
+import os, shutil, subprocess, sys, zipfile
 
 lines = [l.strip() for l in open("cover-request.txt", encoding="utf-8") if l.strip() and not l.startswith("#")]
 build, num, script = lines[0].split()[:3]
@@ -25,11 +25,15 @@ if os.path.exists(lz):
     subprocess.run([sys.executable, lz, f"{W}/el"], check=False)
 # свои элементы обложки серии, которых нет в elementy.zip (план ссылается на них): скрипт из covers/<N>/ и его аргументы (пути от папки w/)
 OWN = {"29": [["dub.py", "el/f4_meadow_day.jpg", "el/v_dub.png"], ["strelka.py", "el/v_strelka.png"]],
-       "28": [["zerkalo.py", "el"]], "30": [["luna.py", "el"]]}
+       "28": [["zerkalo.py", "el"]], "30": [["luna.py", "el"]],
+       "34": [["=copy", "el/f1_meadow_day.jpg", "el/f6_meadow_day.jpg"]]}   # 34: фона f6_meadow_day нет ни в одной сборке — тот же луг днём (f1)
 import glob, shutil
 for f in glob.glob(f"{W}/covers/{num}/v_*.png"):          # готовые свои элементы рядом с планом (33 — шишки)
     shutil.copy(f, f"{W}/el/")
 for sc, *args in OWN.get(num, []):
+    if sc == "=copy":
+        if not os.path.exists(f"{W}/{args[1]}"): shutil.copy(f"{W}/{args[0]}", f"{W}/{args[1]}")
+        print("элемент", args[1], "← копия", args[0]); continue
     r = subprocess.run([sys.executable, f"covers/{num}/{sc}", *args], cwd=W, capture_output=True, text=True)
     print("элемент", sc, "ok" if r.returncode == 0 else "ОШИБКА " + r.stderr[-500:])
 out = os.path.abspath(f"out_cover/{build}"); os.makedirs(out, exist_ok=True)
