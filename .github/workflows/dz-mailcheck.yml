@@ -1,0 +1,27 @@
+# Проверка почт студий: сайт (главная + контакты) и MX доменов. Запуск — изменение dz/mc.txt.
+# Результат зашифрован ключом dz/key.pub: status/dz/mailcheck.json; без адресов — status/dz/mailcheck.txt.
+name: dz-mailcheck
+on:
+  push:
+    branches: [domain-check]
+    paths: ['dz/mc.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: dz-mailcheck
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -q cryptography && (which dig || sudo apt-get install -y -qq dnsutils)
+      - run: python3 dz_mailcheck.py
+      - name: Сохранить
+        run: |
+          git config user.name dz-mailcheck; git config user.email dz-mailcheck@users.noreply.github.com
+          git add status/dz; git commit -m "dz-mailcheck $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true
