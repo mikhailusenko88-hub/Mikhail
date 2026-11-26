@@ -1,0 +1,22 @@
+{
+ "svoy_ron": {
+  "slot": "bak_alfia",
+  "note": "под kseniya — основа Рона: тембр opt_kseniya_1d, манера man_kseniya_1_fast; близость 0.7851 (основа 0.3602)",
+  "coef": 4.919
+ },
+ "svoy_golos": {
+  "slot": "kbd_eduard",
+  "note": "под №4: тембр opt_n4_2c, манера man_n4_1_fast; близость 0.836 (основа 0.4635)",
+  "coef": 2.978
+ },
+ "svoy_barsik": {
+  "slot": "bak_aigul",
+  "note": "под xenia — основа Барсика: тембр opt_xenia_1d, манера man_xenia_1_medium; близость 0.829 (основа 0.0726)",
+  "coef": 5.37
+ },
+ "svoy_pik": {
+  "slot": "bak_ramilia",
+  "note": "под голос Apple — Пик (только мерка): тембр opt_pik_1d, манера man_pik_1_fast; близость 0.7404 (основа 0.2105)",
+  "coef": 5.029
+ }
+}
