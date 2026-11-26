@@ -1,2 +1,1 @@
-# 25.11 20:36 — удалить старые версии 36f/37g после перезаливки («перезалил — удаляй», Михаил 25.11)
-delete W2Aaf9OEKEQ 7y9nKRoGU5Q 6yBYiyfdcc4 4yS2JnxdSSs
+stats
