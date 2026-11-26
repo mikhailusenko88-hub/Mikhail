@@ -1,0 +1,264 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 250.4,
+  "dur": 365.3,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 364.8,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 6,
+  "files": [
+   "list_01.jpg",
+   "list_02.jpg",
+   "list_03.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 365,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 176.6
+ },
+ "kadry": 24,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 4.3,
+  "peak_db": -1.0,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 97.9,
+  "lines": 92,
+  "by_hero": {
+   "Рон": 99.5,
+   "Филя": 98.1,
+   "Топа": 98.9,
+   "Барсик": 97.9,
+   "Рассказчик": 100.0,
+   "Пик": 75.0
+  },
+  "worst": [
+   {
+    "t": 267.246,
+    "name": "Пик",
+    "text": "Его укрыл снег, как одеяло.",
+    "ok": 2,
+    "n": 5,
+    "miss": [
+     "его",
+     "укрыл",
+     "снег"
+    ],
+    "heard": "и вон принжник как одеяло правильно"
+   }
+  ]
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 220.0,
+   "range_st": 5.2,
+   "hnr": 13.3,
+   "jitter": 2.2,
+   "shimmer": 9.3,
+   "F1": 470.0,
+   "F2": 2214.0,
+   "F3": 3347.0,
+   "bright": -12.3,
+   "air": -13.8,
+   "cog": 782.0,
+   "rate": 4.3,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 97.9
+  },
+  "Пик": {
+   "f0": 397.0,
+   "range_st": 7.1,
+   "hnr": 21.4,
+   "jitter": 0.7,
+   "shimmer": 4.3,
+   "F1": 533.0,
+   "F2": 1789.0,
+   "F3": 3817.0,
+   "bright": -19.2,
+   "air": -27.3,
+   "cog": 586.0,
+   "rate": 5.3,
+   "voiced": 0.7,
+   "n": 3,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 75.0
+  },
+  "Рассказчик": {
+   "f0": 166.0,
+   "range_st": 6.5,
+   "hnr": 8.7,
+   "jitter": 3.0,
+   "shimmer": 9.4,
+   "F1": 505.5,
+   "F2": 1815.5,
+   "F3": 3242.5,
+   "bright": -13.6,
+   "air": -12.5,
+   "cog": 867.0,
+   "rate": 3.5,
+   "voiced": 0.5,
+   "n": 2,
+   "age": "взрослый",
+   "pleasant": 3.3,
+   "why": [
+    "шумный, сиплый тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 319.0,
+   "range_st": 10.1,
+   "hnr": 13.5,
+   "jitter": 1.7,
+   "shimmer": 7.2,
+   "F1": 488.0,
+   "F2": 1972.0,
+   "F3": 3605.0,
+   "bright": -16.6,
+   "air": -13.4,
+   "cog": 1176.0,
+   "rate": 2.8,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 99.5
+  },
+  "Топа": {
+   "f0": 155.0,
+   "range_st": 5.3,
+   "hnr": 12.7,
+   "jitter": 2.6,
+   "shimmer": 9.6,
+   "F1": 436.0,
+   "F2": 2195.0,
+   "F3": 3375.0,
+   "bright": -16.8,
+   "air": -25.9,
+   "cog": 480.0,
+   "rate": 3.6,
+   "voiced": 0.4,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 4.3,
+   "why": [
+    "дрожит высота"
+   ],
+   "clear_pct": 98.9
+  },
+  "Филя": {
+   "f0": 286.0,
+   "range_st": 5.5,
+   "hnr": 15.4,
+   "jitter": 1.7,
+   "shimmer": 8.2,
+   "F1": 529.0,
+   "F2": 2153.0,
+   "F3": 3267.0,
+   "bright": -13.9,
+   "air": -21.3,
+   "cog": 697.0,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 98.1
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 33,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 116,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 2432,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 364.797,
+   "video": "video/Кот Барсик - 35. Росток под снегом!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "6d69398",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 53.2,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 9,
+    "e": 124,
+    "b": 4,
+    "w": 1,
+    "n": 9120,
+    "at": 9120,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 8,
+   "ttsFail": 0,
+   "voice": 97,
+   "voiceFail": 0,
+   "voiceSec": 55,
+   "ttsSec": 6,
+   "frames": 9120,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -23.1,
+   "lufs_out": -15.2,
+   "gain_db": 8.7
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 35,
+   "title": "Росток под снегом?!",
+   "scenes": 8,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}

@@ -1,0 +1,72 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 35,
+  "title": "Росток под снегом?!",
+  "scenes": 8,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+   "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 35. Росток под снегом!",
+  "path": "video/Кот Барсик - 35. Росток под снегом!.mp4",
+  "frames": 9120,
+  "sec": 1263,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 364.797,
+  "video": "video/Кот Барсик - 35. Росток под снегом!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "6d69398",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 53.2,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 9,
+   "e": 124,
+   "b": 4,
+   "w": 1,
+   "n": 9120,
+   "at": 9120,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 8,
+  "ttsFail": 0,
+  "voice": 97,
+  "voiceFail": 0,
+  "voiceSec": 55,
+  "ttsSec": 6,
+  "frames": 9120,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -23.1,
+  "lufs_out": -15.2,
+  "gain_db": 8.7
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 2432,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
