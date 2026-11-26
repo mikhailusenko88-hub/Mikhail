@@ -31,8 +31,8 @@ try:
         lo = [min(p[i] for p in pts) for i in range(3)]; hi = [max(p[i] for p in pts) for i in range(3)]
         res["bbox"] = [round(x, 3) for x in lo + hi]
         ctr = mathutils.Vector([(a+b)/2 for a, b in zip(lo, hi)]); size = max(b-a for a, b in zip(lo, hi)) or 1
-        cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); bpy.context.scene.collection.objects.link(cam)
-        cam.location = ctr + mathutils.Vector((1.2, -1.6, 1.0)) * size
+        cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); cam.data.clip_end = size * 50; cam.data.lens = 85; bpy.context.scene.collection.objects.link(cam)
+        cam.location = ctr + mathutils.Vector((0.6, -1.4, 0.25)) * size
         cam.rotation_euler = (ctr - cam.location).to_track_quat('-Z', 'Y').to_euler(); bpy.context.scene.camera = cam
         sun = bpy.data.objects.new("sun", bpy.data.lights.new("sun", 'SUN')); bpy.context.scene.collection.objects.link(sun)
         sun.rotation_euler = (0.7, 0.2, 0.6); sun.data.energy = 3

@@ -1,3 +1,19 @@
 # файл  [url для онлайн-просмотрщика]
-maxlab/files/A907_test.max https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/A907_test.max
-out/samples/Civilian_Boxes_1.max
+maxlab/files/NashDekor_A201-2.max https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_A201-2.max
+maxlab/files/NashDekor_A201.max
+maxlab/files/NashDekor_A902.max
+maxlab/files/NashDekor_A903.max
+maxlab/files/NashDekor_A904.max
+maxlab/files/NashDekor_A905.max
+maxlab/files/NashDekor_A906.max
+maxlab/files/NashDekor_A907.max https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_A907.max
+maxlab/files/NashDekor_A908.max
+maxlab/files/NashDekor_A910.max
+maxlab/files/NashDekor_A912.max
+maxlab/files/NashDekor_A913.max
+maxlab/files/NashDekor_A915.max
+maxlab/files/NashDekor_A916.max
+maxlab/files/NashDekor_A920.max
+maxlab/files/NashDekor_GS1.max
+maxlab/files/NashDekor_GS2.max https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_GS2.max
+maxlab/files/NashDekor_GS3.max

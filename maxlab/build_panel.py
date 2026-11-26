@@ -4,6 +4,7 @@ import json, struct, sys, math
 import maxfile as mx
 
 art, L, outp = sys.argv[1], float(sys.argv[2]), sys.argv[3]
+code = art.replace(' ', '').replace('/', '-')
 prof = json.load(open('profiles_site.json'))[art]
 W = max(p[0] for p in prof)
 # замкнутый контур (x, y): лицевая линия слева направо, затем тыл y=0 справа налево
@@ -92,12 +93,19 @@ m.find(0x0912).data = struct.pack('<I', len(faces)) + b''.join(struct.pack('<III
 tv = [(v[0]/1000.0, v[2]/1000.0, 0.0) for v in verts]
 m.find(0x2394).data = struct.pack('<I', len(tv)) + b''.join(struct.pack('<3f', *t) for t in tv)
 m.find(0x2396).data = struct.pack('<I', len(faces)) + b''.join(struct.pack('<III', a, b, c) for a, b, c, _, _ in faces)
-name9 = f"{art}_{int(L)}"[:9].ljust(9, '_')
-node.find(0x0962).data = name9.encode('utf-16le')
+node_name = f"NashDekor_{code}"
+node.find(0x0962).data = node_name.encode('utf-16le')
+name9 = f"{code.replace('-', '')}-{int(L)}"[:9].ljust(9)     # в сводке файла место ровно на 9 знаков
 TEX = 'nd_white_1.jpg'                      # 14 знаков — как прежнее имя текстуры
 for idx in (360, 371):
     nm = root.children[idx].find(0x4000).find(0x4001)
     nm.data = TEX.encode('utf-16le')
+# единицы сцены: объект Scene, чанк 0x8520 = (тип системной единицы, масштаб); 3 = миллиметры, 1 ед. = 1 мм.
+# 0x8500 — вид отображения (1 = метрический), 0x8530 — 0 (мм). Образцы: (0 = дюймы, 1.0) и вид 2 (US).
+sc_obj = next(c for c in root.children if c.container and c.find(0x8520))
+sc_obj.find(0x8520).data = struct.pack('<if', 3, 1.0)
+sc_obj.find(0x8500).data = struct.pack('<i', 1)
+sc_obj.find(0x8530).data = struct.pack('<i', 0)
 new = {'Scene': mx.dump(scene)}
 # путь к текстуре — рядом с файлом
 fa = st['FileAssetMetaData2']
@@ -109,7 +117,7 @@ def same(s, a, b):
     return s.replace(a.encode('utf-16le'), b.encode('utf-16le'))
 ds = st['\x05DocumentSummaryInformation']
 for a, b in (('Omega', 'Dekor'), ('OMEGA-DATOR', 'NASHDEKOR-1'), ('Tex_0033_1.dds', TEX), ('Mesh_0033', name9),
-             ('Vertices: 994', ('Vertices: %d' % len(verts))[:13].ljust(13)), ('Faces: 390', ('Faces: %d' % len(faces))[:10].ljust(10))):
+             ('Vertices: 994', ('Vertices: %d' % len(verts)).ljust(13)), ('Faces: 390', ('Faces: %d' % len(faces)).ljust(10))):
     ds = same(ds, a, b)
 new['\x05DocumentSummaryInformation'] = ds
 si = bytearray(same(st['\x05SummaryInformation'], 'Omega', 'Dekor'))
@@ -134,4 +142,12 @@ for a, b in (('Omega', 'Dekor'), ('OMEGA-DATOR', 'NASHDEKOR-1')):
     raw = raw.replace(xs(a), xs(b))
 new['Config'] = raw
 open(outp, 'wb').write(mx.write_cfb(ents, new))
-print('готово', outp)
+obj = outp[:-4] + '.obj'
+with open(obj, 'w') as f:
+    f.write(f"# Наш декор — {art}, {int(W)}x{int(round(max(p[1] for p in P)))}x{int(L)} мм, единицы — мм\nmtllib {obj.split('/')[-1][:-4]}.mtl\no {node_name}\n")
+    for v in verts: f.write("v %.4f %.4f %.4f\n" % v)
+    for t in tv: f.write("vt %.5f %.5f\n" % t[:2])
+    f.write("usemtl NashDekor_white\ns 1\n")
+    for a, b, c, _, _ in faces: f.write(f"f {a+1}/{a+1} {b+1}/{b+1} {c+1}/{c+1}\n")
+open(outp[:-4] + '.mtl', 'w').write("newmtl NashDekor_white\nKd 0.965 0.965 0.957\nKa 0 0 0\nKs 0.04 0.04 0.04\nNs 20\nmap_Kd nd_white_1.jpg\n")
+print('готово', outp, obj)
