@@ -89,3 +89,4 @@
 | shorts | 2026-11-25 | 1 | Algeria vs Portugal vs Sweden | https://youtube.com/shorts/yilHRkug2sE | public (только Shorts) |
 | shorts | 2026-11-25 | 2 | Russia vs Philippines vs Thailand | https://youtube.com/shorts/veEHzBR50OE | public (только Shorts) |
 | shorts | 2026-11-25 | 3 | UK vs Chile vs Guatemala | https://youtube.com/shorts/cGm9VQp4WvM | public (только Shorts) |
+| shorts | 2026-11-26 | 1 | Brazil vs Vietnam vs Italy | https://youtube.com/shorts/JIvXUmbhnqA | public (только Shorts) |
