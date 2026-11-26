@@ -1,0 +1,2 @@
+# файл  [url для онлайн-просмотрщика]
+out/samples/Civilian_Boxes_1.max https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/maxlab/out/samples/Civilian_Boxes_1.max

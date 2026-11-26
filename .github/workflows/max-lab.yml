@@ -4,7 +4,7 @@ name: max-lab
 on:
   push:
     branches: [domain-check]
-    paths: ['maxlab/run.txt']
+    paths: ['maxlab/run.txt', 'maxlab/check.txt']
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,7 +14,7 @@ concurrency:
 jobs:
   lab:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - name: Достать читатель и образцы
