@@ -1,20 +1,68 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "49",
- "videos": "62",
+ "subs": "53",
+ "videos": "63",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
    "title": "Кот Барсик 🐱 | Смешные моменты и Shorts",
-   "n": 39
+   "n": 41
   },
   {
    "id": "PLSaY8-Tx3Vwg",
    "title": "Кот Барсик 🐱 | Все серии подряд | Мультики для детей",
-   "n": 49
+   "n": 51
   }
  ],
  "last": [
+  {
+   "id": "P6UAa77a-vE",
+   "title": "⛄ КУДА УШЁЛ СНЕГОВИК?! Тайна оттепели | Кот Барсик | Новая серия 36",
+   "published": "2026-11-26T06:30:35Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M42S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "9QT3Rapwjrc",
+   "title": "Лужа стала льдом?! 🐱 Кот Барсик | 37 серия #shorts",
+   "published": "2026-11-25T17:27:55Z",
+   "privacy": "private",
+   "publishAt": "2026-11-27T13:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT27S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "ZEQyEyFngUk",
+   "title": "🧊 ЛУЖА СТАЛА ЛЬДОМ?! Секрет мороза | Кот Барсик | Новая серия 37",
+   "published": "2026-11-25T17:25:22Z",
+   "privacy": "private",
+   "publishAt": "2026-11-27T06:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M42S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "EuvuGeu65bU",
+   "title": "Куда ушёл снеговик?! 🐱 Кот Барсик | 36 серия #shorts",
+   "published": "2026-11-25T17:24:27Z",
+   "privacy": "private",
+   "publishAt": "2026-11-26T13:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT25S",
+   "views": 0,
+   "likes": 0
+  },
   {
    "id": "nCJHU-PLZK8",
    "title": "Росток под снегом?! 🐱 Кот Барсик | 35 серия #shorts",
@@ -24,7 +72,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT26S",
-   "views": 1,
+   "views": 2,
    "likes": 1
   },
   {
@@ -36,8 +84,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M6S",
-   "views": 2,
-   "likes": 0
+   "views": 795,
+   "likes": 3
   },
   {
    "id": "zCv44IJcyuU",
@@ -52,54 +100,6 @@
    "likes": 0
   },
   {
-   "id": "7y9nKRoGU5Q",
-   "title": "Куда ушёл снеговик?! 🐱 Кот Барсик | 36 серия #shorts",
-   "published": "2026-11-24T18:43:07Z",
-   "privacy": "private",
-   "publishAt": "2026-11-26T13:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT25S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "W2Aaf9OEKEQ",
-   "title": "⛄ КУДА УШЁЛ СНЕГОВИК?! Тайна оттепели | Кот Барсик | Новая серия 36",
-   "published": "2026-11-24T18:39:55Z",
-   "privacy": "private",
-   "publishAt": "2026-11-26T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M42S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "4yS2JnxdSSs",
-   "title": "Лужа стала льдом?! 🐱 Кот Барсик | 37 серия #shorts",
-   "published": "2026-11-24T18:37:45Z",
-   "privacy": "private",
-   "publishAt": "2026-11-27T13:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT27S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "6yBYiyfdcc4",
-   "title": "🧊 ЛУЖА СТАЛА ЛЬДОМ?! Секрет мороза | Кот Барсик | Новая серия 37",
-   "published": "2026-11-24T18:34:27Z",
-   "privacy": "private",
-   "publishAt": "2026-11-27T12:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M42S",
-   "views": 0,
-   "likes": 0
-  },
-  {
    "id": "fJ8ZJ2N9cx4",
    "title": "Жёлудь проснулся?! 🐱 Кот Барсик | 34 серия #shorts",
    "published": "2026-11-24T13:30:32Z",
@@ -108,8 +108,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 5,
-   "likes": 1
+   "views": 9,
+   "likes": 2
   },
   {
    "id": "dxSzLbcBfRA",
@@ -120,8 +120,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M49S",
-   "views": 226,
-   "likes": 1
+   "views": 1756,
+   "likes": 2
   },
   {
    "id": "B86QuwSDoB8",
@@ -180,7 +180,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT25S",
-   "views": 17,
+   "views": 19,
    "likes": 1
   },
   {
@@ -192,7 +192,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M48S",
-   "views": 589,
+   "views": 619,
    "likes": 0
   },
   {
@@ -204,7 +204,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT29M47S",
-   "views": 2089,
+   "views": 2099,
    "likes": 2
   },
   {
@@ -216,7 +216,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT26S",
-   "views": 9,
+   "views": 11,
    "likes": 2
   },
   {
@@ -228,7 +228,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M33S",
-   "views": 731,
+   "views": 736,
    "likes": 2
   },
   {
@@ -240,7 +240,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT27S",
-   "views": 23,
+   "views": 25,
    "likes": 0
   },
   {
@@ -252,7 +252,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M53S",
-   "views": 2661,
+   "views": 2677,
    "likes": 2
   }
  ]
