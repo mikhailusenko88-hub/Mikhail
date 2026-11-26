@@ -1,33 +1,34 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-25 21:46 UTC
+Проверено: 2026-11-26 06:54 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
-- Шапка: 24 подписчика · 89 видео
+- Шапка: 24 подписчика · 90 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-25 19:38 · 52 просм. · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
-- 2026-11-25 11:38 · 908 просм. · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
-- 2026-11-25 03:38 · 419 просм. · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
-- 2026-11-24 19:40 · 908 просм. · Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts · OaxkESiOdNA
-- 2026-11-24 11:38 · 961 просм. · Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts · KsgnzXH1L2o
-- 2026-11-24 03:38 · 945 просм. · Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts · TEIczLtjmMw
-- 2026-11-23 19:38 · 1123 просм. · Brazil on its LAST life ❤️ Brazil vs UK vs Vietnam — Who Survives? #shorts · s3iWur-00qU
+- 2026-11-26 03:42 · 123 просм. · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
+- 2026-11-25 19:38 · 129 просм. · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
+- 2026-11-25 11:38 · 926 просм. · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
+- 2026-11-25 03:38 · 476 просм. · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
+- 2026-11-24 19:40 · 912 просм. · Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts · OaxkESiOdNA
+- 2026-11-24 11:38 · 962 просм. · Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts · KsgnzXH1L2o
+- 2026-11-24 03:38 · 952 просм. · Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts · TEIczLtjmMw
+- 2026-11-23 19:38 · 1128 просм. · Brazil on its LAST life ❤️ Brazil vs UK vs Vietnam — Who Survives? #shorts · s3iWur-00qU
 - 2026-11-23 11:37 · 1053 просм. · Türkiye vs Bangladesh vs Iraq 😱 Who Survives? Country Marble Race #shorts · A4AGd2-sRUQ
-- 2026-11-23 03:38 · 1163 просм. · Last chance for Russia 😱 India vs Russia vs Vietnam | Country Marble Race #shorts · JtU-dx5R9Go
-- 2026-11-22 19:39 · 1038 просм. · Last chance for UK 😱 UK vs Philippines vs France | Country Marble Race #shorts · 2MuAY3ktACg
-- 2026-11-22 11:39 · 69 просм. · Germany vs Korea vs Pakistan 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #43 · N2O-k9tb6sU
+- 2026-11-23 03:38 · 1161 просм. · Last chance for Russia 😱 India vs Russia vs Vietnam | Country Marble Race #shorts · JtU-dx5R9Go
+- 2026-11-22 19:39 · 1037 просм. · Last chance for UK 😱 UK vs Philippines vs France | Country Marble Race #shorts · 2MuAY3ktACg
+- 2026-11-22 11:39 · 70 просм. · Germany vs Korea vs Pakistan 🔥 SUNDAY MEGA TRACK – Who Loses a Life? | Marble Race #43 · N2O-k9tb6sU
 - 2026-11-22 11:39 · 1027 просм. · Korea on its LAST life ❤️ Germany vs Korea vs Pakistan — Who Survives? #shorts · 3jWK5p1xXxc
 - 2026-11-22 03:40 · 324 просм. · Brazil vs Indonesia vs Morocco 😱 Who Survives? Country Marble Race #shorts · egKFQhdpuzU
 - 2026-11-21 19:38 · 970 просм. · 9 days to the Grand Final ⏳ Egypt vs Colombia vs Cambodia — Who Survives? #shorts · iC7WG5L26Is
-- 2026-11-21 11:37 · 990 просм. · Mexico vs Thailand vs Ukraine 😱 Who Survives? Country Marble Race #shorts · 2OebbtHeVAY
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 52 просмотра · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
-- 908 просмотров · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
-- 419 просмотров · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
-- 908 просмотров · Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts · OaxkESiOdNA
-- 961 просмотр · Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts · KsgnzXH1L2o
-- 945 просмотров · Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts · TEIczLtjmMw
+- 123 просмотра · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
+- 134 просмотра · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
+- 927 просмотров · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
+- 470 просмотров · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
+- 912 просмотров · Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts · OaxkESiOdNA
+- 962 просмотра · Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts · KsgnzXH1L2o
+- 957 просмотров · Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts · TEIczLtjmMw
 - 1,1 тыс. просмотров · Brazil on its LAST life ❤️ Brazil vs UK vs Vietnam — Who Survives? #shorts · s3iWur-00qU
 - 1 тыс. просмотров · Türkiye vs Bangladesh vs Iraq 😱 Who Survives? Country Marble Race #shorts · A4AGd2-sRUQ
 - 1,1 тыс. просмотров · Last chance for Russia 😱 India vs Russia vs Vietnam | Country Marble Race #shorts · JtU-dx5R9Go
@@ -51,4 +52,3 @@
 - 652 просмотра · Egypt, Italy or Romania: who loses the first life? 💔 Marble Race #shorts · azywoQy806U
 - 466 просмотров · Race 26/67: 8 of 24 lose a life 😱 Nigeria vs Kazakhstan vs Georgia #shorts · HeDgNql7_JM
 - 881 просмотр · Last chance for USA 😱 USA vs UK vs Spain | Country Marble Race #shorts · uuZV0vOhDr0
-- 1,1 тыс. просмотров · Last chance for Brazil 😱 Brazil vs Mexico vs Japan | Country Marble Race #shorts · AWf2qlc50Ns

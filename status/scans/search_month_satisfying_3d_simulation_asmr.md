@@ -1,38 +1,38 @@
 # Скан: search-month:satisfying 3d simulation asmr
-Проверено: 2026-11-25 06:54 UTC · HTTP 200 · найдено 30
+Проверено: 2026-11-26 06:54 UTC · HTTP 200 · найдено 32
 Ссылка: https://www.youtube.com/results?search_query=satisfying%203d%20simulation%20asmr&sp=EgIIBA%3D%3D
 
 | # | просм. | возраст | в сутки | канал (подписчики) | длит. | название |
 |---|---|---|---|---|---|---|
-| 1 | 1502544 | 27 дн | 56221 | Kawaken 3DCG (@Kawaken_3DCG, 563000) | 9:10 | 【4K】Hypnotic 3D Simulations & Satisfying ASMR Sounds【60fps】 |
-| 2 | 300951 | 3 дн | 100317 | Foxsplash 3D (@Foxsplash3D, 43900) | 8:06 | Insanely Satisfying 3D Physics Simulations / Showcase |
-| 3 | 268898 | 26 дн | 10416 | Satisfy Hub (@Satisfy-hub-studio, 41200) | 5:17 | 20,000+ Colorful Balls Marble Run Loop Animation (Satisfying ASMR) #marblerun #marblerace  |
-| 4 | 653 | ? | ? | Calm Cuts 3D (@calmcuts3d, 27) | 4:57 | Low vs High Resolution: 10 Oddly Satisfying 3D Simulations (ASMR) |
-| 5 | 30131 | 43 ч | 16658 | Satisfix3d (@satisfix3d, 6630) | ? | Can This Marble Structure Survive the Spiral Tube? 🌀💥 #simulation #asmr |
-| 6 | 1249 | 15 ч | 2045 | 2D 3D ASMR (@2D3Dasmr, 17) | ? | 1 Ring vs 150 Rings 😱 Satisfying Physics Simulation ASMR / 3D Animation |
-| 7 | 4833 | 23 ч | 5061 | Simulations3D (@Physics3DSim, 73) | ? | More vs Bigger / Physics Simulation #satisfyingsounds #asmr #blenderanimation #3dsimulatio |
-| 8 | 380140 | 56 ч | 163169 | TheBlender3D (@TheBlender3D, 2850) | ? | Satisfying 3D Dice Physics Loop Shots #asmr #blender |
-| 9 | 10000 | ? | ? | Zenzi (@Zenzirz, ?) | ? | Squeezing through the star. 3D simulation.  #3d #asmr #physics #animation #soft |
-| 10 | 153 | 12 дн | 12 | DS_SIMULATIONS (@DS_SIMULATIONS, ?) | 2:07 | 【4K】Hypnotic 3D Simulations & Satisfying ASMR Sounds【60fps】 |
-| 11 | 59563 | 32 ч | 44803 | TheBlender3D (@TheBlender3D, 2850) | ? | The endless cycle of rolling cubes #asmr #blender #infinite  #3danimation |
-| 12 | 1200 | ? | ? | Jim 3D Studio (@jim3dstudio, ?) | ? | Each Drop Gets Softer… Pure Relaxation 🫧 |
-| 13 | 21000 | ? | ? | Zenzi (@Zenzirz, ?) | ? | More faces = more realistic paper. 3D simulation #3d #asmr  #physics #animation |
-| 14 | 1000 | ? | ? | SimuRoll (@SimuRoll, ?) | ? | Oddly Satisfying 21x21 Cubes • Cosmic Ice Reverse Inward Flow ASMR |
-| 15 | 3100 | ? | ? | marblerium (@marblerium, ?) | ? | This Marble Run Is HYPNOTIC 🤯 / Satisfying 3D Animation  ASMR Simulation |
-| 16 | 1200 | ? | ? | ? (@?, ?) | ? | Soft Body Simulation / Colorful Cannon Smash #3danimation #satisfying #simulation #asmr |
-| 17 | 2000 | ? | ? | ? (@?, ?) | ? | 🔥 Perfect Fit 🔥 Jelly Simulation in Blender 3D — So Smooth & Satisfying! #asmr #3danimatio |
-| 18 | 1200 | ? | ? | ? (@?, ?) | ? | 10% vs 100% Soft 24K Gold Physics Simulation ✨ (ASMR) #shorts #satisfying #blender3d |
-| 19 | 1100 | ? | ? | ? (@?, ?) | ? | Wait for the Final Cloth Subdivision… ✨ / 3D ASMR |
-| 20 | 1700 | ? | ? | ? (@?, ?) | ? | Oddly Satisfying 460 Cubes • Cosmic Ice Kinetic Wave ASMR |
-| 21 | 1200 | ? | ? | ? (@?, ?) | ? | Which Shape Has Your Favorite Sound? (Amber ASMR) #shorts #asmr |
-| 22 | 14 | ? | ? | ? (@?, ?) | ? | Following dominoes · Seamless Physics Loop / ASMR |
-| 23 | 245 | ? | ? | ? (@?, ?) | ? | This 3D Gear Machine Loops Forever (Turn Sound On 🔊) #oddlysatisfying |
-| 24 | 212 | ? | ? | ? (@?, ?) | ? | This Hourglass Defies Gravity… 😳 #satisfying #3dasmr |
-| 25 | 6000 | ? | ? | ? (@?, ?) | ? | Can't Stop Watching This Simulation! 🤤  #Satisfying #Physics #PhysicsSimulation |
-| 26 | 10491 | 63 ч | 4018 | ? (@?, 17) | ? | Silk Cloth vs 1,024 Spikes ASMR / 3D Animation |
-| 27 | 939 | ? | ? | ? (@?, ?) | ? | The ripples are so cool to watch - Satisfying Physics Simulation #asmr #simulation #oddlys |
-| 28 | 1900 | ? | ? | ? (@?, ?) | ? | 0% vs 100% Cylinder x Pipe Soft Body Simulation#blender3d #3danimation #asmr  #satisfyingv |
-| 29 | 33 | ? | ? | ? (@?, ?) | ? | Mesmerizing 3D Metal Balls Falling into a Blue Grid! 🤯✨ Satisfying #youtubeshorts #3danima |
-| 30 | 38000 | ? | ? | ? (@?, ?) | ? | Golden Ball Smashes Through Glass Discs 🔥 / Blender Simulation #satisfying #glass #asmr |
+| 1 | 1553624 | 28 дн | 56036 | Kawaken 3DCG (@Kawaken_3DCG, ?) | 9:10 | 【4K】Hypnotic 3D Simulations & Satisfying ASMR Sounds【60fps】 |
+| 2 | 72622 | 43 ч | 40630 | Sulena 3D Prints (@Sulena3DPrints, 47300) | ? | 6 Clever 3D Prints With Oddly Satisfying Motion 🤯 (ASMR) |
+| 3 | 41466 | 16 ч | 60657 | LoopCraft (@Loopcraft-o2b, 511) | ? | CLEAN CUBE SLIDE in blender / ASMR & MIND RELAXING |
+| 4 | 32838 | 67 ч | 11693 | Satisfix3d (@satisfix3d, 6640) | ? | Can This Marble Structure Survive the Spiral Tube? 🌀💥 #simulation #asmr |
+| 5 | 1320 | 39 ч | 819 | 2D 3D ASMR (@2D3Dasmr, 17) | ? | 1 Ring vs 150 Rings 😱 Satisfying Physics Simulation ASMR / 3D Animation |
+| 6 | 1910 | 15 ч | 3077 | Satisfying Orbs (@satisfyingorbsasmr, 106) | ? | Satisfying physics simulation - 1800 bouncing orbs in perfect sync ✨ #asmr #satisfying #si |
+| 7 | 261058 | 11 дн | 23732 | PADLOX (@PADLOX13, 1670) | 11:37 | Verity at 1000% Softness?! / The Best 3D Physics Simulations ASMR |
+| 8 | 1533 | 16 дн | 97 | 3D MADNESS (@3DMADNESS-b5k, 475) | 10:02 | 【4K】Hyper satisfying 3D Simulations & Satisfying ASMR Sounds【60fps】 |
+| 9 | 9 | 7 дн | 1 | Escalate Lab (@TheEscalateLab, ?) | 3:37 | Will It Break? 22 Oddly Satisfying 3D Simulations / ASMR, No Music |
+| 10 | 258 | ? | ? | Oddly Rendered (@oddly_rendered_7, ?) | ? | 🔥 Perfect Fit 🔥 Jelly Simulation in Blender 3D — So Smooth & Satisfying! #asmr #3danimatio |
+| 11 | 5400 | ? | ? | Simulations3D (@Physics3DSim, ?) | ? | More vs Bigger / Physics Simulation #satisfyingsounds #asmr #blenderanimation #3dsimulatio |
+| 12 | 10000 | ? | ? | Zenzi (@Zenzirz, ?) | ? | Squeezing through the star. 3D simulation.  #3d #asmr #physics #animation #soft |
+| 13 | 27000 | ? | ? | cartoon3D (@cartoon3D-v6o, ?) | ? | 800 Pool Balls vs. the Grid 🎱 Satisfying ASMR |
+| 14 | 867 | ? | ? | strange.simulations (@strange.simulations, ?) | ? | Satisfying 3d ball crusher |
+| 15 | 23000 | ? | ? | Zenzi (@Zenzirz, ?) | ? | More faces = more realistic paper. 3D simulation #3d #asmr  #physics #animation |
+| 16 | 3400 | ? | ? | ? (@?, ?) | ? | Can the ball make it? Satisfying Paper Spiral Simulation #oddlysatisfying #asmr #simulatio |
+| 17 | 3100 | ? | ? | ? (@?, ?) | ? | This Marble Run Is HYPNOTIC 🤯 / Satisfying 3D Animation  ASMR Simulation |
+| 18 | 44000 | ? | ? | ? (@?, ?) | ? | Noodle simulation. Level after level 🍜 #3d #asmr #simulation  #animation #physics |
+| 19 | 1100 | ? | ? | ? (@?, ?) | ? | Oddly Satisfying 21x21 Cubes • Cosmic Ice Reverse Inward Flow ASMR |
+| 20 | 1200 | ? | ? | ? (@?, ?) | ? | Различные удары летящих снарядов для создания мощного столкновения и разрушения #asmr #sho |
+| 21 | 1200 | ? | ? | ? (@?, ?) | ? | 75% vs 25% Colorful Piston Soft Body Simulation #3danimation #satisfying #simulation #asmr |
+| 22 | 615 | ? | ? | ? (@?, ?) | ? | Sound ON 🎧 Glowing Orb Conducts Musical Cubes #asmr #satisfying |
+| 23 | 1200 | ? | ? | ? (@?, ?) | ? | Iron Bead Diamond / 3D ASMR #Shorts |
+| 24 | 260 | ? | ? | ? (@?, ?) | ? | This 3D Gear Machine Loops Forever (Turn Sound On 🔊) #oddlysatisfying |
+| 25 | 1200 | ? | ? | ? (@?, ?) | ? | Each Drop Gets Softer… Pure Relaxation 🫧 |
+| 26 | 935 | ? | ? | ? (@?, ?) | ? | The ripples are so cool to watch - Satisfying Physics Simulation #asmr #simulation #oddlys |
+| 27 | 1200 | ? | ? | ? (@?, ?) | ? | Which Shape Has Your Favorite Sound? (Amber ASMR) #shorts #asmr |
+| 28 | 193 | ? | ? | ? (@?, ?) | ? | Following dominoes · Seamless Physics Loop / ASMR |
+| 29 | 47 | ? | ? | ? (@?, ?) | ? | Mesmerizing 3D Metal Balls Falling into a Blue Grid! 🤯✨ Satisfying #youtubeshorts #3danima |
+| 30 | 179 | 13 дн | 13 | DS_SIMULATIONS (@DS_SIMULATIONS, ?) | 2:07 | 【4K】Hypnotic 3D Simulations & Satisfying ASMR Sounds【60fps】 |
 
-Хэштеги у первых 30: #asmr ×13, #3danimation ×5, #satisfying ×5, #simulation ×3, #3d ×3, #physics ×3, #blender ×2, #animation ×2, #blender3d ×2, #shorts ×2, #oddlysatisfying ×2, #marblerace ×1, #marblerun ×1, #3dsimulation ×1, #blenderanimation ×1, #satisfyingsounds ×1, #soft ×1, #infinite ×1, #3dasmr ×1, #physicssimulation ×1, #satisfyingvideo ×1, #youtubeshorts ×1, #glass ×1
+Хэштеги у первых 30: #asmr ×13, #simulation ×6, #3d ×4, #satisfying ×3, #3danimation ×3, #animation ×3, #physics ×3, #oddlysatisfying ×3, #shorts ×3, #3dsimulation ×1, #blenderanimation ×1, #satisfyingsounds ×1, #soft ×1, #youtubeshorts ×1

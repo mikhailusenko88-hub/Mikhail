@@ -2,7 +2,7 @@
  "spec": "search-month:will the ball multiply",
  "url": "https://www.youtube.com/results?search_query=will%20the%20ball%20multiply&sp=EgIIBA%3D%3D",
  "status": 200,
- "checked": "2026-11-25 06:54 UTC",
+ "checked": "2026-11-26 06:54 UTC",
  "header": "",
  "items": [
   {
@@ -19,7 +19,7 @@
    "snippet": "",
    "published": "2026-11-06T09:48:34+00:00",
    "channel_subs": 2,
-   "age_h": 453.10505964916666,
+   "age_h": 477.09128273249996,
    "per_day": 0,
    "tags": []
   }
