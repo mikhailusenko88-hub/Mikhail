@@ -1,0 +1,3267 @@
+{
+ "summary": {
+  "build": "29dub",
+  "lang": "de",
+  "n": 111,
+  "mos_src": 3.16,
+  "mos_vc": 3.24,
+  "mos_out": 3.04,
+  "by_hero": {
+   "Барсик": 3.61,
+   "Пик": 2.29,
+   "Рассказчик": 3.61,
+   "Рон": 2.57,
+   "Топа": 3.62,
+   "Филя": 3.04
+  },
+  "by_hero_src": {
+   "Барсик": 3.28,
+   "Пик": 2.51,
+   "Рассказчик": 3.54,
+   "Рон": 3.2,
+   "Топа": 3.22,
+   "Филя": 3.28
+  },
+  "clear": 85.9,
+  "q_yesno": 13,
+  "q_bad": [
+   32,
+   60,
+   104
+  ],
+  "q_lost_by_vc": [
+   32
+  ],
+  "flat": [],
+  "fast": [
+   19,
+   33,
+   36,
+   62,
+   73,
+   84
+  ],
+  "minutes": 36.7
+ },
+ "rows": [
+  {
+   "i": 0,
+   "name": "Топа",
+   "text": "Hier ist sie! Ich hab sie vorsichtig getragen.",
+   "ru": "Вот он! Я всю дорогу нёс его осторожно.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 87.5,
+   "mos": {
+    "src": 3.58,
+    "vc": 4.03,
+    "out": 4.03
+   },
+   "pitch": {
+    "src": {
+     "range": 8.6,
+     "end": -2.8,
+     "dur": 2.44
+    },
+    "out": {
+     "range": 6.7,
+     "end": -5.2,
+     "dur": 2.44
+    }
+   },
+   "heard": "Hier ist sie. Ich habe sie vorsichtig getragen.",
+   "clear": 87.5,
+   "sps": 4.6
+  },
+  {
+   "i": 1,
+   "name": "Рон",
+   "text": "Aus so was Kleinem wird eine Eiche?",
+   "ru": "Из такого малыша вырастет дуб?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.51,
+    "vc": 2.65,
+    "out": 2.01
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": 1.6,
+     "dur": 1.6
+    },
+    "out": {
+     "range": 4.9,
+     "end": 1.5,
+     "dur": 1.62
+    }
+   },
+   "heard": "Aus sowas kleinem wird eine Eiche.",
+   "clear": 71.4,
+   "sps": 5.8
+  },
+  {
+   "i": 2,
+   "name": "Рон",
+   "text": "Wo ist der Baum?",
+   "ru": "А где дерево?",
+   "speed": 1.0,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.37,
+    "vc": 2.99,
+    "out": 2.6
+   },
+   "pitch": {
+    "src": {
+     "range": 12.1,
+     "end": 3.8,
+     "dur": 0.74
+    },
+    "out": {
+     "range": 5.1,
+     "end": 1.3,
+     "dur": 0.73
+    }
+   },
+   "heard": "Für ist der Baum.",
+   "clear": 75.0,
+   "sps": 4.8
+  },
+  {
+   "i": 3,
+   "name": "Филя",
+   "text": "Welcher Baum?",
+   "ru": "Какое дерево?",
+   "speed": 0.9,
+   "kind": "вопр-слово",
+   "clear_dub": 50.0,
+   "mos": {
+    "src": 3.19,
+    "vc": 3.43,
+    "out": 2.64
+   },
+   "pitch": {
+    "src": {
+     "range": 2.4,
+     "end": 2.1,
+     "dur": 0.67
+    },
+    "out": {
+     "range": 2.6,
+     "end": 1.0,
+     "dur": 0.68
+    }
+   },
+   "heard": "Bis zum nächsten Mal.",
+   "clear": 0.0,
+   "sps": 3.8
+  },
+  {
+   "i": 4,
+   "name": "Рон",
+   "text": "Der aus der Eichel wachsen soll!",
+   "ru": "Которое должно вырасти из жёлудя!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.45,
+    "vc": 3.16,
+    "out": 2.72
+   },
+   "pitch": {
+    "src": {
+     "range": 10.1,
+     "end": -1.7,
+     "dur": 1.4
+    },
+    "out": {
+     "range": 6.9,
+     "end": -2.0,
+     "dur": 1.43
+    }
+   },
+   "heard": "der Ostereichel wachsen soll.",
+   "clear": 50.0,
+   "sps": 5.1
+  },
+  {
+   "i": 5,
+   "name": "Рон",
+   "text": "Ich hab sogar geguckt! Schon seit dem Morgen!",
+   "ru": "Я его даже высматривал! С самого утра!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.55,
+    "vc": 2.93,
+    "out": 2.35
+   },
+   "pitch": {
+    "src": {
+     "range": 8.4,
+     "end": -3.8,
+     "dur": 2.12
+    },
+    "out": {
+     "range": 7.8,
+     "end": -3.9,
+     "dur": 2.16
+    }
+   },
+   "heard": "Ich hab sogar geguckt, schon seit dem Morgen.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 7,
+   "name": "Пик",
+   "text": "Nicht in einer Nacht.",
+   "ru": "За одну ночь дуб не вырастет.",
+   "speed": 0.792,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.52,
+    "vc": 1.69,
+    "out": 1.69
+   },
+   "pitch": {
+    "src": {
+     "range": 3.0,
+     "end": -10.9,
+     "dur": 1.08
+    },
+    "out": {
+     "range": 8.4,
+     "end": -12.2,
+     "dur": 1.09
+    }
+   },
+   "heard": "Nicht in einer Nacht.",
+   "clear": 100.0,
+   "sps": 3.4
+  },
+  {
+   "i": 8,
+   "name": "Рон",
+   "text": "Und ich wollte schon in ihrem Schatten liegen.",
+   "ru": "А я уже приготовился отдыхать в его тени.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.74,
+    "vc": 2.62,
+    "out": 2.38
+   },
+   "pitch": {
+    "src": {
+     "range": 10.5,
+     "end": -1.4,
+     "dur": 1.76
+    },
+    "out": {
+     "range": 8.0,
+     "end": -2.0,
+     "dur": 1.78
+    }
+   },
+   "heard": "Bruder, ich wollte schon in ihrem Schatten liegen.",
+   "clear": 87.5,
+   "sps": 6.4
+  },
+  {
+   "i": 10,
+   "name": "Пик",
+   "text": "Noch ist da nur dein Schatten, Ron.",
+   "ru": "Рон, тень пока только от тебя самого.",
+   "speed": 1.04,
+   "kind": "утв",
+   "clear_dub": 71.4,
+   "mos": {
+    "src": 2.93,
+    "vc": 2.19,
+    "out": 2.19
+   },
+   "pitch": {
+    "src": {
+     "range": 6.6,
+     "end": -2.6,
+     "dur": 1.92
+    },
+    "out": {
+     "range": 5.3,
+     "end": -2.0,
+     "dur": 1.98
+    }
+   },
+   "heard": "Noch ist dann nur dein Schatten, Ron.",
+   "clear": 85.7,
+   "sps": 3.8
+  },
+  {
+   "i": 11,
+   "name": "Топа",
+   "text": "Ich will auch wissen, wie sie wächst.",
+   "ru": "Мне тоже хочется узнать, как он растёт.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.23,
+    "vc": 3.64,
+    "out": 3.64
+   },
+   "pitch": {
+    "src": {
+     "range": 8.5,
+     "end": -1.9,
+     "dur": 1.19
+    },
+    "out": {
+     "range": 6.5,
+     "end": -0.2,
+     "dur": 1.25
+    }
+   },
+   "heard": "Ich will auch Rissen, wie sie wächst.",
+   "clear": 85.7,
+   "sps": 5.3
+  },
+  {
+   "i": 12,
+   "name": "Барсик",
+   "text": "Zuerst das Geheimnis in der Eichel.",
+   "ru": "Начнём с секрета внутри жёлудя.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.55,
+    "vc": 3.79,
+    "out": 3.79
+   },
+   "pitch": {
+    "src": {
+     "range": 8.6,
+     "end": -3.8,
+     "dur": 1.7
+    },
+    "out": {
+     "range": 9.2,
+     "end": -3.0,
+     "dur": 1.66
+    }
+   },
+   "heard": "Zuerst das Geheimnis in der Eiche.",
+   "clear": 83.3,
+   "sps": 4.8
+  },
+  {
+   "i": 13,
+   "name": "Рон",
+   "text": "Aber wir machen sie nicht auf?",
+   "ru": "Только открывать его не будем?",
+   "speed": 0.8,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.16,
+    "vc": 2.92,
+    "out": 2.48
+   },
+   "pitch": {
+    "src": {
+     "range": 6.3,
+     "end": 10.9,
+     "dur": 1.07
+    },
+    "out": {
+     "range": 4.7,
+     "end": 4.6,
+     "dur": 1.08
+    }
+   },
+   "heard": "Aber wir machen sie nicht auf.",
+   "clear": 100.0,
+   "sps": 6.1
+  },
+  {
+   "i": 14,
+   "name": "Пик",
+   "text": "Nein. Wir schauen im Buch nach.",
+   "ru": "Не будем. Найдём объяснение в книге.",
+   "speed": 1.024,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.71,
+    "vc": 2.32,
+    "out": 2.32
+   },
+   "pitch": {
+    "src": {
+     "range": 5.7,
+     "end": -5.2,
+     "dur": 1.96
+    },
+    "out": {
+     "range": 7.5,
+     "end": -6.4,
+     "dur": 1.98
+    }
+   },
+   "heard": "Wir schauen im Buch nach.",
+   "clear": 83.3,
+   "sps": 1.8
+  },
+  {
+   "i": 15,
+   "name": "Топа",
+   "text": "Dann suchen wir ihr einen Platz.",
+   "ru": "А потом выберем для него место.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.89,
+    "vc": 3.48,
+    "out": 3.48
+   },
+   "pitch": {
+    "src": {
+     "range": 8.1,
+     "end": -4.6,
+     "dur": 1.26
+    },
+    "out": {
+     "range": 8.6,
+     "end": -6.8,
+     "dur": 1.27
+    }
+   },
+   "heard": "Dann suchen wir ihr einen Platz.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 16,
+   "name": "Рон",
+   "text": "Am besten weit weg von meinem Sofa!",
+   "ru": "Желательно подальше от моего дивана!",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.58,
+    "vc": 3.39,
+    "out": 3.0
+   },
+   "pitch": {
+    "src": {
+     "range": 8.8,
+     "end": -1.1,
+     "dur": 1.75
+    },
+    "out": {
+     "range": 5.0,
+     "end": -3.6,
+     "dur": 1.77
+    }
+   },
+   "heard": "Am besten weit weg von meinem Software.",
+   "clear": 85.7,
+   "sps": 5.3
+  },
+  {
+   "i": 17,
+   "name": "Филя",
+   "text": "Die Eichel ist die Frucht der Eiche. Darin steckt ein Samen.",
+   "ru": "Жёлудь — плод дуба. Под его оболочкой находится семя.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.32,
+    "vc": 3.37,
+    "out": 2.85
+   },
+   "pitch": {
+    "src": {
+     "range": 11.8,
+     "end": -6.8,
+     "dur": 2.63
+    },
+    "out": {
+     "range": 6.6,
+     "end": -3.1,
+     "dur": 2.72
+    }
+   },
+   "heard": "Die Eichel ist die Frucht der Eiche. Darin steckt ein Samen.",
+   "clear": 100.0,
+   "sps": 5.2
+  },
+  {
+   "i": 18,
+   "name": "Рон",
+   "text": "Ist im Samen schon ein Baum?",
+   "ru": "А в семени уже есть дерево?",
+   "speed": 0.828,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.91,
+    "vc": 3.27,
+    "out": 2.9
+   },
+   "pitch": {
+    "src": {
+     "range": 10.6,
+     "end": 14.1,
+     "dur": 1.4
+    },
+    "out": {
+     "range": 6.1,
+     "end": 8.6,
+     "dur": 1.39
+    }
+   },
+   "heard": "Ist im Samen schon ein Baum?",
+   "clear": 100.0,
+   "sps": 4.5
+  },
+  {
+   "i": 19,
+   "name": "Пик",
+   "text": "Drin ist ein winziges Pflänzchen.",
+   "ru": "Там есть крошечный зародыш будущего растения.",
+   "speed": 1.367,
+   "kind": "утв",
+   "clear_dub": 60.0,
+   "mos": {
+    "src": 2.45,
+    "vc": 2.11,
+    "out": 2.11
+   },
+   "pitch": {
+    "src": {
+     "range": 7.3,
+     "end": -1.7,
+     "dur": 1.28
+    },
+    "out": {
+     "range": 5.6,
+     "end": -3.8,
+     "dur": 1.31
+    }
+   },
+   "heard": "Du bist ein winziges Pflänzchen.",
+   "clear": 60.0,
+   "sps": 5.7
+  },
+  {
+   "i": 20,
+   "name": "Барсик",
+   "text": "Da drin ist kein fertiger Baum. Er wächst nach und nach.",
+   "ru": "Готового дерева внутри нет. Оно будет постепенно расти.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.25,
+    "vc": 3.54,
+    "out": 3.54
+   },
+   "pitch": {
+    "src": {
+     "range": 10.3,
+     "end": -2.0,
+     "dur": 3.12
+    },
+    "out": {
+     "range": 16.0,
+     "end": -8.3,
+     "dur": 3.19
+    }
+   },
+   "heard": "Daterin ist kein fertiger Baum. Der wächst nach und nach.",
+   "clear": 72.7,
+   "sps": 3.8
+  },
+  {
+   "i": 21,
+   "name": "Филя",
+   "text": "Im Samen ist auch ein Vorrat an Essen.",
+   "ru": "Ещё в семени есть запас питательных веществ.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.81,
+    "vc": 2.87,
+    "out": 2.61
+   },
+   "pitch": {
+    "src": {
+     "range": 11.3,
+     "end": 0.1,
+     "dur": 2.09
+    },
+    "out": {
+     "range": 5.4,
+     "end": 0.7,
+     "dur": 2.09
+    }
+   },
+   "heard": "Dem Samen ist auch ein Vorrat am Essen.",
+   "clear": 75.0,
+   "sps": 4.9
+  },
+  {
+   "i": 22,
+   "name": "Топа",
+   "text": "Für das Pflänzchen?",
+   "ru": "Для будущего ростка?",
+   "speed": 0.92,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.17,
+    "vc": 3.4,
+    "out": 3.32
+   },
+   "pitch": {
+    "src": {
+     "range": 7.3,
+     "end": 7.6,
+     "dur": 0.83
+    },
+    "out": {
+     "range": 1.8,
+     "end": 1.6,
+     "dur": 0.85
+    }
+   },
+   "heard": "Für das Gründchen.",
+   "clear": 66.7,
+   "sps": 4.2
+  },
+  {
+   "i": 23,
+   "name": "Пик",
+   "text": "Ja. Das hilft ihm am Anfang.",
+   "ru": "Да. Этот запас помогает ему в самом начале.",
+   "speed": 1.135,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.85,
+    "vc": 2.56,
+    "out": 2.56
+   },
+   "pitch": {
+    "src": {
+     "range": 8.0,
+     "end": -3.6,
+     "dur": 1.73
+    },
+    "out": {
+     "range": 6.1,
+     "end": -2.1,
+     "dur": 1.74
+    }
+   },
+   "heard": "Ja, das hilft ihm am Anfang.",
+   "clear": 100.0,
+   "sps": 2.5
+  },
+  {
+   "i": 24,
+   "name": "Рон",
+   "text": "Sein eigenes Frühstück! Gut vorbereitet!",
+   "ru": "Собственный завтрак! Хорошо приготовился.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.41,
+    "vc": 3.22,
+    "out": 3.22
+   },
+   "pitch": {
+    "src": {
+     "range": 10.5,
+     "end": -2.3,
+     "dur": 1.84
+    },
+    "out": {
+     "range": 6.4,
+     "end": -3.2,
+     "dur": 1.97
+    }
+   },
+   "heard": "Sein eigenes Frühstück, gut vorbereitet.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 25,
+   "name": "Топа",
+   "text": "Und was hilft dem Samen beim Wachsen?",
+   "ru": "А что поможет ему начать расти?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.96,
+    "vc": 3.61,
+    "out": 3.28
+   },
+   "pitch": {
+    "src": {
+     "range": 4.5,
+     "end": 0.1,
+     "dur": 1.71
+    },
+    "out": {
+     "range": 4.7,
+     "end": 2.2,
+     "dur": 1.73
+    }
+   },
+   "heard": "Und was hilft dem Samen beim Wachsen?",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 26,
+   "name": "Филя",
+   "text": "Zum Wachsen braucht er Wasser, Luft und die richtige Wärme.",
+   "ru": "Для прорастания нужны влага, воздух и подходящая температура.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 90.0,
+   "mos": {
+    "src": 3.29,
+    "vc": 3.32,
+    "out": 2.78
+   },
+   "pitch": {
+    "src": {
+     "range": 9.5,
+     "end": -2.7,
+     "dur": 3.29
+    },
+    "out": {
+     "range": 6.8,
+     "end": -1.9,
+     "dur": 3.32
+    }
+   },
+   "heard": "Zum Wachsen braucht ihr Wasser, Luft und die richtige Wärme.",
+   "clear": 90.0,
+   "sps": 4.4
+  },
+  {
+   "i": 27,
+   "name": "Пик",
+   "text": "Mit grünen Blättern braucht es Licht.",
+   "ru": "А когда появятся зелёные листья, растению понадобится свет.",
+   "speed": 0.792,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.43,
+    "vc": 2.35,
+    "out": 2.35
+   },
+   "pitch": {
+    "src": {
+     "range": 6.5,
+     "end": 1.2,
+     "dur": 3.59
+    },
+    "out": {
+     "range": 7.8,
+     "end": 2.9,
+     "dur": 3.6
+    }
+   },
+   "heard": "Mit grünen Blättern braucht es Licht. Ha!",
+   "clear": 100.0,
+   "sps": 2.2
+  },
+  {
+   "i": 28,
+   "name": "Рон",
+   "text": "Also nicht in eine dunkle Kiste sperren.",
+   "ru": "Значит, закрывать его в тёмном сундуке нельзя.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.24,
+    "vc": 3.05,
+    "out": 2.61
+   },
+   "pitch": {
+    "src": {
+     "range": 12.2,
+     "end": -7.8,
+     "dur": 1.84
+    },
+    "out": {
+     "range": 8.0,
+     "end": -6.6,
+     "dur": 1.86
+    }
+   },
+   "heard": "Also nicht in eine dunkle Kiste sperren.",
+   "clear": 100.0,
+   "sps": 6.1
+  },
+  {
+   "i": 29,
+   "name": "Топа",
+   "text": "Wir suchen draußen einen Platz.",
+   "ru": "Найдём место на улице.",
+   "speed": 0.846,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.06,
+    "vc": 3.74,
+    "out": 3.74
+   },
+   "pitch": {
+    "src": {
+     "range": 9.7,
+     "end": -3.5,
+     "dur": 1.26
+    },
+    "out": {
+     "range": 8.4,
+     "end": -0.9,
+     "dur": 1.25
+    }
+   },
+   "heard": "Wir suchen draußen einen Platz.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 30,
+   "name": "Барсик",
+   "text": "Schaut, eine Eiche!",
+   "ru": "Смотрите, дуб!",
+   "speed": 0.846,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.76,
+    "vc": 4.07,
+    "out": 4.07
+   },
+   "pitch": {
+    "src": {
+     "range": 7.2,
+     "end": -2.8,
+     "dur": 1.43
+    },
+    "out": {
+     "range": 15.4,
+     "end": -12.5,
+     "dur": 1.44
+    }
+   },
+   "heard": "Schaut eine Eiche.",
+   "clear": 100.0,
+   "sps": 3.0
+  },
+  {
+   "i": 31,
+   "name": "Топа",
+   "text": "Gestern fanden wir die Eichel unter so einem Baum.",
+   "ru": "Вчера мы нашли жёлудь под таким деревом.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 3.42,
+    "vc": 3.93,
+    "out": 3.93
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": -2.3,
+     "dur": 2.21
+    },
+    "out": {
+     "range": 10.2,
+     "end": -3.1,
+     "dur": 2.16
+    }
+   },
+   "heard": "Gestern fanden wir die Eiche unter so einem Baum.",
+   "clear": 88.9,
+   "sps": 6.0
+  },
+  {
+   "i": 32,
+   "name": "Филя",
+   "text": "Und diese Eiche war mal ein kleines Pflänzchen?",
+   "ru": "И этот дуб когда-то был маленьким ростком?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.31,
+    "vc": 3.73,
+    "out": 3.09
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": 2.9,
+     "dur": 2.16
+    },
+    "out": {
+     "range": 5.1,
+     "end": -0.4,
+     "dur": 2.12
+    }
+   },
+   "heard": "Und diese Eichel war mal ein kleines Printing.",
+   "clear": 75.0,
+   "sps": 5.3
+  },
+  {
+   "i": 33,
+   "name": "Пик",
+   "text": "Ja. Dann wuchs sie viele Jahre.",
+   "ru": "Да. А потом рос много лет.",
+   "speed": 1.45,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 1.9,
+    "vc": 1.91,
+    "out": 1.91
+   },
+   "pitch": {
+    "src": {
+     "range": 14.6,
+     "end": 14.9,
+     "dur": 2.62
+    },
+    "out": {
+     "range": 10.3,
+     "end": -8.0,
+     "dur": 1.59
+    }
+   },
+   "heard": "Ja, dann wuch sie viele Jahre.",
+   "clear": 83.3,
+   "sps": 3.0
+  },
+  {
+   "i": 34,
+   "name": "Рон",
+   "text": "Guten Tag! Sie sind ja toll gewachsen!",
+   "ru": "Здравствуйте. Очень убедительно выросли!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.41,
+    "vc": 3.02,
+    "out": 2.92
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": -3.5,
+     "dur": 1.69
+    },
+    "out": {
+     "range": 4.9,
+     "end": -3.3,
+     "dur": 1.72
+    }
+   },
+   "heard": "Guten Tag, Sie sind hier toll gewachsen.",
+   "clear": 85.7,
+   "sps": 5.4
+  },
+  {
+   "i": 35,
+   "name": "Топа",
+   "text": "Wächst unsere Eichel auch ganz sicher?",
+   "ru": "Наш жёлудь тоже обязательно вырастет?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 83.3,
+   "mos": {
+    "src": 3.24,
+    "vc": 3.72,
+    "out": 3.72
+   },
+   "pitch": {
+    "src": {
+     "range": 9.2,
+     "end": 10.6,
+     "dur": 1.54
+    },
+    "out": {
+     "range": 27.4,
+     "end": 9.0,
+     "dur": 1.52
+    }
+   },
+   "heard": "wächst unsere Eichel auch ganz sicher.",
+   "clear": 100.0,
+   "sps": 6.1
+  },
+  {
+   "i": 36,
+   "name": "Пик",
+   "text": "Nicht immer. Auch gute Samen wachsen nur, wenn alles passt.",
+   "ru": "Не обязательно. Даже хорошее семя прорастает только при подходящих условиях.",
+   "speed": 1.184,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.62,
+    "vc": 2.41,
+    "out": 2.41
+   },
+   "pitch": {
+    "src": {
+     "range": 6.5,
+     "end": -2.3,
+     "dur": 2.95
+    },
+    "out": {
+     "range": 7.0,
+     "end": -6.0,
+     "dur": 2.96
+    }
+   },
+   "heard": "Ich stimme. Auch gute Samen wachsen, nur wenn alles passt.",
+   "clear": 80.0,
+   "sps": 3.9
+  },
+  {
+   "i": 37,
+   "name": "Барсик",
+   "text": "Wir suchen einen Platz und kümmern uns um sie.",
+   "ru": "Мы можем выбрать место и заботиться о нём.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 3.1,
+    "vc": 3.58,
+    "out": 3.17
+   },
+   "pitch": {
+    "src": {
+     "range": 10.4,
+     "end": -7.9,
+     "dur": 2.0
+    },
+    "out": {
+     "range": 6.7,
+     "end": -6.4,
+     "dur": 1.98
+    }
+   },
+   "heard": "Wir suchen einen Platz und kümmern uns um sie.",
+   "clear": 100.0,
+   "sps": 5.7
+  },
+  {
+   "i": 38,
+   "name": "Топа",
+   "text": "Dann geben wir uns Mühe.",
+   "ru": "Тогда давайте постараемся.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.05,
+    "vc": 3.72,
+    "out": 3.71
+   },
+   "pitch": {
+    "src": {
+     "range": 5.9,
+     "end": -2.5,
+     "dur": 1.03
+    },
+    "out": {
+     "range": 7.0,
+     "end": -3.0,
+     "dur": 1.04
+    }
+   },
+   "heard": "Dann geben wir uns Mühe.",
+   "clear": 100.0,
+   "sps": 5.9
+  },
+  {
+   "i": 39,
+   "name": "Рон",
+   "text": "Pflanzen wir sie am Weg! Dann sagen wir jeden Tag Hallo!",
+   "ru": "Предлагаю посадить возле дорожки. Будем здороваться каждый день!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.99,
+    "vc": 2.55,
+    "out": 2.45
+   },
+   "pitch": {
+    "src": {
+     "range": 10.0,
+     "end": -7.2,
+     "dur": 2.73
+    },
+    "out": {
+     "range": 7.3,
+     "end": -6.1,
+     "dur": 2.77
+    }
+   },
+   "heard": "Pflanzen wir sie am Weg. Dann sagen wir jeden Tag Hallo.",
+   "clear": 100.0,
+   "sps": 5.1
+  },
+  {
+   "i": 40,
+   "name": "Филя",
+   "text": "Aber dort tritt man auf das Pflänzchen.",
+   "ru": "Но там на росток могут наступить.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.36,
+    "vc": 2.69,
+    "out": 2.25
+   },
+   "pitch": {
+    "src": {
+     "range": 6.0,
+     "end": -0.5,
+     "dur": 1.73
+    },
+    "out": {
+     "range": 4.8,
+     "end": -0.3,
+     "dur": 1.75
+    }
+   },
+   "heard": "Aber dort tritt man auf das Pflänzchen.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 41,
+   "name": "Рон",
+   "text": "Stimmt. Dann winken wir von der Seite.",
+   "ru": "Точно. Лучше здороваться немного в стороне.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 2.98,
+    "vc": 3.4,
+    "out": 2.57
+   },
+   "pitch": {
+    "src": {
+     "range": 5.7,
+     "end": -2.1,
+     "dur": 1.88
+    },
+    "out": {
+     "range": 6.6,
+     "end": -1.3,
+     "dur": 1.9
+    }
+   },
+   "heard": "Stimmt, dann winken wir von der Seite.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 42,
+   "name": "Рассказчик",
+   "text": "Die Freunde fanden auf der Wiese einen Platz abseits vom Weg.",
+   "ru": "Друзья выбрали на лугу свободное место вдали от дорожки.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.38,
+    "vc": 3.82,
+    "out": 3.82
+   },
+   "pitch": {
+    "src": {
+     "range": 6.3,
+     "end": -2.8,
+     "dur": 2.77
+    },
+    "out": {
+     "range": 4.3,
+     "end": -2.7,
+     "dur": 2.84
+    }
+   },
+   "heard": "Die Freunde fanden auf der Wiese einen Platz abseits vom Weg.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 43,
+   "name": "Топа",
+   "text": "Hier ist es hell. Und viel Platz für den Baum.",
+   "ru": "Здесь светло. И места для будущего дерева много.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.14,
+    "vc": 3.99,
+    "out": 3.99
+   },
+   "pitch": {
+    "src": {
+     "range": 10.4,
+     "end": -3.4,
+     "dur": 2.38
+    },
+    "out": {
+     "range": 10.2,
+     "end": -3.9,
+     "dur": 2.38
+    }
+   },
+   "heard": "Hier ist es hell, holt viel Platz für den Baum.",
+   "clear": 90.0,
+   "sps": 3.9
+  },
+  {
+   "i": 44,
+   "name": "Пик",
+   "text": "Die Erde: nicht zu trocken, nicht zu nass.",
+   "ru": "Важно, чтобы почва не пересыхала и не была постоянно залита водой.",
+   "speed": 0.916,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.69,
+    "vc": 2.47,
+    "out": 2.47
+   },
+   "pitch": {
+    "src": {
+     "range": 5.1,
+     "end": 1.4,
+     "dur": 2.68
+    },
+    "out": {
+     "range": 4.6,
+     "end": 0.1,
+     "dur": 2.72
+    }
+   },
+   "heard": "Die Erde nicht zu trocken, nicht zu nass.",
+   "clear": 100.0,
+   "sps": 3.3
+  },
+  {
+   "i": 45,
+   "name": "Филя",
+   "text": "Wie finden wir den Platz später wieder?",
+   "ru": "А как мы потом найдём это место?",
+   "speed": 1.0,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.33,
+    "vc": 4.05,
+    "out": 4.05
+   },
+   "pitch": {
+    "src": {
+     "range": 7.6,
+     "end": -2.2,
+     "dur": 1.84
+    },
+    "out": {
+     "range": 6.9,
+     "end": -5.0,
+     "dur": 1.82
+    }
+   },
+   "heard": "Wie finden wir den Platz später wieder?",
+   "clear": 100.0,
+   "sps": 5.1
+  },
+  {
+   "i": 46,
+   "name": "Рон",
+   "text": "Hier ist ein Stein. Der liegt daneben als Zeichen.",
+   "ru": "Вот камень. Оставим его рядом как примету.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.23,
+    "vc": 2.83,
+    "out": 2.42
+   },
+   "pitch": {
+    "src": {
+     "range": 10.1,
+     "end": -5.7,
+     "dur": 2.42
+    },
+    "out": {
+     "range": 7.2,
+     "end": -3.3,
+     "dur": 2.44
+    }
+   },
+   "heard": "Hier ist ein Stein, gelegter Leben als Zeichen.",
+   "clear": 66.7,
+   "sps": 4.5
+  },
+  {
+   "i": 47,
+   "name": "Барсик",
+   "text": "Gut. Die Eichel kommt daneben, nicht unter den Stein.",
+   "ru": "Хорошо. Жёлудь посадим рядом, а не под камнем.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.13,
+    "vc": 3.74,
+    "out": 3.74
+   },
+   "pitch": {
+    "src": {
+     "range": 9.3,
+     "end": -2.5,
+     "dur": 2.59
+    },
+    "out": {
+     "range": 5.2,
+     "end": -12.3,
+     "dur": 2.6
+    }
+   },
+   "heard": "Rot, die Eichen kommen daneben, nicht unter den Stein.",
+   "clear": 66.7,
+   "sps": 4.7
+  },
+  {
+   "i": 48,
+   "name": "Рон",
+   "text": "Alles klar. Kein Dach aus Stein.",
+   "ru": "Понял. Крышу из камня не строим.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.26,
+    "vc": 3.37,
+    "out": 2.65
+   },
+   "pitch": {
+    "src": {
+     "range": 5.5,
+     "end": -2.4,
+     "dur": 1.8
+    },
+    "out": {
+     "range": 7.4,
+     "end": -2.8,
+     "dur": 1.83
+    }
+   },
+   "heard": "Alles klar, kein Dach aus Stein.",
+   "clear": 100.0,
+   "sps": 3.6
+  },
+  {
+   "i": 49,
+   "name": "Топа",
+   "text": "Ist das Loch fertig?",
+   "ru": "Ямка готова?",
+   "speed": 0.828,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.37,
+    "vc": 3.79,
+    "out": 3.71
+   },
+   "pitch": {
+    "src": {
+     "range": 10.0,
+     "end": 7.8,
+     "dur": 0.92
+    },
+    "out": {
+     "range": 7.2,
+     "end": 2.6,
+     "dur": 0.96
+    }
+   },
+   "heard": "Ist das Loch fertig?",
+   "clear": 100.0,
+   "sps": 4.5
+  },
+  {
+   "i": 50,
+   "name": "Барсик",
+   "text": "Ja. Jetzt bist du dran.",
+   "ru": "Да. Теперь твоя очередь.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.43,
+    "vc": 3.48,
+    "out": 3.48
+   },
+   "pitch": {
+    "src": {
+     "range": 9.7,
+     "end": -1.9,
+     "dur": 1.53
+    },
+    "out": {
+     "range": 14.9,
+     "end": -11.0,
+     "dur": 1.55
+    }
+   },
+   "heard": "Ja, jetzt bist du dran.",
+   "clear": 100.0,
+   "sps": 3.0
+  },
+  {
+   "i": 51,
+   "name": "Рассказчик",
+   "text": "Die Freunde pflanzten die Eichel in ein flaches Loch und deckten sie zu.",
+   "ru": "Друзья посадили жёлудь в неглубокую ямку и прикрыли землёй.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.65,
+    "vc": 3.68,
+    "out": 3.68
+   },
+   "pitch": {
+    "src": {
+     "range": 5.5,
+     "end": -4.9,
+     "dur": 3.44
+    },
+    "out": {
+     "range": 5.0,
+     "end": -3.7,
+     "dur": 3.5
+    }
+   },
+   "heard": "Die Freunde pflanzten die Eichel in ein flaches Loch und deckten sie zu.",
+   "clear": 100.0,
+   "sps": 4.7
+  },
+  {
+   "i": 52,
+   "name": "Топа",
+   "text": "Jetzt hat sie ihren eigenen Platz.",
+   "ru": "Теперь у него есть своё место.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.33,
+    "vc": 3.73,
+    "out": 3.73
+   },
+   "pitch": {
+    "src": {
+     "range": 6.5,
+     "end": -4.9,
+     "dur": 1.37
+    },
+    "out": {
+     "range": 4.0,
+     "end": -5.7,
+     "dur": 1.34
+    }
+   },
+   "heard": "Jetzt hat sie ihren eigenen Platz.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 53,
+   "name": "Рассказчик",
+   "text": "Es regnet.",
+   "ru": "Пошёл дождь.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 0.0,
+   "mos": {
+    "src": 2.76,
+    "vc": 3.15,
+    "out": 3.15
+   },
+   "pitch": {
+    "src": {
+     "range": 5.6,
+     "end": -0.2,
+     "dur": 0.35
+    },
+    "out": {
+     "range": 3.8,
+     "end": -0.2,
+     "dur": 0.38
+    }
+   },
+   "heard": "Das ist nett.",
+   "clear": 0.0,
+   "sps": 5.1
+  },
+  {
+   "i": 55,
+   "name": "Рон",
+   "text": "Huch! Wer hat die Dusche bestellt?",
+   "ru": "Ой! Кто заказал полив?",
+   "speed": 0.92,
+   "kind": "вопр-слово",
+   "clear_dub": 83.3,
+   "mos": {
+    "src": 3.07,
+    "vc": 3.09,
+    "out": 2.42
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": 3.4,
+     "dur": 1.85
+    },
+    "out": {
+     "range": 6.7,
+     "end": 5.1,
+     "dur": 1.86
+    }
+   },
+   "heard": "Huch, wer hat die Dusche bestellt?",
+   "clear": 100.0,
+   "sps": 3.8
+  },
+  {
+   "i": 56,
+   "name": "Филя",
+   "text": "Wir sind unterm Schirm. Und die Erde kriegt Wasser.",
+   "ru": "Мы под зонтиком. А земля получает воду.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 3.33,
+    "vc": 3.66,
+    "out": 3.14
+   },
+   "pitch": {
+    "src": {
+     "range": 5.4,
+     "end": -3.0,
+     "dur": 2.32
+    },
+    "out": {
+     "range": 4.4,
+     "end": -3.5,
+     "dur": 2.31
+    }
+   },
+   "heard": "Wir sind unterm Schirrn und die Erde quitt Wasser.",
+   "clear": 77.8,
+   "sps": 4.9
+  },
+  {
+   "i": 57,
+   "name": "Топа",
+   "text": "Decken wir die Eichel auch zu?",
+   "ru": "Может, накроем и жёлудь?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 83.3,
+   "mos": {
+    "src": 3.08,
+    "vc": 3.45,
+    "out": 3.31
+   },
+   "pitch": {
+    "src": {
+     "range": 5.0,
+     "end": 3.6,
+     "dur": 1.28
+    },
+    "out": {
+     "range": 7.9,
+     "end": 1.3,
+     "dur": 1.26
+    }
+   },
+   "heard": "Decken wir die Earche auch zu.",
+   "clear": 83.3,
+   "sps": 5.7
+  },
+  {
+   "i": 58,
+   "name": "Пик",
+   "text": "Bei wenig Regen nicht nötig.",
+   "ru": "От небольшого дождя его прятать не нужно.",
+   "speed": 1.149,
+   "kind": "утв",
+   "clear_dub": 80.0,
+   "mos": {
+    "src": 2.18,
+    "vc": 2.41,
+    "out": 2.41
+   },
+   "pitch": {
+    "src": {
+     "range": 5.5,
+     "end": -4.3,
+     "dur": 3.65
+    },
+    "out": {
+     "range": 5.4,
+     "end": -6.4,
+     "dur": 3.65
+    }
+   },
+   "heard": "Bei wenig wegen nicht nötig. Aber jeden Seiten.",
+   "clear": 80.0,
+   "sps": 2.2
+  },
+  {
+   "i": 59,
+   "name": "Барсик",
+   "text": "Wasser hilft dem Samen. Aber er wächst nicht auf Befehl.",
+   "ru": "Влага поможет семени. Но рост не начинается по команде.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 90.0,
+   "mos": {
+    "src": 3.4,
+    "vc": 3.44,
+    "out": 3.44
+   },
+   "pitch": {
+    "src": {
+     "range": 8.1,
+     "end": -5.8,
+     "dur": 2.66
+    },
+    "out": {
+     "range": 5.6,
+     "end": -4.9,
+     "dur": 2.66
+    }
+   },
+   "heard": "Wasser hilft Gimsan, aber er wächst mich da auf Perfil.",
+   "clear": 60.0,
+   "sps": 5.1
+  },
+  {
+   "i": 60,
+   "name": "Рон",
+   "text": "Auch nicht, wenn wir ganz lieb bitten?",
+   "ru": "Даже если очень вежливо попросить?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.04,
+    "vc": 2.98,
+    "out": 2.7
+   },
+   "pitch": {
+    "src": {
+     "range": 7.5,
+     "end": 0.6,
+     "dur": 1.68
+    },
+    "out": {
+     "range": 4.4,
+     "end": -0.4,
+     "dur": 1.69
+    }
+   },
+   "heard": "Auch nicht, wenn ich an Sie bitten.",
+   "clear": 57.1,
+   "sps": 4.5
+  },
+  {
+   "i": 61,
+   "name": "Топа",
+   "text": "Ich wünsche ihr trotzdem viel Glück.",
+   "ru": "Я всё равно пожелаю ему удачи.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.03,
+    "vc": 3.35,
+    "out": 3.35
+   },
+   "pitch": {
+    "src": {
+     "range": 8.1,
+     "end": -8.0,
+     "dur": 1.29
+    },
+    "out": {
+     "range": 7.4,
+     "end": -5.9,
+     "dur": 1.28
+    }
+   },
+   "heard": "Ich wünsche ihr trotzdem viel Glück.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 62,
+   "name": "Рассказчик",
+   "text": "Der Regen hörte auf.",
+   "ru": "Дождь кончился.",
+   "speed": 1.21,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.67,
+    "vc": 3.46,
+    "out": 3.46
+   },
+   "pitch": {
+    "src": {
+     "range": 9.6,
+     "end": -3.4,
+     "dur": 0.83
+    },
+    "out": {
+     "range": 5.9,
+     "end": -1.1,
+     "dur": 0.94
+    }
+   },
+   "heard": "Der Regen hörte auf.",
+   "clear": 100.0,
+   "sps": 4.1
+  },
+  {
+   "i": 63,
+   "name": "Топа",
+   "text": "Viel Glück, kleine Eichel.",
+   "ru": "Удачи, маленький жёлудь.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.15,
+    "vc": 3.57,
+    "out": 3.45
+   },
+   "pitch": {
+    "src": {
+     "range": 6.8,
+     "end": -1.8,
+     "dur": 1.31
+    },
+    "out": {
+     "range": 7.7,
+     "end": -1.4,
+     "dur": 1.32
+    }
+   },
+   "heard": "Viel Glück, kleine Eichel.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 64,
+   "name": "Филя",
+   "text": "Merken wir uns den heutigen Tag.",
+   "ru": "Давайте запомним сегодняшний день.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.19,
+    "vc": 3.37,
+    "out": 3.37
+   },
+   "pitch": {
+    "src": {
+     "range": 8.9,
+     "end": -4.5,
+     "dur": 1.35
+    },
+    "out": {
+     "range": 5.2,
+     "end": -18.0,
+     "dur": 1.34
+    }
+   },
+   "heard": "Merken wir uns den heutigen Tag.",
+   "clear": 100.0,
+   "sps": 5.8
+  },
+  {
+   "i": 65,
+   "name": "Рон",
+   "text": "Tag des ersten Regens?",
+   "ru": "День первого дождя?",
+   "speed": 1.0,
+   "kind": "вопр-да/нет",
+   "clear_dub": 75.0,
+   "mos": {
+    "src": 3.39,
+    "vc": 3.2,
+    "out": 2.76
+   },
+   "pitch": {
+    "src": {
+     "range": 6.7,
+     "end": 8.0,
+     "dur": 1.0
+    },
+    "out": {
+     "range": 5.0,
+     "end": 4.5,
+     "dur": 1.01
+    }
+   },
+   "heard": "Tag des ersten Redens",
+   "clear": 75.0,
+   "sps": 4.7
+  },
+  {
+   "i": 66,
+   "name": "Филя",
+   "text": "Der Pflanztag! Wir fangen ein Tagebuch an!",
+   "ru": "День посадки. Начнём дневник наблюдений!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.53,
+    "vc": 3.46,
+    "out": 3.22
+   },
+   "pitch": {
+    "src": {
+     "range": 8.5,
+     "end": -3.8,
+     "dur": 2.24
+    },
+    "out": {
+     "range": 5.7,
+     "end": -1.4,
+     "dur": 2.29
+    }
+   },
+   "heard": "Wir fangen an Tadebuch an.",
+   "clear": 42.9,
+   "sps": 4.7
+  },
+  {
+   "i": 67,
+   "name": "Топа",
+   "text": "Ich will das erste Bild malen.",
+   "ru": "Я хочу сделать первый рисунок.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.28,
+    "vc": 3.4,
+    "out": 3.14
+   },
+   "pitch": {
+    "src": {
+     "range": 7.1,
+     "end": -0.1,
+     "dur": 1.34
+    },
+    "out": {
+     "range": 6.7,
+     "end": -1.4,
+     "dur": 1.37
+    }
+   },
+   "heard": "Ich will das erste Bild malen.",
+   "clear": 100.0,
+   "sps": 5.6
+  },
+  {
+   "i": 68,
+   "name": "Рассказчик",
+   "text": "Zu Hause begannen die Freunde ihr Tagebuch.",
+   "ru": "Дома друзья начали дневник наблюдений.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 71.4,
+   "mos": {
+    "src": 3.96,
+    "vc": 3.91,
+    "out": 3.91
+   },
+   "pitch": {
+    "src": {
+     "range": 4.8,
+     "end": -3.1,
+     "dur": 1.96
+    },
+    "out": {
+     "range": 5.8,
+     "end": -4.4,
+     "dur": 2.11
+    }
+   },
+   "heard": "Zuhause begannen die Frauen ihr Tagebuch.",
+   "clear": 57.1,
+   "sps": 5.1
+  },
+  {
+   "i": 69,
+   "name": "Топа",
+   "text": "Ich male die Eichel und den Stein daneben.",
+   "ru": "Нарисую жёлудь и камень рядом с местом посадки.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.26,
+    "vc": 4.01,
+    "out": 3.59
+   },
+   "pitch": {
+    "src": {
+     "range": 8.2,
+     "end": -0.8,
+     "dur": 2.12
+    },
+    "out": {
+     "range": 9.0,
+     "end": -0.1,
+     "dur": 2.11
+    }
+   },
+   "heard": "Ich male die Eiche und den Stein daneben.",
+   "clear": 87.5,
+   "sps": 5.4
+  },
+  {
+   "i": 70,
+   "name": "Филя",
+   "text": "Und ich schreibe auf, dass es heute geregnet hat.",
+   "ru": "А я помогу запомнить, что сегодня был дождь.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.36,
+    "vc": 3.11,
+    "out": 2.77
+   },
+   "pitch": {
+    "src": {
+     "range": 9.2,
+     "end": -4.9,
+     "dur": 2.42
+    },
+    "out": {
+     "range": 4.3,
+     "end": -1.8,
+     "dur": 2.41
+    }
+   },
+   "heard": "Und ich schreibe auf, dass es heute geregnet hat.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 71,
+   "name": "Рон",
+   "text": "Während ihr gemalt habt, ist Zeit vergangen!",
+   "ru": "Пока вы рисовали, уже прошло время!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.16,
+    "vc": 2.59,
+    "out": 2.23
+   },
+   "pitch": {
+    "src": {
+     "range": 10.3,
+     "end": -12.9,
+     "dur": 1.93
+    },
+    "out": {
+     "range": 8.2,
+     "end": -9.7,
+     "dur": 1.96
+    }
+   },
+   "heard": "Während ihr gemalt habt, ist Zeit vergangen.",
+   "clear": 100.0,
+   "sps": 5.4
+  },
+  {
+   "i": 72,
+   "name": "Рон",
+   "text": "Und jetzt noch ein bisschen mehr.",
+   "ru": "Даже ещё немного прошло.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.22,
+    "vc": 3.01,
+    "out": 2.91
+   },
+   "pitch": {
+    "src": {
+     "range": 6.6,
+     "end": 0.5,
+     "dur": 1.34
+    },
+    "out": {
+     "range": 5.4,
+     "end": -4.1,
+     "dur": 1.33
+    }
+   },
+   "heard": "Und jetzt noch ein bisschen mehr.",
+   "clear": 100.0,
+   "sps": 4.9
+  },
+  {
+   "i": 73,
+   "name": "Пик",
+   "text": "Pflanzen kennen keine Uhr.",
+   "ru": "По часам росток не торопится.",
+   "speed": 1.45,
+   "kind": "утв",
+   "clear_dub": 75.0,
+   "mos": {
+    "src": 2.76,
+    "vc": 2.69,
+    "out": 2.69
+   },
+   "pitch": {
+    "src": {
+     "range": 4.9,
+     "end": -4.4,
+     "dur": 1.26
+    },
+    "out": {
+     "range": 6.1,
+     "end": -5.3,
+     "dur": 1.3
+    }
+   },
+   "heard": "Thanschen können keine Gua.",
+   "clear": 25.0,
+   "sps": 4.9
+  },
+  {
+   "i": 74,
+   "name": "Рон",
+   "text": "Gut. Die Uhr bleibt zu Hause. Vielleicht macht sie die Eichel nervös.",
+   "ru": "Хорошо. Часы оставим дома. Вдруг они его нервируют.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 91.7,
+   "mos": {
+    "src": 3.2,
+    "vc": 3.07,
+    "out": 2.56
+   },
+   "pitch": {
+    "src": {
+     "range": 9.1,
+     "end": -2.4,
+     "dur": 3.05
+    },
+    "out": {
+     "range": 6.5,
+     "end": -3.0,
+     "dur": 3.06
+    }
+   },
+   "heard": "Ruth, die Uhr bleibt zu Hause. Vielleicht macht sie die Eichen-Devils.",
+   "clear": 75.0,
+   "sps": 4.9
+  },
+  {
+   "i": 75,
+   "name": "Топа",
+   "text": "Und wenn sich morgen nichts tut?",
+   "ru": "А если завтра ничего не изменится?",
+   "speed": 0.9,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.21,
+    "vc": 3.77,
+    "out": 3.72
+   },
+   "pitch": {
+    "src": {
+     "range": 8.0,
+     "end": 9.1,
+     "dur": 1.37
+    },
+    "out": {
+     "range": 6.6,
+     "end": 6.7,
+     "dur": 1.34
+    }
+   },
+   "heard": "Und wenn sich morgen nichts tut,",
+   "clear": 100.0,
+   "sps": 4.5
+  },
+  {
+   "i": 76,
+   "name": "Барсик",
+   "text": "Das kommt vor. Das schreiben wir ins Tagebuch.",
+   "ru": "Так тоже бывает. Это можно отметить в дневнике.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.44,
+    "vc": 3.74,
+    "out": 3.74
+   },
+   "pitch": {
+    "src": {
+     "range": 6.8,
+     "end": -4.9,
+     "dur": 2.3
+    },
+    "out": {
+     "range": 3.4,
+     "end": -2.2,
+     "dur": 2.39
+    }
+   },
+   "heard": "Das kommt vor. Das schreiben wir ins Tagebuch.",
+   "clear": 100.0,
+   "sps": 4.3
+  },
+  {
+   "i": 77,
+   "name": "Филя",
+   "text": "Wir schreiben auf, was wir sehen.",
+   "ru": "Мы ведь записываем то, что увидели.",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.4,
+    "vc": 3.42,
+    "out": 3.13
+   },
+   "pitch": {
+    "src": {
+     "range": 8.9,
+     "end": -5.5,
+     "dur": 2.06
+    },
+    "out": {
+     "range": 6.2,
+     "end": -4.1,
+     "dur": 2.07
+    }
+   },
+   "heard": "Wir schreiben auf, was wir sehen.",
+   "clear": 100.0,
+   "sps": 3.7
+  },
+  {
+   "i": 78,
+   "name": "Топа",
+   "text": "Auch wenn noch nichts wächst.",
+   "ru": "Даже если пока нет ростка.",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.26,
+    "vc": 3.84,
+    "out": 3.84
+   },
+   "pitch": {
+    "src": {
+     "range": 4.8,
+     "end": -3.9,
+     "dur": 0.87
+    },
+    "out": {
+     "range": 7.1,
+     "end": -3.1,
+     "dur": 0.86
+    }
+   },
+   "heard": "auch wenn noch nichts wächst.",
+   "clear": 100.0,
+   "sps": 4.3
+  },
+  {
+   "i": 79,
+   "name": "Рон",
+   "text": "Also erfinden wir noch keine Blätter.",
+   "ru": "Значит, придумывать ему листья заранее не будем.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.0,
+    "vc": 2.72,
+    "out": 2.4
+   },
+   "pitch": {
+    "src": {
+     "range": 9.9,
+     "end": -3.0,
+     "dur": 1.59
+    },
+    "out": {
+     "range": 7.4,
+     "end": -4.7,
+     "dur": 1.64
+    }
+   },
+   "heard": "Also erfinden die noch keine Blätter.",
+   "clear": 83.3,
+   "sps": 6.4
+  },
+  {
+   "i": 80,
+   "name": "Рассказчик",
+   "text": "Auf dem Heimweg gingen die Freunde noch mal zur Eichel.",
+   "ru": "По дороге домой друзья ещё раз подошли к месту посадки.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 80.0,
+   "mos": {
+    "src": 3.72,
+    "vc": 3.93,
+    "out": 3.93
+   },
+   "pitch": {
+    "src": {
+     "range": 6.8,
+     "end": -6.1,
+     "dur": 3.06
+    },
+    "out": {
+     "range": 6.0,
+     "end": -4.3,
+     "dur": 3.11
+    }
+   },
+   "heard": "Auf dem Heimweg gingen die Freunde nochmal zur Eichel.",
+   "clear": 80.0,
+   "sps": 4.2
+  },
+  {
+   "i": 81,
+   "name": "Рон",
+   "text": "Da ist der Stein, den ich hingelegt hab.",
+   "ru": "Вот камень, который я оставил.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 87.5,
+   "mos": {
+    "src": 3.42,
+    "vc": 2.7,
+    "out": 2.34
+   },
+   "pitch": {
+    "src": {
+     "range": 6.4,
+     "end": -7.8,
+     "dur": 1.72
+    },
+    "out": {
+     "range": 6.3,
+     "end": -6.9,
+     "dur": 1.74
+    }
+   },
+   "heard": "Was ist der Stein, den ich hingelegt habe?",
+   "clear": 75.0,
+   "sps": 5.2
+  },
+  {
+   "i": 82,
+   "name": "Филя",
+   "text": "Dann sind wir hier richtig.",
+   "ru": "Значит, мы пришли правильно.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.42,
+    "vc": 3.03,
+    "out": 3.03
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": -3.4,
+     "dur": 0.87
+    },
+    "out": {
+     "range": 8.3,
+     "end": -3.9,
+     "dur": 1.05
+    }
+   },
+   "heard": "dann sind wir hier richtig.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 83,
+   "name": "Топа",
+   "text": "Oben sieht man nichts. Wie wissen wir, was drinnen passiert?",
+   "ru": "Сверху ничего не видно. Как же понять, что происходит внутри?",
+   "speed": 0.9,
+   "kind": "вопр-слово",
+   "clear_dub": 90.0,
+   "mos": {
+    "src": 3.16,
+    "vc": 3.71,
+    "out": 3.71
+   },
+   "pitch": {
+    "src": {
+     "range": 7.8,
+     "end": 2.6,
+     "dur": 2.53
+    },
+    "out": {
+     "range": 7.7,
+     "end": 3.0,
+     "dur": 2.55
+    }
+   },
+   "heard": "Oben sieht man nichts. Wie wissen wir, was denn passiert?",
+   "clear": 90.0,
+   "sps": 5.2
+  },
+  {
+   "i": 84,
+   "name": "Пик",
+   "text": "Keimt die Eichel, kommt zuerst die Wurzel.",
+   "ru": "Если жёлудь начнёт прорастать, первым обычно появится корешок.",
+   "speed": 1.249,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 2.17,
+    "vc": 2.14,
+    "out": 1.84
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": -4.9,
+     "dur": 2.12
+    },
+    "out": {
+     "range": 8.3,
+     "end": -5.8,
+     "dur": 2.15
+    }
+   },
+   "heard": "Kann ich euch kommen zuerst die Woche?",
+   "clear": 28.6,
+   "sps": 2.9
+  },
+  {
+   "i": 85,
+   "name": "Барсик",
+   "text": "In der Erde sieht man sie nicht.",
+   "ru": "Под землёй мы его не увидим.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.23,
+    "vc": 3.62,
+    "out": 3.62
+   },
+   "pitch": {
+    "src": {
+     "range": 6.5,
+     "end": -4.4,
+     "dur": 1.21
+    },
+    "out": {
+     "range": 4.9,
+     "end": -3.2,
+     "dur": 1.2
+    }
+   },
+   "heard": "In der Erde sieht man sie nicht.",
+   "clear": 100.0,
+   "sps": 5.5
+  },
+  {
+   "i": 86,
+   "name": "Филя",
+   "text": "Später wächst ein Stängel aus der Erde.",
+   "ru": "А позже над землёй появится побег.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.49,
+    "vc": 3.52,
+    "out": 3.17
+   },
+   "pitch": {
+    "src": {
+     "range": 9.8,
+     "end": -3.6,
+     "dur": 1.94
+    },
+    "out": {
+     "range": 9.0,
+     "end": -6.0,
+     "dur": 1.94
+    }
+   },
+   "heard": "Später wächst Herrn Stengel aus der Erde.",
+   "clear": 71.4,
+   "sps": 4.5
+  },
+  {
+   "i": 87,
+   "name": "Топа",
+   "text": "Ich will gucken. Aber ich grab sie nicht aus.",
+   "ru": "Мне хочется посмотреть. Но выкапывать его не буду.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 3.29,
+    "vc": 3.9,
+    "out": 3.94
+   },
+   "pitch": {
+    "src": {
+     "range": 7.9,
+     "end": 0.0,
+     "dur": 1.79
+    },
+    "out": {
+     "range": 7.3,
+     "end": -1.1,
+     "dur": 1.81
+    }
+   },
+   "heard": "Ich will gucken, aber die klappt sie nicht aus.",
+   "clear": 77.8,
+   "sps": 5.3
+  },
+  {
+   "i": 88,
+   "name": "Рон",
+   "text": "Warum?",
+   "ru": "Почему?",
+   "speed": 0.828,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.56,
+    "vc": 2.61,
+    "out": 2.53
+   },
+   "pitch": {
+    "src": {
+     "range": 5.1,
+     "end": -1.0,
+     "dur": 0.39
+    },
+    "out": {
+     "range": 3.7,
+     "end": -2.7,
+     "dur": 0.44
+    }
+   },
+   "heard": "Warum?",
+   "clear": 100.0,
+   "sps": 3.6
+  },
+  {
+   "i": 89,
+   "name": "Топа",
+   "text": "Ich könnte die Wurzel kaputt machen, wenn sie schon da ist.",
+   "ru": "Можно повредить корешок, если он уже появился.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 90.9,
+   "mos": {
+    "src": 3.44,
+    "vc": 3.54,
+    "out": 3.54
+   },
+   "pitch": {
+    "src": {
+     "range": 7.8,
+     "end": -2.2,
+     "dur": 2.59
+    },
+    "out": {
+     "range": 7.5,
+     "end": -2.5,
+     "dur": 2.46
+    }
+   },
+   "heard": "Ihr könnt die Wurzel kaputt machen, wenn sie schon da ist.",
+   "clear": 81.8,
+   "sps": 5.3
+  },
+  {
+   "i": 90,
+   "name": "Пик",
+   "text": "Richtig. Nichts zu sehen heißt noch gar nichts.",
+   "ru": "Верно. И отсутствие ростка сегодня ещё ничего не доказывает.",
+   "speed": 0.953,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.71,
+    "vc": 2.55,
+    "out": 2.45
+   },
+   "pitch": {
+    "src": {
+     "range": 6.0,
+     "end": -4.6,
+     "dur": 2.85
+    },
+    "out": {
+     "range": 5.3,
+     "end": -4.0,
+     "dur": 2.88
+    }
+   },
+   "heard": "Richtig. Nichts zu sehen heißt noch gar nichts.",
+   "clear": 100.0,
+   "sps": 2.5
+  },
+  {
+   "i": 91,
+   "name": "Топа",
+   "text": "Abgemacht. Wir schauen hin und schreiben alles auf.",
+   "ru": "Решено. Будем наблюдать и отмечать изменения.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.49,
+    "vc": 3.78,
+    "out": 3.78
+   },
+   "pitch": {
+    "src": {
+     "range": 9.6,
+     "end": 5.7,
+     "dur": 2.81
+    },
+    "out": {
+     "range": 8.5,
+     "end": -1.5,
+     "dur": 2.85
+    }
+   },
+   "heard": "abgemacht. Wir schauen hin und schreiben alles auf.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 92,
+   "name": "Филя",
+   "text": "Und auf die Erde achten.",
+   "ru": "И следить за почвой.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.65,
+    "vc": 2.6,
+    "out": 2.12
+   },
+   "pitch": {
+    "src": {
+     "range": 8.9,
+     "end": 1.0,
+     "dur": 1.01
+    },
+    "out": {
+     "range": 6.4,
+     "end": -1.6,
+     "dur": 1.01
+    }
+   },
+   "heard": "Und auf die Erde achten.",
+   "clear": 100.0,
+   "sps": 6.2
+  },
+  {
+   "i": 93,
+   "name": "Рон",
+   "text": "Und ich sag allen: Hier nicht drauftreten!",
+   "ru": "А я буду напоминать друзьям обходить это место.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 2.59,
+    "vc": 2.83,
+    "out": 2.57
+   },
+   "pitch": {
+    "src": {
+     "range": 7.5,
+     "end": -8.4,
+     "dur": 2.11
+    },
+    "out": {
+     "range": 7.2,
+     "end": -3.2,
+     "dur": 2.16
+    }
+   },
+   "heard": "Und ich sag ein, hier nicht draufkippen.",
+   "clear": 71.4,
+   "sps": 4.5
+  },
+  {
+   "i": 94,
+   "name": "Топа",
+   "text": "Danke! Das ist mal eine Hilfe!",
+   "ru": "Спасибо. Вот это помощь!",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.1,
+    "vc": 3.36,
+    "out": 3.02
+   },
+   "pitch": {
+    "src": {
+     "range": 3.1,
+     "end": -1.1,
+     "dur": 1.67
+    },
+    "out": {
+     "range": 4.3,
+     "end": -1.9,
+     "dur": 1.47
+    }
+   },
+   "heard": "Danke, das ist mal eine Hilfe.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 95,
+   "name": "Рон",
+   "text": "Der wichtigste Helfer der Eiche legt los!",
+   "ru": "Главный помощник будущего дуба приступает к работе.",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.41,
+    "vc": 2.78,
+    "out": 2.4
+   },
+   "pitch": {
+    "src": {
+     "range": 10.0,
+     "end": -5.9,
+     "dur": 1.94
+    },
+    "out": {
+     "range": 6.3,
+     "end": -6.7,
+     "dur": 1.99
+    }
+   },
+   "heard": "Der wichtigste Helfer der Eiche legt los.",
+   "clear": 100.0,
+   "sps": 5.1
+  },
+  {
+   "i": 96,
+   "name": "Рассказчик",
+   "text": "Am Abend gingen die Freunde nach Hause.",
+   "ru": "Вечером друзья вернулись домой.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 85.7,
+   "mos": {
+    "src": 3.63,
+    "vc": 3.77,
+    "out": 3.32
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": -5.3,
+     "dur": 1.88
+    },
+    "out": {
+     "range": 6.6,
+     "end": -4.9,
+     "dur": 1.92
+    }
+   },
+   "heard": "Am Abend gehen die Freunde nach Hause.",
+   "clear": 85.7,
+   "sps": 5.3
+  },
+  {
+   "i": 97,
+   "name": "Топа",
+   "text": "Heute hab ich eine Eichel gepflanzt. Jetzt lerne ich warten.",
+   "ru": "Сегодня я посадил жёлудь. Теперь буду учиться ждать.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 80.0,
+   "mos": {
+    "src": 3.31,
+    "vc": 3.92,
+    "out": 3.61
+   },
+   "pitch": {
+    "src": {
+     "range": 8.8,
+     "end": -1.0,
+     "dur": 3.06
+    },
+    "out": {
+     "range": 7.0,
+     "end": -1.9,
+     "dur": 3.08
+    }
+   },
+   "heard": "Heute habe ich eine Eiche gepflanzt. Jetzt ja nicht warten.",
+   "clear": 60.0,
+   "sps": 4.9
+  },
+  {
+   "i": 99,
+   "name": "Рон",
+   "text": "Ich warte auch. Nur Schatten such ich mir woanders.",
+   "ru": "Я тоже подожду. Только тень пока найду другую.",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 88.9,
+   "mos": {
+    "src": 3.15,
+    "vc": 2.79,
+    "out": 2.31
+   },
+   "pitch": {
+    "src": {
+     "range": 7.7,
+     "end": -4.6,
+     "dur": 2.5
+    },
+    "out": {
+     "range": 6.1,
+     "end": -4.4,
+     "dur": 2.53
+    }
+   },
+   "heard": "Ich warte auch. Nur Schatten such ich mir woanders.",
+   "clear": 100.0,
+   "sps": 4.4
+  },
+  {
+   "i": 100,
+   "name": "Филя",
+   "text": "Schaut, der Mond!",
+   "ru": "Смотрите, луна!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 66.7,
+   "mos": {
+    "src": 3.82,
+    "vc": 4.21,
+    "out": 3.95
+   },
+   "pitch": {
+    "src": {
+     "range": 5.2,
+     "end": -0.6,
+     "dur": 0.78
+    },
+    "out": {
+     "range": 3.7,
+     "end": -0.1,
+     "dur": 0.78
+    }
+   },
+   "heard": "Schaut der Mund.",
+   "clear": 66.7,
+   "sps": 2.9
+  },
+  {
+   "i": 102,
+   "name": "Рон",
+   "text": "Er sieht anders aus als vorher!",
+   "ru": "Она выглядит не так, как раньше!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 83.3,
+   "mos": {
+    "src": 3.33,
+    "vc": 3.02,
+    "out": 2.7
+   },
+   "pitch": {
+    "src": {
+     "range": 6.9,
+     "end": 0.8,
+     "dur": 1.56
+    },
+    "out": {
+     "range": 6.3,
+     "end": -2.5,
+     "dur": 1.6
+    }
+   },
+   "heard": "Der sieht anders aus als vorher.",
+   "clear": 83.3,
+   "sps": 4.7
+  },
+  {
+   "i": 103,
+   "name": "Топа",
+   "text": "Warum verändert er sich?",
+   "ru": "Почему её вид меняется?",
+   "speed": 0.9,
+   "kind": "вопр-слово",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.18,
+    "vc": 3.76,
+    "out": 3.76
+   },
+   "pitch": {
+    "src": {
+     "range": 6.7,
+     "end": 2.6,
+     "dur": 1.01
+    },
+    "out": {
+     "range": 6.4,
+     "end": 3.0,
+     "dur": 1.0
+    }
+   },
+   "heard": "Warum verändert er sich?",
+   "clear": 100.0,
+   "sps": 5.9
+  },
+  {
+   "i": 104,
+   "name": "Рон",
+   "text": "Hat da jemand ein Stück abgebissen?",
+   "ru": "Неужели кто-то откусил кусочек?",
+   "speed": 0.828,
+   "kind": "вопр-да/нет",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.54,
+    "vc": 2.89,
+    "out": 2.44
+   },
+   "pitch": {
+    "src": {
+     "range": 8.0,
+     "end": -3.6,
+     "dur": 1.46
+    },
+    "out": {
+     "range": 4.9,
+     "end": -1.6,
+     "dur": 1.52
+    }
+   },
+   "heard": "Hat da jemand einen Stück abgebissen?",
+   "clear": 83.3,
+   "sps": 6.1
+  },
+  {
+   "i": 106,
+   "name": "Барсик",
+   "text": "Keiner hat den Mond gegessen, Ron.",
+   "ru": "Нет, Рон. Луну никто не ел.",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.24,
+    "vc": 3.83,
+    "out": 3.83
+   },
+   "pitch": {
+    "src": {
+     "range": 9.7,
+     "end": -0.5,
+     "dur": 1.58
+    },
+    "out": {
+     "range": 6.0,
+     "end": -0.8,
+     "dur": 1.58
+    }
+   },
+   "heard": "Keiner hat den Mund gegessen, Ron.",
+   "clear": 83.3,
+   "sps": 5.0
+  },
+  {
+   "i": 107,
+   "name": "Пик",
+   "text": "Warum, das klären wir nächstes Mal.",
+   "ru": "А почему мы видим её по-разному, разберёмся в следующий раз.",
+   "speed": 0.934,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.54,
+    "vc": 2.43,
+    "out": 2.43
+   },
+   "pitch": {
+    "src": {
+     "range": 5.7,
+     "end": 0.1,
+     "dur": 2.44
+    },
+    "out": {
+     "range": 4.6,
+     "end": -0.0,
+     "dur": 2.5
+    }
+   },
+   "heard": "Warum, das klären wir nächstes Mal.",
+   "clear": 100.0,
+   "sps": 3.2
+  },
+  {
+   "i": 108,
+   "name": "Филя",
+   "text": "Dann wartet schon ein neues Rätsel auf uns!",
+   "ru": "Получается, новая загадка уже ждёт нас!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.24,
+    "vc": 3.46,
+    "out": 3.09
+   },
+   "pitch": {
+    "src": {
+     "range": 9.3,
+     "end": -3.7,
+     "dur": 1.68
+    },
+    "out": {
+     "range": 5.6,
+     "end": -2.0,
+     "dur": 1.7
+    }
+   },
+   "heard": "Dann wartet schon ein Voice-Hätsel auf uns.",
+   "clear": 75.0,
+   "sps": 5.1
+  },
+  {
+   "i": 109,
+   "name": "Рон",
+   "text": "Zum Glück muss ich den Mond nicht mit dem Löffel bewachen.",
+   "ru": "Хорошо, что не придётся караулить луну с ложкой.",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 90.9,
+   "mos": {
+    "src": 2.85,
+    "vc": 2.7,
+    "out": 2.57
+   },
+   "pitch": {
+    "src": {
+     "range": 8.4,
+     "end": 1.9,
+     "dur": 2.2
+    },
+    "out": {
+     "range": 4.2,
+     "end": 1.1,
+     "dur": 2.25
+    }
+   },
+   "heard": "Zum Glück muss ich den Mund nicht mit dem Ruffel bewahren.",
+   "clear": 72.7,
+   "sps": 5.9
+  },
+  {
+   "i": 111,
+   "name": "Барсик",
+   "text": "Bis morgen, Freunde!",
+   "ru": "До завтра, друзья!",
+   "speed": 0.828,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.93,
+    "vc": 3.72,
+    "out": 3.72
+   },
+   "pitch": {
+    "src": {
+     "range": 12.6,
+     "end": -0.5,
+     "dur": 1.34
+    },
+    "out": {
+     "range": 5.1,
+     "end": -10.2,
+     "dur": 1.33
+    }
+   },
+   "heard": "Bis morgen, Freunde.",
+   "clear": 100.0,
+   "sps": 3.5
+  },
+  {
+   "i": 112,
+   "name": "Барсик",
+   "text": "Bis morgen!",
+   "ru": "До завтра!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.92,
+    "vc": 3.2,
+    "out": 3.2
+   },
+   "pitch": {
+    "src": {
+     "range": 4.4,
+     "end": 0.3,
+     "dur": 0.52
+    },
+    "out": {
+     "range": 3.5,
+     "end": 0.6,
+     "dur": 0.51
+    }
+   },
+   "heard": "Grüß morgen.",
+   "clear": 50.0,
+   "sps": 4.7
+  },
+  {
+   "i": 113,
+   "name": "Пик",
+   "text": "Bis morgen!",
+   "ru": "До завтра!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 2.25,
+    "vc": 2.45,
+    "out": 2.45
+   },
+   "pitch": {
+    "src": {
+     "range": 4.4,
+     "end": -2.7,
+     "dur": 0.63
+    },
+    "out": {
+     "range": 9.3,
+     "end": -4.7,
+     "dur": 0.78
+    }
+   },
+   "heard": "Bis morgen.",
+   "clear": 100.0,
+   "sps": 3.4
+  },
+  {
+   "i": 114,
+   "name": "Рон",
+   "text": "Bis morgen!",
+   "ru": "До завтра!",
+   "speed": 0.92,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.51,
+    "vc": 3.24,
+    "out": 2.85
+   },
+   "pitch": {
+    "src": {
+     "range": 4.2,
+     "end": -0.2,
+     "dur": 0.49
+    },
+    "out": {
+     "range": 4.9,
+     "end": -1.6,
+     "dur": 0.51
+    }
+   },
+   "heard": "Bis morgen.",
+   "clear": 100.0,
+   "sps": 5.0
+  },
+  {
+   "i": 115,
+   "name": "Топа",
+   "text": "Bis morgen!",
+   "ru": "До завтра!",
+   "speed": 0.9,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.22,
+    "vc": 3.67,
+    "out": 3.67
+   },
+   "pitch": {
+    "src": {
+     "range": 4.3,
+     "end": 2.5,
+     "dur": 0.5
+    },
+    "out": {
+     "range": 6.1,
+     "end": 1.3,
+     "dur": 0.51
+    }
+   },
+   "heard": "Bis morgen.",
+   "clear": 100.0,
+   "sps": 4.8
+  },
+  {
+   "i": 116,
+   "name": "Филя",
+   "text": "Bis morgen!",
+   "ru": "До завтра!",
+   "speed": 0.8,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.09,
+    "vc": 3.47,
+    "out": 3.47
+   },
+   "pitch": {
+    "src": {
+     "range": 6.1,
+     "end": -2.0,
+     "dur": 0.64
+    },
+    "out": {
+     "range": 4.9,
+     "end": -1.6,
+     "dur": 0.62
+    }
+   },
+   "heard": "Bis morgen.",
+   "clear": 100.0,
+   "sps": 3.9
+  },
+  {
+   "i": 117,
+   "name": "Рон",
+   "text": "Hat dir der Film gefallen? Bitte Mama oder Papa, den Kanal zu abonnieren. Bis zur nächsten Folge!",
+   "ru": "Понравился мультик? Попроси маму или папу подписаться на канал. До встречи в новой серии!",
+   "speed": 1.0,
+   "kind": "утв",
+   "clear_dub": 100.0,
+   "mos": {
+    "src": 3.1,
+    "vc": 2.77,
+    "out": 2.29
+   },
+   "pitch": {
+    "src": {
+     "range": 8.0,
+     "end": 0.9,
+     "dur": 4.87
+    },
+    "out": {
+     "range": 5.9,
+     "end": 0.7,
+     "dur": 4.9
+    }
+   },
+   "heard": "Hat dir der Film gefallen, bitte Mama oder Papa, den Kanal zu abonnieren. Bis zur nächsten Folge.",
+   "clear": 100.0,
+   "sps": 5.8
+  }
+ ]
+}
