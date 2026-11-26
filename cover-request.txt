@@ -1,5 +1,5 @@
-# 2026-11-26 — 29-я: обложки fr и ar (en — для сверки с выложенной); четвёртый запуск — numpy для дуба
-29dub 29 plan.json
-en;EPISODE 29;AN OAK FROM AN ACORN?
-fr;ÉPISODE 29;UN CHÊNE DANS UN GLAND ?
-ar;الحلقة 29;شجرة من بلوطة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 31
+31dub 31 plan.json
+en;EPISODE 31;DID THE SUN DRINK|THE PUDDLE?
+fr;ÉPISODE 31;LE SOLEIL A BU|LA FLAQUE ?
+ar;الحلقة 31;هل شربت الشمس|البركة؟
