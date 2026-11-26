@@ -1,0 +1,222 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 74.7,
+  "dur": 111.28,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 110.78,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 4,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 111,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 195.6
+ },
+ "kadry": 17,
+ "audio": {
+  "lufs": -15.2,
+  "lra": 3.3,
+  "peak_db": -1.2,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 100.0,
+  "lines": 26,
+  "by_hero": {
+   "Рон": 100.0,
+   "Барсик": 100.0,
+   "Топа": 100.0,
+   "Филя": 100.0,
+   "Пик": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 229.0,
+   "range_st": 5.2,
+   "hnr": 13.8,
+   "jitter": 2.1,
+   "shimmer": 9.4,
+   "F1": 544.0,
+   "F2": 1954.0,
+   "F3": 3284.0,
+   "bright": -11.9,
+   "air": -13.7,
+   "cog": 671.0,
+   "rate": 4.9,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 376.0,
+   "range_st": 8.0,
+   "hnr": 22.7,
+   "jitter": 0.8,
+   "shimmer": 5.1,
+   "F1": 459.0,
+   "F2": 1711.0,
+   "F3": 3392.0,
+   "bright": -19.7,
+   "air": -25.5,
+   "cog": 542.0,
+   "rate": 6.3,
+   "voiced": 0.7,
+   "n": 1,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 319.0,
+   "range_st": 9.4,
+   "hnr": 13.6,
+   "jitter": 1.7,
+   "shimmer": 7.0,
+   "F1": 590.0,
+   "F2": 1972.0,
+   "F3": 3535.0,
+   "bright": -16.2,
+   "air": -12.7,
+   "cog": 1206.0,
+   "rate": 3.2,
+   "voiced": 0.5,
+   "n": 5,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Топа": {
+   "f0": 163.0,
+   "range_st": 6.7,
+   "hnr": 12.2,
+   "jitter": 2.5,
+   "shimmer": 9.8,
+   "F1": 519.0,
+   "F2": 1867.0,
+   "F3": 3419.0,
+   "bright": -16.8,
+   "air": -23.8,
+   "cog": 518.0,
+   "rate": 4.0,
+   "voiced": 0.6,
+   "n": 5,
+   "age": "взрослый",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 314.5,
+   "range_st": 6.9,
+   "hnr": 14.1,
+   "jitter": 1.8,
+   "shimmer": 7.9,
+   "F1": 520.0,
+   "F2": 2132.0,
+   "F3": 3458.0,
+   "bright": -12.4,
+   "air": -21.4,
+   "cog": 800.5,
+   "rate": 4.4,
+   "voiced": 0.6,
+   "n": 4,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 7,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 24,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 617,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 110.783,
+   "video": "video/Кот Барсик - 37. Лужа стала льдом!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "f5c5238",
+    "intro": "after",
+    "open": "new",
+    "q": "hq",
+    "at": 50.2,
+    "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 12,
+    "e": 139,
+    "b": 4,
+    "w": 1,
+    "n": 2770,
+    "at": 2770,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 1,
+   "ttsFail": 0,
+   "voice": 36,
+   "voiceFail": 0,
+   "voiceSec": 25,
+   "ttsSec": 2,
+   "frames": 2770,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -22.6,
+   "lufs_out": -15.2,
+   "gain_db": 8.2
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 37,
+   "title": "Лужа стала льдом?!",
+   "scenes": 2,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"kseniya\",\"F\":1.08,\"P\":1.1,\"R\":1.1,\"model\":\"xenia\",\"T\":0.88,\"vend\":1.7,\"qrise\":3,\"laugh\":\"F16\"}"
+   ]
+  }
+ }
+}
