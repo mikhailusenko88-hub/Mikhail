@@ -567,7 +567,17 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 lambda title, text, url: wp.notify(title, text, url, tag="outbox"),
                 repo_url=cfg.get("OUTBOX_REPO", ""), workdir=cfg.get("OUTBOX_DIR", ""))
     app.extensions["outbox"] = ob
-    app.extensions["outbox_run"] = ob.run
+    def outbox_run() -> list[str]:
+        """Раз в минуту: письма из ветки outbox и возвраты «не доставлено» (почта и карточки дизайнеров)."""
+        out = ob.run()
+        try:
+            dzl = app.extensions.get("dz")
+            out += ob.bounces(app.extensions["pochta"], dzl.bounced if dzl is not None else None)
+        except Exception as e:  # noqa: BLE001 - возвраты не мешают отправке
+            out.append(f"возвраты: {e}")
+        return out
+
+    app.extensions["outbox_run"] = outbox_run
 
     @app.route("/api/outbox/key")
     def outbox_key() -> Any:

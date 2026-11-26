@@ -867,6 +867,25 @@ class DzLeads:
             self.after_mail(int(row["id"]), str(dz.get("kind") or "m1"), m["subject"], m["body"], "Claude",
                             sender=f"{m.get('box') or 'mikhail'}@{self.domain}")
 
+    def bounced(self, email: str, when: str) -> str:
+        """Письмо дизайнеру вернулось «не доставлено»: почту из карточки убрать (в истории — какая была), шаг — узнать другую.
+        Только если на этот адрес действительно писали; закрытые карточки не трогаем. Возвращает код карточки или «»."""
+        row = self.by_email(email)
+        if not row or row["status"] in CLOSED:
+            return ""
+        lid = int(row["id"])
+        sent = self.s.c().execute("SELECT 1 FROM dz_touches WHERE lead_id=? AND channel='email' LIMIT 1", (lid,)).fetchone()
+        if not sent:
+            return ""
+        with self.s.tx() as c:
+            c.execute("UPDATE dz_leads SET email='', updated_at=?, updated_by='CRM' WHERE id=?", (iso_now(), lid))
+            self._touch(c, lid, "note", f"Письмо на {email} не доставлено ({when}) — адреса нет или ящик не принимает. "
+                                        "Почту из карточки убрал; узнать рабочую — на сайте, звонком или в мессенджере.", "CRM")
+        has_msg = any((row[k] or "").strip() for k in ("telegram", "whatsapp", "max_link", "phone"))
+        self.set_status(lid, "found" if has_msg else "new", "CRM",
+                        "Почта не работает — узнать рабочую: позвонить или написать в мессенджер", today())
+        return str(row["code"])
+
     def claude_marks(self, p: dict[str, Any]) -> int:
         """Отметки Claude из конверта: «replies» — что ответил дизайнер, «marks» — статус и шаг или заметка в истории."""
         n = 0

@@ -35,7 +35,12 @@ log = logging.getLogger("crm.outbox")
 
 INFO = b"nashdekor-outbox-v1"
 INFO_REPLIES = b"nashdekor-replies-v1"     # ответы на запросы → Claude (ключ READER.pub в ветке outbox)
-INFO_DZ = b"nashdekor-dz-v1"               # сводка базы дизайнеров → Claude (тот же ключ READER.pub)
+INFO_DZ = b"nashdekor-dz-v1"
+# возвраты «не доставлено» (26.11: письмо в Люксорту вернулось — адреса нет, а ни CRM, ни Claude этого не видели)
+BOUNCE_FROM = re.compile(r"^(mailer-daemon|postmaster|mail-daemon|maildaemon|bounces?)[@+]", re.I)
+BOUNCE_SUBJ = re.compile(r"undeliver|delivery status|delivery fail|delivery has failed|returned mail|failure notice|"
+                         r"mail delivery|не доставлен|недоставлен|ошибка доставки|возврат", re.I)
+MAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")               # сводка базы дизайнеров → Claude (тот же ключ READER.pub)
 INFO_SITE = b"nashdekor-site-v1"           # статистика сайта → Claude (ключ SITE.pub, а нет его — READER.pub)
 REPO_URL = "https://github.com/mikhailusenko88-hub/Mikhail.git"
 BRANCH = "outbox"
@@ -332,6 +337,64 @@ class Outbox:
                 payload["dz"] = lead                      # чья карточка в «Базе дизайнеров»
             items.append(seal(k, payload, INFO_REPLIES))
         return {"v": 1, "key": k[:8], "items": items}
+
+    def bounces(self, pochta: Any, on_bounce: Callable[[str, str], str] | None = None) -> list[str]:
+        """Возвраты «не доставлено» в info@: письмо из «Исходящих» — статус bounced, адрес — в хук (карточка дизайнера:
+        почта убирается, шаг «узнать другую»), Михаилу — пуш. Каждый возврат — один раз."""
+        try:
+            seen = list(json.loads(self.s.setting("outbox_bounce_seen", "[]") or "[]"))
+        except ValueError:
+            seen = []
+        known = set(seen)
+        rows = self.s.c().execute("SELECT id, to_addr, subject, sent_at FROM outbox_mail WHERE status='sent' AND sent_at<>''").fetchall()
+        out: list[str] = []
+        now = time.time()
+        for e in pochta.index():
+            eid = str(e.get("id") or "")
+            if not eid or eid in known or e.get("box") != "info":
+                continue
+            frm = str(e.get("from") or "").lower()
+            if not (BOUNCE_FROM.match(frm) or (BOUNCE_SUBJ.search(str(e.get("subject") or "")) and
+                                               ("daemon" in frm or "postmaster" in frm))):
+                continue
+            ts = float(e.get("ts") or 0)
+            known.add(eid)
+            seen.append(eid)
+            if now - ts > 14 * 86400:
+                continue
+            m = pochta.get(eid) or {}
+            text = str(m.get("text") or m.get("html") or "")
+            for a in m.get("atts") or []:                # приложенный оригинал (message/rfc822, text/rfc822-headers)
+                mime = str(a.get("mime") or "")
+                if a.get("saved") and int(a.get("size") or 0) < 300_000 and (mime.startswith("message/") or mime.startswith("text/")):
+                    b = pochta.read_bytes(eid, a.get("n"))
+                    if b:
+                        text += "\n" + b.decode("utf-8", "replace")
+            low = text.lower()
+            addrs = {a.lower().strip(".") for a in MAIL_RE.findall(text)}
+            addrs = {a for a in addrs if not a.endswith("@" + self.domain) and a != frm and not BOUNCE_FROM.match(a)}
+            when = time.strftime("%d.%m %H:%M", time.localtime(ts or now))
+            failed: set[str] = set()
+            for r in rows:
+                to = [a.strip().lower() for a in str(r["to_addr"] or "").split(",") if a.strip()]
+                if (any(a in addrs for a in to) or self.msgid(r["id"]).lower() in low) and ts >= _ts(r["sent_at"]) - 3600:
+                    self._record(r["id"], status="bounced", error=f"не доставлено {when}: адреса нет или ящик не принимает")
+                    failed.update(a for a in to if a in addrs or len(to) == 1)
+            names = []
+            for a in sorted(failed | addrs):
+                code = ""
+                if on_bounce:
+                    try:
+                        code = on_bounce(a, when) or ""
+                    except Exception:  # noqa: BLE001
+                        log.exception("outbox: возврат — карточка дизайнера")
+                if a in failed or code:
+                    names.append(f"{a}{' (' + code + ')' if code else ''}")
+            if names:
+                self.notify("Письмо не доставлено", ", ".join(names)[:180] + " — адреса нет, почту из карточки убрал", "/outbox")
+                out.append(f"возврат {eid}: " + ", ".join(names))
+        self.s.set_setting("outbox_bounce_seen", json.dumps(seen[-500:]))
+        return out
 
     def sealed(self, payload: dict[str, Any], info: bytes = INFO_DZ, keyfile: str = "READER.pub", prefix: str = "") -> dict[str, Any]:
         """Любая выгрузка для Claude (сводка базы дизайнеров, статистика сайта) — только шифром для его ключа

@@ -2338,6 +2338,37 @@ class TestDzClaude(TestPochta):
         self.post("/outbox", {"on": "1", "daily": "30"})                     # галочку сняли — сводки нет
         self.assertTrue(self.c.get("/api/dz/export").get_json()["off"])
 
+    def test_bounce_clears_dead_address(self) -> None:
+        """26.11: письмо в Люксорту вернулось «не доставлено» — CRM видит возврат: письмо bounced, почта из карточки
+        убрана (в истории — какая была), шаг «узнать рабочую», напоминание на мёртвый адрес не уходит; один раз."""
+        p1, env1 = self.letter(to="hello@liniya-studio.ru", subject="Рейки и молдинги", body="Добрый день!", attachments=[],
+                               dz={"code": "Д03", "kind": "m1"}, **{"from": "mikhail"})
+        self.put(env1)
+        self.app.extensions["outbox_run"]()
+        self.assertEqual(self.lead("Д03")["status"], "sent")
+        mid = self.ob.msgid(p1["id"])
+        self.deliver(self.msg("MAILER-DAEMON@mx.nashdekor.ru", "Undelivered Mail Returned to Sender",
+                              text=f"This is the mail system.\n<hello@liniya-studio.ru>: host mx.liniya-studio.ru said: "
+                                   f"550 5.1.1 User unknown\nMessage-ID: <{mid}>\nTo: other@unrelated.ru"))
+        self.deliver(self.msg("MAILER-DAEMON@mx.nashdekor.ru", "Undelivered Mail Returned to Sender",
+                              text="<x@nowrite.ru>: 550 User unknown"))           # на этот адрес мы не писали — карточку не трогаем
+        self.export()
+        out = self.app.extensions["outbox_run"]()
+        self.assertTrue(any("возврат" in x and "Д03" in x for x in out), out)
+        self.assertEqual(self.c.get(f"/api/outbox/status/{p1['id']}").get_json()["status"], "bounced")
+        d3 = self.lead("Д03")
+        self.assertEqual(d3["email"], ""); self.assertEqual(d3["status"], "new"); self.assertIn("узнать рабочую", d3["next_step"])
+        notes = [x["text"] for x in self.dz.touches(int(d3["id"])) if x["channel"] == "note"]
+        self.assertTrue(any("hello@liniya-studio.ru" in n and "не доставлено" in n for n in notes))
+        self.assertEqual(self.lead("Д09")["email"], "x@nowrite.ru")
+        n = len(self.dz.touches(int(d3["id"])))
+        self.app.extensions["outbox_run"]()                                       # второй раз тот же возврат не считаем
+        self.assertEqual(len(self.dz.touches(int(d3["id"]))), n)
+        p2, env2 = self.letter(to="hello@liniya-studio.ru", subject="Re: Рейки и молдинги", body="2", attachments=[],
+                               dz={"code": "Д03", "kind": "m2"}, **{"from": "mikhail"})
+        self.put(env2); self.app.extensions["outbox_run"]()
+        self.assertEqual(self.c.get(f"/api/outbox/status/{p2['id']}").get_json()["status"], "skipped")
+
     def test_several_reader_keys(self) -> None:
         """24.11: каждая работа Claude держит свой ключ в readers/*.pub — сеансы не перебивают READER.pub друг другу."""
         from cryptography.hazmat.primitives import serialization
