@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 35
-35d 35 v3.py
-en;EPISODE 35;A SPROUT UNDER THE SNOW?
-fr;ÉPISODE 35;UNE POUSSE SOUS LA NEIGE ?
-ar;الحلقة 35;نبتة تحت الثلج؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 33
+33dub 33 v2.py
+en;EPISODE 33;DOES THE PINE CONE|KNOW THE WEATHER?
+fr;ÉPISODE 33;LA POMME DE PIN|CONNAÎT LA MÉTÉO ?
+ar;الحلقة 33;هل يعرف الكوز|الطقس؟
