@@ -1,1 +1,1 @@
-2026-11-25 20:07 UTC gens=140 npc=56 sigma=0.2 tag=d spec=0.02 pitchtol=1 man=medium optpool=40 heropool=1 pop=16 tlim=150 — круг 4: тембр на полусотне фраз (героям — реплики мультика), 56 осей, проверка на восьми чужих фразах
+# 2026-11-26 12:20 UTC gens=140 npc=56 sigma=0.2 tag=d spec=0 pitchtol=2 man=medium optpool=40 heropool=1 pop=16 tlim=120 only=pik — Пик: тембр своего голоса под голос Apple (образец 22 кГц — спектр в мерку не берём), основа ru_zara, фразы Пика из мультика
