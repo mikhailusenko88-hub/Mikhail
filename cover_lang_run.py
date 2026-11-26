@@ -25,7 +25,8 @@ if os.path.exists(lz):
     subprocess.run([sys.executable, lz, f"{W}/el"], check=False)
 # свои элементы обложки серии, которых нет в elementy.zip (план ссылается на них): скрипт из covers/<N>/ и его аргументы (пути от папки w/)
 OWN = {"29": [["dub.py", "el/f4_meadow_day.jpg", "el/v_dub.png"], ["strelka.py", "el/v_strelka.png"]],
-       "28": [["zerkalo.py", "el"]], "30": [["luna.py", "el"]]}
+       "28": [["zerkalo.py", "el"]], "30": [["luna.py", "el"]],
+       "38": [["=copy", "el/f2_winter_day.jpg", "el/f1_winter_day.jpg"]]}   # 38d/38h: зимний день под номером f2
 import glob, shutil
 for f in glob.glob(f"{W}/covers/{num}/v_*.png"):          # готовые свои элементы рядом с планом (33 — шишки)
     shutil.copy(f, f"{W}/el/")
