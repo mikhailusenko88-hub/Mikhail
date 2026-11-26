@@ -1,5 +1,5 @@
 # Снятые страницы
 
-- 01 200 https://crm.nashdekor.ru/api/outbox/status/9fb55380-39d7-4456-b35b-e0ff7e7f5484 (66 симв.)
-- 02 200 https://crm.nashdekor.ru/api/outbox/status/7db50a9a-c118-4173-94f1-017bb2956302 (66 симв.)
-- 03 200 https://crm.nashdekor.ru/api/outbox/status/e02ce3a0-757c-4428-9d4b-68744903d25b (42 симв.)
+- 01 200 https://nashdekor.ru/p/a910/ (6264 симв.)
+- 02 200 https://nashdekor.ru/stati/rejki-na-stenu-v-interere/ (5551 симв.)
+- 03 200 https://nashdekor.ru/p/3-9/ (6752 симв.)
