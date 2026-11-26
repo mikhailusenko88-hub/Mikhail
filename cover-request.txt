@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 28
-28dub 28 plan.json
-en;EPISODE 28;A SECOND RON|IN THE MIRROR?
-fr;ÉPISODE 28;UN DEUXIÈME RON|DANS LE MIROIR ?
-ar;الحلقة 28;رون ثان|في المرآة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 27
+27dub 27 plan.json
+en;EPISODE 27;WHY DOESN'T|THE BOAT SINK?
+fr;ÉPISODE 27;POURQUOI LE BATEAU|NE COULE PAS ?
+ar;الحلقة 27;لماذا لا يغرق|القارب؟
