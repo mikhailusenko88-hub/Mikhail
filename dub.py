@@ -234,7 +234,27 @@ def main():
         json.dump({"rows": rows, "minutes": round((time.time() - t_start) / 60, 1)}, open(os.path.join(pdir, f"p{PART[0]}.json"), "w", encoding="utf-8"), ensure_ascii=False)
         D.log("доля готова", PART, "реплик", len(rows), "мин", round((time.time() - t_start) / 60, 1))
         return
-    if MODE == "merge":
+    if MODE == "merge" and os.environ.get("DUB_BEST"):
+        # «Лучшее из проходов» (26.11): доли нескольких прогонов (папки через запятую) — по каждой реплике берётся та озвучка,
+        # которую распознаватель понял лучше (меньше лишних слов, не за окном). Голос случаен от прогона к прогону: ±10–60 % на реплике.
+        import glob
+        mins, cand = 0.0, {}
+        for d in [x for x in os.environ["DUB_BEST"].split(",") if x]:
+            for f in sorted(glob.glob(os.path.join(d, "**", "p*.json"), recursive=True)):
+                J = json.load(open(f, encoding="utf-8")); mins = max(mins, J.get("minutes", 0))
+                z = np.load(f[:-5] + ".npz")
+                for r in J["rows"]:
+                    if "clear" not in r or str(r["i"]) not in z.files:
+                        continue
+                    sc = r["clear"] - 10 * r.get("extra", 0) - 30 * max(0.0, r.get("over", 0.0))
+                    if r["i"] not in cand or sc > cand[r["i"]][0]:
+                        cand[r["i"]] = (sc, dict(r, pick=d.rstrip("/").split("/")[-1]), z[str(r["i"])])
+        rows = sorted((c[1] for c in cand.values()), key=lambda r: r["i"])
+        dub = {i: c[2] for i, c in cand.items()}
+        t_start -= mins * 60
+        from collections import Counter
+        D.log("лучшее из проходов: реплик", len(rows), "откуда:", dict(Counter(r["pick"] for r in rows)))
+    elif MODE == "merge":
         import glob
         mins = 0.0
         for f in sorted(glob.glob(os.path.join(pdir, "p*.json"))):
@@ -315,6 +335,9 @@ def main():
               "syl": round(float(np.median([r["syl"] for r in ok])), 1) if ok else None,
               "len_ratio": round(float(np.median([r["sec"] / max(0.3, r["ru_sec"]) for r in ok])), 2) if ok else None,
               "fast": [r["i"] for r in ok if r["speed"] > 1.25], "rows": rows}
+    if any("pick" in r for r in ok):
+        from collections import Counter
+        report["picks"] = dict(Counter(r.get("pick") for r in ok))
     if any("words" in r for r in ok):
         report["words_avg"] = round(float(np.mean([r.get("words", 0) for r in ok])), 1)
     json.dump(report, open(os.path.join(OUT, f"report_{LT}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
