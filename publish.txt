@@ -1,2 +1,2 @@
-# 26.11 11:58 — в keep новый сборник rTKjyRowWIE вместо zCv44IJcyuU; проба удаления старого
-delete --dry zCv44IJcyuU
+# 26.11 12:00 — удалить старый сборник 32–36 (перезалит: rTKjyRowWIE; «перезалил — удаляй», Михаил 25.11)
+delete zCv44IJcyuU
