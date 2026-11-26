@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-25 слот 3: mass_cars №9 https://youtube.com/shorts/IKhK1WD30Dw, за 43 с
+ВЫЛОЖЕНО 2026-11-26 слот 1: mass_cars №10 https://youtube.com/shorts/B5xutGPfsh8, за 45 с
 
 {
- "title": "1000 ta shar! Nexia, Onix, Cobalt… Qaysi mashina yutadi? Какая машина победит? №9 #shorts",
- "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Lacetti, Cobalt, Malibu, Epica, Tracker, Nexia, Gentra, Tahoe, Jiguli, Onix\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
+ "title": "1000 ta shar! Cobalt, Labo, Gentra… Qaysi mashina yutadi? Какая машина победит? №10 #shorts",
+ "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Spark, Nexia, Malibu, Epica, Captiva, Chery Tiggo, Labo, Gentra, Cobalt, Tico\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -18,26 +18,26 @@
   "mashina",
   "chevrolet",
   "1000 marbles",
-  "Lacetti",
-  "Cobalt",
+  "Spark",
+  "Nexia",
   "Malibu",
   "Epica"
  ]
 }
 
 --- журнал (время Ташкента) ---
-19:35:31 режим publish, событие workflow_dispatch
-19:35:31 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:35:44 комментарии: роликов просмотрено: 15, комментариев: 1
-19:35:44 «1000 ta shar» (cars) №9: Lacetti, Cobalt, Malibu, Epica, Tracker, Nexia, Gentra, Tahoe, Jiguli, Onix
-19:35:48 «1000 шарик»: действие 21.7 с, ролик 26.3 с; в кубке 327; победа Jiguli 39
-19:35:49 кадр 0 / 788
-19:35:53 кадр 150 / 788
-19:35:57 кадр 300 / 788
-19:36:00 кадр 450 / 788
-19:36:03 кадр 600 / 788
-19:36:08 кадр 750 / 788
-19:36:11 ролик готов: 26 с, 12 МБ, сборка 40 с; победил Jiguli, топ-3: Jiguli, Tracker, Lacetti, в кубке 327
-19:36:13 YouTube: https://youtube.com/shorts/IKhK1WD30Dw
-19:36:14 в плейлисте
-19:36:14 статус: public uploaded
+11:35:38 режим publish, событие workflow_dispatch
+11:35:38 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+11:35:50 комментарии: роликов просмотрено: 15, комментариев: 1
+11:35:51 «1000 ta shar» (cars) №10: Spark, Nexia, Malibu, Epica, Captiva, Chery Tiggo, Labo, Gentra, Cobalt, Tico
+11:35:56 «1000 шарик»: действие 22.4 с, ролик 27.0 с; в кубке 325; победа Gentra 43
+11:35:57 кадр 0 / 809
+11:36:01 кадр 150 / 809
+11:36:05 кадр 300 / 809
+11:36:08 кадр 450 / 809
+11:36:11 кадр 600 / 809
+11:36:16 кадр 750 / 809
+11:36:20 ролик готов: 27 с, 12 МБ, сборка 43 с; победил Gentra, топ-3: Gentra, Malibu, Labo, в кубке 325
+11:36:21 YouTube: https://youtube.com/shorts/B5xutGPfsh8
+11:36:22 в плейлисте
+11:36:22 статус: public uploaded

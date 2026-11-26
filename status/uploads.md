@@ -60,3 +60,4 @@
 | 2026-11-25 | 1 | mass_cars №8 | Cobalt | https://youtube.com/shorts/LTBkPR9-HjM | public |
 | 2026-11-25 | 2 | mass_cities №4 | Samarqand | https://youtube.com/shorts/Z__JB-NTuzM | public |
 | 2026-11-25 | 3 | mass_cars №9 | Jiguli | https://youtube.com/shorts/IKhK1WD30Dw | public |
+| 2026-11-26 | 1 | mass_cars №10 | Gentra | https://youtube.com/shorts/B5xutGPfsh8 | public |
