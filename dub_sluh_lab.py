@@ -123,6 +123,29 @@ def main():
             pieces += [nrm(out), D.silence(0.4), nrm(v[3.0]), D.silence(0.4), nrm(v[5.0]), D.silence(1.0)]
             D.log(row["i"], row["name"], {k: (row[k]["mos"], row[k]["end"]) for k in ("base", "rise3", "rise5")})
         mp3(pieces, f"lab_q_{LANG}")
+    elif WHAT == "qsrc":
+        # 27.11: подъём поверх готового звука (PSOLA) стоит 0,3–0,4 UTMOS — пробуем поднимать конец у родного голоса ДО перекраски:
+        # перекраска заново синтезирует звук и снимает «шов» PSOLA, а мелодию в основном переносит.
+        qs = [r for r in rows if S.kind(r["text"]) == "вопр-да/нет"]
+        for r in qs:
+            spec, pre = spec_for(r["name"], r.get("speed") or 1.0)
+            s = D.source(r["text"], spec)
+            if pre:
+                s = D.change(s, f0=pre.get("f0", 0), F=pre.get("F", 1.0), rng=pre.get("range", 1.0))
+            s = D.trim(s)
+            row = {"i": r["i"], "name": r["name"], "text": r["text"]}
+            outs = {}
+            for key, st in (("base", 0), ("src4", 4.0), ("src7", 7.0)):
+                ss = qrise(s, st) if st else s
+                raw = D.trim(D.vc(ss, refs[r["name"]]))
+                out, _ = D.match_pitch(raw, f0s[r["name"]], 1.5)
+                out = D.trim(out)
+                row[key] = score(out, r["text"], remb[r["name"]])
+                outs[key] = out
+            res.append(row)
+            pieces += [nrm(outs["base"]), D.silence(0.4), nrm(outs["src4"]), D.silence(0.4), nrm(outs["src7"]), D.silence(1.0)]
+            D.log(row["i"], row["name"], {k: (row[k]["mos"], row[k]["end"]) for k in ("base", "src4", "src7")})
+        mp3(pieces, f"lab_qsrc_{LANG}")
     elif WHAT == "pik":
         pk = [r for r in rows if r["name"] == "Пик"]
         hero = S.G["heroes"]["Пик"]
@@ -174,10 +197,10 @@ def main():
               open(os.path.join(OUT, f"lab_{WHAT}_{LANG}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     # коротко
     M = [f"# Проба «{WHAT}» — {NAME} {LANG}", ""]
-    if WHAT == "q":
-        for k in ("base", "rise3", "rise5"):
+    if WHAT in ("q", "qsrc"):
+        for k in (("base", "rise3", "rise5") if WHAT == "q" else ("base", "src4", "src7")):
             M.append(f"- {k}: UTMOS {np.mean([r[k]['mos'] for r in res]):.2f}, сходство {np.mean([r[k]['sim'] for r in res]):.3f}, понято {np.mean([r[k]['clear'] for r in res]):.1f}, конец {np.mean([r[k]['end'] or 0 for r in res]):+.1f} пт")
-        M.append("\nПары: как сейчас → +3 пт → +5 пт (lab_q_*.mp3)")
+        M.append("\nПары: как сейчас → +3/+4 пт → +5/+7 пт (lab_q_*.mp3 — поверх итога; lab_qsrc_*.mp3 — у источника до перекраски)")
     elif WHAT == "pik":
         M += [f"- {x['variant']}: UTMOS {x['mos']}, сходство с Пиком {x['sim']}, понято {x['clear']}, подгонка высоты {x['shift']} пт" for x in res if "variant" in x]
         M.append(f"\nПары (lab_pik_*.mp3): {res[-1]['pairs_order']}")
