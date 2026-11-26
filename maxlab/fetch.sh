@@ -34,3 +34,29 @@ sort -u $OUT/urls.txt | while read -r u n; do [ -n "$u" ] || continue
   f="$OUT/samples/$(basename "$n")"; [ -f "$f" ] && continue
   curl -fsSL -m 120 "$u" -o "$f" && log "образец $n $(wc -c <"$f")" || log "нет образца $u"; done
 ls -la $OUT/samples >> $OUT/log.txt
+# 3) прямые ссылки на тестовые .max из коммитов автора дополнения
+for u in \
+ "$B/blender/blender-addons-contrib/raw/commit/d639eb49d62fcb8e67e3964e0606d5956099f9de/Civilian_Boxes_1.max" \
+ "$B/NRGSille/blender-addons-contrib/raw/commit/d639eb49d62fcb8e67e3964e0606d5956099f9de/Civilian_Boxes_1.max" \
+ "$B/NRGSille/blender-addons/raw/branch/main/Civilian_Boxes_1.max" \
+ "$B/NRGSille/blender-addons-contrib/raw/branch/main/Civilian_Boxes_1.max"; do
+  f="$OUT/samples/$(echo "$u" | md5sum | cut -c1-6)_$(basename "$u")"
+  curl -fsSL -m 120 "$u" -o "$f" && log "образец ok $u $(wc -c <"$f")" || { rm -f "$f"; log "нет $u"; }
+done
+# коммиты PR: список файлов через страницу коммита
+for c in d639eb49d62fcb8e67e3964e0606d5956099f9de 2bcb045779b1b64810b0c0ea9708873804267f79; do
+  for r in blender/blender-addons-contrib NRGSille/blender-addons-contrib NRGSille/blender-addons; do
+    curl -fsSL -m 60 "$B/api/v1/repos/$r/git/commits/$c" -o /tmp/c.json && python3 -c "
+import json;d=json.load(open('/tmp/c.json'));print('commit', '$r', [f.get('filename') for f in d.get('files',[])])" >> $OUT/log.txt 2>&1 && break
+  done
+done
+# GitHub: маленькие .max в открытых репозиториях (поиск кода, токен Actions)
+if [ -n "${GH_TOKEN:-}" ]; then
+  gh api -X GET search/code -f q='extension:max size:<60000' -f per_page=30 --jq '.items[] | [.repository.full_name, .path, .sha] | @tsv' > $OUT/gh_max.tsv 2>>$OUT/log.txt || true
+  head -30 $OUT/gh_max.tsv >> $OUT/log.txt
+  head -8 $OUT/gh_max.tsv | while IFS=$'\t' read -r repo path sha; do
+    f="$OUT/samples/gh_$(echo "$repo" | tr '/' '_')_$(basename "$path")"
+    gh api "repos/$repo/git/blobs/$sha" --jq .content 2>/dev/null | base64 -d > "$f" 2>/dev/null && [ -s "$f" ] && log "gh образец $repo/$path $(wc -c <"$f")" || rm -f "$f"
+  done
+fi
+ls -la $OUT/samples >> $OUT/log.txt
