@@ -1,0 +1,8 @@
+title: racing car engine sound loops | OpenGameArt.org
+licenses: 
+https://opengameart.org/sites/default/files/loop_0.wav
+https://opengameart.org/sites/default/files/loop_1_0.wav
+https://opengameart.org/sites/default/files/loop_2_0.wav
+https://opengameart.org/sites/default/files/loop_3_0.wav
+https://opengameart.org/sites/default/files/loop_4_0.wav
+https://opengameart.org/sites/default/files/loop_5_0.wav

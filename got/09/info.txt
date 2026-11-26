@@ -1,0 +1,3 @@
+title: 50 RPG sound effects | OpenGameArt.org
+licenses: 
+https://opengameart.org/sites/default/files/RPGsounds_Kenney.zip
