@@ -869,7 +869,8 @@ class DzLeads:
     def mails_delivered(self, lid: int) -> int:
         """Сколько писем дошло: письма до последнего возврата «не доставлено» не считаем (их не получили)."""
         c = self.s.c()
-        r = c.execute("SELECT MAX(id) FROM dz_touches WHERE lead_id=? AND channel='note' AND by_name='CRM' AND text LIKE '%не доставлено%'",
+        r = c.execute("SELECT MAX(id) FROM dz_touches WHERE lead_id=? AND channel='note' AND by_name IN ('CRM', 'Claude') "
+                      "AND text LIKE '%не доставлено%'",
                       (lid,)).fetchone()
         last_bounce = int(r[0] or 0)
         return int(c.execute("SELECT COUNT(*) FROM dz_touches WHERE lead_id=? AND channel='email' AND id>?",

@@ -2382,6 +2382,35 @@ class TestDzClaude(TestPochta):
         self.assertEqual(self.lead("Д03")["status"], "sent")
         self.assertEqual(self.dz.mails_delivered(int(self.lead("Д03")["id"])), 1)
 
+    def test_bounce_goes_to_reply_address(self) -> None:
+        """26.11: возврат на письмо от mikhail@ ушёл в личный ящик — теперь конверт (MAIL FROM) = адрес для ответов."""
+        import smtplib
+        import app as appmod
+        calls = []
+
+        class FakeSMTP:
+            def __init__(self, *a, **k): pass
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def send_message(self, m, from_addr=None): calls.append((m["From"], from_addr))
+
+        orig = smtplib.SMTP
+        smtplib.SMTP = FakeSMTP
+        try:
+            real = getattr(self, "orig", appmod.send_mail)                    # в TestOutbox send_mail подменён
+            real("x@studio.ru", "Тема", "Текст", sender="Михаил — Наш декор <mikhail@nashdekor.ru>", reply_to="info@nashdekor.ru")
+            real("client@mail.ru", "Заказ", "Текст", sender="zakaz@nashdekor.ru")
+        finally:
+            smtplib.SMTP = orig
+        self.assertEqual(calls[0][1], "info@nashdekor.ru")
+        self.assertIsNone(calls[1][1])
+        # Claude сам отметил возврат (письмо не дошло) — повторное письмо 1 на рабочую почту не считается вторым
+        d3 = self.lead("Д03")
+        self.dz.touch(int(d3["id"]), "email", "От mikhail@: письмо 1", "Claude")
+        self.assertEqual(self.dz.mails_delivered(int(d3["id"])), 1)
+        self.dz.touch(int(d3["id"]), "note", "Claude: письмо на hello@liniya-studio.ru не доставлено (возврат)", "Claude")
+        self.assertEqual(self.dz.mails_delivered(int(d3["id"])), 0)
+
     def test_several_reader_keys(self) -> None:
         """24.11: каждая работа Claude держит свой ключ в readers/*.pub — сеансы не перебивают READER.pub друг другу."""
         from cryptography.hazmat.primitives import serialization

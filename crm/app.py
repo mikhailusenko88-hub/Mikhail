@@ -2652,9 +2652,16 @@ def send_mail(to: str, subject: str, body: str, sender: str = "", reply_to: str 
     for fname, data, mime in attachments or []:
         maintype, _, subtype = mime.partition("/")
         m.add_attachment(data, maintype=maintype, subtype=subtype or "octet-stream", filename=fname)
+    # возвраты «не доставлено» — туда же, куда ответы (info@): их видит CRM. Без этого возврат на письмо от mikhail@
+    # уходил в личный ящик mikhail@, CRM его не видела (26.11, Люксорта)
+    from email.utils import parseaddr
+    bounce = parseaddr(reply_to)[1] if reply_to else ""
     try:
         with smtplib.SMTP("127.0.0.1", 25, timeout=15) as smtp:
-            smtp.send_message(m)
+            if bounce and "@" in bounce:
+                smtp.send_message(m, from_addr=bounce)
+            else:
+                smtp.send_message(m)
         return True
     except Exception:  # noqa: BLE001
         log.warning("не удалось отправить письмо")
