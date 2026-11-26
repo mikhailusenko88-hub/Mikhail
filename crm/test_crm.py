@@ -2368,6 +2368,19 @@ class TestDzClaude(TestPochta):
                                dz={"code": "Д03", "kind": "m2"}, **{"from": "mikhail"})
         self.put(env2); self.app.extensions["outbox_run"]()
         self.assertEqual(self.c.get(f"/api/outbox/status/{p2['id']}").get_json()["status"], "skipped")
+        # нашли рабочую почту на сайте — Claude ставит её в карточку и шлёт письмо 1 заново (прежнее не дошло)
+        import uuid
+        self.put_dz({"id": str(uuid.uuid4()), "kind": "dz", "items": [],
+                     "marks": [{"code": "Д03", "email": "manager@liniya-studio.ru", "touch": "Claude: рабочая почта — с сайта, /contacts"}]})
+        self.app.extensions["outbox_run"]()
+        self.assertEqual(self.lead("Д03")["email"], "manager@liniya-studio.ru")
+        n_sent = len(self.sent)
+        p3, env3 = self.letter(to="manager@liniya-studio.ru", subject="Рейки и молдинги", body="Добрый день!", attachments=[],
+                               dz={"code": "Д03", "kind": "m1"}, **{"from": "mikhail"})
+        self.put(env3); self.app.extensions["outbox_run"]()
+        self.assertEqual(len(self.sent), n_sent + 1)
+        self.assertEqual(self.lead("Д03")["status"], "sent")
+        self.assertEqual(self.dz.mails_delivered(int(self.lead("Д03")["id"])), 1)
 
     def test_several_reader_keys(self) -> None:
         """24.11: каждая работа Claude держит свой ключ в readers/*.pub — сеансы не перебивают READER.pub друг другу."""

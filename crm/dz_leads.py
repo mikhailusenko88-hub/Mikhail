@@ -847,8 +847,7 @@ class DzLeads:
             return f"адрес не совпадает с карточкой ({row['email'] or 'почты нет'})"
         if row["status"] in CLOSED:
             return "карточка закрыта: " + STATUS_NAMES[row["status"]].lower()
-        mails = int(self.s.c().execute("SELECT COUNT(*) FROM dz_touches WHERE lead_id=? AND channel='email'",
-                                       (row["id"],)).fetchone()[0])
+        mails = self.mails_delivered(int(row["id"]))
         kind = dz.get("kind")
         if kind == "m1" and (mails or row["status"] not in ("new", "found", "nocall", "sent")):
             return "письмо 1 уже было или дизайнер уже ответил"
@@ -866,6 +865,15 @@ class DzLeads:
         if row:
             self.after_mail(int(row["id"]), str(dz.get("kind") or "m1"), m["subject"], m["body"], "Claude",
                             sender=f"{m.get('box') or 'mikhail'}@{self.domain}")
+
+    def mails_delivered(self, lid: int) -> int:
+        """Сколько писем дошло: письма до последнего возврата «не доставлено» не считаем (их не получили)."""
+        c = self.s.c()
+        r = c.execute("SELECT MAX(id) FROM dz_touches WHERE lead_id=? AND channel='note' AND by_name='CRM' AND text LIKE '%не доставлено%'",
+                      (lid,)).fetchone()
+        last_bounce = int(r[0] or 0)
+        return int(c.execute("SELECT COUNT(*) FROM dz_touches WHERE lead_id=? AND channel='email' AND id>?",
+                             (lid, last_bounce)).fetchone()[0])
 
     def bounced(self, email: str, when: str) -> str:
         """Письмо дизайнеру вернулось «не доставлено»: почту из карточки убрать (в истории — какая была), шаг — узнать другую.
@@ -900,6 +908,8 @@ class DzLeads:
             row = self.by_code(str(r.get("code") or "")) if isinstance(r, dict) else None
             if not row:
                 continue
+            if isinstance(r.get("email"), str) and "@" in r["email"]:      # рабочая почта вместо вернувшейся (с сайта)
+                self.update(int(row["id"]), "Claude", email=r["email"].strip())
             if (r.get("touch") or "").strip():
                 ch = str(r.get("channel") or "note")
                 self.touch(int(row["id"]), ch if ch in CHANNEL_NAMES else "note", str(r["touch"])[:2000], "Claude")
