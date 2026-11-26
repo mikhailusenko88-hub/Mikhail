@@ -17,7 +17,7 @@ jobs:
       - name: Шрифты и Pillow
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq fonts-inter fonts-noto-core fonts-noto-extra fonts-freefont-ttf
-          pip install -q pillow
+          pip install -q pillow numpy
           python3 -c "from PIL import features; print('raqm', features.check('raqm'))"
           fc-list | grep -i "kufi\|Inter-Black\|InterDisplay-Black\|Inter.*Black" | head -8
       - name: Скрипты обложек (ветка studio) и элементы сборки
