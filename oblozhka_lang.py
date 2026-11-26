@@ -60,7 +60,10 @@ C.pill = lambda img, t: _pill(img, series)
 K = 1.3 if lang == 'hi' else 1.0   # буквы деванагари ниже латиницы — свиток крупнее
 C.banner = lambda img, lines, where, maxw=.52, base=None: _banner(img, text.split('|'), where, maxw, base and base * K)
 if src.endswith('.json'):
-    A.make(json.load(open(src, encoding='utf-8')), out)
+    plan = json.load(open(src, encoding='utf-8'))
+    if not os.path.isdir(plan.get('el', '.')):   # в плане путь из прошлого сеанса (/home/claude/…) — взять элементы сборки рядом
+        plan['el'] = 'el'
+    A.make(plan, out)
 else:   # скрипт обложки серии (covers/<N>/vN.py): ему — свои аргументы
     sys.argv = [src] + sys.argv[6:]
     runpy.run_path(src, run_name='__main__')
