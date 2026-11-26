@@ -100,7 +100,9 @@ def register(app: Flask, store: Any, docs: Docs, h: dict[str, Any]) -> None:
         block = "\n\n".join(lines)
         body = text.replace(MARK, block) if MARK in text else text + "\n\n" + block
         ch = app.extensions["mail_channel"]() if "mail_channel" in app.extensions else ""
-        body += f"\n\nС уважением, {who()}, «Наш декор»\nhttps://{dom} · info@{dom}" + (f"\nКанал в MAX: {ch}" if ch else "")
+        ph = app.extensions["my_phone"]() if "my_phone" in app.extensions else ""   # свой телефон того, кто отправляет
+        body += (f"\n\nС уважением, {who()}, «Наш декор»\nhttps://{dom} · info@{dom}" + (f" · {ph}" if ph else "")
+                 + (f"\nКанал в MAX: {ch}" if ch else ""))
         if not send_mail(email, subject, body, sender=f"Наш декор <info@{dom}>", reply_to=f"info@{dom}"):
             docs.links_off(tokens)
             flash("Письмо не ушло — почтовый сервер не принял. Попробуйте позже или скопируйте ссылки и отправьте в мессенджере.", "err")

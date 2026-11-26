@@ -9,7 +9,7 @@
 <form class="grid2" method="post" action="{{ url_for('dz_texts') }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label class="f">Телефон в подписи — Михаил<input name="phone" value="{{ phone }}" inputmode="tel"></label>
-  <label class="f">Телефон в подписи — Юлия (пусто — как у Михаила)<input name="phone_yulia" value="{{ phone_yulia }}" inputmode="tel"></label>
+  <label class="f">Телефон в подписи — Юлия (пусто — письма Юлии уйдут без телефона; она может вписать свой сама: Настройки → Мои контакты)<input name="phone_yulia" value="{{ phone_yulia }}" inputmode="tel"></label>
   <label class="f">Писем из базы в сутки (новый домен — до 15)<input name="daily" value="{{ daily }}" inputmode="numeric"></label>
   {% for k, title, text in tpls %}
   <label class="f span2">{{ title }}{% if k.endswith('subject') %}<input name="{{ k }}" value="{{ text }}" maxlength="150">{% else %}<textarea name="{{ k }}" rows="{{ 12 if k in ('m1','call') else 7 }}">{{ text }}</textarea>{% endif %}</label>

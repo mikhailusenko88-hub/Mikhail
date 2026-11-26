@@ -204,7 +204,7 @@ TEMPLATES: dict[str, tuple[str, str]] = {
 Канал в MAX: {макс}"""),
     "msg": ("Сообщение в Telegram / WhatsApp / MAX", """Здравствуйте! Это «Наш декор» из Петербурга — реечные панели, плинтусы и молдинги под покраску и под дерево. Работаем с дизайнерами: бесплатно присылаем 3D-модели всех профилей (3ds Max, SketchUp, ArchiCAD, Revit, Blender), считаем количество по проекту, для студий — свои условия. Каталог с 3D, ценами и расчётом стены: {сайт}
 Прислать вам модели? Куда удобнее — сюда или на почту?"""),
-    "call": ("Звонок — как говорить", """1. «Здравствуйте! Меня зовут Юлия, магазин «Наш декор», Санкт-Петербург. Мы продаём рейки, молдинги и плинтусы под покраску и под дерево. Подскажите, кто у вас подбирает отделочные материалы для проектов?»
+    "call": ("Звонок — как говорить", """1. «Здравствуйте! Меня зовут {я}, магазин «Наш декор», Санкт-Петербург. Мы продаём рейки, молдинги и плинтусы под покраску и под дерево. Подскажите, кто у вас подбирает отделочные материалы для проектов?»
 2. Когда соединили: «Мы работаем с дизайнерами: бесплатно присылаем 3D-модели всех профилей и считаем количество по проекту. Весь каталог с 3D и ценами — на сайте nashdekor.ru. Для студий есть свои условия — расскажу, если интересно.»
 3. «Куда прислать ссылку на сайт, модели и каталог — на почту или в Telegram?» → внизу «Итог звонка: дали контакт».
 4. «Не нужно» → «Отказ», больше не звоним.
@@ -599,13 +599,26 @@ class DzLeads:
             text = (text or "").replace("\r\n", "\n").strip()[:6000]
             self.s.set_setting("dz_tpl_" + key, "" if text == TEMPLATES[key][1] else text)
 
+    def phone_key(self, sender: str = "mikhail") -> str:
+        """Где лежит телефон отправителя: dz_phone_<отправитель>; у Михаила — dz_phone, пока своего dz_phone_mikhail нет."""
+        sender = sender if sender in SENDERS else "mikhail"
+        if sender == "mikhail" and not self.s.setting("dz_phone_mikhail", ""):
+            return "dz_phone"
+        return f"dz_phone_{sender}"
+
     def phone(self, sender: str = "mikhail") -> str:
-        """Телефон в подписи: свой у каждого отправителя (настройка dz_phone_<логин>), иначе общий dz_phone."""
-        return self.s.setting(f"dz_phone_{sender}", "") or self.s.setting("dz_phone", "")
+        """Телефон в подписи — только свой: под именем Юлии телефон Михаила не подставляем (решение Михаила 26.11).
+        Нет своего — письмо уходит без телефона, карточка просит его вписать (Настройки → Мои контакты)."""
+        return self.s.setting(self.phone_key(sender), "")
 
     @staticmethod
-    def sender_for(login: str) -> str:
-        return login if login in SENDERS else "mikhail"
+    def sender_for(login: str, name: str = "") -> str:
+        """От чьего имени пишет вошедший: логин из SENDERS, иначе по имени (Юлия, Юля → yulia), иначе Михаил."""
+        if login in SENDERS:
+            return login
+        if (name or "").strip().lower().startswith(("юл", "yul", "jul", "iul")):
+            return "yulia"
+        return "mikhail"
 
     def sender_addr(self, sender: str) -> str:
         sd = SENDERS.get(sender) or SENDERS["mikhail"]
@@ -637,13 +650,17 @@ class DzLeads:
         sd = SENDERS.get(sender) or SENDERS["mikhail"]
         nm = first_name(lead["person"]) if lead is not None else ""
         subj = self.tpl("m1_subject")
+        ph = self.phone(sender)
+        t = self.tpl(key)
+        if not ph:                      # своего телефона нет — убрать его место без висящей запятой и пустой строки
+            t = re.sub(r"[ \t]*[,·][ \t]*\{телефон\}", "", t)
+            t = re.sub(r"(?m)^[ \t]*\{телефон\}[ \t]*(?:\n|$)", "", t)
         vals = {"{строка}": (lead["line"] or "").strip() if lead is not None else "",
                 "{раздел}": self.section(lead) if lead is not None else self.site_url(),
-                "{сайт}": self.site_url(), "{телефон}": self.phone(sender), "{имя}": (", " + nm) if nm else "", "{тема}": subj,
+                "{сайт}": self.site_url(), "{телефон}": ph, "{имя}": (", " + nm) if nm else "", "{тема}": subj,
                 "{я}": sd["name"], "{условия}": sd["terms"], "{звонок}": sd["call"],
                 "{кому}": self.whom(lead), "{макс}": self.s.setting("dz_max", MAX_CHANNEL) or MAX_CHANNEL, "{домен}": self.domain,
                 "{бот}": self.bot_link(int(lead["id"])) if lead is not None else self.bot_url()}
-        t = self.tpl(key)
         for k, v in vals.items():
             t = t.replace(k, v)
         t = re.sub(r"[ \t]+\n", "\n", t)

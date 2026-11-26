@@ -579,6 +579,35 @@ class TestApi(Base):
         self.assertEqual((d["source"], d["kind"], d["discount"], d["phone"]), ("site", "d", 10, "+79991112233"))
         self.assertTrue(d["consent_at"])
 
+    def test_letters_from_yulia_carry_her_phone(self) -> None:
+        """26.11: под логином Юлии в письмах клиентам — её телефон, не Михаила (и в шаблоне, и через {телефон})."""
+        did = self.lead(email="ira@example.com", calc="Товар: A912 — 10 шт").get_json()["id"]
+        self.login()
+        self.post(f"/deals/{did}/lines", {"article": "A912", "qty": "10"})
+        self.store.set_setting("dz_phone", "+7 921 000-11-22")
+        self.post("/k/templates/calc", {"subject": "Расчёт №{номер}", "body": "Привет, {имя}!\n\n{состав}\n\nЗвоните: 8 (921) 000-11-22\nМой: {телефон}\n\n{подпись}"})
+        sent = []
+        orig = crm_app.send_mail
+        crm_app.send_mail = lambda to, subject, body, sender="", reply_to="", **kw: sent.append(body) or True
+        try:
+            self.post(f"/deals/{did}/send-calc", {"email": "ira@example.com"})
+            self.assertIn("Звоните: 8 (921) 000-11-22", sent[-1])            # своего телефона у Юлии нет — текст как был
+            self.post("/settings/me", {"phone": "+7 911 555-44-33"})
+            self.post(f"/deals/{did}/send-calc", {"email": "ira@example.com"})
+            self.assertIn("Звоните: +7 911 555-44-33", sent[-1]); self.assertIn("Мой: +7 911 555-44-33", sent[-1])
+            self.assertNotIn("000-11-22", sent[-1])
+            self.assertEqual(self.post("/settings/me", {"phone": "12-34"}).status_code, 302)   # мало цифр — не сохраняем
+            self.assertEqual(self.store.setting("dz_phone_yulia", ""), "+7 911 555-44-33")
+            boss = self.app.test_client()
+            self.login("mikhail", "Secret-pass-2", client=boss)
+            self.post(f"/deals/{did}/send-calc", {"email": "ira@example.com"}, client=boss)
+            self.assertIn("Звоните: 8 (921) 000-11-22", sent[-1]); self.assertIn("Мой: +7 921 000-11-22", sent[-1])
+        finally:
+            crm_app.send_mail = orig
+        dz = self.app.extensions["dz"]
+        self.assertEqual(dz.sender_for("julia2", "Юля Усенко"), "yulia")              # логин не «yulia» — узнаём по имени
+        self.assertEqual(dz.sender_for("ivan", "Иван"), "mikhail")
+
     def test_lead_with_email_and_send_calc(self) -> None:
         r = self.lead(email="elena@example.com", calc="Товар: A907 — 12 шт")
         did = r.get_json()["id"]
@@ -2728,6 +2757,7 @@ class TestDesignerDocs(Base):
             self.assertEqual(sent, [])
             r = self.post("/designers/docs/send", {"email": "hello@arka.example"})                  # ничего не отмечено
             self.assertEqual(sent, [])
+            self.store.set_setting("dz_phone", "+7 921 000-11-22"); self.store.set_setting("dz_phone_yulia", "+7 911 555-44-33")
             r = self.c.post("/designers/docs/send", data={"csrf": self.csrf(), "email": "Hello@Arka.example", "ids": list(ids.values()),
                                                            "subject": "", "text": "Добрый день!\n\n{ссылки}\n\nЖдём вопросы."})
             self.assertTrue(r.headers["Location"].endswith("/designers#sent"))
@@ -2740,6 +2770,7 @@ class TestDesignerDocs(Base):
         self.assertIn("Добрый день!", body); self.assertIn("Ждём вопросы.", body); self.assertNotIn("{ссылки}", body)
         self.assertIn("3D-модели для SketchUp (DAE)", body); self.assertIn("Каталог «Наш декор»", body)
         self.assertIn("С уважением, Юлия, «Наш декор»", body); self.assertNotIn("бесплатно", (subj + body).lower())
+        self.assertIn("info@nashdekor.ru · +7 911 555-44-33", body); self.assertNotIn("000-11-22", body)   # телефон того, кто отправил
         personal = self.links(body)
         self.assertEqual(len(personal), 2)
         common = self.links(self.c.get("/designers").get_data(as_text=True))
@@ -3923,7 +3954,16 @@ class TestDzLeads(Base):
         self.store.set_setting("dz_phone", "+7 900 000-00-00")
         card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
         self.assertIn("Письмо 1", card); self.assertIn("Здравствуйте, Татьяна!", card)
-        self.assertIn("Молдинги: https://nashdekor.ru/catalog/moldingi/", card); self.assertIn("+7 900 000-00-00", card)
+        self.assertIn("Молдинги: https://nashdekor.ru/catalog/moldingi/", card)
+        # вошла Юлия, своего телефона нет — телефон Михаила под её именем не встаёт, карточка просит вписать свой (26.11)
+        self.assertNotIn("+7 900 000-00-00", card); self.assertIn("В подписи нет телефона", card)
+        self.assertIn("\nЮлия\n«Наш декор» (ИП Усенко Ю. В.), Санкт-Петербург\nhttps://nashdekor.ru</textarea>", card)
+        r = self.post("/settings/me", {"phone": "+7 911 555-44-33"})
+        self.assertEqual(r.status_code, 302); self.assertEqual(self.store.setting("dz_phone_yulia", ""), "+7 911 555-44-33")
+        self.assertIn("Мои контакты в письмах", self.c.get("/settings").get_data(as_text=True))
+        card = self.c.get(f"/dz/{lid}").get_data(as_text=True)
+        self.assertIn("+7 911 555-44-33", card); self.assertNotIn("В подписи нет телефона", card)
+        self.assertIn("+7 900 000-00-00", self.c.get(f"/dz/{lid}?from=mikhail").get_data(as_text=True))   # у Михаила — его
         kind, subj, body = self.dz.mail_draft(self.dz.get(lid), "yulia")
         r = self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body + "\nPS"})
         self.assertEqual(r.status_code, 302)
@@ -4053,6 +4093,10 @@ class TestDzLeads(Base):
         self.assertIn("когда мне позвонить вам", self.dz.render("reply", row, "yulia"))
         self.assertIn("когда Михаилу позвонить вам", self.dz.render("reply", row, "mikhail"))
         self.assertNotIn("Михаил расскажет", self.dz.render("call", row))
+        self.assertIn("Меня зовут Михаил", self.dz.render("call", row, "mikhail"))                 # сценарий звонка — от того, кто звонит
+        self.assertIn("Меня зовут Юлия", self.dz.render("call", row, "yulia"))
+        self.store.set_setting("dz_phone_yulia", "")
+        self.assertTrue(self.dz.render("m2", row, "yulia").splitlines()[-2].endswith("Юлия, «Наш декор»"))   # без висящей запятой
         kind, subj, body = self.dz.mail_draft(self.dz.get(lid), "mikhail")
         self.post(f"/dz/{lid}/mail", {"kind": kind, "subject": subj, "text": body, "sender": "mikhail"})
         self.assertEqual(self.sent[-1][3]["sender"], "Михаил — Наш декор <mikhail@nashdekor.ru>")

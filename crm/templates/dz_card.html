@@ -71,6 +71,7 @@
   <div class="span2"><span class="d">От кого:</span>
     <nav class="chips" aria-label="От кого письмо">{% for k, sd in SENDERS.items() %}<a class="chip" href="{{ url_for('dz_card', lid=d['id'], **{'from': k}) }}#mail" {% if sender==k %}aria-current="true"{% endif %}>{{ sd['name'] }}</a>{% endfor %}</nav></div>
   <p class="d span2">Письмо уйдёт от: {{ mail_from }} · ответ придёт в «Почту» (info@). Сегодня из базы отправлено {{ sent_today }} из {{ limit }}.</p>
+  {% if no_phone %}<div class="flash err span2">В подписи нет телефона — {{ SENDERS[sender]['name'] }} ещё не вписал{% if sender=='yulia' %}а{% endif %} свой. {% if sender==me_sender %}Впишите его: <a href="{{ url_for('settings_view') }}#me">Настройки → Мои контакты</a>, и он встанет во все письма под вашим логином.{% else %}Его вписывают в «Настройки → Мои контакты» под своим логином.{% endif %} Без него письмо уйдёт без телефона.</div>{% endif %}
   <label class="f span2">Тема<input name="subject" maxlength="150" value="{{ mail_subject }}"></label>
   <label class="f span2">Текст — прочитайте и поправьте личную строку, если нужно<textarea name="text" rows="18">{{ mail_body }}</textarea></label>
   {% if not d['line'] and mail_kind=='m1' %}<p class="d span2">Личной строки нет — допишите в «Данные → Личная строка», иначе письмо получится общим.</p>{% endif %}

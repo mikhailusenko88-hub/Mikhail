@@ -17,6 +17,15 @@
     <button class="btn-g">Отключить</button></form>{% endfor %}
 </div>
 {% endif %}
+{% if me_contacts %}
+<h2 id="me">Мои контакты в письмах</h2>
+<form class="panel pad grid2" method="post" action="{{ url_for('settings_me') }}">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <p class="d span2">Под вашим логином письма подписываются вашим именем — <b>{{ me_contacts['name'] }}</b> — и этим телефоном: письма дизайнерам (первое, напоминание, ответ), текст для мессенджера, сценарий звонка, письмо с 3D-моделями и каталогом, а в письмах клиентам ваш телефон встаёт на место телефона Михаила. Пусто — письма уйдут без телефона.</p>
+  <label class="f">Мой телефон (WhatsApp, Telegram)<input name="phone" value="{{ me_contacts['phone'] }}" inputmode="tel" autocomplete="tel" placeholder="+7 …"></label>
+  <div class="span2"><button class="btn-p">Сохранить</button></div>
+</form>
+{% endif %}
 <h2>Мой пароль</h2>
 <form class="panel pad grid2" method="post" action="{{ url_for('settings_password') }}">
   <input type="hidden" name="csrf" value="{{ csrf }}">

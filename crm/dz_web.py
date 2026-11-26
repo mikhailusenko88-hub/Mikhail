@@ -101,7 +101,7 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
     def dz_card(lid: int) -> Any:
         row = lead_or_404(lid)
         sender = request.args.get("from", "")
-        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"])
+        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"], g.user["name"])
         kind, subj, body = dz.mail_draft(row, sender)
         letters = []
         if pochta is not None and row["email"] and g.user["role"] == "admin":
@@ -113,7 +113,8 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
         client = store.client(int(row["client_id"])) if row["client_id"] else None
         return render_template("dz_card.html", d=row, links=dz.links(row), last=dz.last_out(lid).get(lid),
                                prio_about=dz.prio_about(row), mail_kind=kind, mail_subject=subj, mail_body=body,
-                               msg=dz.render("msg", row), call_script=dz.render("call", row), touches=dz.touches(lid),
+                               msg=dz.render("msg", row, sender), call_script=dz.render("call", row, sender), touches=dz.touches(lid),
+                               no_phone=not dz.phone(sender), me_sender=dz.sender_for(g.user["login"], g.user["name"]),
                                letters=letters, client=client, gmail=dz.gmail(row), sent_today=dz.sent_today(),
                                limit=dz.daily_limit(), MSG_CHANNELS=MSG_CHANNELS, mail_from=dz.sender_addr(sender),
                                sender=sender, SENDERS=SENDERS)
@@ -162,7 +163,7 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
                   "чтобы не попасть в спам).", "err")
             return back(lid, "mail")
         sender = request.form.get("sender", "")
-        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"])
+        sender = sender if sender in SENDERS else dz.sender_for(g.user["login"], g.user["name"])
         ok = send_mail(email, subject, body, sender=dz.sender_addr(sender), reply_to=f"info@{dom}")
         if not ok:
             flash("Письмо не ушло — почтовый сервер не принял. Попробуйте позже или напишите в мессенджер.", "err")
@@ -247,14 +248,14 @@ def register(app: Flask, store: Any, dz: DzLeads, h: dict[str, Any]) -> None:
             for k in TEMPLATES:
                 if k in request.form:
                     dz.set_tpl(k, request.form.get(k, ""))
-            store.set_setting("dz_phone", re.sub(r"[^\d+()\- ]", "", request.form.get("phone", ""))[:30])
-            store.set_setting("dz_phone_yulia", re.sub(r"[^\d+()\- ]", "", request.form.get("phone_yulia", ""))[:30])
+            store.set_setting(dz.phone_key("mikhail"), re.sub(r"[^\d+()\- ]", "", request.form.get("phone", ""))[:30].strip())
+            store.set_setting("dz_phone_yulia", re.sub(r"[^\d+()\- ]", "", request.form.get("phone_yulia", ""))[:30].strip())
             try:
                 store.set_setting("dz_mail_day", str(max(1, min(60, int(request.form.get("daily", "15"))))))
             except ValueError:
                 pass
             flash("Тексты сохранены.", "ok")
             return redirect(url_for("dz_texts"))
-        return render_template("dz_texts.html", tpls=[(k, TEMPLATES[k][0], dz.tpl(k)) for k in TEMPLATES], phone=dz.s.setting("dz_phone", ""),
+        return render_template("dz_texts.html", tpls=[(k, TEMPLATES[k][0], dz.tpl(k)) for k in TEMPLATES], phone=dz.phone("mikhail"),
                                phone_yulia=dz.s.setting("dz_phone_yulia", ""),
                                daily=dz.daily_limit())

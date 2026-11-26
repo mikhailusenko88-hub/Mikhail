@@ -24,8 +24,8 @@ from datetime import datetime, timedelta
 from email.message import EmailMessage
 from typing import Any
 
-from flask import (Flask, Request, Response, abort, current_app, flash, g, jsonify, redirect, render_template, request,
-                   send_file, session, url_for)
+from flask import (Flask, Request, Response, abort, current_app, flash, g, has_request_context, jsonify, redirect,
+                   render_template, request, send_file, session, url_for)
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -43,7 +43,7 @@ from pochta import INLINE_OK, Pochta, fmt_ts, size_h
 from docs import MAX_FILE as DOC_MAX, Docs, clean_folder, fmt_date
 from avito_katalog import register as register_avito_katalog
 from designer_docs import register as register_designer_docs
-from dz_leads import DzLeads
+from dz_leads import SENDERS as DZ_SENDERS, DzLeads
 from dz_web import register as register_dz
 from invoice import Invoices
 from push import WebPush
@@ -549,17 +549,39 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 f"Сайт: https://{dom}"] + ([f"Наш канал в MAX — новинки и фото в интерьере: {ch}"] if ch else []) + [
                 "", "С уважением, " + (f"{manager}, " if manager else "") + "«Наш декор»"]
 
+    def my_phone() -> str:
+        """Телефон вошедшего для подписи (Настройки → Мои контакты); вне запроса (cron) — телефон Михаила."""
+        if not has_request_context() or not getattr(g, "user", None):
+            return dz.phone("mikhail")
+        return dz.phone(dz.sender_for(g.user["login"], g.user["name"]))
+
+    def as_me(text: str) -> str:
+        """Письмо клиенту под логином Юлии: телефон Михаила в тексте (например, вписан в шаблон) меняется на её
+        (решение Михаила 26.11: «если под её заходишь, то её контакты»). Михаил и cron — без изменений."""
+        if not has_request_context() or not getattr(g, "user", None):
+            return text
+        mine = my_phone()
+        dm, db = re.sub(r"\D", "", mine)[-10:], re.sub(r"\D", "", dz.phone("mikhail"))[-10:]
+        if len(dm) < 10 or len(db) < 10 or dm == db:
+            return text
+        return PHONE_RE.sub(lambda m: mine if re.sub(r"\D", "", m.group(0))[-10:] == db else m.group(0), text)
+
+    def send_as_me(to: str, subject: str, body: str, *a: Any, **kw: Any) -> bool:
+        return send_mail(to, subject, as_me(body), *a, **kw)
+
+    app.extensions["my_phone"] = my_phone
+
     k = Konstruktor(store)
     app.extensions["k"] = k
     register_k(app, store, k, {"admin_required": admin_required, "login_required": login_required, "who": who,
-                               "send_mail": lambda *a, **kw: send_mail(*a, **kw), "letter_ctx": lambda *a, **kw: letter_ctx(*a, **kw), "conf": conf, "fmt_day": fmt_day})
+                               "send_mail": send_as_me, "letter_ctx": lambda *a, **kw: letter_ctx(*a, **kw), "conf": conf, "fmt_day": fmt_day})
     site_edits = SiteEdits(store, cfg.get("SITE_UPLOADS") or os.path.join(os.path.dirname(os.path.abspath(conf["CRM_DB"])), "site-uploads"),
                            conf["CATALOG_FILE"])
     app.extensions["site_edits"] = site_edits
     register_site(app, store, site_edits, conf["CATALOG_FILE"], {"admin_required": admin_required, "who": who,
                                                                   "pause_flag": conf["PAUSE_FLAG"]})
     register_buh(app, store, buh, {"login_required": login_required, "admin_required": admin_required, "who": who,
-                                   "safe_next": safe_next, "send_mail": lambda *a, **k: send_mail(*a, **k),
+                                   "safe_next": safe_next, "send_mail": send_as_me,
                                    "mail_signature": mail_signature, "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
 
     # ------------------------------------------------------------ исходящие письма с zapros@ (шифр из ветки outbox)
@@ -670,7 +692,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
     ob.save_doc = docs.add                       # Claude кладёт документы через ветку outbox (docs/*.json, шифр)
     ob.replace_doc = docs.replace                # новая версия файла (docs2/*.json): ссылки дизайнерам сохраняются
     register_designer_docs(app, store, docs, {"admin_required": admin_required, "who": who,
-                                              "send_mail": lambda *a, **k: send_mail(*a, **k),
+                                              "send_mail": send_as_me,
                                               "shop_domain": conf["SHOP_DOMAIN"] or "nashdekor.ru"})
     register_avito_katalog(app, store, docs, {"login_required": login_required})   # листы каталога картинками для чата Авито
     # ------------------------------------------------------------ база дизайнеров: кому предлагаем (Авито / сайты и Zoon)
@@ -825,7 +847,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                                      "ссылка действует 7 дней. Электронный чек придёт на e-mail.") if link else "",
                 "дата_расчёта": fmt_day(d["stage_at"][:10]) if d["stage_at"] else "", "действует_до": fmt_day(until) if until else "конца недели",
                 "заметка": (d["client_note"] or "").strip(), "менеджер": manager or "", "подпись": "\n".join(mail_signature(manager)).strip(),
-                "возврат": return_text(d)}
+                "возврат": return_text(d), "телефон": my_phone()}
 
     def calc_text(d: Any, lines: list[Any], manager: str = "") -> str:
         """Расчёт для клиента: позиции, суммы, итог, что дальше, контакты — в письмо или в мессенджер."""
@@ -912,7 +934,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 continue
             n = int(row["followups"]) + 1
             subj, body = followup_text(d, lines, n)
-            if send_mail(d["email"], subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
+            if send_as_me(d["email"], subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
                 store.mark_followup(int(row["id"]), "авто", d["email"], n, postpone_days=3 if n == 1 else 4)
                 out.append(f"№{row['id']}: напоминание {n} → {d['email']}")
             else:
@@ -936,7 +958,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
         is_order = (d["want"] or "").startswith("ЗАКАЗ.")
         tpl = k.template("calc")
-        ok = send_mail(email, k.render(tpl["subject"], letter_ctx(d, lines, who())) if tpl else
+        ok = send_as_me(email, k.render(tpl["subject"], letter_ctx(d, lines, who())) if tpl else
                        (f"Заказ №{did} — состав и сумма к оплате, «Наш декор»" if is_order else f"Расчёт №{did} — реечные панели и декор, «Наш декор»"),
                        calc_text(d, lines, who()), sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}")
         c = store.c()
@@ -967,7 +989,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
         n = min(int(d["followups"] or 0) + 1, 2)
         subj, body = followup_text(d, lines, n)
         dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
-        if send_mail(email, subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
+        if send_as_me(email, subj, body, sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
             store.mark_followup(did, who(), email, n)
             flash(f"Напоминание отправлено на {email}.", "ok")
         else:
@@ -1958,10 +1980,35 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
             return back
         return back
 
+    def me_contacts() -> dict[str, str] | None:
+        """«Мои контакты в письмах»: от чьего имени пишет вошедший и его телефон. Свой телефон есть у Михаила (админ)
+        и у Юлии; у других сотрудников раздела нет — их письма подписаны магазином."""
+        u = g.user
+        snd = dz.sender_for(u["login"], u["name"])
+        if snd != "yulia" and u["role"] != "admin" and u["login"] != "mikhail":
+            return None
+        return {"sender": snd, "name": DZ_SENDERS[snd]["name"], "phone": dz.phone(snd)}
+
+    @app.post("/settings/me")
+    @login_required
+    def settings_me() -> Any:
+        mc = me_contacts()
+        if mc is None:
+            abort(403)
+        ph = re.sub(r"[^\d+()\- ]", "", request.form.get("phone", ""))[:30].strip()
+        if ph and len(re.sub(r"\D", "", ph)) < 10:
+            flash("Похоже, в номере не хватает цифр — впишите полностью, например +7 900 123-45-67.", "err")
+            return redirect(url_for("settings_view") + "#me")
+        store.set_setting(dz.phone_key(mc["sender"]), ph)
+        with store.tx() as c:
+            store.log(c, "Мои контакты: телефон в подписи писем " + ("изменён" if ph else "убран"), who())
+        flash("Сохранено: этот телефон теперь в ваших письмах." if ph else "Телефон убран — письма уйдут без него.", "ok")
+        return redirect(url_for("settings_view") + "#me")
+
     @app.route("/settings")
     @login_required
     def settings_view() -> Any:
-        return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [],
+        return render_template("settings.html", users=store.users() if g.user["role"] == "admin" else [], me_contacts=me_contacts(),
                                conf=conf, bot=bool(store._bot()), hit_ips="\n".join(own_ips()), my_ip=ip(),
                                my_ip_own=ip_is_own(ip()), visits_total=visits.count(),
                                followup_auto=store.setting("followup_auto", "1") == "1", mail_contacts=mail_contacts(), mail_channel=mail_channel(),
@@ -2495,7 +2542,7 @@ def create_app(cfg: dict[str, Any] | None = None) -> Flask:
                 dom = conf["SHOP_DOMAIN"] or "nashdekor.ru"
                 body = (f"Здравствуйте{', ' + ch['name'] if ch['name'] else ''}!\n\nОтвет на ваш вопрос в чате на сайте «Наш декор»:\n\n{text}\n\n"
                         f"Продолжить переписку — в окне «Чат» на https://{dom} (с того же устройства) или ответом на это письмо.")
-                if send_mail(em.group(0), "Ответ в чате — «Наш декор»", "\n".join([body] + mail_signature(g.user["name"])),
+                if send_as_me(em.group(0), "Ответ в чате — «Наш декор»", "\n".join([body] + mail_signature(g.user["name"])),
                              sender=f"Наш декор <noreply@{dom}>", reply_to=f"zakaz@{dom}"):
                     store.chat_post(ch["sid"], "note", f"Ответ также отправлен на {em.group(0)} (клиент не на сайте)")
             if ch["deal_id"]:
