@@ -1,0 +1,35 @@
+name: img-fetch
+# Скачать картинки, которые не открываются из облака: список — pages/img.txt («имя | адрес»).
+# Результат — status/img/<имя>.jpg (уменьшено до 360 px по ширине) и status/img/list.txt.
+on:
+  push:
+    branches: [domain-check]
+    paths: ['pages/img.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: img-fetch
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Скачать
+        run: |
+          mkdir -p status/img; : > status/img/list.txt
+          grep -v '^#' pages/img.txt | grep '|' | while IFS='|' read -r n u; do
+            n=$(echo "$n" | xargs); u=$(echo "$u" | xargs)
+            if curl -sSL -m 40 -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15' -o "/tmp/$n.bin" "$u"; then
+              convert "/tmp/$n.bin[0]" -background white -flatten -resize '360x360>' -quality 76 "status/img/$n.jpg" && echo "$n ok $(stat -c%s status/img/$n.jpg)" >> status/img/list.txt || echo "$n convert-fail" >> status/img/list.txt
+            else echo "$n download-fail" >> status/img/list.txt; fi
+          done
+          cat status/img/list.txt
+      - name: Сохранить
+        run: |
+          git config user.name img-fetch; git config user.email img-fetch@users.noreply.github.com
+          git add status/img; git commit -m "img-fetch $(date -u +%F_%H:%M)" || exit 0
+          git pull --rebase origin domain-check || true
+          git push origin HEAD:domain-check || true

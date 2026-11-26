@@ -1,0 +1,16 @@
+# имя | адрес картинки — задание img-fetch кладёт в status/img/<имя>.jpg (360 px)
+lenta5 | https://avatars.mds.yandex.net/get-goods_pic/14238622/hat195b69fcda1604ab75def1dc507f2a39/350x350
+lentaut | https://avatars.mds.yandex.net/get-goods_pic/5879699/hat8e3b985a5066aa9f3e2a5a755e9bd9c0/350x350
+globus | https://avatars.mds.yandex.net/get-goods_pic/14798517/hat605623456e735a74ff73aca1380bf990/350x350
+vivo | https://avatars.mds.yandex.net/get-goods_pic/9599871/hated8817eab8de223ae48a8bc216b1e993/350x350
+vetta | https://avatars.mds.yandex.net/get-goods_pic/16542585/hate35278d8fd311d3aa9f3b8924d427f70/350x350
+softpc | https://avatars.mds.yandex.net/get-goods_pic/14794575/hat42272be427d75a4efd59374b4757376c/350x350
+softmk | https://avatars.mds.yandex.net/get-mpic/17759237/2a0000019b6f7f3e8789f18f03cb1bb1b00d/600x800_multiply
+kuchen | https://avatars.mds.yandex.net/get-goods_pic/9336243/hatcf7f0ddcc99bb62e136c0604689dd9a0/350x350
+mallony | https://avatars.mds.yandex.net/get-mpic/19926455/2a0000019f314689fc16edb9f1c741d57e1a/600x800_multiply
+slhome | https://avatars.mds.yandex.net/get-mpic/16341797/2a0000019e45892b6df8a8d3042ace4726e4/600x800_multiply
+bugatti | https://avatars.mds.yandex.net/get-mpic/12140066/2a0000019abbae3f117b6aa33d55c52e04f4/600x800_multiply
+savosa | https://avatars.mds.yandex.net/get-mpic/4888456/2a00000195a9912673902beccbcd38893d1e/600x800_multiply
+staub | https://avatars.mds.yandex.net/get-mpic/18316420/2a0000019b8f0f8ad577640f110063d20fd4/600x800_multiply
+lecreuset | https://avatars.mds.yandex.net/get-mpic/14775361/2a0000019a2f8289e0f778c7293695b05d21/orig
+utk27 | https://avatars.mds.yandex.net/get-mpic/16396243/2a0000019a2b65bed0bd8f2b007afc7e1e00/600x800_multiply
