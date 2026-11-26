@@ -1,5 +1,5 @@
-# 2026-11-27 00:00 — ёлочные шары, второй заход: толстый пол (в первом осколки проваливались, шары не раскалывались), трещины не видны; пробы прочности и высоты
-ou1 py=ornament.py thr=0.05 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
-ou2 py=ornament.py thr=0.15 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
-ou3 py=ornament.py thr=0.4 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
-ou4 py=ornament.py thr=0.15 h0=0.7 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+# 2026-11-27 00:10 — ёлочные шары, третий заход: ломкие связи не рвутся (шары падают целыми) → раскол по сценарию: связи выключаются в момент удара снизу вверх. Пробы
+ov1 py=ornament.py thr=1000 spread=3 brest=0.45 frames=1,15,18,22,30,50,100,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ov2 py=ornament.py thr=1000 spread=6 brest=0.45 frames=1,15,18,22,30,50,100,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ov3 py=ornament.py thr=1000 spread=3 brest=0.6 h0=0.6 frames=1,15,18,22,30,50,100,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ov4 py=ornament.py thr=1000 spread=2 brest=0.55 ts=0.45 frames=1,15,18,22,30,50,100,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34

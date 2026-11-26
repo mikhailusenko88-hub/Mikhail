@@ -187,6 +187,9 @@ THR = float(A.get("thr", "0.6"))
 H0 = float(A.get("h0", "0.45"))
 OXO = float(A.get("ox", "0.12"))
 COLS = A.get("cols", "red,gold").split(",")
+BRK = A.get("brk", "auto") == "auto"            # auto — раскол по сценарию в момент удара; off — только ломкие связи (thr)
+BRK_SPREAD = int(A.get("spread", "3"))          # за сколько кадров трещина пробегает от низа до верха
+F_IMP = 1 + int(math.sqrt(2 * float(A.get("h0", "0.45")) / 9.81) * 30 / float(A.get("ts", "0.6")))   # кадр касания пола
 SHRINK = float(A.get("shrink", "0.998"))         # осколки чуть сжаты к своему центру (0,985 — видна сетка трещин)
 ORN_COL = {
     "red": {"Base Color": (0.62, 0.012, 0.02, 1), "Metallic": 0.55, "Roughness": 0.12, "Coat Weight": 1.0, "Coat Roughness": 0.03},
@@ -307,6 +310,13 @@ def make_ornament(cx, col):
         k.use_breaking = True
         k.breaking_threshold = THR
         k.disable_collisions = True
+        if BRK:                                      # раскол по сценарию: связи выключаются в момент удара, снизу вверх (трещина бежит от пола)
+            zrel = (e.location.z - (cz - ORN_R)) / (2 * ORN_R)          # 0 — низ шара, 1 — верх
+            fb = F_IMP + int(round(zrel * BRK_SPREAD)) + int(rng_o.integers(0, 2))
+            k.enabled = True
+            k.keyframe_insert("enabled", frame=max(1, fb - 1))
+            k.enabled = False
+            k.keyframe_insert("enabled", frame=fb)
     return cz
 
 
@@ -323,7 +333,7 @@ base = bpy.context.active_object
 bpy.ops.object.shade_smooth()
 base.data.materials.append(m_ball)
 if not ANIM:
-    add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=0.3, mass=0.002)
+    add_rb(base, "ACTIVE", "SPHERE", friction=0.5, rest=float(A.get("brest", "0.45")), mass=0.002)
     base.rigid_body.linear_damping = 0.05
     base.rigid_body.angular_damping = float(A.get("adamp", "0.6"))
 step = 2.08 * BR
