@@ -43,8 +43,11 @@ window.trDesc=function(lang,d){
   return c.line+'\n\n'+lines.join('\n').trim()+'\n\n'+tags.join(' ');
 }
 window.openLang=async function(lang){
+  // 26.11: окно языка после обычной навигации открывается дольше 2,5 с («нет окна») — ждать до 10 с; уже открытое не трогать
+  const dl=()=>vis().find(d=>d.innerText.trim().startsWith(lang));
+  if(dl()) return 'уже открыто';
   let row=[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>r.innerText.trim().startsWith(lang));
-  if(row){ [...row.querySelectorAll('button, ytcp-button')].find(b=>b.getClientRects().length).click(); await sleep(2500); return 'row'; }
+  if(row){ [...row.querySelectorAll('button, ytcp-button')].find(b=>b.getClientRects().length).click(); for(let k=0;k<20 && !dl();k++) await sleep(500); await sleep(800); return 'row'; }
   // 26.11: список языков после закрытия окна прошлого языка появляется не сразу — ждать до 6 с; если список уже открыт, «Add language» не нажимать (закроет его)
   const find=()=>[...document.querySelectorAll('tp-yt-paper-item, [role=option]')].filter(x=>x.getClientRects().length).find(x=>x.innerText.trim()===lang);
   let it=find();
