@@ -383,6 +383,10 @@ sc.camera = cam
 tgt = bpy.data.objects.new("tgt", None)
 sc.collection.objects.link(tgt)
 tgt.location = (float(A.get("tx", "0")), 0, float(A.get("tz", "0.14")))
+if "tz1" in A:   # после удара камера плавно опускает взгляд к шарикам на полу (tf0 → tf1)
+    for f, z in ((1, float(A["tz"])), (int(A.get("tf0", "34")), float(A["tz"])), (int(A.get("tf1", "80")), float(A["tz1"]))):
+        tgt.location[2] = z
+        tgt.keyframe_insert("location", index=2, frame=f)
 c = cam.constraints.new("TRACK_TO")
 c.target = tgt
 c.track_axis = "TRACK_NEGATIVE_Z"

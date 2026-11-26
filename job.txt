@@ -1,15 +1,15 @@
-# 2026-11-27 00:25 — ёлочные шары: рендер of2 (повтор: в первом заходе осколки золотого шара при рендере выходили не те — исправлено), нормали целой сферы. Кадры 19–170 на 14 машинах
-om01 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=19-29
-om02 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=30-40
-om03 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=41-51
-om04 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=52-61
-om05 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=62-72
-om06 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=73-83
-om07 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=84-94
-om08 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=95-105
-om09 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=106-116
-om10 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=117-127
-om11 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=128-137
-om12 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=138-148
-om13 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=149-159
-om14 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=160-170
+# 2026-11-27 00:40 — ёлочные шары: рендер, камера после удара опускает взгляд к шарикам (выше подписей Shorts)
+on01 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=19-29
+on02 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=30-40
+on03 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=41-51
+on04 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=52-61
+on05 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=62-72
+on06 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=73-83
+on07 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=84-94
+on08 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=95-105
+on09 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=106-116
+on10 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=117-127
+on11 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=128-137
+on12 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=138-148
+on13 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=149-159
+on14 py=ornament.py thr=1000 spread=4 brest=0.5 h0=0.5 ts=0.3 ox=0.105 seed=11 anim=out/of2/anim.npz end=170 samples=40 res=1080x1920 tz=0.20 tz1=0.02 tf0=36 tf1=80 cy0=-0.98 cy1=-0.92 cz0=0.30 cz1=0.29 range=160-170
