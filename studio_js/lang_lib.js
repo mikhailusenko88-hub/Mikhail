@@ -71,7 +71,7 @@ window.job=async function(j){
     const tr=[...dlg.querySelectorAll('tr')].find(t=>t.getClientRects().length && /^Audio/.test(t.innerText.trim()));
     const ab=tr && btnIn(tr,/^Add$/);
     if(!ab){ log.push('дорожка=есть/нет Add'); }
-    else { ab.click(); await sleep(2000); const b=await getBlob(j.audio); const inp=document.querySelector('#audio-file-loader');
+    else { ab.click(); await sleep(2000); const b=await getBlob(j.audio); const inp=[...document.querySelectorAll('#audio-file-loader')].pop();   // после перехода по SPA старый input остаётся — нужен последний
       if(!b||!inp) log.push('аудио?'); else { const dt=new DataTransfer(); dt.items.add(new File([b],j.aname,{type:'audio/mpeg'})); inp.files=dt.files; inp.dispatchEvent(new Event('change',{bubbles:true})); await sleep(4000);
         const ad=vis().find(d=>/Add audio track/.test(d.innerText)); if(ad && ad.innerText.includes(j.aname)){ btnIn(ad,/^Publish$/).click(); await sleep(5000); log.push('аудио+'+b.size);} else log.push('аудио не встало'); }
       dlg=vis().find(d=>d.innerText.trim().startsWith(j.lang)); const up=dlg&&btnIn(dlg,/^Update$/); if(up){ up.click(); await sleep(3500); log.push('Update'); } }
@@ -81,6 +81,7 @@ window.job=async function(j){
 }
 
 // 26.11: замена своей же дорожки (хинди «без спешки» и т. п.): Audio «⋮» → Delete → Confirm, затем job() добавляет новый файл.
+// Переход к другой серии без перезагрузки (помощники остаются в странице): history.pushState({},'',`/video/${id}/translations`); dispatchEvent(new PopStateEvent('popstate',{state:{}})); — сверять название серии (#entity-name).
 // Дольше 45 с — запускать фоном: window.Rn=null; replAudio('Hindi',url,'Barsik-29-hi.mp3').then(r=>window.Rn=r)
 window.replAudio=async function(lang,url,name){
   const log=[lang+' замена'];
