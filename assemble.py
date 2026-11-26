@@ -22,7 +22,9 @@ nf = int(subprocess.run(['ffprobe', '-v', 'error', '-count_frames', '-select_str
 d = np.load(posf)
 pos = d['pos'].astype(np.float32)
 CNTS = []                                              # счётчик на каждый сосуд (duo — два)
-if 'vessel' in d.files:                                # сосуд-зверь: внутри = SDF < 0 и ниже края отверстия
+if 'orn' in d.files:                                   # ёлочные шары — без счётчика
+    cnt = np.zeros(pos.shape[0], int)
+elif 'vessel' in d.files:                                # сосуд-зверь: внутри = SDF < 0 и ниже края отверстия
     from scipy.ndimage import map_coordinates, median_filter
     vox = d['vox'] if 'vox' in d.files else np.zeros(1)
     for vname, ox in zip(str(d['vessel']).split(','), vox):
@@ -42,7 +44,7 @@ else:
     cnt = np.maximum.accumulate(cnt)                       # счётчик не идёт назад (шар, отскочивший вверх, не «убывает»)
     CNTS = [cnt]
 TOTAL = pos.shape[1]
-print('кадров', nf, 'шаров всего', TOTAL, 'в сосуде к концу', [int(c[min(len(c) - 1, F0 - 1 + nf - 1)]) for c in CNTS])
+print('кадров', nf, 'тел всего', TOTAL, 'в сосуде к концу', [int(c[min(len(c) - 1, F0 - 1 + nf - 1)]) for c in CNTS])
 fb = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 150)
 fs = ImageFont.truetype('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf', 40)
 dec = subprocess.Popen(['ffmpeg', '-loglevel', 'error', '-i', raw, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], stdout=subprocess.PIPE)

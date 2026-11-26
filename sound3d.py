@@ -27,8 +27,11 @@ if VES:                                              # сосуд-зверь: «
         _sd = map_coordinates(_D, ((_P - _O) / _H).T, order=1, mode="nearest").reshape(pos.shape[:2])
         SD = _sd if SD is None else np.minimum(SD, _sd)
         del _P
+elif "orn" in d.files:                               # ёлочные шары: первые NSH столбцов — осколки и колпачки, дальше шарики
+    NSH = int(d["nshard"])
 else:
     GW, GD, GH, T = (float(v) for v in d["glass"])
+ORN = "orn" in d.files
 OUT = sys.argv[2]
 T0 = float(sys.argv[3]) if len(sys.argv) > 3 else 0.0
 DUR = float(sys.argv[4]) if len(sys.argv) > 4 else pos.shape[0] / FPS - T0
@@ -58,7 +61,10 @@ def bank(kind):
     out = []
     for _ in range(12):
         k = 2 ** rng.normal(0, 0.12)
-        if kind == "glass":     # шар о стекло: звонко
+        if kind == "shard":     # осколок тонкого стекла: высокий звон с длинным хвостом
+            f0 = 3600 * k
+            out.append(modal([f0, f0 * 1.52, f0 * 2.37, f0 * 3.1], [1.0, 0.6, 0.35, 0.2], [0.05, 0.035, 0.02, 0.012], 1.0, 0.25))
+        elif kind == "glass":     # шар о стекло: звонко
             f0 = 1900 * k
             out.append(modal([f0, f0 * 1.61, f0 * 2.13], [1.0, 0.45, 0.2], [0.018, 0.010, 0.006], 1.0, 0.09))
         elif kind == "ball":    # шар о шар: сухой щелчок
@@ -70,8 +76,8 @@ def bank(kind):
     return out
 
 
-B = {k: bank(k) for k in ("glass", "ball", "floor")}
-lp = butter(2, 5200, btype="low", fs=SR, output="sos")
+B = {k: bank(k) for k in ("glass", "ball", "floor", "shard")}
+lp = butter(2, 9000 if ORN else 5200, btype="low", fs=SR, output="sos")
 B = {k: [sosfiltfilt(lp, s) for s in v] for k, v in B.items()}
 
 f_from = int(T0 * FPS)
@@ -89,7 +95,9 @@ for f in range(f_from, f_to):
     for i in keep:
         x, y, z = P[f, i]
         j = min(J[f, i], 4.0)
-        if VES:
+        if ORN:
+            kind = "shard" if i < NSH else ("floor" if z < 0.02 else "ball")
+        elif VES:
             sd = float(SD[min(f + 1, SD.shape[0] - 1), i])
             if -(BRAD + 0.007) < sd < BRAD + 0.011:
                 kind = "glass"
@@ -115,6 +123,20 @@ for f in range(f_from, f_to):
         L[si:si + m] += s[:m] * v * gl * 1.41
         R[si:si + m] += s[:m] * v * gr * 1.41
         total += 1
+if ORN:
+    cnt_sh = (J[:, :NSH] > 1.2).sum(1)
+    for f in range(f_from, f_to):
+        if cnt_sh[f] >= 6 and (f == 0 or cnt_sh[f - 1] < 6):      # начало раскола
+            m = int(0.18 * SR)
+            t_ = np.arange(m) / SR
+            nz = rng.normal(0, 1, m) * np.exp(-t_ / 0.035)
+            nz = sosfiltfilt(butter(2, [2500, 12000], btype="band", fs=SR, output="sos"), nz)
+            si = int((f + 2 - f_from) / FPS * SR)
+            if si < n:
+                mm = min(m, n - si)
+                v = 0.5 * min(1.0, cnt_sh[f] / 20)
+                L[si:si + mm] += nz[:mm] * v
+                R[si:si + mm] += nz[:mm] * v
 # маленькая комната: редкие отражения
 ir = np.zeros(int(0.5 * SR))
 for tp in np.sort(rng.uniform(0.004, 0.45, 400)):

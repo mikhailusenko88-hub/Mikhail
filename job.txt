@@ -1,15 +1,6 @@
-# 2026-11-25 20:05 — «Cat vs Bear»: рендер физики dA (кот 792, мишка 723 из 1 555 у каждого), камера поближе (C2), кадры 105–248 на 14 машинах
-cv01 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=105-114
-cv02 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=115-125
-cv03 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=126-135
-cv04 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=136-145
-cv05 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=146-155
-cv06 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=156-166
-cv07 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=167-176
-cv08 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=177-186
-cv09 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=187-197
-cv10 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=198-207
-cv11 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=208-217
-cv12 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=218-227
-cv13 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=228-238
-cv14 py=vessel.py duo=cat82,bear78 ox=0.145 bs=0.95 r=0.009 lx=0.07 anim=out/dA/anim.npz end=330 samples=40 res=1080x1920 tilt=1:0,15:0,45:34,110:58,170:80,230:104,270:124 tx=0 cx=0 tz=0.26 cy0=-1.45 cy1=-1.35 cz0=0.48 cz1=0.45 range=239-248
+# 2026-11-26 23:45 — ёлочные шары (красный и золотой), полные цветных шариков, падают и разбиваются. Проба вида и 4 пробы прочности связей
+olook py=ornament.py nosim=1 frames=1,12 end=200 res=720x1280 samples=40 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
+ot1 py=ornament.py thr=0.15 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
+ot2 py=ornament.py thr=0.4 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
+ot3 py=ornament.py thr=1.0 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
+ot4 py=ornament.py thr=2.5 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
