@@ -9,9 +9,9 @@
     analytics: { send: (name, data) => { L.ev.push([name, data || {}]); } },
     platform: { id: 'playgama', language: window.__pgLang || 'en', isAudioEnabled: window.__pgAudio !== false, sendMessage: (m, d) => L.msgs.push(m + (d && d.level ? ':' + d.level : '')), on: (ev, f) => { (hs[ev] = hs[ev] || []).push(f); } },
     advertisement: {
-      isRewardedSupported: true, isInterstitialSupported: !window.__pgNoInter, on: (ev, f) => { (hs[ev] = hs[ev] || []).push(f); },
+      isRewardedSupported: true, get rewardedState() { return L.rewState || 'closed'; }, get interstitialState() { return 'closed'; }, isInterstitialSupported: !window.__pgNoInter, on: (ev, f) => { (hs[ev] = hs[ev] || []).push(f); },
       showInterstitial: (p) => { L.ads.push('inter:' + p); setTimeout(() => emit('interstitial_state_changed', 'opened'), 100); setTimeout(() => emit('interstitial_state_changed', 'closed'), 900); },
-      showRewarded: (p) => { L.ads.push('rew:' + p); if (window.__adMode === 'fail') { setTimeout(() => emit('rewarded_state_changed', 'failed'), 200); return; }
+      showRewarded: (p) => { L.ads.push('rew:' + p); if (window.__adMode === 'hang') { L.rewState = 'loading'; emit('rewarded_state_changed', 'loading'); return; } if (window.__adMode === 'fail') { setTimeout(() => emit('rewarded_state_changed', 'failed'), 200); return; }
         setTimeout(() => emit('rewarded_state_changed', 'opened'), 100); if (window.__adMode !== 'skip') setTimeout(() => emit('rewarded_state_changed', 'rewarded'), 800); setTimeout(() => emit('rewarded_state_changed', 'closed'), 1000); },
     },
     storage: { get: (k) => Promise.resolve(Array.isArray(k) ? k.map((q) => L.store[q] || null) : L.store[k] || null), set: (k, v) => { L.store[k] = v; try { localStorage.setItem('__pgcloud:' + k, v); } catch (e) { /* */ } return Promise.resolve(); } },

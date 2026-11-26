@@ -1,0 +1,30 @@
+// Ролик не пришёл (мост завис на «loading», как на iPhone в песочнице 26.11): экран не замерзает, игра пишет «не загрузился», повтор не шлёт второй запрос
+// в зависший мост, отметки ad_request; итог на низком экране 859×237 — кнопки не налезают на счёт. node tests/g9/adhang.js
+const { chromium } = require('/opt/npm-tools/node_modules/playwright'); const path = require('path'), fs = require('fs');
+const DIR = path.resolve(__dirname, '../../dist/mud-pg'), STUB = fs.readFileSync(path.resolve(__dirname, '../g8/pgstub.js'), 'utf8'), OUT = '/tmp/adhang'; fs.mkdirSync(OUT, { recursive: true });
+(async () => { const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  let okN = 0, bad = 0; const ok = (c, m) => { if (c) okN++; else bad++; console.log((c ? 'OK   ' : 'FAIL ') + m); };
+  const ctx = await b.newContext({ viewport: { width: 859, height: 237 }, deviceScaleFactor: 2, locale: 'ru-RU', hasTouch: true, isMobile: true });
+  await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: STUB }));
+  const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message));
+  const SV = { coins: 900, own: { awd: [1], low: [1], lock: [1], tires: [1], lift: [1] }, build: { awd: 1, low: 1, lock: 1, tires: 1, lift: 1 }, stars: { village: 3, farm: 3, creek: 3, pit: 3 }, seen: { first: 1, awd: 1, low: 1, lock: 1 }, tl: { awd: 2, low: 2, lock: 2 }, ts: 1 };
+  await p.addInitScript((sv) => { window.__pgLang = 'ru'; window.__pgNoInter = true; window.__pgStore0 = { 'mud4.save': JSON.stringify(sv) }; }, SV);
+  await p.goto('file://' + DIR + '/index.html'); await p.waitForFunction(() => window.__mud && window.__mud.S); await p.waitForTimeout(1500);
+  await p.evaluate(() => { window.__mud.press('c:4'); window.__mud.press('go'); }); await p.waitForTimeout(300); await p.evaluate(() => { const S = window.__mud.S; S.truck.x = S.L.fin + 200; });
+  await p.waitForFunction(() => window.__mud.mode === 'win' && window.__mud.res && window.__mud.buttons.some((q) => q.id === 'x2'), null, { timeout: 20000 }); await p.waitForTimeout(600);
+  await p.screenshot({ path: OUT + '/1result.png' });
+  const lay = await p.evaluate(() => window.__mud.buttons.map((q) => [q.id, Math.round(q.x), Math.round(q.y), Math.round(q.w), Math.round(q.h)]));
+  const ov = lay.some((a, i) => lay.some((c, j) => i < j && a[1] < c[1] + c[3] && c[1] < a[1] + a[3] && a[2] < c[2] + c[4] && c[2] < a[2] + a[4])); ok(!ov && lay.every((q) => q[2] + q[4] <= 237), 'кнопки итога не налезают друг на друга и в экране: ' + JSON.stringify(lay));
+  const c0 = await p.evaluate(() => window.__mud.save.coins);
+  await p.evaluate(() => { window.__adMode = 'hang'; window.__mud.press('x2'); }); await p.waitForTimeout(2000);
+  const blocked = await p.evaluate(() => window.__mud.mode); await p.waitForTimeout(6500); await p.screenshot({ path: OUT + '/2no-video.png' });
+  const ev = await p.evaluate(() => window.__pg.ev.filter((q) => q[0] === 'ad_request').map((q) => q[1].result));
+  ok(ev.includes('timeout'), 'через 7 с без ролика — отметка ad_request timeout: ' + ev);
+  await p.evaluate(() => window.__mud.press('x2')); await p.waitForTimeout(300);
+  const ads = await p.evaluate(() => window.__pg.ads.filter((q) => q.startsWith('rew')).length), ev2 = await p.evaluate(() => window.__pg.ev.filter((q) => q[0] === 'ad_request').map((q) => q[1].result));
+  ok(ads === 1 && ev2.includes('busy'), 'повторное нажатие не шлёт второй запрос в зависший мост, а говорит «не загрузился»: запросов ' + ads + ', ' + ev2);
+  await p.screenshot({ path: OUT + '/3retry.png' });
+  await p.evaluate(() => window.__mud.press('menu')); await p.waitForTimeout(600); const m = await p.evaluate(() => ({ mode: window.__mud.mode, coins: window.__mud.save.coins }));
+  ok(blocked === 'win' && m.mode === 'menu' && m.coins === c0, 'экран не замёрз: «К заказам» сработало, монеты без награды не прибавились: ' + JSON.stringify(m));
+  ok(errs.length === 0, 'ошибок нет ' + errs.join('; '));
+  console.log(`итог: ${okN} OK, ${bad} FAIL`); await b.close(); process.exit(bad ? 1 : 0); })();
