@@ -1,0 +1,1102 @@
+{
+ "what": "pik",
+ "rows": [
+  {
+   "variant": "сейчас",
+   "mos": 2.98,
+   "sim": 0.578,
+   "clear": 100.0,
+   "shift": 0.9,
+   "lines": [
+    {
+     "mos": 3.47,
+     "sim": 0.614,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -11.0,
+     "dur": 2.72,
+     "shift": 0.0,
+     "i": 31
+    },
+    {
+     "mos": 2.82,
+     "sim": 0.5,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -5.2,
+     "dur": 1.4,
+     "shift": 2.4,
+     "i": 38
+    },
+    {
+     "mos": 3.24,
+     "sim": 0.702,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold. All night.",
+     "end": -5.5,
+     "dur": 2.55,
+     "shift": 0.0,
+     "i": 49
+    },
+    {
+     "mos": 1.81,
+     "sim": 0.465,
+     "clear": 100.0,
+     "heard": "It's cold.",
+     "end": 1.3,
+     "dur": 0.73,
+     "shift": 0.0,
+     "i": 77
+    },
+    {
+     "mos": 2.54,
+     "sim": 0.57,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -7.4,
+     "dur": 2.65,
+     "shift": 4.2,
+     "i": 82
+    },
+    {
+     "mos": 3.17,
+     "sim": 0.596,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -6.2,
+     "dur": 2.07,
+     "shift": 1.6,
+     "i": 91
+    },
+    {
+     "mos": 2.8,
+     "sim": 0.615,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -12.6,
+     "dur": 2.4,
+     "shift": 0.0,
+     "i": 103
+    },
+    {
+     "mos": 3.51,
+     "sim": 0.567,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -4.7,
+     "dur": 1.55,
+     "shift": 0.0,
+     "i": 106
+    },
+    {
+     "mos": 3.42,
+     "sim": 0.577,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -7.8,
+     "dur": 2.74,
+     "shift": 0.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_heart без подъёма",
+   "mos": 2.95,
+   "sim": 0.554,
+   "clear": 100.0,
+   "shift": 3.7,
+   "lines": [
+    {
+     "mos": 2.89,
+     "sim": 0.584,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -6.2,
+     "dur": 2.71,
+     "shift": 5.4,
+     "i": 31
+    },
+    {
+     "mos": 2.59,
+     "sim": 0.569,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -4.7,
+     "dur": 1.43,
+     "shift": 5.1,
+     "i": 38
+    },
+    {
+     "mos": 2.9,
+     "sim": 0.643,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -6.4,
+     "dur": 2.55,
+     "shift": 5.0,
+     "i": 49
+    },
+    {
+     "mos": 2.19,
+     "sim": 0.409,
+     "clear": 100.0,
+     "heard": "It's cold.",
+     "end": -0.0,
+     "dur": 0.76,
+     "shift": 1.7,
+     "i": 77
+    },
+    {
+     "mos": 2.52,
+     "sim": 0.584,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -4.0,
+     "dur": 2.65,
+     "shift": 4.4,
+     "i": 82
+    },
+    {
+     "mos": 3.07,
+     "sim": 0.564,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -8.0,
+     "dur": 2.07,
+     "shift": 2.1,
+     "i": 91
+    },
+    {
+     "mos": 3.0,
+     "sim": 0.63,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -3.0,
+     "dur": 2.38,
+     "shift": 2.8,
+     "i": 103
+    },
+    {
+     "mos": 3.47,
+     "sim": 0.51,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -6.0,
+     "dur": 1.55,
+     "shift": 4.5,
+     "i": 106
+    },
+    {
+     "mos": 3.88,
+     "sim": 0.493,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": 0.3,
+     "dur": 2.75,
+     "shift": 2.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_sky без подъёма",
+   "mos": 2.73,
+   "sim": 0.568,
+   "clear": 100.0,
+   "shift": 4.9,
+   "lines": [
+    {
+     "mos": 2.96,
+     "sim": 0.62,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -4.6,
+     "dur": 2.74,
+     "shift": 5.5,
+     "i": 31
+    },
+    {
+     "mos": 2.53,
+     "sim": 0.534,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -1.6,
+     "dur": 1.41,
+     "shift": 6.3,
+     "i": 38
+    },
+    {
+     "mos": 2.8,
+     "sim": 0.666,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold, all night.",
+     "end": -4.5,
+     "dur": 2.61,
+     "shift": 4.4,
+     "i": 49
+    },
+    {
+     "mos": 1.59,
+     "sim": 0.532,
+     "clear": 100.0,
+     "heard": "It's cold.",
+     "end": -0.1,
+     "dur": 0.99,
+     "shift": 5.4,
+     "i": 77
+    },
+    {
+     "mos": 2.98,
+     "sim": 0.52,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -1.3,
+     "dur": 2.74,
+     "shift": 5.5,
+     "i": 82
+    },
+    {
+     "mos": 3.0,
+     "sim": 0.592,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -0.4,
+     "dur": 2.05,
+     "shift": 4.2,
+     "i": 91
+    },
+    {
+     "mos": 2.8,
+     "sim": 0.58,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -5.8,
+     "dur": 2.39,
+     "shift": 3.8,
+     "i": 103
+    },
+    {
+     "mos": 2.5,
+     "sim": 0.547,
+     "clear": 100.0,
+     "heard": "Here's the bowl, what's in it?",
+     "end": -4.2,
+     "dur": 1.58,
+     "shift": 5.3,
+     "i": 106
+    },
+    {
+     "mos": 3.41,
+     "sim": 0.517,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -6.6,
+     "dur": 2.8,
+     "shift": 3.8,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_nicole без подъёма",
+   "mos": 2.74,
+   "sim": 0.458,
+   "clear": 88.9,
+   "shift": 7.8,
+   "lines": [
+    {
+     "mos": 2.55,
+     "sim": 0.446,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -5.4,
+     "dur": 4.2,
+     "shift": 8.2,
+     "i": 31
+    },
+    {
+     "mos": 3.29,
+     "sim": 0.478,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -0.6,
+     "dur": 1.77,
+     "shift": 7.2,
+     "i": 38
+    },
+    {
+     "mos": 2.73,
+     "sim": 0.483,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -1.9,
+     "dur": 3.9,
+     "shift": 6.1,
+     "i": 49
+    },
+    {
+     "mos": 1.78,
+     "sim": 0.308,
+     "clear": 0.0,
+     "heard": "CODE",
+     "end": -0.3,
+     "dur": 0.98,
+     "shift": 4.1,
+     "i": 77
+    },
+    {
+     "mos": 2.24,
+     "sim": 0.531,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -0.7,
+     "dur": 3.74,
+     "shift": 9.3,
+     "i": 82
+    },
+    {
+     "mos": 2.77,
+     "sim": 0.306,
+     "clear": 100.0,
+     "heard": "Of course. It's hard like a stone.",
+     "end": -1.8,
+     "dur": 3.44,
+     "shift": 10.0,
+     "i": 91
+    },
+    {
+     "mos": 2.71,
+     "sim": 0.439,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": 0.9,
+     "dur": 3.64,
+     "shift": 12.3,
+     "i": 103
+    },
+    {
+     "mos": 2.97,
+     "sim": 0.621,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -3.4,
+     "dur": 2.13,
+     "shift": 6.3,
+     "i": 106
+    },
+    {
+     "mos": 3.61,
+     "sim": 0.507,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -1.2,
+     "dur": 4.07,
+     "shift": 7.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_bella без подъёма",
+   "mos": 2.69,
+   "sim": 0.539,
+   "clear": 100.0,
+   "shift": 4.6,
+   "lines": [
+    {
+     "mos": 2.65,
+     "sim": 0.608,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -5.6,
+     "dur": 2.84,
+     "shift": 5.8,
+     "i": 31
+    },
+    {
+     "mos": 2.85,
+     "sim": 0.539,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -6.6,
+     "dur": 1.4,
+     "shift": 3.7,
+     "i": 38
+    },
+    {
+     "mos": 2.62,
+     "sim": 0.568,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold. All night.",
+     "end": -8.0,
+     "dur": 2.58,
+     "shift": 4.2,
+     "i": 49
+    },
+    {
+     "mos": 2.47,
+     "sim": 0.298,
+     "clear": 100.0,
+     "heard": "Cold.",
+     "end": 0.3,
+     "dur": 0.75,
+     "shift": 4.0,
+     "i": 77
+    },
+    {
+     "mos": 2.56,
+     "sim": 0.611,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -3.7,
+     "dur": 2.79,
+     "shift": 5.7,
+     "i": 82
+    },
+    {
+     "mos": 2.63,
+     "sim": 0.558,
+     "clear": 100.0,
+     "heard": "Of course. It's hard like a stone.",
+     "end": -9.2,
+     "dur": 2.28,
+     "shift": 3.1,
+     "i": 91
+    },
+    {
+     "mos": 2.49,
+     "sim": 0.592,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -4.9,
+     "dur": 2.48,
+     "shift": 5.6,
+     "i": 103
+    },
+    {
+     "mos": 3.02,
+     "sim": 0.545,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -6.2,
+     "dur": 1.56,
+     "shift": 4.8,
+     "i": 106
+    },
+    {
+     "mos": 2.96,
+     "sim": 0.533,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -0.7,
+     "dur": 2.82,
+     "shift": 4.8,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_nova без подъёма",
+   "mos": 2.7,
+   "sim": 0.52,
+   "clear": 88.9,
+   "shift": 5.9,
+   "lines": [
+    {
+     "mos": 2.77,
+     "sim": 0.625,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -3.3,
+     "dur": 2.76,
+     "shift": 6.5,
+     "i": 31
+    },
+    {
+     "mos": 3.05,
+     "sim": 0.414,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -6.5,
+     "dur": 1.47,
+     "shift": 6.1,
+     "i": 38
+    },
+    {
+     "mos": 2.61,
+     "sim": 0.635,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -3.2,
+     "dur": 2.83,
+     "shift": 4.1,
+     "i": 49
+    },
+    {
+     "mos": 1.61,
+     "sim": 0.389,
+     "clear": 0.0,
+     "heard": "I call that.",
+     "end": -3.1,
+     "dur": 1.03,
+     "shift": 6.4,
+     "i": 77
+    },
+    {
+     "mos": 2.87,
+     "sim": 0.54,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -0.5,
+     "dur": 2.75,
+     "shift": 5.4,
+     "i": 82
+    },
+    {
+     "mos": 2.87,
+     "sim": 0.573,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -9.5,
+     "dur": 2.16,
+     "shift": 5.9,
+     "i": 91
+    },
+    {
+     "mos": 2.84,
+     "sim": 0.442,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -3.3,
+     "dur": 2.42,
+     "shift": 7.4,
+     "i": 103
+    },
+    {
+     "mos": 2.89,
+     "sim": 0.509,
+     "clear": 100.0,
+     "heard": "Here's the bowl what's in it.",
+     "end": -4.5,
+     "dur": 1.7,
+     "shift": 6.4,
+     "i": 106
+    },
+    {
+     "mos": 2.76,
+     "sim": 0.553,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -1.2,
+     "dur": 2.81,
+     "shift": 5.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_kore без подъёма",
+   "mos": 2.81,
+   "sim": 0.55,
+   "clear": 88.9,
+   "shift": 3.9,
+   "lines": [
+    {
+     "mos": 2.84,
+     "sim": 0.701,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice, it can be thin.",
+     "end": -6.6,
+     "dur": 2.7,
+     "shift": 4.5,
+     "i": 31
+    },
+    {
+     "mos": 2.5,
+     "sim": 0.431,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -5.2,
+     "dur": 1.22,
+     "shift": 5.4,
+     "i": 38
+    },
+    {
+     "mos": 3.05,
+     "sim": 0.644,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -4.7,
+     "dur": 2.45,
+     "shift": 3.0,
+     "i": 49
+    },
+    {
+     "mos": 2.49,
+     "sim": 0.397,
+     "clear": 0.0,
+     "heard": "顔表。",
+     "end": -3.4,
+     "dur": 0.72,
+     "shift": 0.0,
+     "i": 77
+    },
+    {
+     "mos": 2.65,
+     "sim": 0.544,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -2.0,
+     "dur": 2.59,
+     "shift": 5.0,
+     "i": 82
+    },
+    {
+     "mos": 3.12,
+     "sim": 0.543,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -4.6,
+     "dur": 1.81,
+     "shift": 3.2,
+     "i": 91
+    },
+    {
+     "mos": 2.75,
+     "sim": 0.592,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -6.2,
+     "dur": 2.28,
+     "shift": 5.3,
+     "i": 103
+    },
+    {
+     "mos": 2.49,
+     "sim": 0.54,
+     "clear": 100.0,
+     "heard": "Here's the bowl, what's in it?",
+     "end": -5.5,
+     "dur": 1.42,
+     "shift": 4.8,
+     "i": 106
+    },
+    {
+     "mos": 3.44,
+     "sim": 0.562,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -5.3,
+     "dur": 2.54,
+     "shift": 3.8,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_jessica без подъёма",
+   "mos": 2.73,
+   "sim": 0.59,
+   "clear": 85.9,
+   "shift": 2.9,
+   "lines": [
+    {
+     "mos": 2.9,
+     "sim": 0.573,
+     "clear": 91.7,
+     "heard": "And we don't go on river ice, it can be thins.",
+     "end": -6.8,
+     "dur": 2.61,
+     "shift": 4.4,
+     "i": 31
+    },
+    {
+     "mos": 2.5,
+     "sim": 0.644,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": 2.4,
+     "dur": 1.38,
+     "shift": 2.2,
+     "i": 38
+    },
+    {
+     "mos": 2.5,
+     "sim": 0.67,
+     "clear": 90.9,
+     "heard": "We have to put it out in the cold all nights.",
+     "end": -6.0,
+     "dur": 2.31,
+     "shift": 3.3,
+     "i": 49
+    },
+    {
+     "mos": 2.42,
+     "sim": 0.476,
+     "clear": 0.0,
+     "heard": "ENCODE!",
+     "end": -4.5,
+     "dur": 0.8,
+     "shift": 0.0,
+     "i": 77
+    },
+    {
+     "mos": 2.76,
+     "sim": 0.634,
+     "clear": 90.9,
+     "heard": "And by mornings, the water in the bowl may be hard.",
+     "end": -5.5,
+     "dur": 2.64,
+     "shift": 4.5,
+     "i": 82
+    },
+    {
+     "mos": 2.63,
+     "sim": 0.615,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -0.7,
+     "dur": 2.03,
+     "shift": 2.2,
+     "i": 91
+    },
+    {
+     "mos": 2.74,
+     "sim": 0.523,
+     "clear": 100.0,
+     "heard": "It's melting, soon it'll be water again.",
+     "end": -2.7,
+     "dur": 2.22,
+     "shift": 3.6,
+     "i": 103
+    },
+    {
+     "mos": 2.67,
+     "sim": 0.586,
+     "clear": 100.0,
+     "heard": "Here's the bowl what's in it.",
+     "end": -0.5,
+     "dur": 1.65,
+     "shift": 4.1,
+     "i": 106
+    },
+    {
+     "mos": 3.45,
+     "sim": 0.587,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -4.1,
+     "dur": 2.56,
+     "shift": 2.2,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_sky подъём",
+   "mos": 2.78,
+   "sim": 0.599,
+   "clear": 100.0,
+   "shift": 1.5,
+   "lines": [
+    {
+     "mos": 2.96,
+     "sim": 0.648,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice, it can be thin.",
+     "end": -4.4,
+     "dur": 2.73,
+     "shift": 0.0,
+     "i": 31
+    },
+    {
+     "mos": 3.46,
+     "sim": 0.559,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -1.5,
+     "dur": 1.42,
+     "shift": 0.0,
+     "i": 38
+    },
+    {
+     "mos": 2.88,
+     "sim": 0.683,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -4.9,
+     "dur": 2.63,
+     "shift": 1.6,
+     "i": 49
+    },
+    {
+     "mos": 1.45,
+     "sim": 0.454,
+     "clear": 100.0,
+     "heard": "Get cold.",
+     "end": 0.8,
+     "dur": 1.04,
+     "shift": 4.0,
+     "i": 77
+    },
+    {
+     "mos": 2.72,
+     "sim": 0.653,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -7.9,
+     "dur": 2.75,
+     "shift": 4.1,
+     "i": 82
+    },
+    {
+     "mos": 3.1,
+     "sim": 0.63,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": 2.8,
+     "dur": 2.05,
+     "shift": 0.0,
+     "i": 91
+    },
+    {
+     "mos": 2.64,
+     "sim": 0.652,
+     "clear": 100.0,
+     "heard": "It's melting, soon it'll be water again.",
+     "end": -6.5,
+     "dur": 2.39,
+     "shift": 1.8,
+     "i": 103
+    },
+    {
+     "mos": 2.74,
+     "sim": 0.479,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -5.7,
+     "dur": 1.58,
+     "shift": 1.6,
+     "i": 106
+    },
+    {
+     "mos": 3.06,
+     "sim": 0.632,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -4.8,
+     "dur": 2.79,
+     "shift": 0.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_nicole подъём",
+   "mos": 2.69,
+   "sim": 0.494,
+   "clear": 88.9,
+   "shift": 2.9,
+   "lines": [
+    {
+     "mos": 2.68,
+     "sim": 0.558,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice, it can be thin.",
+     "end": -2.8,
+     "dur": 4.18,
+     "shift": 3.6,
+     "i": 31
+    },
+    {
+     "mos": 3.61,
+     "sim": 0.565,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -1.2,
+     "dur": 1.77,
+     "shift": 0.0,
+     "i": 38
+    },
+    {
+     "mos": 2.49,
+     "sim": 0.534,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -3.6,
+     "dur": 3.87,
+     "shift": 3.2,
+     "i": 49
+    },
+    {
+     "mos": 1.96,
+     "sim": 0.369,
+     "clear": 0.0,
+     "heard": "Come on.",
+     "end": 2.7,
+     "dur": 0.88,
+     "shift": 0.0,
+     "i": 77
+    },
+    {
+     "mos": 2.1,
+     "sim": 0.516,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -5.7,
+     "dur": 3.75,
+     "shift": 2.5,
+     "i": 82
+    },
+    {
+     "mos": 2.72,
+     "sim": 0.505,
+     "clear": 100.0,
+     "heard": "Of course, it's hard like a stone.",
+     "end": -2.8,
+     "dur": 3.42,
+     "shift": 2.6,
+     "i": 91
+    },
+    {
+     "mos": 2.75,
+     "sim": 0.389,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": 0.9,
+     "dur": 3.64,
+     "shift": 8.5,
+     "i": 103
+    },
+    {
+     "mos": 2.26,
+     "sim": 0.491,
+     "clear": 100.0,
+     "heard": "Here's the bowl, what's in it?",
+     "end": -2.2,
+     "dur": 2.14,
+     "shift": 3.6,
+     "i": 106
+    },
+    {
+     "mos": 3.65,
+     "sim": 0.518,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -9.9,
+     "dur": 4.06,
+     "shift": 2.1,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "variant": "af_bella подъём",
+   "mos": 2.81,
+   "sim": 0.579,
+   "clear": 88.9,
+   "shift": 2.3,
+   "lines": [
+    {
+     "mos": 2.83,
+     "sim": 0.558,
+     "clear": 100.0,
+     "heard": "And we don't go on river ice. It can be thin.",
+     "end": -10.5,
+     "dur": 2.84,
+     "shift": 1.7,
+     "i": 31
+    },
+    {
+     "mos": 3.08,
+     "sim": 0.601,
+     "clear": 100.0,
+     "heard": "Here's a bowl with water.",
+     "end": -6.6,
+     "dur": 1.39,
+     "shift": 2.4,
+     "i": 38
+    },
+    {
+     "mos": 2.88,
+     "sim": 0.688,
+     "clear": 100.0,
+     "heard": "We have to put it out in the cold all night.",
+     "end": -6.8,
+     "dur": 2.57,
+     "shift": 1.7,
+     "i": 49
+    },
+    {
+     "mos": 1.86,
+     "sim": 0.369,
+     "clear": 0.0,
+     "heard": "Combed.",
+     "end": 0.0,
+     "dur": 0.74,
+     "shift": 2.9,
+     "i": 77
+    },
+    {
+     "mos": 2.98,
+     "sim": 0.625,
+     "clear": 100.0,
+     "heard": "And by morning, the water in the bowl may be hard.",
+     "end": -1.6,
+     "dur": 2.8,
+     "shift": 2.6,
+     "i": 82
+    },
+    {
+     "mos": 2.74,
+     "sim": 0.598,
+     "clear": 100.0,
+     "heard": "Of course. It's hard like a stone.",
+     "end": -10.9,
+     "dur": 2.27,
+     "shift": 2.9,
+     "i": 91
+    },
+    {
+     "mos": 2.42,
+     "sim": 0.639,
+     "clear": 100.0,
+     "heard": "It's melting. Soon it'll be water again.",
+     "end": -7.0,
+     "dur": 2.48,
+     "shift": 2.9,
+     "i": 103
+    },
+    {
+     "mos": 2.71,
+     "sim": 0.546,
+     "clear": 100.0,
+     "heard": "Here's the bowl. What's in it?",
+     "end": -3.5,
+     "dur": 1.55,
+     "shift": 3.8,
+     "i": 106
+    },
+    {
+     "mos": 3.81,
+     "sim": 0.584,
+     "clear": 100.0,
+     "heard": "Maybe it's the frost. It comes when it's dark.",
+     "end": -7.3,
+     "dur": 2.82,
+     "shift": 0.0,
+     "i": 124
+    }
+   ]
+  },
+  {
+   "pairs_order": [
+    "сейчас",
+    "af_sky подъём",
+    "af_heart без подъёма"
+   ]
+  }
+ ],
+ "minutes": 34.4
+}
