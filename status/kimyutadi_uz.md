@@ -1,5 +1,5 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-26 07:07 UTC
+Проверено: 2026-11-26 08:28 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 11 подписчиков · 63 видео
@@ -7,7 +7,7 @@
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
 - 2026-11-26 06:36 · 9 просм. · 1000 ta shar! Cobalt, Labo, Gentra… Qaysi mashina yutadi? Какая машина победит? №10 #shorts · B5xutGPfsh8
 - 2026-11-25 14:36 · 234 просм. · 1000 ta shar! Nexia, Onix, Cobalt… Qaysi mashina yutadi? Какая машина победит? №9 #shorts · IKhK1WD30Dw
-- 2026-11-25 10:36 · 278 просм. · 1000 ta shar! Samarqand, Navoiy, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №4 #shorts · Z__JB-NTuzM
+- 2026-11-25 10:36 · 293 просм. · 1000 ta shar! Samarqand, Navoiy, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №4 #shorts · Z__JB-NTuzM
 - 2026-11-25 06:36 · 495 просм. · 1000 ta shar! Nexia, Matiz, Cobalt… Qaysi mashina yutadi? Какая машина победит? №8 #shorts · LTBkPR9-HjM
 - 2026-11-24 14:37 · 346 просм. · 1000 ta shar! Nexia, Gentra, Captiva… Qaysi mashina yutadi? Какая машина победит? №7 #shorts · GrVGwQWIMTg
 - 2026-11-24 10:36 · 915 просм. · 1000 ta shar! Toshkent, Fargʻona, Nukus… Qaysi shahar yutadi? Какой город победит? №3 #shorts · JuM5D0hY5tM
@@ -25,7 +25,7 @@
 - 9 просмотров · 1000 ta shar! Cobalt, Labo, Gentra… Qaysi mashina yutadi? Какая машина победит? №10 #shorts · B5xutGPfsh8
 - 234 просмотра · 1000 ta shar! Nexia, Onix, Cobalt… Qaysi mashina yutadi? Какая машина победит? №9 #shorts · IKhK1WD30Dw
 - 288 просмотров · 1000 ta shar! Samarqand, Navoiy, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №4 #shorts · Z__JB-NTuzM
-- 478 просмотров · 1000 ta shar! Nexia, Matiz, Cobalt… Qaysi mashina yutadi? Какая машина победит? №8 #shorts · LTBkPR9-HjM
+- 497 просмотров · 1000 ta shar! Nexia, Matiz, Cobalt… Qaysi mashina yutadi? Какая машина победит? №8 #shorts · LTBkPR9-HjM
 - 346 просмотров · 1000 ta shar! Nexia, Gentra, Captiva… Qaysi mashina yutadi? Какая машина победит? №7 #shorts · GrVGwQWIMTg
 - 916 просмотров · 1000 ta shar! Toshkent, Fargʻona, Nukus… Qaysi shahar yutadi? Какой город победит? №3 #shorts · JuM5D0hY5tM
 - 1 тыс. просмотров · 1000 ta shar! Cobalt, Tahoe, Epica… Qaysi mashina yutadi? Какая машина победит? №6 #shorts · G3WD46oGL0I
