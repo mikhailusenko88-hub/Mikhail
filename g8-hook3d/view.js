@@ -77,15 +77,18 @@
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
   // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
-  const BUILD = '10', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const BUILD = '11', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
   const stepOf = (l) => ({ step_id: 'L' + String(l + 1).padStart(2, '0'), step_index: l + 1 }); // шаг продвижения по образцу Playgama: имя события постоянное, номер уровня — в данных
   const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
   const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign(stepOf(lvl), { level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
   const runQuit = (how) => { if (TM.live && S && S.state !== 'win') pgEv('progression_failed', runData({ how, assists: TA.n })); TM.live = false; }; // ушёл с уровня, не доехав: в меню или начал заново
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
   // межстраничная: только в паузах между уровнями (после уровня или перед стартом уровня из меню), начиная с 3-го уровня,
-  // не раньше минуты от запуска, не чаще раза в минуту и не сразу после ролика за награду; чаще не даст и сама площадка
-  function pgCanInter(li) { const t = pgNow(); return PG.on && PG.inter && li >= 2 && t - PG.t0 / 1000 > 60 && t - PG.lastInter > 60 && t - PG.lastRew > 90 && !PG.pend; }
+  // первая — не раньше четырёх минут от запуска, дальше — не чаще раза в три минуты и не сразу после ролика за награду.
+  // Сборка 11: было «минута и минута». По данным первых суток показов было 0,77 на игру при норме 0,30, первая реклама приходила на 2:34,
+  // после каждого четвёртого показа игру закрывали, а среднего времени игры до нормы не хватало.
+  const AD_FIRST = 240, AD_GAP = 180;
+  function pgCanInter(li) { const t = pgNow(); return PG.on && PG.inter && li >= 2 && t - PG.t0 / 1000 > AD_FIRST && t - PG.lastInter > AD_GAP && t - PG.lastRew > 90 && !PG.pend; }
   function pgInter(cb, li = lvl) {
     if (!pgCanInter(li)) return cb();
     PG.lastInter = pgNow(); PG.pend = { type: 'inter', cb, tm: setTimeout(() => pgDone(false), 45000) };
