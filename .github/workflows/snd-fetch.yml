@@ -1,0 +1,41 @@
+name: snd-fetch
+on:
+  push:
+    branches: [snd-fetch]
+    paths: [pages.txt]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: download
+        run: |
+          set +e
+          mkdir -p got
+          n=0
+          while read -r url; do
+            [ -z "$url" ] && continue
+            n=$((n+1)); d=got/$(printf '%02d' $n); mkdir -p $d
+            echo "$url" > $d/url.txt
+            curl -sL -A "Mozilla/5.0" "$url" -o $d/page.html
+            # лицензия и название — для проверки
+            python3 - "$d" <<'PY'
+          import re, sys, html
+          d = sys.argv[1]; s = open(d + '/page.html', encoding='utf8', errors='ignore').read()
+          t = re.search(r'<title>(.*?)</title>', s, re.S); lic = re.findall(r'field-name-field-art-licenses.*?</div>\s*</div>\s*</div>', s, re.S)
+          names = re.findall(r'class="license-name"[^>]*>(.*?)<', s)
+          links = sorted(set(re.findall(r'href="(https://opengameart\.org/sites/default/files/[^"]+\.(?:zip|ogg|wav|mp3|7z|flac))"', s)))
+          open(d + '/info.txt', 'w').write('title: ' + html.unescape(t.group(1).strip() if t else '') + '\nlicenses: ' + ', '.join(names) + '\n' + '\n'.join(links) + '\n')
+          open(d + '/links.txt', 'w').write('\n'.join(links) + '\n')
+          PY
+            while read -r f; do [ -n "$f" ] && curl -sL -A "Mozilla/5.0" "$f" -o "$d/$(basename "$f")"; done < $d/links.txt
+            rm -f $d/page.html
+          done < pages.txt
+          find got -type f -size +60M -delete
+          ls -laR got | head -200
+      - name: commit
+        run: |
+          git config user.name "snd-fetch"; git config user.email "actions@users.noreply.github.com"
+          git add got && git commit -qm "звуки [skip ci]" && git push
