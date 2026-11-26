@@ -89,7 +89,7 @@ CATS = [  # код, адрес, название в меню, H1, вводный
      "Три серии по числу реек на панели шириной 120 мм: серия 2 — две широкие, серия 3 — три, серия 5 — пять узких. Длина 3 м, дюрополимер. "
      "Декоры одной серии одинаковы по размеру и цене — их можно сочетать на одной стене. В коробке — один декор и одна серия.",
      "Стеновые панели под дерево и бетон, реечные, 3 м — купить в СПб | Наш декор",
-     "Стеновые реечные панели под дерево и под бетон на чёрной основе, 3 метра, 28 декоров в трёх сериях. Красить не нужно. Цена за шт и за м², доставка по СПб и Ленобласти, 3D-просмотр."),
+     "Стеновые реечные панели под дерево и под бетон на чёрной основе, 3 м, 28 декоров в трёх сериях, от {min} ₽ за шт. Красить не нужно. Доставка по СПб и Ленобласти, 3D-просмотр."),
     ("plinth", "plintusy", "Плинтусы", "Плинтус напольный белый под покраску",
      "Напольные плинтусы из дюрополимера: белые, под покраску, высота от 65 до 150 мм, длина 2 м. "
      "Ударопрочный материал не крошится и не боится влажной уборки, красится в цвет стен или дверей. Ниже плинтусы собраны по высоте — выбирайте под свой потолок и двери. "
@@ -117,7 +117,7 @@ CATS = [  # код, адрес, название в меню, H1, вводный
     ("corner", "ugolki", "Уголки", "Декоративные уголки для стен и стеновых панелей",
      "Декоративные уголки под покраску из дюрополимера для внешних углов 22×22 и 30×30 мм, длина 2 м — закрывают торцы стеновых панелей на углу и защищают угол от сколов.",
      "Декоративные уголки для стеновых панелей — купить в СПб | Наш декор",
-     "Декоративные уголки для внешних углов и торцов стеновых панелей, 22×22 и 30×30 мм, длина 2 м, под покраску. Цена за шт, доставка по СПб и Ленобласти."),
+     "Декоративные уголки для внешних углов и торцов стеновых панелей, 22×22 и 30×30 мм, длина 2 м, под покраску, от {min} ₽ за шт. Доставка по СПб и Ленобласти."),
 ]
 # FAQ по разделам: вопрос → ответ (на странице и в разметке FAQPage)
 FAQ = {
@@ -476,6 +476,24 @@ def int_gallery(x, root):
     return ('<div class="gal int"><h2>В интерьере</h2><p class="note">3D-визуализация: так %s смотрится на стене целиком.</p><div class="galgrid" style="grid-template-columns:repeat(2,1fr)">%s</div></div>' % (
         esc(x["a"]), "".join('<a href="%simg/int/%s/%s.jpg" target="_blank" rel="noopener">%s</a>' % (root, sc, s, int_img(sc, s, "%s %s — 3D-визуализация" % (what, w), root))
                              for sc, w in shots)))
+# «В интерьере» на разделах с панелями (26.11.2026, «да» Михаила): разделы уже в индексе Яндекса и Google, а карточки с рендерами
+# в Google пока в основном «Discovered – currently not indexed» — с разделов картинки попадут в Картинки раньше, а карточки
+# получат ссылку с картинкой. 4 разные панели раздела, ссылка с картинки — на карточку товара. Пары «панель + сцена» не повторяют
+# статью «Рейки на стену в интерьере» (там 3-9 tv, A910 bed, A907 hall, 3-7 sofa). Google: картинки — рядом с подходящим текстом
+# и на страницах той же темы (developers.google.com/search/docs/appearance/google-images).
+SEC_INT = {"panel": (("a902", "tv"), ("a905", "sofa"), ("a913", "bed"), ("gs3", "hall")),
+           "color": (("5-10", "tv"), ("3-15", "sofa"), ("2-7", "bed"), ("3-11", "hall")),
+           "wall":  (("3-7", "tv"), ("a910", "sofa"), ("3-9", "bed"), ("a920", "hall"))}
+def section_int(code, root):
+    where = dict(INT_SCENES); cells = []
+    for s, sc in SEC_INT.get(code, ()):
+        x = next((y for y in CAT if slug(y["a"]) == s), None)
+        if not x or not int_shot(sc, s): continue
+        alt = "%s %s (%s) %s — 3D-визуализация" % (KIND[x["c"]], x["a"], x["d"].split(",")[0], where[sc])
+        cells.append('<a href="%sp/%s/">%s</a>' % (root, s, int_img(sc, s, alt, root, sizes="(max-width: 860px) 50vw, 540px")))   # в разделе сетка шире, чем на карточке
+    if not cells: return ""
+    return ('<div class="gal int"><h2>В интерьере</h2><p class="note">3D-визуализация: панели из этого раздела на стене целиком. '
+            'Нажмите на картинку — откроется карточка с ценой.</p><div class="galgrid" style="grid-template-columns:repeat(2,1fr)">%s</div></div>' % "".join(cells))
 
 def product_page(x):
     a, c = x["a"], x["c"]
@@ -654,6 +672,9 @@ def category_page(code, sl, menu, h1, intro, ctitle, cdesc):
         "@context": "https://schema.org", "@type": "CollectionPage", "name": h1, "url": url, "description": intro,
         "mainEntity": {"@type": "ItemList", "numberOfItems": len(items), "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "url": "%s/p/%s/" % (BASE, slug(x["a"])), "name": x["n"]} for i, x in enumerate(items)]}}, ensure_ascii=False)
+    # Хлебные крошки в разметке — как у карточек и /dostavka/ (26.11.2026): Яндекс строит навигационную цепочку в сниппете по
+    # Schema.org BreadcrumbList в JSON-LD (yandex.ru/support/webmaster/en/supported-schemas/navigation-links), Google — тоже.
+    ld += '<script type="application/ld+json">%s</script>' % json.dumps(crumbs_ld(crumb_items, lambda h: BASE + "/" if h == ROOT else url), ensure_ascii=False)
     H2 = '<h2 style="font-size:18px;margin:22px 0 10px" id="%s">%s</h2>'
     if code == "color":
         groups = []
@@ -681,7 +702,7 @@ def category_page(code, sl, menu, h1, intro, ctitle, cdesc):
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="head" style="margin-top:6px"><div><h1 style="font-size:clamp(24px,4.2vw,38px)">%s</h1><p class="catintro">%s</p></div></div>' % (esc(h1), esc(intro)) +
             sections_nav(code, ROOT) + grid +
-            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, 3D, профиль, размеры, цена и заявка.</p>' + faq_html + read_more(code, ROOT) + '</div>' +
+            '<p class="note" style="margin-top:18px">Цены предварительные, за штуку, без НДС. Нажмите на товар — там фото, 3D, профиль, размеры, цена и заявка.</p>' + section_int(code, ROOT) + faq_html + read_more(code, ROOT) + '</div>' +
             lead_form(None) + "</main>" + footer(ROOT) +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps({"root": ROOT, "list": True, "shop": {"telegram": SHOP["telegram"], "max": SHOP.get("max", "")}}, ensure_ascii=False), ROOT, VER))
     return head(t, desc, url, og_img, ld, ROOT) + body
@@ -1082,9 +1103,36 @@ def lastmod(u):
     except OSError: return TODAY
     if LASTMOD.get(u, [None])[0] != h: LASTMOD[u] = [h, TODAY]
     return LASTMOD[u][1]
-sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-      '  <url><loc>%s/</loc><lastmod>%s</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>' % (BASE, lastmod(BASE + "/"))]
-sm += ['  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>' % (u, lastmod(u), f, p) for u, f, p in urls]
+# Картинки в sitemap (26.11.2026, «да» Михаила): Google в image sitemap находит картинки, которые иначе может не найти
+# (developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps). Берём картинки, которые реально стоят на
+# странице (<img> c путём /img/…), из srcset — самую крупную; адрес — как на странице (с ?v=). Польза — прежде всего для Google.
+from urllib.parse import urljoin
+_IMG = re.compile(r"<img\b[^>]*>", re.I)
+def page_imgs(u):
+    p = u[len(BASE) + 1:]
+    try: h = open(os.path.join(SITE, p + "index.html" if p == "" or p.endswith("/") else p), encoding="utf-8").read()
+    except OSError: return []
+    out = []
+    for tag in _IMG.findall(h):
+        m = re.search(r'\ssrc="([^"]+)"', tag); ss = re.search(r'\ssrcset="([^"]+)"', tag)
+        src = m.group(1) if m else ""
+        if ss:
+            cand = [c.strip().rsplit(" ", 1) for c in ss.group(1).split(",") if c.strip()]
+            cand = [(c[0], int(c[1][:-1])) for c in cand if len(c) == 2 and c[1].endswith("w") and c[1][:-1].isdigit()]
+            if cand: src = max(cand, key=lambda c: c[1])[0]
+        if not src or src.startswith("data:"): continue
+        a = urljoin(u, src)
+        path = a.split("?")[0]
+        if not a.startswith(BASE + "/img/") or path.endswith(".svg") or "/img/tex/" in path: continue
+        if not os.path.isfile(os.path.join(SITE, path[len(BASE) + 1:])): continue   # только настоящие файлы (не шаблоны из JS)
+        if a not in out: out.append(a)
+    return out[:1000]
+def sm_url(loc, lm, f, p):
+    imgs = "".join("<image:image><image:loc>%s</image:loc></image:image>" % esc(i) for i in page_imgs(loc))
+    return '  <url><loc>%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority>%s</url>' % (loc, lm, f, p, imgs)
+sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+      sm_url(BASE + "/", lastmod(BASE + "/"), "weekly", "1.0")]
+sm += [sm_url(u, lastmod(u), f, p) for u, f, p in urls]
 sm += ['  <url><loc>%s/%s</loc><lastmod>%s</lastmod><changefreq>yearly</changefreq><priority>%s</priority></url>' % (BASE, f, lastmod("%s/%s" % (BASE, f)), p) for f, p in (("oferta.html", "0.3"), ("privacy.html", "0.2"), ("consent.html", "0.2"))]
 _live = {BASE + "/"} | {u for u, _, _ in urls} | {"%s/%s" % (BASE, f) for f in ("oferta.html", "privacy.html", "consent.html")}
 open(LASTMOD_FILE, "w", encoding="utf-8").write(json.dumps({k: v for k, v in sorted(LASTMOD.items()) if k in _live}, ensure_ascii=False, indent=0) + "\n")
