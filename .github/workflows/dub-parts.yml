@@ -70,8 +70,8 @@ jobs:
           pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
           pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
           python -m spacy download en_core_web_sm -q || true
-      - name: SILMA TTS (только src=silma) — своё окружение
-        if: needs.plan.outputs.src == 'silma'
+      - name: SILMA TTS (арабский или src=silma) — своё окружение
+        if: needs.plan.outputs.src == 'silma' || needs.plan.outputs.lang == 'ar'
         run: |
           python -m venv ~/silma
           ~/silma/bin/pip install -q torch==2.6.0 torchaudio==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cpu
