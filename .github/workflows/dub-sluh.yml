@@ -1,6 +1,6 @@
 name: dub-sluh
 # Слух дубляжа «для носителя» (26.11): естественность (UTMOS) источник → перекраска → итог, мелодия вопросов, разборчивость.
-# Запуск — строки в sluh-request.txt: «<сборка> <язык> [сколько реплик]», каждая строка — отдельное задание. Итог — out_sluh/<сборка>/.
+# Запуск — строки в sluh-request.txt: «<сборка> <язык> [сколько реплик | q | pik | pre]» (q, pik, pre — пробы улучшений, dub_sluh_lab.py), каждая строка — отдельное задание. Итог — out_sluh/<сборка>/.
 on:
   push:
     branches: [golos-en]
@@ -55,11 +55,13 @@ jobs:
           mkdir -p "tmp_dubsrc/$NAME"
           gh release download "studio-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME" || gh release download "dubsrc-$NAME" -R ${{ github.repository }} -p dub.zip -D "tmp_dubsrc/$NAME"
       - name: Слух
-        run: python dub_sluh.py "$NAME" "$LANG_" "${{ matrix.j.n }}"
+        run: |
+          N="${{ matrix.j.n }}"
+          if [[ "$N" =~ ^[0-9]+$ ]]; then python dub_sluh.py "$NAME" "$LANG_" "$N"; else python dub_sluh_lab.py "$NAME" "$LANG_" "$N"; fi   # q | pik | pre — пробы улучшений
       - name: В ветку
         if: always()
         run: |
           git config user.name dub; git config user.email dub@users.noreply.github.com
-          git add out_sluh/$NAME/$LANG_.md out_sluh/$NAME/$LANG_.json out_sluh/$NAME/pairs_$LANG_.mp3 2>/dev/null || true
+          git add out_sluh/$NAME/$LANG_.md out_sluh/$NAME/$LANG_.json out_sluh/$NAME/pairs_$LANG_.mp3 out_sluh/$NAME/lab_*_$LANG_.* 2>/dev/null || true
           git commit -qm "слух дубляжа $NAME $LANG_ [skip ci]" || echo nothing
           for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done

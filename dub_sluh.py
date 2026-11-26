@@ -13,7 +13,7 @@ import numpy as np
 import dubcore as D
 
 NAME, LANG = sys.argv[1], sys.argv[2]
-LIM = int(sys.argv[3]) if len(sys.argv) > 3 else 0
+LIM = int(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3].isdigit() else 0
 SRM = 44100
 G = json.load(open("geroi.json", encoding="utf-8"))
 OUT = os.path.join("out_sluh", NAME)
