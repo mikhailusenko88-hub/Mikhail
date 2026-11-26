@@ -1,15 +1,15 @@
-URL: https://www.okeydostavka.ru/spb/tovary-dlia-doma/tovary-dlia-kukhni/prigotovlenie/kastriulia-chugunnaia-ember-enamel-4-3l
+URL: https://lenta.com/product/kastryulya-kuhni-rossii-chugun-emal-aerc-6-kitajj-889569/
 КОД: 401
 ЗАГОЛОВКИ:
 Server: QRATOR
-Date: Thu, 26 Nov 2026 17:22:27 GMT
+Date: Thu, 26 Nov 2026 17:32:55 GMT
 Content-Type: text/html
 Content-Length: 265
 Connection: close
 Cache-Control: no-cache, no-store, must-revalidate
 Pragma: no-cache
 Expires: 0
-Set-Cookie: qrator_jsr=1795713747.621.ZdUIrr5dxhDPAOhb-2eeo2op0ojkb15d0vdj8rr1d8vf7le6a-00; Max-Age=300; Path=/;  Domain=.lenta.com;
+Set-Cookie: qrator_jsr=1795714375.896.dutnujYIaY7FoGfP-chdqgbsafll4uqid1oeptb87na0j4fo6-00; Max-Age=300; Path=/;  Domain=.lenta.com;
 
 
 

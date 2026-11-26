@@ -1,17 +1,24 @@
-URL: https://lenta.com/product/kastryulya-kuhni-rossiichugunemal5l-aerc-7-kitajj-889559/
-КОД: 401
+URL: https://kuper.ru/fdlenta/kastryulya-homeclub-kuhni-rossii-5-l-b3c60e5
+КОД: 403
 ЗАГОЛОВКИ:
-Server: QRATOR
-Date: Thu, 26 Nov 2026 17:22:24 GMT
+Server: nginx
+Date: Thu, 26 Nov 2026 17:32:52 GMT
 Content-Type: text/html
-Content-Length: 265
+Content-Length: 4251
 Connection: close
-Cache-Control: no-cache, no-store, must-revalidate
-Pragma: no-cache
-Expires: 0
-Set-Cookie: qrator_jsr=1795713744.521.iBAYjcv9bo4nd9Ib-5kkd9sbtflg6k6vtlua5k1pdnth59sg3-00; Max-Age=300; Path=/;  Domain=.lenta.com;
+Vary: Accept-Encoding
+access-control-allow-origin: *
+X-SP-CRID: 9951211:1
 
-
+Купер 
+ Отключите VPN
+ А после — обновите страницу.
+ И всё заработает
+ Обновить 
+ Если вы видите это сообщение, хотя VPN отключён, скопируйте системную информацию и отправьте её в службу поддержки.
+ Скопировать 
+ 2026-11-26 17:32:52 +0000
+ IP: 20.169.93.38
+ ID: qWrVHoPVd0U1
 
 ССЫЛКИ:
-data:,

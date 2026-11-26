@@ -1,7 +1,0 @@
-URL: https://www.globus.ru/products/kastryulya-chugunnaya-emalirovannaya-my-iron-cook-s-kryshkoj-22l-944658_ST
-КОД: ошибка: <urlopen error timed out>
-ЗАГОЛОВКИ:
-
-
-
-ССЫЛКИ:
