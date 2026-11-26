@@ -15,7 +15,7 @@ OUT = "cast10"
 HELD = (1, 3, 4, 7, 8, 10, 12, 13, 15, 16)          # фразы phrases24 вне подбора (подбор шёл на 0, 2, 5, 6, 9, 11, 14, 17)
 NPAIR = 6
 NAME = {"n4": ("№4", "svoy_golos", "kbd_eduard"), "xenia": ("xenia — основа Барсика", "svoy_barsik", "bak_aigul"),
-        "kseniya": ("kseniya — основа Рона", "svoy_ron", "bak_alfia")}
+        "kseniya": ("kseniya — основа Рона", "svoy_ron", "bak_alfia"), "pik": ("голос Apple — Пик (только мерка)", "svoy_pik", "bak_ramilia")}
 log = lambda *a: print(*a, flush=True)
 
 
@@ -78,10 +78,12 @@ def main(target, pin=False):
     else:
         spk = target
     TW = []
+    import tgt_ref
     for t in held:
-        a = ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000,
-                           put_accent=True, put_yo=True)
-        TW.append(a.numpy().copy())
+        r = tgt_ref.rec(target, t)
+        a = r if r is not None else ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000,
+                                                    put_accent=True, put_yo=True).numpy()
+        TW.append(np.asarray(a).copy())
     del ru
 
     def emb_all(W):
@@ -283,8 +285,9 @@ def merge():
         if p["target"] == "n4":
             add.append({"name": "свой:№4", "group": "№4", "target": "n4@syn", "mix": mix, "kind": "mix", "note": "выращенный тембр и манера под №4"})
         else:
-            hero, F = ("Барсик", 1.12) if p["target"] == "xenia" else ("Рон", 1.08)
-            add.append({"name": f"свой:{p['target']}", "group": p["target"], "target": f"{p['target']}@syn", "mix": mix, "kind": "mix", "note": f"выращенный голос под {p['target']} (без движка)"})
+            hero, F = {"xenia": ("Барсик", 1.12), "kseniya": ("Рон", 1.08), "pik": ("Пик", 1.25)}[p["target"]]
+            if p["target"] != "pik":           # у Пика нет образца «без движка» в слухе (голос Apple делает только Мак)
+                add.append({"name": f"свой:{p['target']}", "group": p["target"], "target": f"{p['target']}@syn", "mix": mix, "kind": "mix", "note": f"выращенный голос под {p['target']} (без движка)"})
             for Fk in (F, round(F - 0.04, 2), round(F + 0.04, 2)):
                 add.append({"name": f"свой:{hero}:{Fk}", "group": hero, "target": f"{hero}@g24", "mix": mix, "F": Fk, "auto": True, "eq": False, "kind": "emu",
                             "note": f"выращенный голос + подделка движка, форманты ×{Fk}"})

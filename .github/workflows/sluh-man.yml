@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [n4, xenia, kseniya]
+        target: [n4, xenia, kseniya, pik]
         rate: [medium, fast]
     steps:
       - uses: actions/checkout@v4

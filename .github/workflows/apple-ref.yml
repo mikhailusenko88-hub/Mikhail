@@ -1,0 +1,67 @@
+name: apple-ref
+# Образец голоса Apple для подбора своего голоса Пику (26.11.2026) — ТОЛЬКО МЕРКА, в ролики не идёт.
+# Фразы — cast11/apple_jobs.json; синтез — tts_mac.swift (как в студии: AVSpeechSynthesizer, женский голос) на каждую фразу и высоту.
+# Итог — cast11/apple/p<высота×100>/<имя>.flac. Запрос: apple-ref-request.txt
+on:
+  push:
+    branches: [svoy-golos]
+    paths: ['apple-ref-request.txt']
+permissions:
+  contents: write
+jobs:
+  apple:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            cast11
+            tts_mac.swift
+            apple-ref-request.txt
+          sparse-checkout-cone-mode: false
+      - name: Инструменты
+        run: |
+          swiftc -O tts_mac.swift -o tts 2>&1 | tail -5
+          npm init -y >/dev/null && npm i ffmpeg-static >/dev/null 2>&1
+          echo "FF=$(node -e "process.stdout.write(require('ffmpeg-static'))")" >> $GITHUB_ENV
+      - name: Прогрев голоса
+        run: |
+          echo '[{"name":"w","text":"Раз, два, три. Проверка голоса.","ipa":[],"base":"female","pitch":1.0,"rate":0.52}]' > /tmp/w.json
+          for i in 1 2 3 4 5 6; do perl -e 'alarm 60; exec @ARGV' ./tts /tmp/w.json /tmp/warm 0 2>&1 | tail -1; done
+      - name: Синтез
+        run: |
+          python3 - <<'EOF'
+          import json, os, subprocess
+          J = json.load(open("cast11/apple_jobs.json", encoding="utf-8"))
+          FF = os.environ["FF"]
+          bad = []
+          for p in J["pitch"]:
+              d = f"cast11/apple/p{round(p * 100)}"; os.makedirs(d, exist_ok=True)
+              for j in J["jobs"]:
+                  out = f"{d}/{j['name']}.flac"
+                  if os.path.exists(out):
+                      continue
+                  text = j["text"].replace("+", "").replace("́", "")
+                  jf = "/tmp/job.json"
+                  json.dump([{"name": j["name"], "text": text, "ipa": [], "base": "female", "pitch": p, "rate": J["rate"]}], open(jf, "w"), ensure_ascii=False)
+                  ok = False
+                  for _ in range(3):
+                      subprocess.run(["perl", "-e", "alarm 60; exec @ARGV", "./tts", jf, "/tmp/caf", "0"], capture_output=True)
+                      caf = f"/tmp/caf/{j['name']}.caf"
+                      if os.path.exists(caf) and os.path.getsize(caf) > 2000:
+                          subprocess.run([FF, "-v", "error", "-y", "-i", caf, "-ac", "1", out], check=True); os.remove(caf); ok = True; break
+                  if not ok:
+                      bad.append((p, j["text"]))
+              print("высота", p, "готово", len(os.listdir(d)))
+          print("сбои:", len(bad), bad[:5])
+          EOF
+      - name: В ветку
+        run: |
+          git config user.name svoy-golos; git config user.email svoy-golos@users.noreply.github.com
+          rm -rf /tmp/res && cp -r cast11/apple /tmp/res
+          for i in 1 2 3; do
+            git fetch -q --depth 1 origin svoy-golos && git checkout -q -f -B res FETCH_HEAD && mkdir -p cast11/apple && cp -r /tmp/res/. cast11/apple/
+            git add -A cast11/apple; git commit -q -m "apple-ref: образец голоса Apple для подбора Пику (только мерка)" || echo nothing
+            git push origin HEAD:svoy-golos && break; sleep 5
+          done

@@ -51,7 +51,7 @@ def contour(x48, sr=48000):
     return {"f": fc, "e": ec, "dur": dur, "f0": float(np.median(f[v])), "sd": float(np.std(st)), "voiced": float(v.mean())}
 
 
-HERO = {"xenia": "Барсик", "kseniya": "Рон"}
+HERO = {"xenia": "Барсик", "kseniya": "Рон", "pik": "Пик"}
 
 
 def pool_phrases(n, hero=None):
@@ -113,9 +113,11 @@ def main(target, seed, rate, gens):
             ru.put(ru.build(svoy_bars.W4)); spk = svoy2.SLOT[svoy2.RU]
         else:
             spk = target
+        import tgt_ref
         for t in extra_ph:
-            a = ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000, put_accent=True, put_yo=True)
-            PH.append(t); TWall.append(a.numpy().copy())
+            r = tgt_ref.rec(target, t)
+            a = r if r is not None else ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000, put_accent=True, put_yo=True).numpy()
+            PH.append(t); TWall.append(np.asarray(a).copy())
         del ru
     NV = 10 if POOL else 0
     TRAIN = list(range(len(PH) - NV)); VAL = list(range(len(PH) - NV, len(PH))) or list(range(8))

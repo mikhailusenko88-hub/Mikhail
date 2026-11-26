@@ -15,7 +15,8 @@ import numpy as np
 OUT = "cast10"
 log = lambda *a: print(*a, flush=True)
 REF = {"ecapa": (0.97, 0.30), "wavlm": (0.99, 0.92), "resem": (0.98, 0.65)}     # (образец сам с собой, в среднем с чужими) — из sluh/itog.md
-BASE = {"n4": ("g03", "low"), "eugene": ("g03", "low"), "xenia": ("ru_zhadyra", "medium"), "kseniya": ("ru_zhazira", "medium")}
+BASE = {"n4": ("g03", "low"), "eugene": ("g03", "low"), "xenia": ("ru_zhadyra", "medium"), "kseniya": ("ru_zhazira", "medium"),
+        "pik": ("ru_zara", "medium")}            # Пик (26.11): образец — запись голоса Apple (tgt_ref.py), только мерка
 NPC = int(os.environ.get("NPC", "24"))
 
 
@@ -55,9 +56,11 @@ class Lab:
             spk = target
         E = {k: [] for k in REF}
         f0, self.tw = [], []
+        import tgt_ref
         for t in self.ph:
-            a = ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk, sample_rate=48000,
-                               put_accent=True, put_yo=True)
+            r = tgt_ref.rec(target, t)
+            a = torch.tensor(r) if r is not None else ru.m.apply_tts(ssml_text=K3.text_for({"model": "ru", "pitch": "medium", "rate": "medium"}, t), speaker=spk,
+                                                                      sample_rate=48000, put_accent=True, put_yo=True)
             self.tw.append(a.numpy().copy())
             x = self.to16(a); e = sluh2.embeds(x)
             for k in E:
