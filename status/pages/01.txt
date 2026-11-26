@@ -1,19 +1,42 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/ff3675de-b369-4062-8782-a67299bd13d2
+URL: https://evg-group.ru
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Wed, 25 Nov 2026 06:25:14 GMT
-Content-Type: application/json
-Content-Length: 67
+Server: ddos-guard
 Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Set-Cookie: __ddg8_=sD6KnIpJneZ5hJSZ; Domain=.evg-group.ru; Path=/; Expires=Thu, 26-Nov-2026 06:41:48 GMT
+Set-Cookie: __ddg10_=1795674108; Domain=.evg-group.ru; Path=/; Expires=Thu, 26-Nov-2026 06:41:48 GMT
+Set-Cookie: __ddg9_=20.169.102.244; Domain=.evg-group.ru; Path=/; Expires=Thu, 26-Nov-2026 06:41:48 GMT
+Set-Cookie: __ddg1_=R1r1YFEkjOGDuwQEL1EB; Domain=.evg-group.ru; HttpOnly; Path=/; Expires=Fri, 26-Nov-2027 06:21:48 GMT
+date: Thu, 26 Nov 2026 06:21:48 GMT
+content-type: text/html; charset=UTF-8
+last-modified: Fri, 20 Nov 2026 11:11:19 GMT
+etag: W/"4162-660b34db07139-gzip"
+x-frame-options: SAMEORIGIN
+x-ws-id: 3
+x-host: evg-group.ru
+x-tilda-server: 26
+x-tilda-imprint: d7e23cb1-2a61-4693-86f9-11aeee799c46
+Transfer-Encoding: chunked
 
-{"error":"","sent_at":"2026-11-25T09:23:04+03:00","status":"sent"}
+Строительная группа ИВиДжи 
+ EVG — лендинг 
+ О компании 
+ Проекты 
+ Контакты 
+ +7 (812) 917-20-20 info@evg-group.ru
 
 ССЫЛКИ:
+/inprocess/
+https://evg-group.ru
+https://evg-novayaistoria.ru/
+https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&subset=latin,cyrillic
+https://fonts.gstatic.com
+https://proektnasledie.ru
+https://static.tildacdn.com
+https://static.tildacdn.com/css/tilda-grid-3.0.min.css
+https://static.tildacdn.com/tila6262-3234-4965-b736-666531663536/favicon.ico
+https://static.tildacdn.com/tila6435-6135-4431-b135-626664356261/favicon.ico
+https://static.tildacdn.com/ws/project4531994/tilda-blocks-page402044609.min.css?t=1795173078
+https://ws.tildacdn.com
+mailto:info@evg-group.ru
+tel:+78129172020

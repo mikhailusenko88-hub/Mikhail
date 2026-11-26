@@ -1,19 +1,7 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/4d3161f9-7ec2-4b88-ab22-e6538620d9e0
-КОД: 200
+URL: https://polozov.design
+КОД: ошибка: <urlopen error [Errno 101] Network is unreachable>
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Wed, 25 Nov 2026 06:25:14 GMT
-Content-Type: application/json
-Content-Length: 67
-Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
 
-{"error":"","sent_at":"2026-11-25T09:23:05+03:00","status":"sent"}
+
 
 ССЫЛКИ:

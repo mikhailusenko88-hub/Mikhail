@@ -1,19 +1,7 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/b020b11c-c73d-42e5-b17a-e1dafb46cd1e
-КОД: 200
+URL: https://n-zori.ru
+КОД: ошибка: <urlopen error timed out>
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Wed, 25 Nov 2026 06:25:15 GMT
-Content-Type: application/json
-Content-Length: 67
-Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
 
-{"error":"","sent_at":"2026-11-25T09:23:06+03:00","status":"sent"}
+
 
 ССЫЛКИ:
