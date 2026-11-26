@@ -358,13 +358,13 @@
   // ---------- заказы: от простого к трудному; каждый следующий требует новой детали ----------
   const mk = (f) => () => { const b = Route().start(-700, 600).mark(540, 'garage').flat(1300); f(b); b.flat(500).mark(420, 'mill').flat(400).fin(0).end(); return b.S; };
   const CONTRACTS = [
-    { id: 'village', name: ['Firewood for the village', 'Дрова в деревню'], cargo: 'log', pay: 25, need: [], build: mk((b) => { // задний привод: мелкая грязь, пологий холм, мелкий брод, пара ухабов
+    { id: 'village', name: ['Firewood for the village', 'Дрова в деревню'], cargo: 'log', pay: 28, need: [], build: mk((b) => { // задний привод: мелкая грязь, пологий холм, мелкий брод, пара ухабов
       b.sign(-190, 'soil', 'shallow').mud(700, ZONES.shallow).flat(500).cp(-300).hill(900, 90).flat(400).cp(-250);
       b.sign(-170, 'ford', 0.5).ford(600, 27).flat(500).cp(-300).bump(60, 12).flat(260).bump(60, 12); }) },
-    { id: 'farm', name: ['Logs to the farm', 'Брёвна на хутор'], cargo: 'log', pay: 40, need: [['awd', 1]], build: mk((b) => { // нужен полный привод: мягкая грязь подлиннее и затяжной подъём
-      b.sign(-190, 'soil', 'soft').mud(1200, ZONES.soft).flat(500).cp(-300).sign(-170, 'climb', 20).slope(1400, 420).flat(500).cp(-300);
+    { id: 'farm', name: ['Logs to the farm', 'Брёвна на хутор'], cargo: 'log', pay: 40, need: [['awd', 1]], build: mk((b) => { // нужен полный привод: мягкая грязь подлиннее и затяжной подъём. Грязь 17 м: без 4×4 садишься, с 4×4 стартовый грузовик проходит её и с полным кузовом (при 22 м полный кузов застревал у самого выезда)
+      b.sign(-190, 'soil', 'soft').mud(900, ZONES.soft).flat(500).cp(-300).sign(-170, 'climb', 20).slope(1400, 420).flat(500).cp(-300);
       b.sign(-170, 'ford', 0.7).ford(700, 38).flat(400).cp(-250).sign(-190, 'soil', 'soft').mud(800, ZONES.soft); }) },
-    { id: 'creek', name: ['Melons across the creek', 'Арбузы через ручей'], cargo: 'melon', pay: 50, need: [['awd', 1], ['low', 1]], build: mk((b) => { // нужна пониженная: брод, песок с хода, гребёнка (арбузы прыгают), крутой подъём
+    { id: 'creek', name: ['Melons across the creek', 'Арбузы через ручей'], cargo: 'melon', pay: 60, need: [['awd', 1], ['low', 1]], build: mk((b) => { // нужна пониженная: брод, песок с хода, гребёнка (арбузы прыгают), крутой подъём
       b.sign(-170, 'ford', 0.9).ford(800, 49).flat(500).cp(-300).sign(-190, 'soil', 'sand').mud(1300, ZONES.sand).flat(500).can(-150).cp(-300);
       b.bump(70, 15).flat(190).bump(70, 15).flat(190).bump(70, 15).flat(500).cp(-300).sign(-170, 'climb', 28).slope(1400, 620).flat(900).cp(-300).sign(-170, 'crest', 0.55).crest(240, 55); }) },
     { id: 'pit', name: ['Barrels to the clay pit', 'Бочки в карьер'], cargo: 'barrel', pay: 150, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1]], build: mk((b) => { // нужна блокировка: глина, подъём после неё, средняя грязь — а бочки тяжёлые

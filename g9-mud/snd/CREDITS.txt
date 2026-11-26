@@ -1,0 +1,8 @@
+Sounds and music in Mud Haul — all released into the public domain (CC0 1.0), credit not required:
+- Interface sounds (click, on, off, no, warn, cp, fail): "Interface Sounds" by Kenney, kenney.nl
+- Coins, buy, fuel can, hook: "50 RPG sound effects" by Kenney, kenney.nl
+- Mud: "25 CC0 mud sfx" by rubberduck, opengameart.org
+- Splash: "40 CC0 water / splash / slime SFX" by rubberduck, opengameart.org
+- Cargo falling: "100 CC0 metal and wood SFX" by rubberduck, opengameart.org
+- Engine: "racing car engine sound loops" by domasx2, opengameart.org (from a public domain recording), pitched down
+- Music "Gone Fishin'" and jingle "The Reel Winner" by Memoraphile (You're Perfect Studio), opengameart.org, CC0
