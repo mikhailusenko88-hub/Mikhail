@@ -1,6 +1,6 @@
 name: img-fetch
 # Скачать картинки, которые не открываются из облака: список — pages/img.txt («имя | адрес»).
-# Результат — status/img/<имя>.jpg (уменьшено до 360 px по ширине) и status/img/list.txt.
+# Результат — status/img/<имя>.img (как скачано) и status/img/list.txt.
 on:
   push:
     branches: [domain-check]
@@ -23,7 +23,7 @@ jobs:
           grep -v '^#' pages/img.txt | grep '|' | while IFS='|' read -r n u; do
             n=$(echo "$n" | xargs); u=$(echo "$u" | xargs)
             if curl -sSL -m 40 -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15' -o "/tmp/$n.bin" "$u"; then
-              convert "/tmp/$n.bin[0]" -background white -flatten -resize '360x360>' -quality 76 "status/img/$n.jpg" && echo "$n ok $(stat -c%s status/img/$n.jpg)" >> status/img/list.txt || echo "$n convert-fail" >> status/img/list.txt
+              cp "/tmp/$n.bin" "status/img/$n.img" && echo "$n ok $(stat -c%s status/img/$n.img) $(file -b --mime-type status/img/$n.img)" >> status/img/list.txt
             else echo "$n download-fail" >> status/img/list.txt; fi
           done
           cat status/img/list.txt

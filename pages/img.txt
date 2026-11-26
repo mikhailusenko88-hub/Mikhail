@@ -14,3 +14,4 @@ savosa | https://avatars.mds.yandex.net/get-mpic/4888456/2a00000195a9912673902be
 staub | https://avatars.mds.yandex.net/get-mpic/18316420/2a0000019b8f0f8ad577640f110063d20fd4/600x800_multiply
 lecreuset | https://avatars.mds.yandex.net/get-mpic/14775361/2a0000019a2f8289e0f778c7293695b05d21/orig
 utk27 | https://avatars.mds.yandex.net/get-mpic/16396243/2a0000019a2b65bed0bd8f2b007afc7e1e00/600x800_multiply
+# 2026-11-26_17:23 повтор без convert
