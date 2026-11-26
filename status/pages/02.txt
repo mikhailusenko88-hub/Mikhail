@@ -1,8 +1,0 @@
-URL: https://zoon.ru/spb/trainings/type/kursy_dizajna_interera/page-2/
-КОД: 103
-ЗАГОЛОВКИ:
-link: <//zoon.ru/fonts3/montserrat-800-cyr-lat.woff2?v=2>; rel=preload; as=font; crossorigin; fetchpriority=low,<//zoon.ru/fonts3/roboto-100-cyr-lat.woff2?v=2>; rel=preload; as=font; crossorigin; fetchpriority=low,<//zoon.ru/fonts3/roboto-400-cyr-lat.woff2?v=2>; rel=preload; as=font; crossorigin; fetchpriority=low,<//zoon.ru/fonts3/roboto-700-cyr-lat.woff2?v=2>; rel=preload; as=font; crossorigin; fetchpriority=low,<//zoon.ru/lib/jquery-3.7.0.1.min.js>; rel=preload; as=script; fetchpriority=high,<//zoon.ru/lib/require-2.3.8.lite.min.js>; rel=preload; as=script; fetchpriority=high,<//zoon.ru/build/shared/bootstrap.js?v=gT-1UGpokPI>; rel=preload; as=script; fetchpriority=high,<//zoon.ru/build/build3.js?v=m27LyaLz6qQ>; rel=preload; as=script; fetchpriority=high,<//mc.yandex.ru/metrika/tag.js>; rel=preload; as=script; fetchpriority=low,<//zoon.ru/build/main/desktop.css?v=ALLHlHDSb4A>; rel=preload; as=style; fetchpriority=high
-
-
-
-ССЫЛКИ:

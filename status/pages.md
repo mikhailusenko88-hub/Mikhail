@@ -1,6 +1,3 @@
 # Снятые страницы
 
-- 01 103 https://zoon.ru/spb/trainings/type/kursy_dizajna_interera/ (0 симв.)
-- 02 103 https://zoon.ru/spb/trainings/type/kursy_dizajna_interera/page-2/ (0 симв.)
-- 03 103 https://zoon.ru/spb/trainings/type/kursy_dizajna_interera/page-3/ (0 симв.)
-- 04 103 https://zoon.ru/spb/trainings/type/kursy_dizajna_interera/page-4/ (0 симв.)
+- 01 200 https://crm.nashdekor.ru/api/outbox/status/7f451470-7c43-4479-8a08-524292a5b3e9 (66 симв.)
