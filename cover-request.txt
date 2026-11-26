@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 34
-34dub 34 v2.py
-en;EPISODE 34;DID THE ACORN WAKE UP?
-fr;ÉPISODE 34;LE GLAND S'EST RÉVEILLÉ ?
-ar;الحلقة 34;هل استيقظت البلوطة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 35
+35d 35 v3.py
+en;EPISODE 35;A SPROUT UNDER THE SNOW?
+fr;ÉPISODE 35;UNE POUSSE SOUS LA NEIGE ?
+ar;الحلقة 35;نبتة تحت الثلج؟
