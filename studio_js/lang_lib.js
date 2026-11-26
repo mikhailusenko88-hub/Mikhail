@@ -45,8 +45,11 @@ window.trDesc=function(lang,d){
 window.openLang=async function(lang){
   let row=[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>r.innerText.trim().startsWith(lang));
   if(row){ [...row.querySelectorAll('button, ytcp-button')].find(b=>b.getClientRects().length).click(); await sleep(2500); return 'row'; }
-  const add=[...document.querySelectorAll('ytcp-button, button')].find(b=>b.getClientRects().length && /Add language/i.test(b.innerText)); add.click(); await sleep(1500);
-  const it=[...document.querySelectorAll('tp-yt-paper-item, [role=option]')].filter(x=>x.getClientRects().length).find(x=>x.innerText.trim()===lang);
+  // 26.11: список языков после закрытия окна прошлого языка появляется не сразу — ждать до 6 с; если список уже открыт, «Add language» не нажимать (закроет его)
+  const find=()=>[...document.querySelectorAll('tp-yt-paper-item, [role=option]')].filter(x=>x.getClientRects().length).find(x=>x.innerText.trim()===lang);
+  let it=find();
+  if(!it){ const add=[...document.querySelectorAll('ytcp-button, button')].find(b=>b.getClientRects().length && /Add language/i.test(b.innerText)); add.click();
+    for(let k=0;k<12 && !(it=find());k++) await sleep(500); }
   if(!it) return 'нет языка в списке'; it.click(); await sleep(2500); return 'new';
 }
 window.job=async function(j){
@@ -59,9 +62,9 @@ window.job=async function(j){
     for(const [e,v,nm] of [[te,TT,'t'],[de,DD,'d']]){ if(!e){log.push(nm+'?');continue;} if(e.innerText.trim().length>3){log.push(nm+'=есть');continue;} e.focus(); document.execCommand('selectAll'); document.execCommand('insertText',false,v); await sleep(400); log.push(nm+'+'); }
     const tr=[...dlg.querySelectorAll('tr')].find(t=>t.getClientRects().length && /^Thumbnail/.test(t.innerText.trim()));
     const ab=tr && btnIn(tr,/^Add$/);
-    if(ab){ ab.click(); await sleep(1500); const b=await getBlob(j.cover); const inp=document.querySelector('#file-loader');
+    if(ab && j.cover){ ab.click(); await sleep(1500); const b=await getBlob(j.cover); const inp=document.querySelector('#file-loader');
       if(b && inp){ const dt=new DataTransfer(); dt.items.add(new File([b],j.cname,{type:'image/jpeg'})); inp.files=dt.files; inp.dispatchEvent(new Event('change',{bubbles:true})); await sleep(4000); log.push('обл+'+b.size);} else log.push('обл?'); }
-    else log.push('обл=есть');
+    else log.push(j.cover?'обл=есть':'обл нет файла');
     dlg=vis().find(d=>d.innerText.trim().startsWith(j.lang));
     const up=btnIn(dlg,/^Update$/); if(up && up.getAttribute('aria-disabled')!=='true'){ up.click(); await sleep(3500); log.push('Update'); } else log.push('Update выкл');
   }
@@ -101,4 +104,7 @@ window.replAudio=async function(lang,url,name){
 
 window.BJ=async function(JOBS){ const out=[location.pathname]; for(const j of JOBS){ out.push(await job(j)); }
  out.push([...document.querySelectorAll('ytgn-video-translation-row')].map(x=>x.innerText.replace(/\s+/g,' ')).join(' | ')); return out; };
+// 26.11: пачка заданий фоном (вызов дольше 45 с обрывается): runJobs(JOBS) → через минуту-две читать window.Rn (итог) или window.Rp (по ходу); rows() — строки языков.
+window.rows=()=>[...document.querySelectorAll('ytgn-video-translation-row')].map(x=>x.innerText.replace(/\s+/g,' ')).join(' | ');
+window.runJobs=function(JOBS){ window.Rn=null; window.Rp=null; (async()=>{const out=[]; for(const j of JOBS){ try{ out.push(await job(j)); }catch(e){ out.push(j.lang+' ОШИБКА '+e); } window.Rp=out.slice(); } window.Rn=out; })(); return 'started'; };
 'BJ ok'
