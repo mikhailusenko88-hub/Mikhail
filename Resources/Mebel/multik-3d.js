@@ -3140,7 +3140,7 @@ function mediumFit(c, id, seg, lib, zk, cl) {   /* cl — крупный пла�
   return fit; }
 /** 26.11.2026: герой лежит (упал, лёг) — крупный и средний план смотрят туда, где он лежит, а не туда, где была бы голова стоя.
  *  37-я 0:05–0:07: Рон поскользнулся на льду, крупный план остался на высоте головы стоя — тело внизу кадра, мордочка со звёздочками у левого края. Теперь крупно — голова в середине кадра, камера чуть сверху;
- *  средний — всё тело. Переход плавный (как сама поза: 0,35 с упасть, «встаёт» — обратно). MK3D.LIE_CAM = false — как было. */
+ *  средний — камера ниже, на лежащего (по горизонтали как стоя: лежащий целиком входит в кадр среднего плана, а сдвиг вбок резал соседа — проба lezh1, 1:24). Переход плавный (как сама поза: 0,35 с упасть, «встаёт» — обратно). MK3D.LIE_CAM = false — как было. */
 function lieK(st) { if (!st || MK3D.LIE_CAM === false) return 0; const p = st.persist, a = st.act || {};
   if (p === 'fallen' || p === 'lie') return ease((st.pt || 0) / .35);
   if (a.n === 'stand' && (st.prev === 'fallen' || st.prev === 'lie')) return 1 - ease(a.p || 0); return 0; }
@@ -3148,7 +3148,7 @@ function lieCam(out, st, rg, close, side, hr, hy, zk) { const k = lieK(st); if (
   const hw = new THREE.Vector3(), rw = new THREE.Vector3(); rg.root.updateMatrixWorld(true); rg.head.getWorldPosition(hw); rg.root.getWorldPosition(rw);
   if (!isFinite(hw.x) || !isFinite(hw.y)) return out;
   const L = close ? { pos: new THREE.Vector3(hw.x + side * hr * .9, hw.y + hr * 1.6, hw.z + hr * 6.4 / zk), look: new THREE.Vector3(hw.x + side * hr * .15, hw.y - hr * .05, hw.z) }
-    : (() => { const cx = lerp(hw.x, rw.x, .45), cz = lerp(hw.z, rw.z, .45), cy = Math.max(.12, hw.y * .8), D = Math.max(hr * 11.5, hy * 1.9) / zk * .8; return { pos: new THREE.Vector3(cx + side * hr * 1.2, cy + hy * .45, cz + D), look: new THREE.Vector3(cx + side * hr * .3, cy, cz) }; })();
+    : (() => { const cy = Math.max(.12, hw.y * .8); return { pos: new THREE.Vector3(out.pos.x, cy + hy * .45, out.pos.z), look: new THREE.Vector3(out.look.x, cy, out.look.z) }; })();   // средний: по горизонтали как стоя (подбор mediumFit не режет соседей), по высоте — на лежащего
   return { pos: out.pos.clone().lerp(L.pos, k), look: out.look.clone().lerp(L.look, k) }; }
 function camFor(c, S, seg, lib) {
   const h = id => { const lc = lib.characters[id]; return lc ? (lc.spec.height || 1) * (lc.spec.kind === 'human' && (lc.spec.age === 'adult' || lc.spec.age === 'old') ? 1.62 : lc.spec.kind === 'human' ? 1.02 : 1) : 1; };
