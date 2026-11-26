@@ -50,8 +50,20 @@ for c in d639eb49d62fcb8e67e3964e0606d5956099f9de 2bcb045779b1b64810b0c0ea970887
 import json;d=json.load(open('/tmp/c.json'));print('commit', '$r', [f.get('filename') for f in d.get('files',[])])" >> $OUT/log.txt 2>&1 && break
   done
 done
+
+# 4) образцы через API Gitea (raw по ref коммита)
+for f in "Civilian_Boxes_1.max" "Lamp EICHHOLTZ SPITFIRE N281113.max"; do
+  e=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$f")
+  for u in "$B/api/v1/repos/blender/blender-addons-contrib/raw/$e?ref=d639eb49d62fcb8e67e3964e0606d5956099f9de" \
+           "$B/api/v1/repos/blender/blender-addons-contrib/media/$e?ref=d639eb49d62fcb8e67e3964e0606d5956099f9de"; do
+    o="$OUT/samples/$(echo "$f" | tr ' ' '_')"
+    curl -fsSL -m 120 "$u" -o "$o" && [ -s "$o" ] && { log "образец ok $f $(wc -c <"$o")"; break; } || { rm -f "$o"; log "нет $u"; }
+  done
+done
+ls -la $OUT/samples >> $OUT/log.txt
+
 # GitHub: маленькие .max в открытых репозиториях (поиск кода, токен Actions)
-if [ -n "${GH_TOKEN:-}" ]; then
+if [ -n "${GH_TOKEN:-}" ] && [ -f maxlab/gh_search ]; then
   gh api -X GET search/code -f q='extension:max size:<60000' -f per_page=30 --jq '.items[] | [.repository.full_name, .path, .sha] | @tsv' > $OUT/gh_max.tsv 2>>$OUT/log.txt || true
   head -30 $OUT/gh_max.tsv >> $OUT/log.txt
   head -8 $OUT/gh_max.tsv | while IFS=$'\t' read -r repo path sha; do
