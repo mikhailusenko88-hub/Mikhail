@@ -452,6 +452,31 @@ def read_more(code, root):
     return ('<aside class="more-art"><h2>Полезно почитать</h2><ul>%s</ul></aside>' %
             "".join('<li><a href="%sstati/%s/">%s</a></li>' % (root, a["slug"], esc(a["title"])) for a in arts))
 
+# «В интерьере» — 3D-визуализации панели на карточке (26.11.2026). Рендеры img/int/<сцена>/<артикул>.jpg были только
+# на /vizual/ (noindex) и в JS главной — Яндекс и Google Картинки их не видели: картинка индексируется из src/data-src тега img
+# (yandex.ru/support/images/ru/indexing), «картинки, раскрывающиеся при помощи скрипта, обычно не индексируются».
+# alt и title — содержательные и разные у каждой картинки (yandex.ru/support/images/robot-search.html).
+INT_SCENES = (("tv", "на стене за телевизором"), ("sofa", "на стене за диваном в гостиной"),
+              ("bed", "в изголовье кровати в спальне"), ("hall", "в прихожей"))
+try:
+    _im = json.load(open(os.path.join(SITE, "img", "int", "manifest.json"), encoding="utf-8"))
+    INT_MAN, INT_V = _im.get("scenes", {}), str(_im.get("v", ""))
+except Exception:
+    INT_MAN, INT_V = {}, ""
+def int_shot(sc, s): return s in INT_MAN.get(sc, ()) and os.path.exists(os.path.join(SITE, "img", "int", sc, s + ".jpg"))
+def int_img(sc, s, alt, root, sizes="(max-width: 860px) 50vw, 220px"):
+    full = "%simg/int/%s/%s.jpg" % (root, sc, s); v = ("?v=" + INT_V) if INT_V else ""
+    th = "%simg/int/%s/t/%s.jpg" % (root, sc, s)
+    srcset = (' srcset="%s%s 450w, %s%s 1350w" sizes="%s"' % (th, v, full, v, sizes)) if os.path.exists(os.path.join(SITE, "img", "int", sc, "t", s + ".jpg")) else ""
+    return '<img src="%s%s"%s alt="%s" title="%s" loading="lazy" width="1350" height="900">' % (full, v, srcset, esc(alt), esc(alt))
+def int_gallery(x, root):
+    s = slug(x["a"]); shots = [(sc, w) for sc, w in INT_SCENES if int_shot(sc, s)]
+    if not shots: return ""
+    what = "%s %s (%s)" % (KIND[x["c"]], x["a"], x["d"].split(",")[0])
+    return ('<div class="gal int"><h2>В интерьере</h2><p class="note">3D-визуализация: так %s смотрится на стене целиком.</p><div class="galgrid" style="grid-template-columns:repeat(2,1fr)">%s</div></div>' % (
+        esc(x["a"]), "".join('<a href="%simg/int/%s/%s.jpg" target="_blank" rel="noopener">%s</a>' % (root, sc, s, int_img(sc, s, "%s %s — 3D-визуализация" % (what, w), root))
+                             for sc, w in shots)))
+
 def product_page(x):
     a, c = x["a"], x["c"]
     sl = slug(a); url = "%s/p/%s/" % (BASE, sl); catc = CAT_BY[c]
@@ -568,7 +593,7 @@ def product_page(x):
     if is_wood: data["wood"] = wood_parts(x); data["tex"] = "img/tex/" + PHOTO[a] + "?v=" + PHOTO_V if PHOTO.get(a) else ""
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
-            '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + gal_html + prof_html + specs_html +
+            '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + gal_html + int_gallery(x, ROOT) + prof_html + specs_html +
             '<div class="about"><h2>О товаре</h2>%s</div>%s%s</div>%s</div></div>' % (about(x), read_more(c, ROOT), revs_html, buy) +
             with_it + related + lead_form(x) + "</main>" + footer(ROOT) +
             ('<script src="/mebel/_lib/three.min.js"></script><script src="/mebel/_lib/OrbitControls.js"></script>' if has3d else "") +
@@ -727,6 +752,12 @@ def fill_article(body):
     body = re.sub(r"\{c:([^}]+)\}", catl, body)
     body = re.sub(r"\{img:([^|}]+)\|([^}]+)\}", img, body)
     body = re.sub(r"\{svg:([^}]+)\}", lambda m: SVG.get(m.group(1), ""), body)
+    def intf(m):   # {int:tv/3-9|подпись} → 3D-интерьер со ссылкой на товар (26.11.2026)
+        sc, s_, cap = m.group(1), m.group(2), m.group(3); x = next((y for y in CAT if slug(y["a"]) == s_), None)
+        if not int_shot(sc, s_): return ""
+        im = int_img(sc, s_, cap, ROOT, "(max-width: 860px) 100vw, 790px")
+        return '<figure>%s<figcaption>%s</figcaption></figure>' % (('<a href="%sp/%s/">%s</a>' % (ROOT, s_, im)) if x else im, esc(cap))
+    body = re.sub(r"\{int:([a-z0-9]+)/([^|}]+)\|([^}]+)\}", intf, body)
     body = re.sub(r"\{pic:([^|}]+)\|([^}]*)\}", lambda m: '<figure><img src="%simg/stati/%s" alt="%s" loading="lazy">%s</figure>' % (
         ROOT, esc(m.group(1)), esc(m.group(2) or "фото"), ("<figcaption>%s</figcaption>" % esc(m.group(2))) if m.group(2) else ""), body)
     return body
