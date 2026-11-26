@@ -262,6 +262,12 @@ def make_ornament(cx, col):
         me.update()
         for pg in me.polygons:
             pg.use_smooth = True
+        NR = np.array(verts)
+        NR /= np.linalg.norm(NR, axis=1, keepdims=True)              # нормали как у целой сферы — швов между осколками не видно
+        try:
+            me.normals_split_custom_set_from_vertices([tuple(v) for v in NR])
+        except Exception as ex:
+            print("нормали:", ex, flush=True)
         o = bpy.data.objects.new(f"sh_{col}_{pid}", me)
         sc.collection.objects.link(o)
         o.location = (cx + c[0], c[1], cz + c[2])
