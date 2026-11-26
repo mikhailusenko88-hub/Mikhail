@@ -91,7 +91,7 @@ window.replAudio=async function(lang,url,name){
     const del=[...document.querySelectorAll('tp-yt-paper-item, [role=menuitem], ytcp-ve, yt-formatted-string')].filter(x=>x.getClientRects().length).find(x=>/^Delete$/i.test(x.innerText.trim()));
     if(!del) return log.concat('нет Delete').join(' ');
     del.click(); await sleep(1500);
-    const cd=[...document.querySelectorAll('ytcp-confirmation-dialog')].find(d=>d.getClientRects().length);
+    const cd=[...document.querySelectorAll('ytcp-confirmation-dialog')].find(d=>d.getClientRects().length && /Delete track/.test(d.innerText));   // 26.11: без проверки текста попадал не в то окно
     const cb=cd && btnIn(cd,/^(Confirm|Delete)$/i); if(!cb) return log.concat('нет Confirm').join(' ');
     cb.click(); await sleep(3500); log.push('старая удалена');
   } else log.push('дорожки не было');
