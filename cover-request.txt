@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 30
-30dub 30 plan.json
-en;EPISODE 30;WHO BIT THE MOON?
-fr;ÉPISODE 30;QUI A CROQUÉ LA LUNE ?
-ar;الحلقة 30;من قضم القمر؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 28
+28dub 28 plan.json
+en;EPISODE 28;A SECOND RON|IN THE MIRROR?
+fr;ÉPISODE 28;UN DEUXIÈME RON|DANS LE MIROIR ?
+ar;الحلقة 28;رون ثان|في المرآة؟
