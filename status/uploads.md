@@ -62,3 +62,4 @@
 | 2026-11-25 | 3 | mass_cars №9 | Jiguli | https://youtube.com/shorts/IKhK1WD30Dw | public |
 | 2026-11-26 | 1 | mass_cars №10 | Gentra | https://youtube.com/shorts/B5xutGPfsh8 | public |
 | 2026-11-26 | 2 | mass_cities №5 | Qoʻqon | https://youtube.com/shorts/5r3Ae6cv9C4 | public |
+| 2026-11-26 | 3 | mass_cars №11 | Tico | https://youtube.com/shorts/Ki0KPOMteic | public |

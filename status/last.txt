@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-26 слот 2: mass_cities №5 https://youtube.com/shorts/5r3Ae6cv9C4, за 41 с
+ВЫЛОЖЕНО 2026-11-26 слот 3: mass_cars №11 https://youtube.com/shorts/Ki0KPOMteic, за 33 с
 
 {
- "title": "1000 ta shar! Samarqand, Qarshi, Chirchiq… Qaysi shahar yutadi? Какой город победит? №5 #shorts",
- "description": "1000 ta shar — 10 ta shahar. Qaysi shaharning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 городов Узбекистана. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Toshkent, Qoʻqon, Namangan, Xiva, Qarshi, Asaka, Samarqand, Chirchiq, Angren, Olmaliq\n\nSen qaysi shahar muxlisisan? Izohlarda yoz 👇\nЗа какой город болеешь? Пиши в комментариях 👇\nShahring yoʻqmi? Yoz — qoʻshamiz! · Нет твоего города? Напиши — добавим!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #1000tashar #гонкашариков #shorts",
+ "title": "1000 ta shar! Nexia, Gentra, Equinox… Qaysi mashina yutadi? Какая машина победит? №11 #shorts",
+ "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Lacetti, Nexia, Equinox, Tracker, Gentra, Captiva, Kia K5, Damas, Tico, Cobalt\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -13,29 +13,30 @@
   "marble race",
   "1000 ta shar",
   "1000 шариков",
-  "qaysi shahar yutadi",
-  "какой город победит",
-  "города узбекистана",
+  "qaysi mashina yutadi",
+  "какая машина победит",
+  "mashina",
+  "chevrolet",
   "1000 marbles",
-  "Toshkent",
-  "Qoʻqon",
-  "Namangan",
-  "Xiva"
+  "Lacetti",
+  "Nexia",
+  "Equinox",
+  "Tracker"
  ]
 }
 
 --- журнал (время Ташкента) ---
-15:36:20 режим publish, событие workflow_dispatch
-15:36:20 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-15:36:31 комментарии: роликов просмотрено: 15, комментариев: 1
-15:36:32 «1000 ta shar» (cities) №5: Toshkent, Qoʻqon, Namangan, Xiva, Qarshi, Asaka, Samarqand, Chirchiq, Angren, Olmaliq
-15:36:36 «1000 шарик»: действие 20.1 с, ролик 24.7 с; в кубке 348; победа Qoʻqon 42
-15:36:37 кадр 0 / 740
-15:36:41 кадр 150 / 740
-15:36:45 кадр 300 / 740
-15:36:48 кадр 450 / 740
-15:36:51 кадр 600 / 740
-15:36:58 ролик готов: 25 с, 11 МБ, сборка 39 с; победил Qoʻqon, топ-3: Qoʻqon, Olmaliq, Xiva, в кубке 348
-15:37:00 YouTube: https://youtube.com/shorts/5r3Ae6cv9C4
-15:37:01 в плейлисте
-15:37:01 статус: public uploaded
+19:35:35 режим publish, событие workflow_dispatch
+19:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+19:35:48 комментарии: роликов просмотрено: 15, комментариев: 1
+19:35:49 «1000 ta shar» (cars) №11: Lacetti, Nexia, Equinox, Tracker, Gentra, Captiva, Kia K5, Damas, Tico, Cobalt
+19:35:52 «1000 шарик»: действие 19.7 с, ролик 24.2 с; в кубке 393; победа Tico 45
+19:35:52 кадр 0 / 727
+19:35:55 кадр 150 / 727
+19:35:57 кадр 300 / 727
+19:35:59 кадр 450 / 727
+19:36:01 кадр 600 / 727
+19:36:06 ролик готов: 24 с, 12 МБ, сборка 30 с; победил Tico, топ-3: Tico, Kia K5, Damas, в кубке 393
+19:36:08 YouTube: https://youtube.com/shorts/Ki0KPOMteic
+19:36:08 в плейлисте
+19:36:09 статус: public uploaded
