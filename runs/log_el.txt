@@ -1,0 +1,5 @@
+[00:02] страница: Failed to load resource: the server responded with a status of 404 (Not Found)
+[00:02] страница готова; видеокарта: ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)
+[00:02] СБОЙ студии: Error: ENOENT: no such file or directory, open 'scripts/.txt'
+    at Object.readFileSync (node:fs:440:20)
+    at /Users/runner/work/Mikhail/Mikhail/studio.js:188:10
