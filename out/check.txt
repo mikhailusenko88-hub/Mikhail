@@ -1,0 +1,37 @@
+blender: blender-4.2.23-linux-x64.tar.xz
+RESULT {"file": "maxlab/files/NashDekor_A201-2.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A201-2"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -11.0, 0.0, 99.9, 0.0, 2400.0], "shot": "blender_NashDekor_A201-2.png"}
+WEB https://www.innerscene.com/tools/max-viewer?embedded=1&url=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_A201-2.max
+TEXT This 3ds Max scene uses 1 texture image that was not uploaded with it, so the surfaces that use it are drawn in plain colours. A .max only records where its images were on the computer that saved it: zip the .max together with its maps folder and open the .zip, or add the image here. |  | × |  | Add the missing file |  | Drag nd_white_1.jpg in here, or click to choose it. |  | Choose file | 3ds Max Viewer by Innerscene
+MSG log: [embed] picking renderer, useThree= true
+MSG log: [embed] renderer constructed
+MSG log: [embed] loadScene done
+MSG warning: RGBELoader has been deprecated. Please use HDRLoader instead.
+RESULT {"file": "maxlab/files/NashDekor_A201.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A201"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -11.0, 0.0, 99.9, 0.0, 2000.0], "shot": "blender_NashDekor_A201.png"}
+RESULT {"file": "maxlab/files/NashDekor_A902.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A902"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -10.0, 0.0, 129.9, 0.0, 3000.0], "shot": "blender_NashDekor_A902.png"}
+RESULT {"file": "maxlab/files/NashDekor_A903.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A903"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -10.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A903.png"}
+RESULT {"file": "maxlab/files/NashDekor_A904.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A904"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -10.0, 0.0, 149.9, 0.0, 3000.0], "shot": "blender_NashDekor_A904.png"}
+RESULT {"file": "maxlab/files/NashDekor_A905.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A905"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -14.0, 0.0, 199.9, 0.0, 3000.0], "shot": "blender_NashDekor_A905.png"}
+RESULT {"file": "maxlab/files/NashDekor_A906.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A906"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -10.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A906.png"}
+RESULT {"file": "maxlab/files/NashDekor_A907.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A907"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -10.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A907.png"}
+WEB https://www.innerscene.com/tools/max-viewer?embedded=1&url=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_A907.max
+TEXT This 3ds Max scene uses 1 texture image that was not uploaded with it, so the surfaces that use it are drawn in plain colours. A .max only records where its images were on the computer that saved it: zip the .max together with its maps folder and open the .zip, or add the image here. |  | × |  | Add the missing file |  | Drag nd_white_1.jpg in here, or click to choose it. |  | Choose file | 3ds Max Viewer by Innerscene
+MSG log: [embed] picking renderer, useThree= true
+MSG log: [embed] renderer constructed
+MSG log: [embed] loadScene done
+MSG warning: RGBELoader has been deprecated. Please use HDRLoader instead.
+RESULT {"file": "maxlab/files/NashDekor_A908.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A908"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -14.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A908.png"}
+RESULT {"file": "maxlab/files/NashDekor_A910.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A910"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -12.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A910.png"}
+RESULT {"file": "maxlab/files/NashDekor_A912.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A912"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -12.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A912.png"}
+RESULT {"file": "maxlab/files/NashDekor_A913.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A913"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -12.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A913.png"}
+RESULT {"file": "maxlab/files/NashDekor_A915.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A915"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -9.0, 0.0, 149.9, 0.0, 3000.0], "shot": "blender_NashDekor_A915.png"}
+RESULT {"file": "maxlab/files/NashDekor_A916.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A916"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -12.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A916.png"}
+RESULT {"file": "maxlab/files/NashDekor_A920.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_A920"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -20.0, 0.0, 179.9, 0.0, 3000.0], "shot": "blender_NashDekor_A920.png"}
+RESULT {"file": "maxlab/files/NashDekor_GS1.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_GS1"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -13.0, 0.0, 119.9, 0.0, 3000.0], "shot": "blender_NashDekor_GS1.png"}
+RESULT {"file": "maxlab/files/NashDekor_GS2.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_GS2"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -20.0, 0.0, 119.9, 0.0, 3000.0], "shot": "blender_NashDekor_GS2.png"}
+WEB https://www.innerscene.com/tools/max-viewer?embedded=1&url=https://raw.githubusercontent.com/mikhailusenko88-hub/Mikhail/domain-check/maxlab/files/NashDekor_GS2.max
+TEXT This 3ds Max scene uses 1 texture image that was not uploaded with it, so the surfaces that use it are drawn in plain colours. A .max only records where its images were on the computer that saved it: zip the .max together with its maps folder and open the .zip, or add the image here. |  | × |  | Add the missing file |  | Drag nd_white_1.jpg in here, or click to choose it. |  | Choose file | 3ds Max Viewer by Innerscene
+MSG log: [embed] picking renderer, useThree= true
+MSG log: [embed] renderer constructed
+MSG log: [embed] loadScene done
+MSG warning: RGBELoader has been deprecated. Please use HDRLoader instead.
+RESULT {"file": "maxlab/files/NashDekor_GS3.max", "objects": 1, "verts": 224, "faces": 444, "names": ["NashDekor_GS3"], "materials": ["nd_white_1.jpg_nd_white_1"], "bbox": [0.0, -13.0, 0.0, 119.9, 0.0, 3000.0], "shot": "blender_NashDekor_GS3.png"}

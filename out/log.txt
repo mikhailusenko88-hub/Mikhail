@@ -1,0 +1,47 @@
+total 64
+drwxr-xr-x 2 runner runner  4096 Nov 26 10:34 .
+drwxr-xr-x 4 runner runner  4096 Nov 26 10:34 ..
+-rw-r--r-- 1 runner runner  5492 Nov 26 10:34 __init__.py
+-rw-r--r-- 1 runner runner 46170 Nov 26 10:34 import_max.py
+ok https://projects.blender.org/blender/blender-addons-contrib/raw/branch/main/io_scene_max/import_max.py 46170
+ok https://projects.blender.org/blender/blender-addons-contrib/raw/branch/main/io_scene_max/__init__.py 5492
+нет https://projects.blender.org/NRGSille/blender-addons/raw/commit/2bcb045779b1b64810b0c0ea9708873804267f79/io_import_max.py
+href="https://www.blender.org/download/?utm_medium=nav-global"
+href="https://www.blender.org/download/releases/?utm_medium=nav-global"
+href="https://www.blender.org/download/releases/4-2/"
+href="https://extensions.blender.org/download/sha256:ae11b8903ca7fcab78cd1163305b80a268335894139f251a502da0476ef77b43/add-on-io-scene-max-v1.9.2.zip?repository=%2Fapi%2Fv1%2Fextensions%2F&amp;blender_version_min=4.2.0"
+href="https://extensions.blender.org/download/sha256:ae11b8903ca7fcab78cd1163305b80a268335894139f251a502da0476ef77b43/add-on-io-scene-max-v1.9.2.zip?repository=%2Fapi%2Fv1%2Fextensions%2F&amp;blender_version_min=4.2.0"
+ok ext.zip https://extensions.blender.org/download/sha256:ae11b8903ca7fcab78cd1163305b80a268335894139f251a502da0476ef77b43/add-on-io-scene-max-v1.9.2.zip?repository=%2Fapi%2Fv1%2Fextensions%2F&amp;blender_version_min=4.2.0
+ext:
+io_scene_max
+
+ext/io_scene_max:
+__init__.py
+blender_manifest.toml
+import_max.py
+нет api blender/blender-addons-contrib#17
+нет api blender/blender-addons-contrib#18
+нет api blender/blender-addons-contrib#19
+нет api blender/blender-addons-contrib#21
+нет api blender/blender-addons-contrib#22
+нет api blender/blender-addons#105013
+total 8
+drwxr-xr-x 2 runner runner 4096 Nov 26 10:34 .
+drwxr-xr-x 4 runner runner 4096 Nov 26 10:34 ..
+нет https://projects.blender.org/blender/blender-addons-contrib/raw/commit/d639eb49d62fcb8e67e3964e0606d5956099f9de/Civilian_Boxes_1.max
+нет https://projects.blender.org/NRGSille/blender-addons-contrib/raw/commit/d639eb49d62fcb8e67e3964e0606d5956099f9de/Civilian_Boxes_1.max
+нет https://projects.blender.org/NRGSille/blender-addons/raw/branch/main/Civilian_Boxes_1.max
+нет https://projects.blender.org/NRGSille/blender-addons-contrib/raw/branch/main/Civilian_Boxes_1.max
+commit blender/blender-addons-contrib ['Civilian_Boxes_1.max', 'Lamp EICHHOLTZ SPITFIRE N281113.max', 'io_import_max.py']
+образец ok Civilian_Boxes_1.max 225280
+образец ok Lamp EICHHOLTZ SPITFIRE N281113.max 1294336
+total 1492
+drwxr-xr-x 2 runner runner    4096 Nov 26 10:34 .
+drwxr-xr-x 4 runner runner    4096 Nov 26 10:34 ..
+-rw-r--r-- 1 runner runner  225280 Nov 26 10:34 Civilian_Boxes_1.max
+-rw-r--r-- 1 runner runner 1294336 Nov 26 10:34 Lamp_EICHHOLTZ_SPITFIRE_N281113.max
+total 1492
+drwxr-xr-x 2 runner runner    4096 Nov 26 10:34 .
+drwxr-xr-x 4 runner runner    4096 Nov 26 10:34 ..
+-rw-r--r-- 1 runner runner  225280 Nov 26 10:34 Civilian_Boxes_1.max
+-rw-r--r-- 1 runner runner 1294336 Nov 26 10:34 Lamp_EICHHOLTZ_SPITFIRE_N281113.max
