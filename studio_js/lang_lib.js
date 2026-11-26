@@ -19,7 +19,7 @@ window.TR_L=s=>[...s].length;
 window.trTitle=function(lang,t){
   const c=window.TR_CFG[lang]; t=t.trim();
   if(t.includes(c.kw.split(' | ')[0])) return null;               // уже сделано
-  const isSb=/5 (episodes|episodios|episódios|Folgen)|लगातार|подряд/i.test(t);
+  const isSb=/5 (episodes|episodios|episódios|épisodes|Folgen|حلقات)|लगातार|متتالية|подряд/i.test(t);
   if(isSb){
     let base=t.split(' | ')[0].trim();
     let n=base+' | '+c.kw; if(window.TR_L(n)<=100) return n;
