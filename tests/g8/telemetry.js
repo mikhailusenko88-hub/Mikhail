@@ -14,7 +14,7 @@ const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
     const hud = async (id) => { const m = await p.evaluate((id) => { const b = window.__hook.buttons.find((q) => q.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!m) return false; await p.touchscreen.tap(m[0], m[1]); await p.waitForTimeout(400); return true; };
     const tap = async (id) => { const q = await p.evaluate((id) => { const b = window.__hook.btns.find((q) => q.id === id); return b ? [b.x + b.w / 2, b.y + b.h / 2] : null; }, id); if (!q) return false; await p.touchscreen.tap(q[0], q[1]); await p.waitForTimeout(300); return true; };
     const win = async () => { await p.evaluate(() => { const S = window.__hook.S; S.L.star.got = true; S.state = 'win'; S.wonT = 1; S.wonAt = 5.2; }); await p.waitForTimeout(1800); };
-    ok(await p.evaluate(() => window.__pg.ver) === '11', 'номер сборки передан мосту: 11');
+    ok(await p.evaluate(() => window.__pg.ver) === '12', 'номер сборки передан мосту: 12');
     ok((await ev()).length === 0, 'в меню событий нет');
     // уровень 1: две аварии, начал заново, доехал
     await p.evaluate(() => window.__hook.start(false, 0)); await p.waitForTimeout(600);

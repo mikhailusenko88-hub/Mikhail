@@ -15,7 +15,7 @@ const path = require('path'), fs = require('fs'); const DIR = path.resolve(__dir
     // прошёл уровень li, когда от запуска прошло since секунд, от прошлой межстраничной — gap, от ролика за награду — rew; нажал «дальше» — была ли реклама
     const next = async (li, since, gap, rew) => { await p.evaluate(([li, since, gap, rew]) => { const g = window.__hook.pg, now = performance.now() / 1000; g.t0 = (now - since) * 1000; g.lastInter = now - gap; g.lastRew = now - rew; window.__pg.ads.length = 0; window.__hook.start(false, li); }, [li, since, gap, rew]); await p.waitForTimeout(400); await win();
       await tap('next'); await p.waitForTimeout(300); const ad = await p.evaluate(() => /inter:level_end/.test(window.__pg.ads.join(','))); await p.waitForTimeout(1300); return ad; };
-    ok(await p.evaluate(() => window.__pg.ver) === '11', name + ': сборка 11');
+    ok(await p.evaluate(() => window.__pg.ver) === '12', name + ': сборка 12');
     ok(!(await next(2, 100, 1e9, 1e9)), name + ': 1 мин 40 с от запуска, уровень 3 — рекламы нет (раньше была)');
     ok(!(await next(4, 230, 1e9, 1e9)), name + ': 3 мин 50 с от запуска — рекламы ещё нет');
     ok(await next(4, 250, 1e9, 1e9), name + ': 4 мин 10 с от запуска — первая реклама');

@@ -77,7 +77,7 @@
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
   // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
-  const BUILD = '11', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const BUILD = '12', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
   const stepOf = (l) => ({ step_id: 'L' + String(l + 1).padStart(2, '0'), step_index: l + 1 }); // шаг продвижения по образцу Playgama: имя события постоянное, номер уровня — в данных
   const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
   const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign(stepOf(lvl), { level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
@@ -202,7 +202,7 @@
   let ctl = save.ctl === 'auto' ? 'auto' : 'manual', wait = false, ts = 1, tut = null, hookT0 = 0;
   // Самый первый запуск: без меню, сразу уровень 1 в режиме «один палец» (газ сам). По данным песочницы 16% уходили из меню, а 44% начавших не проходили ни одного уровня.
   // Кто уже играл или сам выбрал управление — у тех ничего не меняется. TA — помощь на первом уровне: игра не даёт его провалить.
-  const FR = { done: false, on: false, w: 0 }, TA = { t: 0, auto: false, n: 0, lock: false, early: false, user: false };
+  const FR = { done: false, on: false, w: 0 }, TA = { t: 0, auto: false, n: 0, lock: false, early: false, user: false, ri: 0, fall: [], cl: -1, w0: -1 };
   const isNew = () => !save.stars.some((n) => n > 0) && !(save.tut && (save.tut[0] || save.tut[1])); // ни одного пройденного уровня — в том числе тот, кто заходил и ушёл
   function firstRun() {
     if (FR.done) return; FR.done = true;
@@ -264,7 +264,7 @@
     return isAuto() ? { gas: true, brake: false, hook, pull: false } : { gas, brake, hook, pull: duo && (!!k.KeyS || held('pull')) };
   }
 
-  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; TA.t = 0; TA.auto = false; TA.n = 0; TA.lock = false; TA.early = false; TA.user = false; FR.w = 0; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; pgEv('progression_started', Object.assign(stepOf(lvl), { control: duo ? 'duo' : ctl, first_run: FR.on && lvl === 0 && !(save.tut && save.tut[0]) })); ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
+  function startGame(d, li) { if (mode === 'play') runQuit('restart'); TM.t0 = performance.now(); TM.deaths = 0; TM.fn = 0; TM.fs = 0; TM.live = true; TA.t = 0; TA.auto = false; TA.n = 0; TA.lock = false; TA.early = false; TA.user = false; TA.ri = 0; TA.fall = []; TA.cl = -1; TA.w0 = -1; FR.w = 0; pgMsg('gameplay_started'); pgMsg('level_started', { level: (li !== undefined ? li : lvl) + 1 }); duo = d; if (li !== undefined) lvl = li; pgEv('progression_started', Object.assign(stepOf(lvl), { control: duo ? 'duo' : ctl, first_run: FR.on && lvl === 0 && !(save.tut && save.tut[0]) })); ser = H.levels[lvl].ser; S = H.create(lvl, { up: save.up }); mode = 'play'; acc = 0; toasts = []; parts = []; hintShown = {}; wait = isAuto(); ts = 1; tut = null; camX = S.truck.x + 300; camY = S.truck.y; ptrs.clear(); }
   function restart() { startGame(duo, lvl); }
   function finish() {
     const l = H.levels[lvl], got = !!S.L.star.got, fast = S.wonAt <= l.par, n = 1 + (got ? 1 : 0) + (fast ? 1 : 0);
@@ -299,8 +299,12 @@
   function tutor(inp) {
     tut = null;
     const G = H.levels[lvl].guide; if (!G || (save.tut && save.tut[lvl]) || S.state !== 'play') return 1; // обучение — пока уровень не пройден с ним хоть раз (у старых сохранений покажется заново)
-    const tr = S.truck, slow = lvl === 0 && !save.up.eng && !save.up.winch;
-    if (slow) { // первый уровень в первый раз провалить нельзя
+    const tr = S.truck; if (S.rope) TA.ri = S.ropeA.i; else if (S.target) TA.ri = S.target.i; // кольцо, с которым игрок сейчас имеет дело
+    // «Прощающий» режим: игра ждёт у края ямы или у стены, цепляет и отпускает за того, кто не успел. Уровень 1 — весь. Уровень 2 (сборка 12) — первая яма
+    // и стена (она на уровне 2 встречается впервые) всегда; последняя яма — после двух падений в неё или сразу, если на этом уровне игра уже дважды
+    // действовала за игрока. Повод: уровень 1 прощал всё, и кто прошёл его на подсказках, на уровне 2 трижды падал в первую же яму и уходил.
+    const ez = !save.up.eng && !save.up.winch, slow = ez && (lvl === 0 || (lvl === 1 && (TA.ri === 0 || !!(G[TA.ri] && G[TA.ri].climb) || TA.fall[TA.ri] >= 2 || TA.n >= 2)));
+    if (slow) { // здесь в первый раз провалить нельзя
       const t = S.target, tg = !S.rope && t && G[t.i];
       if (TA.lock && !S.rope && (S.grounded || (tg && !tg.climb && tr.x > t.x - tg.att - 60 && tr.x <= t.x + 40))) TA.lock = false; // приземлился или подъехал к следующей яме — крюк снова слушается
       if (TA.lock && !S.rope) inp.hook = false; // отпустил и летит: повторное нажатие в воздухе не цепляет обратно — именно так новички и падали
@@ -308,16 +312,36 @@
     }
     if (!isAuto() && !inp.gas && S.grounded && !S.rope && Math.abs(tr.vx) < 140) { tut = 'gas'; return 1; } // ручное управление: стоит — покажи, где газ
     if (!S.rope) {
-      const a = S.target, g = a && G[a.i]; if (!g) return 1;
-      if (g.climb) { if (S.wallTouch || tr.x > a.x - 300) tut = 'hold'; return 1; }
-      if (tr.x > a.x + 40) { if (slow) inp.hook = false; return 1; } // кольцо уже позади — «держи» не показываем; на первом уровне за кольцо позади не цепляем (иначе утянет назад в яму)
+      const a = S.target, g = a && G[a.i]; if (!g) { if (ez) inp.hook = false; return 1; } // цели нет (кадр сразу после отпускания): крюк не пускаем — иначе игра сама найдёт кольцо позади и утянет назад
+      if (g.climb) {
+        if (slow && TA.cl === a.i) { inp.hook = false; return 1; } // эту стену уже взяли: за её кольцо второй раз не цепляем — иначе тот, кто держит палец, повиснет под кольцом
+        if (!(S.wallTouch || tr.x > a.x - 300)) { if (slow) inp.hook = false; return 1; } // до стены ещё далеко: издалека не цепляем — притянет и ударит о стену
+        tut = 'hold';
+        if (!(slow && S.wallTouch && !inp.hook)) { TA.w0 = -1; return 1; }
+        if (TA.w0 < 0) TA.w0 = realT; // упёрся в стену и не держит. Первые полсекунды время идёт как обычно: кто умеет, нажмёт сам и паузы не увидит
+        if (realT - TA.w0 < 0.5) return 1;
+        if (TA.user && TA.t > 2.5) { TA.auto = true; TA.n++; inp.hook = true; TA.w0 = -1; return 1; } // дальше ждём игрока; кто хоть раз касался экрана, за того через 2,5 с цепляем сами
+        return 0;
+      }
+      if (tr.x > a.x + 40) { if (ez) inp.hook = false; return 1; } // кольцо уже позади — «держи» не показываем; пока идёт обучение, за кольцо позади не цепляем (иначе утянет назад в яму)
       if (tr.x > a.x - g.att - (slow ? 170 : 340)) tut = 'hold'; // рука появляется заранее: нажать можно сразу, крюк сам выстрелит у края
       if (tr.x <= a.x - g.att) { const stop = slow && !inp.hook && tr.x > a.x - g.att - 60; if (stop && TA.user && TA.t > 2.5) { TA.auto = true; TA.n++; return 1; } inp.hook = false; return stop ? 0 : 1; } // цепляться ещё рано: учим делать это у края ямы
       if (slow && !inp.hook) { if (TA.user && TA.t > 2.5) { TA.auto = true; TA.n++; inp.hook = true; return 1; } return 0; } // сама игра цепляет только за того, кто хоть раз коснулся экрана: без единого нажатия уровень сам не проходится
       return 1;
     }
     const a = S.ropeA, g = G[a.i]; if (!g) return 1;
-    if (g.climb) { if (S.grounded && tr.y < a.y + 300 && (tr.x > a.x - 80 || S.rope.len <= 160)) tut = 'rel'; return 1; }
+    if (g.climb) {
+      if (!slow) { if (S.grounded && tr.y < a.y + 300 && (tr.x > a.x - 80 || S.rope.len <= 160)) tut = 'rel'; return 1; } // въехал наверх — пора отпускать
+      // Прощающий режим ждёт игрока в точке отпускания, поэтому она должна ловиться наверняка: «стоит на колёсах» у грузовика, которого лебёдка тащит через край,
+      // мигает от кадра к кадру. Берём геометрию: середина грузовика над верхней площадкой и он не летит назад, — отсюда он садится на площадку.
+      const top = tr.y < a.y + 300 && tr.x > a.x - 80 && (S.grounded || tr.vx > -40);
+      if (!top) { if (!inp.hook) { inp.hook = true; TA.early = true; } tut = 'hold'; return 1; } // отпустил на полпути — держим сами: иначе сорвётся со стены
+      tut = 'rel';
+      if (!inp.hook) { if (TA.early) TA.n++; TA.early = false; TA.cl = a.i; return 1; } // наверху и отпустил (или мы додержали за него)
+      if (!TA.auto && S.grounded && tr.x < a.x - 40) return 1; // первые сантиметры площадки — на полной скорости: кто умеет, отпустит сам и паузы не увидит
+      if (TA.auto || TA.t > 3) { inp.hook = false; TA.auto = false; TA.early = false; TA.cl = a.i; TA.n++; return 1; } // не отпустил за 3 с — отпускаем сами
+      return 0; // ждём, пока отпустит
+    }
     const rel = tr.x - a.x;
     if (slow) {
       const inWin = tr.vx > 0 && rel >= g.lo && rel <= g.hi, at = a.i === 0 ? (g.lo + g.hi) / 2 : g.lo + (g.hi - g.lo) * 0.6;
@@ -339,6 +363,8 @@
     if (rel < g.lo) tut = 'hold';
     return 1;
   }
+  // падение записываем на ближайшую яму с кольцом: после двух падений в одну яму уровня 2 игра начинает на ней помогать
+  function tallyFall() { const G = H.levels[lvl].guide; if (!G) return; let bi = -1, bd = 1e9; S.L.anchors.forEach((a, i) => { const d = Math.abs(a.x - S.truck.x); if (G[i] && !G[i].climb && d < bd) { bd = d; bi = i; } }); if (bi >= 0) TA.fall[bi] = (TA.fall[bi] || 0) + 1; }
   // рука-указатель: кончик пальца в точке (x, y); lift — насколько палец поднят над экраном
   function hand(x, y, sc, lift) {
     ctx.save(); ctx.translate(x, y - lift); ctx.scale(sc, sc); ctx.rotate(-0.22);
@@ -366,7 +392,8 @@
       ctx.globalAlpha = 1;
     }
     hand(x, y, big, lift * big);
-    const side = kind === 'go' && !port && !hk, fs = Math.round((kind === 'go' ? 26 : 40) * big), ty = side ? y + 16 * big : y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10); // лёжа «нажми — поехали» пишем сбоку от руки, под дорогой: над рукой надпись закрывала грузовик
+    const GC = H.levels[lvl].guide, wall = !!S && (kind === 'hold' ? S.wallTouch && !S.rope : kind === 'rel' && !!S.rope && !!(GC && GC[S.ropeA.i] && GC[S.ropeA.i].climb)); // у стены и наверху стены грузовик стоит посередине экрана
+    const side = (kind === 'go' || wall) && !port && !hk, fs = Math.round((kind === 'go' ? 26 : side ? 34 : 40) * big), ty = side ? y + 16 * big : y - (kind === 'go' ? 62 : 74) * big, pul = kind === 'go' ? 1 : 1 + 0.06 * Math.sin(realT * 10); // лёжа «нажми — поехали» и подсказки у стены пишем сбоку от руки, под дорогой: над рукой надпись закрывала грузовик
     ctx.font = `900 ${fs}px system-ui, sans-serif`; const half = Math.min(ctx.measureText(txt).width * 1.07 + fs * 0.3, W - 16) / 2, tx = clamp(side ? x - 50 * big - half : x, half + 8, W - half - 8), mw = W - 28;
     ctx.save(); ctx.translate(tx, ty); ctx.scale(pul, pul); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     ctx.lineWidth = fs * 0.24; ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.strokeText(txt, 0, 0, mw); ctx.fillStyle = kind === 'go' ? '#fff' : col; ctx.fillText(txt, 0, 0, mw); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; if (kind !== 'go') ctx.strokeText(txt, 0, 0, mw);
@@ -967,7 +994,7 @@
         S.step(inp); acc -= P.DT; n++;
         for (const e of S.events) {
           if (e.e === 'hook') { sfx.hook(); hookT0 = S.t; } else if (e.e === 'unhook') sfx.unhook();
-          else if (e.e === 'dead') { TM.deaths++; TA.lock = false; TA.early = false; TA.auto = false; if (TM.deaths <= 40) pgEv('crash', runData({ reason: e.why || 'fell' })); sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
+          else if (e.e === 'dead') { TM.deaths++; TA.lock = false; TA.early = false; TA.auto = false; TA.cl = -1; tallyFall(); if (TM.deaths <= 40) pgEv('crash', runData({ reason: e.why || 'fell' })); sfx.crash(); shake = 0.4; toasts.push({ t: 0, text: e.why === 'crash' ? T.crash : T.fell, col: '#ff8a80' }); }
           else if (e.e === 'cp') { sfx.cp(); toasts.push({ t: 0, text: T.cp, col: '#69f0ae' }); }
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
@@ -998,7 +1025,7 @@
     }
     if (!dbg.clean) { if (mode === 'play' || mode === 'win') drawHud(inp); if (mode === 'menu') drawMenu(); else if (mode === 'win') drawWin(); else if (mode === 'garage') drawGarage(); }
   }
-  window.__hook = { dbg, use3d, pg: PG, get gq() { return gq; }, pf: PF, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
+  window.__hook = { dbg, use3d, pg: PG, ta: TA, get gq() { return gq; }, pf: PF, get tut() { return tut; }, get wait() { return wait; }, get ts() { return ts; }, setCtl: (m) => { duo = m === 'duo'; if (!duo) ctl = m; }, get ctl() { return duo ? 'duo' : ctl; }, garage: openGarage, click: menuClick, get gar() { return gar; }, get btns() { return menuBtns; }, coins: (n) => { save.coins += n; store(); }, get mode() { return mode; }, get lvl() { return lvl; }, save: () => save, start: startGame, get S() { return S; }, keys, input, get buttons() { layout(); return buttons; } };
   applyLook(curLook());
   requestAnimationFrame(frame);
   // «игра готова»: после первых кадров, когда мост ответил (или сразу, если моста нет)
