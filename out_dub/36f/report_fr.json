@@ -2,6 +2,7 @@
  "build": "36f",
  "lang": "fr",
  "tag": "",
+ "lenk": 1.0,
  "tkey": "fr",
  "src": {
   "engine": "kokoro",
@@ -15,22 +16,18 @@
  "dur": 341.61,
  "lines": 89,
  "done": 89,
- "clear_avg": 95.1,
+ "clear_avg": 97.8,
  "low": [
   8,
-  42,
   60,
-  61,
-  83,
-  87,
   100
  ],
  "stretched": [],
  "over": [],
- "minutes": 17.7,
+ "minutes": 20.3,
  "syl_ru": 4.0,
- "syl": 5.1,
- "len_ratio": 0.93,
+ "syl": 5.0,
+ "len_ratio": 0.92,
  "fast": [
   87
  ],
@@ -44,15 +41,16 @@
    "heard": "Regardez une flaque et le bonhomme de neige a disparu.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.8,
+   "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.03,
+   "sec": 3.02,
    "window": 5.91,
    "ru_sec": 3.49,
    "syl_ru": 3.4,
-   "syl": 6.3
+   "syl": 6.3,
+   "pick": "r45709392715"
   },
   {
    "i": 1,
@@ -60,18 +58,19 @@
    "t": 6.238,
    "ru": "Где мой сторож? Его нет!",
    "text": "Où est mon gardien ? Il n'est plus là !",
-   "heard": "Où est mon gardien qui n'est plus là ?",
-   "clear": 88.9,
+   "heard": "Où est mon gardien si il n'est plus là ?",
+   "clear": 100.0,
    "extra": 1,
-   "shift": 2.7,
-   "speed": 0.9,
+   "shift": 2.8,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.83,
+   "sec": 2.07,
    "window": 2.89,
    "ru_sec": 2.07,
    "syl_ru": 3.4,
-   "syl": 4.9
+   "syl": 4.3,
+   "pick": "r45709392715"
   },
   {
    "i": 2,
@@ -79,18 +78,19 @@
    "t": 9.207,
    "ru": "И моя подушка тут. Мокрая!",
    "text": "Et mon oreiller est là. Tout mouillé !",
-   "heard": "Et mon oreiller est là tout mouillé.",
+   "heard": "Et mon oreiller est là, tout mouillé.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.0,
-   "speed": 1.0,
+   "shift": 0.0,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.34,
+   "sec": 2.53,
    "window": 2.88,
    "ru_sec": 2.66,
    "syl_ru": 3.0,
-   "syl": 4.3
+   "syl": 4.0,
+   "pick": "r45709392715"
   },
   {
    "i": 3,
@@ -101,15 +101,16 @@
    "heard": "Quelqu'un l'a emporté.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -3.3,
+   "shift": -2.9,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.19,
+   "sec": 1.18,
    "window": 1.44,
    "ru_sec": 1.22,
    "syl_ru": 4.9,
-   "syl": 5.9
+   "syl": 5.9,
+   "pick": "r45709392715"
   },
   {
    "i": 4,
@@ -128,7 +129,8 @@
    "window": 6.73,
    "ru_sec": 3.21,
    "syl_ru": 3.1,
-   "syl": 4.8
+   "syl": 4.8,
+   "pick": "r45709392715"
   },
   {
    "i": 5,
@@ -140,33 +142,35 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.9,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.02,
+   "sec": 2.96,
    "window": 3.85,
    "ru_sec": 3.48,
    "syl_ru": 2.9,
-   "syl": 4.0
+   "syl": 4.1,
+   "pick": "r45709392715"
   },
   {
    "i": 8,
    "name": "Рон",
    "t": 28.006,
    "ru": "Пахнет… тоже лужей.",
-   "text": "Et ça sent la flaque.",
-   "heard": "Et ça sonne à flanque.",
-   "clear": 40.0,
-   "extra": 3,
-   "shift": 0.0,
-   "speed": 0.828,
+   "text": "Ça sent la flaque aussi.",
+   "heard": "Usassons la flaque aussi.",
+   "clear": 60.0,
+   "extra": 1,
+   "shift": 3.0,
+   "speed": 0.8,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.82,
+   "sec": 2.05,
    "window": 2.45,
    "ru_sec": 2.23,
    "syl_ru": 2.7,
-   "syl": 3.3
+   "syl": 3.4,
+   "pick": "r45709392715"
   },
   {
    "i": 9,
@@ -178,14 +182,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.995,
+   "speed": 1.029,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.21,
+   "sec": 1.94,
    "window": 2.31,
    "ru_sec": 2.09,
    "syl_ru": 5.3,
-   "syl": 5.4
+   "syl": 6.2,
+   "pick": "r45709392715"
   },
   {
    "i": 10,
@@ -200,11 +205,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.56,
+   "sec": 1.52,
    "window": 1.87,
    "ru_sec": 1.65,
    "syl_ru": 3.6,
-   "syl": 5.1
+   "syl": 5.3,
+   "pick": "r45709392715"
   },
   {
    "i": 11,
@@ -215,15 +221,16 @@
    "heard": "Il est parti, mais il n'a pas de jambe.",
    "clear": 90.0,
    "extra": 1,
-   "shift": -2.5,
+   "shift": -1.9,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.2,
+   "sec": 2.18,
    "window": 2.78,
    "ru_sec": 2.56,
    "syl_ru": 3.1,
-   "syl": 5.0
+   "syl": 5.0,
+   "pick": "r45709392715"
   },
   {
    "i": 12,
@@ -238,11 +245,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.35,
+   "sec": 2.13,
    "window": 2.55,
    "ru_sec": 2.33,
    "syl_ru": 3.4,
-   "syl": 4.3
+   "syl": 4.7,
+   "pick": "r45709392715"
   },
   {
    "i": 13,
@@ -261,7 +269,8 @@
    "window": 3.89,
    "ru_sec": 3.67,
    "syl_ru": 4.4,
-   "syl": 4.5
+   "syl": 4.5,
+   "pick": "r45709392715"
   },
   {
    "i": 14,
@@ -272,7 +281,7 @@
    "heard": "Quel mystère ! Il y avait un gardien et voilà une flaque.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.4,
+   "shift": -2.3,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -280,7 +289,8 @@
    "window": 11.14,
    "ru_sec": 3.52,
    "syl_ru": 4.0,
-   "syl": 5.1
+   "syl": 5.1,
+   "pick": "r45709392715"
   },
   {
    "i": 15,
@@ -292,14 +302,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.0,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.68,
+   "sec": 2.69,
    "window": 5.33,
    "ru_sec": 4.61,
    "syl_ru": 2.6,
-   "syl": 3.7
+   "syl": 3.7,
+   "pick": "r45709392715"
   },
   {
    "i": 17,
@@ -318,7 +329,8 @@
    "window": 1.84,
    "ru_sec": 1.62,
    "syl_ru": 4.3,
-   "syl": 3.2
+   "syl": 3.2,
+   "pick": "r45794121945"
   },
   {
    "i": 18,
@@ -337,7 +349,8 @@
    "window": 2.85,
    "ru_sec": 2.63,
    "syl_ru": 4.6,
-   "syl": 4.7
+   "syl": 4.7,
+   "pick": "r45794121945"
   },
   {
    "i": 19,
@@ -348,15 +361,16 @@
    "heard": "et s'il était juste parti se promener.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
-   "speed": 1.0,
+   "shift": -1.9,
+   "speed": 0.92,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.96,
+   "sec": 2.09,
    "window": 2.25,
    "ru_sec": 2.03,
    "syl_ru": 4.4,
-   "syl": 6.1
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 20,
@@ -367,15 +381,16 @@
    "heard": "Pas de jambes, il n'ira pas loin.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.6,
+   "shift": 2.1,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.48,
+   "sec": 2.16,
    "window": 2.54,
    "ru_sec": 2.33,
    "syl_ru": 3.4,
-   "syl": 3.6
+   "syl": 4.2,
+   "pick": "r45709392715"
   },
   {
    "i": 24,
@@ -386,15 +401,16 @@
    "heard": "Vous vous rappelez, le soleil a bu la flaque.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.9,
+   "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.25,
+   "sec": 2.24,
    "window": 2.56,
    "ru_sec": 2.34,
    "syl_ru": 4.7,
-   "syl": 5.8
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 25,
@@ -409,11 +425,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.28,
+   "sec": 2.27,
    "window": 2.5,
    "ru_sec": 2.28,
    "syl_ru": 4.8,
-   "syl": 5.7
+   "syl": 5.7,
+   "pick": "r45709392715"
   },
   {
    "i": 26,
@@ -428,11 +445,12 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.1,
+   "sec": 2.11,
    "window": 2.56,
    "ru_sec": 2.34,
    "syl_ru": 6.0,
-   "syl": 5.2
+   "syl": 5.2,
+   "pick": "r45709392715"
   },
   {
    "i": 27,
@@ -444,14 +462,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.193,
-   "tempo": 1.09,
+   "speed": 1.188,
+   "tempo": 1.1,
    "over": 0.0,
-   "sec": 2.2,
+   "sec": 2.22,
    "window": 2.22,
    "ru_sec": 2.0,
    "syl_ru": 5.0,
-   "syl": 7.3
+   "syl": 7.2,
+   "pick": "r45709392715"
   },
   {
    "i": 28,
@@ -466,11 +485,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.44,
+   "sec": 1.52,
    "window": 9.24,
    "ru_sec": 1.62,
    "syl_ru": 4.3,
-   "syl": 4.9
+   "syl": 4.6,
+   "pick": "r45709392715"
   },
   {
    "i": 29,
@@ -478,18 +498,19 @@
    "t": 93.185,
    "ru": "Вот снежок! Круглый, как маленький снеговик!",
    "text": "Voilà la boule ! Ronde comme un petit bonhomme de neige !",
-   "heard": "Voilà la boule, gronde comme un petit bonhomme de neige.",
-   "clear": 90.0,
-   "extra": 1,
+   "heard": "Voilà la boule, ronde comme un petit bonhomme de neige.",
+   "clear": 100.0,
+   "extra": 0,
    "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.87,
+   "sec": 2.85,
    "window": 3.49,
    "ru_sec": 2.77,
    "syl_ru": 4.3,
-   "syl": 6.3
+   "syl": 6.3,
+   "pick": "r45709392715"
   },
   {
    "i": 30,
@@ -500,15 +521,16 @@
    "heard": "Je vais la surveiller pour qu'on ne la vole pas aussi.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.2,
+   "shift": 2.7,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.13,
+   "sec": 3.32,
    "window": 4.42,
    "ru_sec": 3.6,
    "syl_ru": 5.0,
-   "syl": 5.1
+   "syl": 4.8,
+   "pick": "r45709392715"
   },
   {
    "i": 31,
@@ -516,18 +538,19 @@
    "t": 101.257,
    "ru": "А мы пока попьём чаю.",
    "text": "Et nous, on va boire du thé.",
-   "heard": "Et nous, qu'on va boire du thé.",
+   "heard": "Et nous qu'on va boire du thé.",
    "clear": 100.0,
    "extra": 1,
-   "shift": -3.3,
+   "shift": -4.0,
    "speed": 0.846,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.66,
+   "sec": 1.64,
    "window": 6.52,
    "ru_sec": 1.41,
    "syl_ru": 5.0,
-   "syl": 4.8
+   "syl": 4.9,
+   "pick": "r45709392715"
   },
   {
    "i": 32,
@@ -542,11 +565,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.78,
+   "sec": 2.77,
    "window": 3.71,
    "ru_sec": 2.99,
    "syl_ru": 4.0,
-   "syl": 5.8
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 33,
@@ -554,18 +578,19 @@
    "t": 111.651,
    "ru": "А снежку тут нравится?",
    "text": "La boule de neige se plaît ici ?",
-   "heard": "La boule de neige se plate ici.",
-   "clear": 85.7,
-   "extra": 1,
+   "heard": "La boule de neige se plaît ici.",
+   "clear": 100.0,
+   "extra": 0,
    "shift": 0.0,
-   "speed": 0.92,
-   "tempo": 1.05,
-   "over": 0.01,
-   "sec": 1.8,
+   "speed": 1.08,
+   "tempo": 1.0,
+   "over": 0.0,
+   "sec": 1.64,
    "window": 1.79,
    "ru_sec": 1.57,
    "syl_ru": 4.4,
-   "syl": 5.6
+   "syl": 6.1,
+   "pick": "r45709392715"
   },
   {
    "i": 34,
@@ -584,7 +609,8 @@
    "window": 1.26,
    "ru_sec": 0.89,
    "syl_ru": 5.6,
-   "syl": 4.3
+   "syl": 4.3,
+   "pick": "r45794121945"
   },
   {
    "i": 36,
@@ -595,15 +621,16 @@
    "heard": "Après le thé, j'ai toujours sommeil.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.0,
+   "shift": -1.5,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.92,
+   "sec": 1.94,
    "window": 2.83,
    "ru_sec": 2.61,
    "syl_ru": 3.5,
-   "syl": 4.2
+   "syl": 4.1,
+   "pick": "r45709392715"
   },
   {
    "i": 37,
@@ -622,7 +649,8 @@
    "window": 2.42,
    "ru_sec": 2.05,
    "syl_ru": 4.4,
-   "syl": 3.3
+   "syl": 3.3,
+   "pick": "r45794121945"
   },
   {
    "i": 39,
@@ -633,15 +661,16 @@
    "heard": "Et moi, je surveille bien la boule d'un seul œil.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": 1.9,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.76,
+   "sec": 3.09,
    "window": 5.11,
    "ru_sec": 4.09,
    "syl_ru": 4.2,
-   "syl": 4.7
+   "syl": 4.2,
+   "pick": "r45709392715"
   },
   {
    "i": 40,
@@ -653,14 +682,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.92,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.41,
+   "sec": 1.06,
    "window": 3.36,
    "ru_sec": 1.14,
    "syl_ru": 3.5,
-   "syl": 3.5
+   "syl": 4.7,
+   "pick": "r45709392715"
   },
   {
    "i": 41,
@@ -675,30 +705,32 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.38,
+   "sec": 2.63,
    "window": 3.45,
    "ru_sec": 3.23,
    "syl_ru": 2.8,
-   "syl": 5.0
+   "syl": 4.6,
+   "pick": "r45709392715"
   },
   {
    "i": 42,
    "name": "Пик",
    "t": 136.594,
    "ru": "Вот миска. Что в ней?",
-   "text": "Il y a quoi dans le bol ?",
-   "heard": "Il vient quoi dans le bol ?",
-   "clear": 71.4,
+   "text": "Voilà le bol. Et dedans ?",
+   "heard": "Voilà le bol est dedans.",
+   "clear": 80.0,
    "extra": 1,
    "shift": 0.0,
-   "speed": 0.88,
-   "tempo": 1.12,
-   "over": 0.01,
-   "sec": 1.63,
+   "speed": 1.211,
+   "tempo": 1.0,
+   "over": 0.0,
+   "sec": 1.25,
    "window": 1.62,
    "ru_sec": 1.4,
    "syl_ru": 3.6,
-   "syl": 4.3
+   "syl": 5.6,
+   "pick": "r45709392715"
   },
   {
    "i": 43,
@@ -717,7 +749,8 @@
    "window": 2.35,
    "ru_sec": 2.13,
    "syl_ru": 3.3,
-   "syl": 4.1
+   "syl": 4.1,
+   "pick": "r45709392715"
   },
   {
    "i": 44,
@@ -728,15 +761,16 @@
    "heard": "La neige a fondu au chaud, la neige devient de l'eau.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.0,
+   "shift": -2.5,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.81,
+   "sec": 2.8,
    "window": 3.15,
    "ru_sec": 2.94,
    "syl_ru": 4.1,
-   "syl": 5.3
+   "syl": 5.4,
+   "pick": "r45709392715"
   },
   {
    "i": 45,
@@ -755,7 +789,8 @@
    "window": 2.75,
    "ru_sec": 2.53,
    "syl_ru": 5.5,
-   "syl": 3.8
+   "syl": 3.8,
+   "pick": "r45794121945"
   },
   {
    "i": 46,
@@ -770,11 +805,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.24,
+   "sec": 2.25,
    "window": 2.73,
    "ru_sec": 2.51,
    "syl_ru": 4.4,
-   "syl": 5.8
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 47,
@@ -789,11 +825,12 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.48,
+   "sec": 2.5,
    "window": 3.5,
    "ru_sec": 3.28,
    "syl_ru": 3.7,
-   "syl": 4.4
+   "syl": 4.4,
+   "pick": "r45709392715"
   },
   {
    "i": 48,
@@ -804,15 +841,16 @@
    "heard": "Il était si courageux.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.2,
+   "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.73,
+   "sec": 1.69,
    "window": 2.14,
    "ru_sec": 1.92,
    "syl_ru": 3.1,
-   "syl": 4.1
+   "syl": 4.1,
+   "pick": "r45709392715"
   },
   {
    "i": 49,
@@ -823,15 +861,16 @@
    "heard": "Ne sois pas triste, Ron, il y a encore plein de neige, on en fera un autre.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.1,
+   "shift": -2.3,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 4.16,
+   "sec": 4.15,
    "window": 4.21,
    "ru_sec": 3.99,
    "syl_ru": 4.3,
-   "syl": 5.5
+   "syl": 5.5,
+   "pick": "r45709392715"
   },
   {
    "i": 50,
@@ -843,14 +882,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.846,
+   "speed": 1.194,
    "tempo": 1.02,
    "over": 0.0,
-   "sec": 1.69,
+   "sec": 1.68,
    "window": 1.68,
    "ru_sec": 1.46,
    "syl_ru": 4.8,
-   "syl": 4.7
+   "syl": 4.7,
+   "pick": "r45709392715"
   },
   {
    "i": 51,
@@ -858,18 +898,19 @@
    "t": 161.446,
    "ru": "А лепить бу́дем в тени́. Там со́лнце не доста́нет.",
    "text": "On le fera à l'ombre. Là, le soleil ne l'atteindra pas.",
-   "heard": "On le fera à l'ombre, là le soleil ne l'atteindra pas.",
+   "heard": "On le fera à l'ombre. Là, le soleil ne l'atteindra pas.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.0,
-   "tempo": 1.02,
+   "speed": 1.101,
+   "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.06,
+   "sec": 2.81,
    "window": 3.07,
    "ru_sec": 2.85,
    "syl_ru": 4.9,
-   "syl": 5.2
+   "syl": 5.7,
+   "pick": "r45709392715"
   },
   {
    "i": 52,
@@ -880,15 +921,16 @@
    "heard": "Alors vite avant qu'il fasse nuit.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 3.1,
+   "shift": 2.4,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.14,
+   "sec": 2.42,
    "window": 6.69,
    "ru_sec": 2.67,
    "syl_ru": 3.7,
-   "syl": 5.1
+   "syl": 4.5,
+   "pick": "r45709392715"
   },
   {
    "i": 53,
@@ -903,11 +945,12 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.51,
+   "sec": 3.47,
    "window": 4.19,
    "ru_sec": 3.97,
    "syl_ru": 3.5,
-   "syl": 5.7
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 54,
@@ -926,7 +969,8 @@
    "window": 2.88,
    "ru_sec": 2.66,
    "syl_ru": 3.8,
-   "syl": 5.4
+   "syl": 5.4,
+   "pick": "r45709392715"
   },
   {
    "i": 55,
@@ -937,15 +981,16 @@
    "heard": "Mais la neige collante, c'est mieux pour construire.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.8,
-   "speed": 1.177,
+   "shift": -2.6,
+   "speed": 1.183,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.09,
+   "sec": 2.08,
    "window": 2.81,
    "ru_sec": 2.09,
    "syl_ru": 5.8,
-   "syl": 6.2
+   "syl": 6.3,
+   "pick": "r45709392715"
   },
   {
    "i": 56,
@@ -956,15 +1001,16 @@
    "heard": "Regardez un sapin, et dessous il y a de l'ombre.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.7,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.0,
+   "sec": 2.99,
    "window": 3.58,
    "ru_sec": 3.36,
    "syl_ru": 3.0,
-   "syl": 5.0
+   "syl": 5.0,
+   "pick": "r45709392715"
   },
   {
    "i": 57,
@@ -979,11 +1025,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.69,
+   "sec": 2.67,
    "window": 3.29,
    "ru_sec": 2.57,
    "syl_ru": 4.7,
-   "syl": 5.2
+   "syl": 5.2,
+   "pick": "r45709392715"
   },
   {
    "i": 58,
@@ -998,11 +1045,12 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.63,
+   "sec": 2.92,
    "window": 3.45,
    "ru_sec": 3.23,
    "syl_ru": 3.4,
-   "syl": 4.9
+   "syl": 4.4,
+   "pick": "r45709392715"
   },
   {
    "i": 59,
@@ -1017,11 +1065,12 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.53,
+   "sec": 1.52,
    "window": 1.92,
    "ru_sec": 1.7,
    "syl_ru": 5.9,
-   "syl": 5.2
+   "syl": 5.3,
+   "pick": "r45709392715"
   },
   {
    "i": 60,
@@ -1029,18 +1078,19 @@
    "t": 194.04,
    "ru": "Пусть будет Снежок Второй!",
    "text": "Ce sera Flocon Deux !",
-   "heard": "Et ce sera Flocon 2.",
+   "heard": "Et ce sera flocon 2.",
    "clear": 75.0,
    "extra": 2,
-   "shift": -1.6,
+   "shift": -1.9,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.45,
+   "sec": 1.77,
    "window": 2.01,
    "ru_sec": 1.79,
    "syl_ru": 3.9,
-   "syl": 4.1
+   "syl": 3.4,
+   "pick": "r45709392715"
   },
   {
    "i": 61,
@@ -1048,18 +1098,19 @@
    "t": 196.13,
    "ru": "Здравствуй, Снежок Второй. Не тай, пожалуйста.",
    "text": "Bonjour, Flocon Deux. Ne fonds pas, s'il te plaît.",
-   "heard": "Un bonjour, flocon 2, ne fonds pas s'il te plaît.",
+   "heard": "Bonjour flocon 2, ne fonds pas s'il te plaît.",
    "clear": 90.0,
-   "extra": 2,
+   "extra": 1,
    "shift": 0.0,
-   "speed": 0.828,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.75,
+   "sec": 3.45,
    "window": 4.08,
    "ru_sec": 3.86,
    "syl_ru": 3.1,
-   "syl": 2.9
+   "syl": 3.2,
+   "pick": "r45709392715"
   },
   {
    "i": 66,
@@ -1070,7 +1121,7 @@
    "heard": "Regardez moi aussi, je suis blanc, je suis un bonhomme de neige.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.7,
+   "shift": 1.8,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1078,7 +1129,8 @@
    "window": 5.14,
    "ru_sec": 4.92,
    "syl_ru": 2.8,
-   "syl": 4.2
+   "syl": 4.2,
+   "pick": "r45709392715"
   },
   {
    "i": 68,
@@ -1086,9 +1138,9 @@
    "t": 211.798,
    "ru": "Только ты тёплый. И с хвостом.",
    "text": "Mais toi, tu es chaud. Et tu as une queue.",
-   "heard": "Mais toi tu es chaud et tu as une cure.",
-   "clear": 90.0,
-   "extra": 1,
+   "heard": "Mais toi tu es chaud et tu as une queue.",
+   "clear": 100.0,
+   "extra": 0,
    "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
@@ -1097,7 +1149,8 @@
    "window": 3.5,
    "ru_sec": 2.28,
    "syl_ru": 3.5,
-   "syl": 5.1
+   "syl": 5.1,
+   "pick": "r45709392715"
   },
   {
    "i": 69,
@@ -1108,15 +1161,16 @@
    "heard": "Aïe, de la neige dans mon cou, c'est froid.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": 2.3,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.15,
+   "sec": 2.19,
    "window": 3.36,
    "ru_sec": 3.14,
    "syl_ru": 3.2,
-   "syl": 5.1
+   "syl": 5.0,
+   "pick": "r45709392715"
   },
   {
    "i": 74,
@@ -1135,7 +1189,8 @@
    "window": 2.67,
    "ru_sec": 2.44,
    "syl_ru": 3.3,
-   "syl": 5.7
+   "syl": 5.7,
+   "pick": "r45794121945"
   },
   {
    "i": 75,
@@ -1154,7 +1209,8 @@
    "window": 3.09,
    "ru_sec": 2.87,
    "syl_ru": 3.8,
-   "syl": 5.9
+   "syl": 5.9,
+   "pick": "r45794121945"
   },
   {
    "i": 76,
@@ -1165,15 +1221,16 @@
    "heard": "La neige fond peu à peu, l'eau s'en va dans la terre.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": -2.3,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.56,
+   "sec": 2.57,
    "window": 2.98,
    "ru_sec": 2.75,
    "syl_ru": 5.1,
-   "syl": 5.5
+   "syl": 5.5,
+   "pick": "r45709392715"
   },
   {
    "i": 77,
@@ -1188,11 +1245,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.66,
+   "sec": 1.64,
    "window": 1.95,
    "ru_sec": 1.73,
    "syl_ru": 3.5,
-   "syl": 5.4
+   "syl": 5.5,
+   "pick": "r45709392715"
   },
   {
    "i": 78,
@@ -1203,15 +1261,16 @@
    "heard": "Oui, l'eau de la neige, c'est sa boisson pour le printemps.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.4,
+   "shift": -3.1,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.66,
+   "sec": 2.64,
    "window": 2.95,
    "ru_sec": 2.73,
    "syl_ru": 5.1,
-   "syl": 5.3
+   "syl": 5.3,
+   "pick": "r45709392715"
   },
   {
    "i": 79,
@@ -1219,18 +1278,19 @@
    "t": 236.255,
    "ru": "А если опять станет холодно?",
    "text": "Et s'il refait froid ?",
-   "heard": "Et ici il refait froid.",
-   "clear": 80.0,
-   "extra": 1,
-   "shift": 2.0,
+   "heard": "Et s'il refait froid ?",
+   "clear": 100.0,
+   "extra": 0,
+   "shift": 2.7,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.87,
+   "sec": 1.86,
    "window": 2.26,
    "ru_sec": 2.04,
    "syl_ru": 4.9,
-   "syl": 2.7
+   "syl": 2.7,
+   "pick": "r45709392715"
   },
   {
    "i": 80,
@@ -1238,18 +1298,19 @@
    "t": 238.597,
    "ru": "Тогда снова пойдёт снег. И укроет его.",
    "text": "Alors il neigera encore. Et la neige la couvrira.",
-   "heard": "Alors il naîtra encore, et la neige la couvrira.",
+   "heard": "Alors il neige encore, et la neige la couvrira.",
    "clear": 88.9,
    "extra": 1,
    "shift": 0.0,
-   "speed": 1.209,
+   "speed": 0.968,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.31,
+   "sec": 2.73,
    "window": 2.88,
    "ru_sec": 2.16,
    "syl_ru": 5.6,
-   "syl": 7.4
+   "syl": 6.2,
+   "pick": "r45709392715"
   },
   {
    "i": 81,
@@ -1257,37 +1318,39 @@
    "t": 241.555,
    "ru": "Вот! Ещё одно одеяло. Запасное. Из подушки.",
    "text": "Voilà ! Encore une couverture. En plus. C'est mon oreiller.",
-   "heard": "Voilà encore une couverture, en plus c'est mon oreiller.",
+   "heard": "Voilà encore une couverture. En plus, c'est mon oreiller.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.7,
+   "shift": 2.2,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.64,
+   "sec": 3.69,
    "window": 5.29,
    "ru_sec": 5.08,
    "syl_ru": 3.0,
-   "syl": 4.9
+   "syl": 4.9,
+   "pick": "r45709392715"
   },
   {
    "i": 83,
    "name": "Филя",
    "t": 247.861,
    "ru": "Рон, она же мо́края!",
-   "text": "Mais il est tout mouillé !",
-   "heard": "Mezile tu muie",
-   "clear": 0.0,
-   "extra": 3,
+   "text": "Mais il est mouillé, Ron !",
+   "heard": "Mais il est mouillé grand.",
+   "clear": 80.0,
+   "extra": 1,
    "shift": 0.0,
    "speed": 0.9,
-   "tempo": 1.01,
-   "over": 0.02,
-   "sec": 1.86,
+   "tempo": 1.0,
+   "over": 0.0,
+   "sec": 1.35,
    "window": 1.84,
    "ru_sec": 1.62,
    "syl_ru": 3.7,
-   "syl": 3.2
+   "syl": 4.5,
+   "pick": "r45709392715"
   },
   {
    "i": 84,
@@ -1302,11 +1365,12 @@
    "speed": 1.209,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.03,
+   "sec": 1.34,
    "window": 1.44,
    "ru_sec": 1.22,
    "syl_ru": 3.3,
-   "syl": 5.8
+   "syl": 4.5,
+   "pick": "r45709392715"
   },
   {
    "i": 85,
@@ -1325,7 +1389,8 @@
    "window": 4.05,
    "ru_sec": 2.43,
    "syl_ru": 4.9,
-   "syl": 7.1
+   "syl": 7.1,
+   "pick": "r45794121945"
   },
   {
    "i": 86,
@@ -1340,11 +1405,12 @@
    "speed": 0.828,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.78,
+   "sec": 2.79,
    "window": 3.61,
    "ru_sec": 3.39,
    "syl_ru": 4.4,
-   "syl": 4.3
+   "syl": 4.3,
+   "pick": "r45709392715"
   },
   {
    "i": 87,
@@ -1352,18 +1418,19 @@
    "t": 259.119,
    "ru": "Начинай!",
    "text": "Vas-y, commence !",
-   "heard": "Basic hack commence.",
-   "clear": 33.3,
-   "extra": 2,
-   "shift": -2.5,
-   "speed": 1.45,
+   "heard": "Vas-y, Greg, commence.",
+   "clear": 100.0,
+   "extra": 1,
+   "shift": -2.1,
+   "speed": 1.432,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.96,
+   "sec": 0.94,
    "window": 0.96,
    "ru_sec": 0.74,
    "syl_ru": 4.0,
-   "syl": 5.2
+   "syl": 5.3,
+   "pick": "r45709392715"
   },
   {
    "i": 88,
@@ -1371,18 +1438,19 @@
    "t": 260.162,
    "ru": "Во что превращается снег в тепле?",
    "text": "Que devient la neige quand il fait chaud ?",
-   "heard": "que devient la neige quand il fait chaud.",
+   "heard": "Que devient la neige quand il fait chaud ?",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.82,
+   "sec": 1.84,
    "window": 5.32,
    "ru_sec": 2.1,
    "syl_ru": 4.3,
-   "syl": 5.5
+   "syl": 5.4,
+   "pick": "r45709392715"
   },
   {
    "i": 89,
@@ -1401,7 +1469,8 @@
    "window": 1.61,
    "ru_sec": 1.39,
    "syl_ru": 5.0,
-   "syl": 5.0
+   "syl": 5.0,
+   "pick": "r45794121945"
   },
   {
    "i": 90,
@@ -1420,7 +1489,8 @@
    "window": 7.42,
    "ru_sec": 4.2,
    "syl_ru": 4.5,
-   "syl": 6.2
+   "syl": 6.2,
+   "pick": "r45709392715"
   },
   {
    "i": 91,
@@ -1439,7 +1509,8 @@
    "window": 2.98,
    "ru_sec": 2.76,
    "syl_ru": 3.3,
-   "syl": 5.6
+   "syl": 5.6,
+   "pick": "r45709392715"
   },
   {
    "i": 92,
@@ -1454,30 +1525,32 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.07,
+   "sec": 2.13,
    "window": 5.88,
    "ru_sec": 2.66,
    "syl_ru": 4.5,
-   "syl": 4.3
+   "syl": 4.2,
+   "pick": "r45709392715"
   },
   {
    "i": 93,
    "name": "Барсик",
    "t": 283.773,
    "ru": "В землю. К ростку.",
-   "text": "Dans la terre. Vers la plante.",
-   "heard": "dans la terre vers la plante.",
+   "text": "Dans la terre. Vers la pousse.",
+   "heard": "Dans la terre vers la pousse.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.8,
-   "speed": 0.92,
+   "shift": -3.5,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.65,
+   "sec": 1.49,
    "window": 1.72,
    "ru_sec": 1.5,
    "syl_ru": 2.7,
-   "syl": 4.9
+   "syl": 5.4,
+   "pick": "r45709392715"
   },
   {
    "i": 94,
@@ -1485,18 +1558,19 @@
    "t": 285.574,
    "ru": "А мой первый сторож — в лужу.",
    "text": "Et mon premier gardien, dans une flaque.",
-   "heard": "Et mon premier gardien dans une flaque.",
+   "heard": "et mon premier gardien dans une flaque.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.097,
+   "speed": 1.098,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.2,
+   "sec": 2.21,
    "window": 2.31,
    "ru_sec": 2.09,
    "syl_ru": 3.8,
-   "syl": 5.0
+   "syl": 5.0,
+   "pick": "r45709392715"
   },
   {
    "i": 96,
@@ -1507,15 +1581,16 @@
    "heard": "Tout le monde a répondu.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.6,
+   "shift": -2.1,
    "speed": 1.101,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.11,
+   "sec": 1.23,
    "window": 2.75,
    "ru_sec": 1.13,
    "syl_ru": 4.4,
-   "syl": 7.2
+   "syl": 6.5,
+   "pick": "r45709392715"
   },
   {
    "i": 97,
@@ -1526,15 +1601,16 @@
    "heard": "Le soleil se couche, il commence à faire froid.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.8,
+   "shift": -2.9,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.59,
+   "sec": 2.64,
    "window": 2.72,
    "ru_sec": 2.5,
    "syl_ru": 4.8,
-   "syl": 5.4
+   "syl": 5.3,
+   "pick": "r45709392715"
   },
   {
    "i": 98,
@@ -1545,7 +1621,7 @@
    "heard": "Regardez notre bonhomme de neige, il est à l'ombre.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.2,
+   "shift": -1.6,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
@@ -1553,7 +1629,8 @@
    "window": 3.69,
    "ru_sec": 2.87,
    "syl_ru": 3.8,
-   "syl": 5.8
+   "syl": 5.8,
+   "pick": "r45709392715"
   },
   {
    "i": 99,
@@ -1568,11 +1645,12 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.65,
+   "sec": 2.53,
    "window": 3.15,
    "ru_sec": 2.93,
    "syl_ru": 2.7,
-   "syl": 4.5
+   "syl": 4.7,
+   "pick": "r45709392715"
   },
   {
    "i": 100,
@@ -1580,18 +1658,19 @@
    "t": 301.504,
    "ru": "Спокойной ночи, Снежок Второй. Стой крепко.",
    "text": "Bonne nuit, Flocon Deux. Tiens bon.",
-   "heard": "S'bonne nuit, flocon de tiens bon.",
+   "heard": "Z'bonne nuit flocon 2 tiens bon.",
    "clear": 83.3,
    "extra": 2,
    "shift": 0.0,
-   "speed": 0.828,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.31,
+   "sec": 2.21,
    "window": 7.0,
    "ru_sec": 3.78,
    "syl_ru": 3.2,
-   "syl": 3.5
+   "syl": 3.6,
+   "pick": "r45709392715"
   },
   {
    "i": 101,
@@ -1603,14 +1682,15 @@
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.0,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.98,
+   "sec": 1.75,
    "window": 2.3,
    "ru_sec": 2.08,
    "syl_ru": 4.3,
-   "syl": 4.5
+   "syl": 5.2,
+   "pick": "r45709392715"
   },
   {
    "i": 102,
@@ -1629,7 +1709,8 @@
    "window": 2.28,
    "ru_sec": 2.06,
    "syl_ru": 5.8,
-   "syl": 5.9
+   "syl": 5.9,
+   "pick": "r45794121945"
   },
   {
    "i": 103,
@@ -1648,7 +1729,8 @@
    "window": 2.89,
    "ru_sec": 2.67,
    "syl_ru": 3.0,
-   "syl": 5.2
+   "syl": 5.2,
+   "pick": "r45794121945"
   },
   {
    "i": 108,
@@ -1659,7 +1741,7 @@
    "heard": "Je ne sais pas, c'est un nouveau mystère.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.9,
+   "shift": -3.3,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
@@ -1667,7 +1749,8 @@
    "window": 2.54,
    "ru_sec": 2.17,
    "syl_ru": 4.1,
-   "syl": 4.8
+   "syl": 4.8,
+   "pick": "r45709392715"
   },
   {
    "i": 110,
@@ -1686,7 +1769,8 @@
    "window": 4.4,
    "ru_sec": 4.18,
    "syl_ru": 2.9,
-   "syl": 4.0
+   "syl": 4.0,
+   "pick": "r45709392715"
   },
   {
    "i": 111,
@@ -1697,15 +1781,16 @@
    "heard": "Demain, on saura ce que le gel fera à la flaque.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.4,
-   "speed": 1.119,
+   "shift": -3.1,
+   "speed": 1.117,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.43,
+   "sec": 2.42,
    "window": 4.15,
    "ru_sec": 2.33,
    "syl_ru": 4.7,
-   "syl": 6.2
+   "syl": 6.2,
+   "pick": "r45709392715"
   },
   {
    "i": 112,
@@ -1720,11 +1805,16 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 7.61,
+   "sec": 7.62,
    "window": 9.11,
    "ru_sec": 7.59,
    "syl_ru": 4.5,
-   "syl": 6.0
+   "syl": 6.0,
+   "pick": "r45709392715"
   }
- ]
+ ],
+ "picks": {
+  "r45709392715": 78,
+  "r45794121945": 11
+ }
 }
