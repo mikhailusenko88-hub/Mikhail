@@ -98,7 +98,7 @@ for k in range(int(12 * 2) + 2):
     at = START + k * BEAT / 2
     if at > LAND + 0.05:
         break
-    put(jingle(0.06 if k % 2 == 0 else 0.033), at + rng.uniform(0, 0.006), pan=rng.uniform(-0.6, 0.6))
+    put(jingle(0.04 if k % 2 == 0 else 0.022), at + rng.uniform(0, 0.006), pan=rng.uniform(-0.6, 0.6))
 put(jingle(0.08), LAND, pan=0.0)
 
 # тёплый зал: короткий хвост

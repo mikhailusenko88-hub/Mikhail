@@ -210,6 +210,7 @@ add_rb(slab, "PASSIVE", "BOX", friction=0.6, rest=0.25)
 rng_o = np.random.default_rng(SEED)
 dyn = []                                         # всё, что движется: осколки, колпачки, шарики (порядок = столбцы pos.npz)
 NSHARD = 0
+WHOLE = []                                       # (целый шар, его осколки) — подмена в кадре удара
 
 
 def fib_sphere(n, jit):
@@ -296,6 +297,14 @@ def make_ornament(cx, col):
         add_rb(cap, "ACTIVE", "CONVEX_HULL", friction=0.5, rest=0.2, mass=0.004)
     dyn.append(cap)
     NSHARD += len(pieces) + 1
+    if ANIM:   # для кадра: до удара — целый гладкий шар (едет вместе с колпачком), осколки появляются в момент удара
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=128, ring_count=64, radius=ORN_R, location=(cx, 0, cz))
+        wh = bpy.context.active_object
+        bpy.ops.object.shade_smooth()
+        wh.data.materials.append(mat)
+        wh.parent = cap
+        wh.matrix_parent_inverse = cap.matrix_world.inverted()
+        WHOLE.append((wh, [pieces[k][0] for k in pieces]))
     if ANIM:
         if BRK:                                      # те же вызовы генератора, что при расчёте физики: иначе осколки второго шара выйдут другими
             for _ in range(len(adj) + 3):
@@ -413,6 +422,11 @@ if ANIM:
         for i, o in enumerate(balls):
             o.location = APOS[k, i]
             o.rotation_quaternion = AROT[k, i]
+        for wh, shs in WHOLE:
+            cracked = f >= int(A.get("swap", str(F_IMP)))
+            wh.hide_render = cracked
+            for o in shs:
+                o.hide_render = not cracked
         sc.render.filepath = os.path.join(OUT, f"f_{f:04d}.jpg")
         bpy.ops.render.render(write_still=True)
         print(f"кадр {f} нарисован, {time.time() - t0:.0f} с", flush=True)
