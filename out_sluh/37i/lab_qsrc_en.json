@@ -1,0 +1,238 @@
+{
+ "what": "qsrc",
+ "rows": [
+  {
+   "i": 6,
+   "name": "Рон",
+   "text": "Where's the water? Is it gone?",
+   "base": {
+    "mos": 4.34,
+    "sim": 0.616,
+    "clear": 100.0,
+    "heard": "Where's the water? Is it gone?",
+    "end": -18.1,
+    "dur": 1.79
+   },
+   "src4": {
+    "mos": 4.38,
+    "sim": 0.604,
+    "clear": 100.0,
+    "heard": "Where's the water, is it gone?",
+    "end": -6.1,
+    "dur": 1.8
+   },
+   "src7": {
+    "mos": 4.09,
+    "sim": 0.621,
+    "clear": 100.0,
+    "heard": "Where's the water? Is it gone?",
+    "end": -4.0,
+    "dur": 1.8
+   }
+  },
+  {
+   "i": 25,
+   "name": "Топа",
+   "text": "Can I try too?",
+   "base": {
+    "mos": 4.43,
+    "sim": 0.33,
+    "clear": 100.0,
+    "heard": "Can I try too?",
+    "end": -1.0,
+    "dur": 1.1
+   },
+   "src4": {
+    "mos": 4.18,
+    "sim": 0.182,
+    "clear": 75.0,
+    "heard": "Can I try to?",
+    "end": -0.5,
+    "dur": 1.07
+   },
+   "src7": {
+    "mos": 4.36,
+    "sim": 0.306,
+    "clear": 100.0,
+    "heard": "Can I try too?",
+    "end": 2.9,
+    "dur": 1.09
+   }
+  },
+  {
+   "i": 33,
+   "name": "Рон",
+   "text": "Knock knock! Puddle, are you home?",
+   "base": {
+    "mos": 4.07,
+    "sim": 0.536,
+    "clear": 100.0,
+    "heard": "Knock knock, Puddle are you home?",
+    "end": -3.3,
+    "dur": 1.87
+   },
+   "src4": {
+    "mos": 3.65,
+    "sim": 0.504,
+    "clear": 100.0,
+    "heard": "Knock knock, Puddle are you home?",
+    "end": -3.7,
+    "dur": 1.86
+   },
+   "src7": {
+    "mos": 3.47,
+    "sim": 0.5,
+    "clear": 100.0,
+    "heard": "Knock knock, Puddle are you home?",
+    "end": -1.6,
+    "dur": 1.86
+   }
+  },
+  {
+   "i": 36,
+   "name": "Топа",
+   "text": "Can we make ice ourselves? At home?",
+   "base": {
+    "mos": 4.38,
+    "sim": 0.344,
+    "clear": 100.0,
+    "heard": "Can we make ice ourselves at home?",
+    "end": -4.7,
+    "dur": 2.2
+   },
+   "src4": {
+    "mos": 4.31,
+    "sim": 0.452,
+    "clear": 100.0,
+    "heard": "Can we make ice ourselves at home?",
+    "end": 0.2,
+    "dur": 2.19
+   },
+   "src7": {
+    "mos": 4.33,
+    "sim": 0.433,
+    "clear": 100.0,
+    "heard": "Can we make ice ourselves? At home?",
+    "end": 1.3,
+    "dur": 2.19
+   }
+  },
+  {
+   "i": 45,
+   "name": "Рон",
+   "text": "What if I blow? Fff! Is it hard now?",
+   "base": {
+    "mos": 3.76,
+    "sim": 0.543,
+    "clear": 66.7,
+    "heard": "What if I blow, SFF is a card now.",
+    "end": -7.7,
+    "dur": 2.48
+   },
+   "src4": {
+    "mos": 3.36,
+    "sim": 0.569,
+    "clear": 100.0,
+    "heard": "What if I blow, FFF, is it hard now?",
+    "end": 0.8,
+    "dur": 2.47
+   },
+   "src7": {
+    "mos": 3.54,
+    "sim": 0.53,
+    "clear": 88.9,
+    "heard": "What if I blow, SFF, is it hard now?",
+    "end": -14.4,
+    "dur": 2.45
+   }
+  },
+  {
+   "i": 64,
+   "name": "Барсик",
+   "text": "Let's play a game. I say a word, and you say: is it hard or soft?",
+   "base": {
+    "mos": 4.49,
+    "sim": 0.592,
+    "clear": 100.0,
+    "heard": "Let's play a game. I say a word and you say, is it hard or soft?",
+    "end": -1.0,
+    "dur": 4.11
+   },
+   "src4": {
+    "mos": 4.46,
+    "sim": 0.613,
+    "clear": 100.0,
+    "heard": "Let's play a game. I say a word and you say, is it hard or soft?",
+    "end": 0.8,
+    "dur": 4.11
+   },
+   "src7": {
+    "mos": 4.47,
+    "sim": 0.607,
+    "clear": 100.0,
+    "heard": "Let's play a game. I say a word and you say, is it hard or soft?",
+    "end": 2.8,
+    "dur": 4.11
+   }
+  },
+  {
+   "i": 114,
+   "name": "Топа",
+   "text": "And the snowman? Is he still out in the cold?",
+   "base": {
+    "mos": 4.44,
+    "sim": 0.409,
+    "clear": 100.0,
+    "heard": "And the snowman, is he still out in the cold?",
+    "end": 1.7,
+    "dur": 2.47
+   },
+   "src4": {
+    "mos": 4.41,
+    "sim": 0.421,
+    "clear": 100.0,
+    "heard": "And the snowman, is he still out in the cold?",
+    "end": -1.1,
+    "dur": 2.47
+   },
+   "src7": {
+    "mos": 4.42,
+    "sim": 0.414,
+    "clear": 100.0,
+    "heard": "And the snowman, is he still out in the cold?",
+    "end": 5.4,
+    "dur": 2.47
+   }
+  },
+  {
+   "i": 122,
+   "name": "Филя",
+   "text": "Draws? On the windows?",
+   "base": {
+    "mos": 4.36,
+    "sim": 0.705,
+    "clear": 100.0,
+    "heard": "Draws on the windows.",
+    "end": -18.2,
+    "dur": 1.29
+   },
+   "src4": {
+    "mos": 3.9,
+    "sim": 0.679,
+    "clear": 100.0,
+    "heard": "Draws on the windows.",
+    "end": -3.6,
+    "dur": 1.28
+   },
+   "src7": {
+    "mos": 4.2,
+    "sim": 0.73,
+    "clear": 100.0,
+    "heard": "Draws on the windows.",
+    "end": -6.5,
+    "dur": 1.3
+   }
+  }
+ ],
+ "minutes": 11.2
+}
