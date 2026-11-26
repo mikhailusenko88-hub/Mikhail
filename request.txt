@@ -3,4 +3,7 @@
 # 2026-11-25 22:56 UTC — чат «Свой голос»: свои голоса Барсику и Рону, пятый круг — паспорта по замерам golosa28 (Барсику темп выше, Рону тон выше)
 # (собрано 25.11) golosa29 --std --voice=multik-voice-svoy --golos=Мурзик:girl…
 # 2026-11-26 14:06 UTC — чат «Свой голос»: пробы для «да» Михаила — Барсик и Рон (паспорта golosa29) и свой Пик (svoy_pik, два паспорта)
-golosa30 --std --voice=multik-voice-svoy --golos=Мурзик:girl:speaker=svoy_barsik:P=1.10:F=1.09:T=1.24:R=0.9:gap=0.2:qrise=3,Рон:girl:speaker=kseniya:model=xenia:P=1.1:F=1.08:R=1.1:T=0.88:vend=1.7:qrise=3:laugh=F16,Рекс:girl:speaker=svoy_ron:P=1.10:F=1.10:R=1.7:T=1.07:vend=1.7:gap=0.8:qrise=3:laugh=F16,Пуся:girl:speaker=svoy_pik:P=1.72:F=1.25:T=1.35:R=1.2:qrise=3,Пуша:girl:speaker=svoy_pik:P=1.82:F=1.20:T=1.30:R=1.2:qrise=3
+# (собрано 26.11 14:31) golosa30 --std --voice=multik-voice-svoy --golos=Мурзик:girl…
+
+# 2026-11-26 14:52 UTC — чат «Свой голос»: свой Пик, круг 2 — темп как у нынешнего (+10 %), форманты выше (слух: «голос крупнее» −5,8 %)
+golosa31 --std --voice=multik-voice-svoy --golos=Пуся:girl:speaker=svoy_pik:P=1.72:F=1.32:T=1.48:R=1.2:qrise=3,Пуша:girl:speaker=svoy_pik:P=1.70:F=1.38:T=1.48:R=1.2:qrise=3
