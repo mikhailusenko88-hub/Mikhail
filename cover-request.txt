@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 31
-31dub 31 plan.json
-en;EPISODE 31;DID THE SUN DRINK|THE PUDDLE?
-fr;ÉPISODE 31;LE SOLEIL A BU|LA FLAQUE ?
-ar;الحلقة 31;هل شربت الشمس|البركة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 34
+34dub 34 v2.py
+en;EPISODE 34;DID THE ACORN WAKE UP?
+fr;ÉPISODE 34;LE GLAND S'EST RÉVEILLÉ ?
+ar;الحلقة 34;هل استيقظت البلوطة؟
