@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 38 (новая 38h, элементы 38d — как у en/es/pt/hi/de; вариант A, как у других языков) ; повтор: фон f1_winter_day = f2_winter_day
-38h 38 v1.py el=38d
-en;EPISODE 38;WHO DRAWS|ON THE WINDOW?
-fr;ÉPISODE 38;QUI DESSINE|SUR LA FENÊTRE ?
-ar;الحلقة 38;من يرسم على النافذة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 39 (новая 39g, элементы 39c — как у en/es/pt/hi/de)
+39g 39 v1.py el=39c
+en;EPISODE 39;WHY DOES A SNOWFLAKE|HAVE RAYS?
+fr;ÉPISODE 39;POURQUOI LE FLOCON|A SIX BRANCHES ?
+ar;الحلقة 39;لماذا للندفة ستة أشعة؟
