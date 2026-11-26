@@ -80,6 +80,24 @@ window.job=async function(j){
   return log.join(' ');
 }
 
+// 26.11: замена своей же дорожки (хинди «без спешки» и т. п.): Audio «⋮» → Delete → Confirm, затем job() добавляет новый файл.
+// Дольше 45 с — запускать фоном: window.Rn=null; replAudio('Hindi',url,'Barsik-29-hi.mp3').then(r=>window.Rn=r)
+window.replAudio=async function(lang,url,name){
+  const log=[lang+' замена'];
+  await openLang(lang); let dlg=vis().find(d=>d.innerText.trim().startsWith(lang)); if(!dlg) return log.concat('нет окна').join(' ');
+  const opt=[...dlg.querySelectorAll('[aria-label="Show dubbed audio options"]')].find(b=>b.getClientRects().length);
+  if(opt){ opt.click(); await sleep(1200);
+    const del=[...document.querySelectorAll('tp-yt-paper-item, [role=menuitem], ytcp-ve, yt-formatted-string')].filter(x=>x.getClientRects().length).find(x=>/^Delete$/i.test(x.innerText.trim()));
+    if(!del) return log.concat('нет Delete').join(' ');
+    del.click(); await sleep(1500);
+    const cd=[...document.querySelectorAll('ytcp-confirmation-dialog')].find(d=>d.getClientRects().length);
+    const cb=cd && btnIn(cd,/^(Confirm|Delete)$/i); if(!cb) return log.concat('нет Confirm').join(' ');
+    cb.click(); await sleep(3500); log.push('старая удалена');
+  } else log.push('дорожки не было');
+  for(const d of vis()){ const c=d.querySelector('#close-button, [aria-label=Close]'); if(c && c.getClientRects().length){ c.click(); await sleep(800);} }
+  return log.join(' ')+' | '+await job({lang,audio:url,aname:name});
+}
+
 window.BJ=async function(JOBS){ const out=[location.pathname]; for(const j of JOBS){ out.push(await job(j)); }
  out.push([...document.querySelectorAll('ytgn-video-translation-row')].map(x=>x.innerText.replace(/\s+/g,' ')).join(' | ')); return out; };
 'BJ ok'
