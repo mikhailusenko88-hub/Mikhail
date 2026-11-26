@@ -1,6 +1,5 @@
-# 2026-11-26 23:45 — ёлочные шары (красный и золотой), полные цветных шариков, падают и разбиваются. Проба вида и 4 пробы прочности связей
-olook py=ornament.py nosim=1 frames=1,12 end=200 res=720x1280 samples=40 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
-ot1 py=ornament.py thr=0.15 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
-ot2 py=ornament.py thr=0.4 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
-ot3 py=ornament.py thr=1.0 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
-ot4 py=ornament.py thr=2.5 frames=1,14,20,30,60,120,200 end=200 res=540x960 samples=20 tz=0.16 cy0=-1.25 cy1=-1.15 cz0=0.34 cz1=0.32
+# 2026-11-27 00:00 — ёлочные шары, второй заход: толстый пол (в первом осколки проваливались, шары не раскалывались), трещины не видны; пробы прочности и высоты
+ou1 py=ornament.py thr=0.05 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ou2 py=ornament.py thr=0.15 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ou3 py=ornament.py thr=0.4 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34
+ou4 py=ornament.py thr=0.15 h0=0.7 frames=1,16,20,26,40,80,200 end=200 res=540x960 samples=20 tz=0.24 cy0=-1.15 cy1=-1.05 cz0=0.36 cz1=0.34

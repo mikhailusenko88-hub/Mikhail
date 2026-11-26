@@ -187,7 +187,7 @@ THR = float(A.get("thr", "0.6"))
 H0 = float(A.get("h0", "0.45"))
 OXO = float(A.get("ox", "0.12"))
 COLS = A.get("cols", "red,gold").split(",")
-SHRINK = float(A.get("shrink", "0.985"))         # осколки чуть сжаты к своему центру — видна сетка трещин
+SHRINK = float(A.get("shrink", "0.998"))         # осколки чуть сжаты к своему центру (0,985 — видна сетка трещин)
 ORN_COL = {
     "red": {"Base Color": (0.62, 0.012, 0.02, 1), "Metallic": 0.55, "Roughness": 0.12, "Coat Weight": 1.0, "Coat Roughness": 0.03},
     "gold": {"Base Color": (1.0, 0.70, 0.28, 1), "Metallic": 1.0, "Roughness": 0.14, "Coat Weight": 0.6, "Coat Roughness": 0.05},
@@ -196,7 +196,14 @@ ORN_COL = {
     "green": {"Base Color": (0.02, 0.35, 0.08, 1), "Metallic": 0.55, "Roughness": 0.12, "Coat Weight": 1.0, "Coat Roughness": 0.03},
 }
 m_cap, _ = mat_principled("cap", **ORN_COL["silver"])
-add_rb(floor, "PASSIVE", "BOX", friction=0.6, rest=0.25)
+# толстая невидимая плита вместо тонкой плоскости пола: иначе быстрые осколки проваливаются сквозь пол и удар гасится
+bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, -0.05))
+slab = bpy.context.active_object
+slab.scale = (3.0, 3.0, 0.1)
+bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+slab.hide_render = True
+slab.display_type = "WIRE"
+add_rb(slab, "PASSIVE", "BOX", friction=0.6, rest=0.25)
 rng_o = np.random.default_rng(SEED)
 dyn = []                                         # всё, что движется: осколки, колпачки, шарики (порядок = столбцы pos.npz)
 NSHARD = 0
