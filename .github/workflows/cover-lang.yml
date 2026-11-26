@@ -27,7 +27,7 @@ jobs:
           git fetch -q --depth 1 origin studio
           git archive FETCH_HEAD afisha.py compose.py covers/$N covers/31 | tar -x -C w
           cp oblozhka_lang.py w/
-          gh release download "studio-$BUILD" -R ${{ github.repository }} -p elementy.zip -D w
+          EL=$(echo "$L" | grep -o 'el=[^ ]*' | cut -d= -f2); gh release download "studio-${EL:-$BUILD}" -R ${{ github.repository }} -p elementy.zip -D w   # el=<сборка> — элементы из другой сборки (34 — из 33dub)
           ls w w/covers/$N
       - name: Обложки
         run: python3 cover_lang_run.py
