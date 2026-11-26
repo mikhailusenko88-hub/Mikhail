@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 33
-33dub 33 v2.py
-en;EPISODE 33;DOES THE PINE CONE|KNOW THE WEATHER?
-fr;ÉPISODE 33;LA POMME DE PIN|CONNAÎT LA MÉTÉO ?
-ar;الحلقة 33;هل يعرف الكوز|الطقس؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 32
+32dub 32 plan.json
+en;EPISODE 32;THE STUBBORN NEEDLE?
+fr;ÉPISODE 32;UNE AIGUILLE TÊTUE ?
+ar;الحلقة 32;إبرة عنيدة؟
