@@ -10,7 +10,7 @@ const LV = (process.env.LV || '0,1,4').split(',').map(Number), SEC = +(process.e
 (async () => {
   const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: true, isMobile: true });
-  await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+  await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
   const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message));
   await p.addInitScript(() => { localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [], best: [], duo: false, coins: 0, ts: 1 })); });
   await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(2500);

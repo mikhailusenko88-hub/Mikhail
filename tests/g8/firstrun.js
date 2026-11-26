@@ -9,7 +9,7 @@ const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
   const res = [], ok = (c, m) => res.push((c ? 'OK   ' : 'FAIL ') + m);
   const open = async (init, size) => {
     const ctx = await b.newContext({ viewport: size || { width: 844, height: 390 }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: true, isMobile: true });
-    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
     const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && p.errs.push(m.text().slice(0, 200)));
     await p.addInitScript(init || (() => { window.HOOK_FIRST = true; })); await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500); return [ctx, p];
   };
@@ -61,7 +61,7 @@ const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
     await p.keyboard.down('Space'); await p.waitForTimeout(300); await p.keyboard.up('Space'); await p.waitForTimeout(7500);
     const sm = await ev(p, 'performance_sample'), q = sm[0] || {}, need = ['target_fps', 'window_ms', 'active_ms', 'frame_count', 'fps_avg', 'fps_p10', 'frame_time_p50_ms', 'frame_time_p95_ms', 'frame_time_p99_ms', 'frame_time_max_ms', 'frames_over_50ms', 'frames_over_100ms', 'frames_over_250ms', 'frames_over_500ms', 'frames_over_1000ms', 'build_version'];
     ok(sm.length >= 1 && need.every((k) => q[k] !== undefined && (typeof q[k] === 'number' ? isFinite(q[k]) : true)), `performance_sample пришёл (${sm.length} шт.), все обязательные поля на месте`);
-    ok(q.frame_count > 10 && q.fps_avg > 1 && q.fps_p10 <= q.fps_avg + 0.11 && q.frame_time_p50_ms <= q.frame_time_p95_ms && q.frame_time_p95_ms <= q.frame_time_p99_ms && q.frame_time_p99_ms <= q.frame_time_max_ms && q.window_ms >= q.active_ms - 1 && q.build_version === '12', 'числа замера согласованы: ' + JSON.stringify(q));
+    ok(q.frame_count > 10 && q.fps_avg > 1 && q.fps_p10 <= q.fps_avg + 0.11 && q.frame_time_p50_ms <= q.frame_time_p95_ms && q.frame_time_p95_ms <= q.frame_time_p99_ms && q.frame_time_p99_ms <= q.frame_time_max_ms && q.window_ms >= q.active_ms - 1 && q.build_version === '13', 'числа замера согласованы: ' + JSON.stringify(q));
     if ((await p.evaluate(() => window.__hook.mode)) !== 'play') await p.evaluate(() => window.__hook.start(false, 2)); await p.waitForTimeout(400);
     await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); const pf = await ev(p, 'progression_failed'); ok(pf.length === 1 && pf[0].how === 'left' && pf[0].step_id, 'закрыл игру посреди уровня — progression_failed (how: left): ' + JSON.stringify(pf[0]));
     ok(p.errs.length === 0, 'ошибок нет' + (p.errs.length ? ': ' + p.errs[0] : '')); await ctx.close();

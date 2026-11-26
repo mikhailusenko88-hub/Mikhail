@@ -9,7 +9,7 @@ fs.mkdirSync(OUT, { recursive: true });
   for (const [w, h] of SIZES) {
     for (const lang of ['ru', 'en']) {
       const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'en-US' });
-      await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+      await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
       const p = await ctx.newPage();
       await p.addInitScript((lang) => { window.__pgLang = lang; localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [3, 2, 1], best: [], duo: false, tut: [1, 1], coins: 12345, ts: 1 })); }, lang);
       await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500);

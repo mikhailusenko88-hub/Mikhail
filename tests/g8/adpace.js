@@ -1,5 +1,5 @@
-// Hook Truck, сборка 11: темп межстраничной рекламы. Первая — не раньше четырёх минут от запуска, следующая — не раньше чем через три минуты,
-// после ролика за награду — полторы минуты тишины; на первых двух уровнях рекламы нет никогда. Время задаётся сдвигом отметок игры, ждать не нужно.
+// Hook Truck, сборка 13: межстраничная по правилу Playgama — игра просит мост о рекламе на каждой паузе между уровнями, а когда показать, решает мост (своих таймеров нет).
+// Мост, которому рано, может промолчать — тогда игра через 1,5 с идёт дальше сама, не зависая.
 const { chromium } = require('/opt/npm-tools/node_modules/playwright');
 const path = require('path'), fs = require('fs'); const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
 (async () => {
@@ -15,20 +15,12 @@ const path = require('path'), fs = require('fs'); const DIR = path.resolve(__dir
     // прошёл уровень li, когда от запуска прошло since секунд, от прошлой межстраничной — gap, от ролика за награду — rew; нажал «дальше» — была ли реклама
     const next = async (li, since, gap, rew) => { await p.evaluate(([li, since, gap, rew]) => { const g = window.__hook.pg, now = performance.now() / 1000; g.t0 = (now - since) * 1000; g.lastInter = now - gap; g.lastRew = now - rew; window.__pg.ads.length = 0; window.__hook.start(false, li); }, [li, since, gap, rew]); await p.waitForTimeout(400); await win();
       await tap('next'); await p.waitForTimeout(300); const ad = await p.evaluate(() => /inter:level_end/.test(window.__pg.ads.join(','))); await p.waitForTimeout(1300); return ad; };
-    ok(await p.evaluate(() => window.__pg.ver) === '12', name + ': сборка 12');
-    ok(!(await next(2, 100, 1e9, 1e9)), name + ': 1 мин 40 с от запуска, уровень 3 — рекламы нет (раньше была)');
-    ok(!(await next(4, 230, 1e9, 1e9)), name + ': 3 мин 50 с от запуска — рекламы ещё нет');
-    ok(await next(4, 250, 1e9, 1e9), name + ': 4 мин 10 с от запуска — первая реклама');
-    ok(!(await next(5, 400, 100, 1e9)), name + ': 1 мин 40 с после прошлой — рекламы нет (раньше была)');
-    ok(!(await next(5, 400, 170, 1e9)), name + ': 2 мин 50 с после прошлой — рекламы ещё нет');
-    ok(await next(5, 400, 190, 1e9), name + ': 3 мин 10 с после прошлой — реклама');
-    ok(!(await next(5, 400, 1e9, 60)), name + ': минута после ролика за награду — рекламы нет');
-    ok(await next(5, 400, 1e9, 100), name + ': 1 мин 40 с после ролика за награду — реклама');
-    ok(!(await next(1, 1e6, 1e9, 1e9)), name + ': уровень 2 — рекламы нет, сколько бы ни играл');
-    ok(!(await next(0, 1e6, 1e9, 1e9)), name + ': уровень 1 — рекламы нет, сколько бы ни играл');
-    // настоящее время: только что была реклама — сразу «дальше» ещё раз: второй подряд нет
-    await next(5, 400, 1e9, 1e9); const again = await p.evaluate(() => { window.__pg.ads.length = 0; window.__hook.start(false, 6); return true; }); await p.waitForTimeout(400); await win(); await tap('next'); await p.waitForTimeout(300);
-    ok(again && !(await p.evaluate(() => /inter/.test(window.__pg.ads.join(',')))), name + ': сразу после рекламы следующий уровень — без рекламы');
+    ok(await p.evaluate(() => window.__pg.ver) === '13', name + ': сборка 13');
+    for (const li of [0, 1, 2, 5]) ok(await next(li, 10, 0, 0), name + `: после уровня ${li + 1} — просьба мосту о межстраничной, сколько бы ни прошло с прошлой`);
+    await p.evaluate(() => { window.bridge.advertisement.showInterstitial = (q) => { window.__pg.ads.push('silent:' + q); }; });
+    await p.evaluate(() => { window.__pg.ads.length = 0; window.__hook.start(false, 3); }); await p.waitForTimeout(400); await win(); await tap('next');
+    const gone = await p.waitForFunction(() => window.__hook.mode === 'play' && window.__hook.S.t < 3, null, { timeout: 5000 }).then(() => true).catch(() => false);
+    ok(gone, name + ': мост промолчал — через 1,5 с игра сама переходит к следующему уровню');
     ok(!errs.length, name + ': ошибок нет' + (errs.length ? ' — ' + errs[0] : '')); await ctx.close();
   }
   await b.close(); console.log(res.join('\n')); const f = res.filter((r) => r.startsWith('FAIL')).length; console.log(f ? `ПРОВАЛОВ: ${f}` : `всё в порядке (${res.length})`); process.exit(f ? 1 : 0);

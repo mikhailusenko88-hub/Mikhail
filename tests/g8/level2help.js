@@ -6,7 +6,7 @@ const path = require('path'), fs = require('fs'); const DIR = path.resolve(__dir
 (async () => {
   const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] }); const res = [], ok = (c, m) => res.push((c ? 'OK   ' : 'FAIL ') + m);
   const open = async () => { const ctx = await b.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: true, isMobile: true });
-    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
     const p = await ctx.newPage(); p.errs = []; p.on('pageerror', (e) => p.errs.push(e.message));
     await p.addInitScript(() => { localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [2], best: [], duo: false, tut: [1], ctl: 'auto', coins: 30, ts: 1 })); }); // уровень 1 пройден, уровень 2 — впервые
     await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500); await p.evaluate(() => { window.__hook.setCtl('auto'); window.__hook.start(false, 1); }); await p.waitForTimeout(400); return [ctx, p]; };

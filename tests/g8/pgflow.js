@@ -30,8 +30,9 @@ fs.mkdirSync(OUT, { recursive: true });
     const earn = await p.evaluate(() => 20 + 10 * 2 + 30 * 1); // для отчёта не нужно
     ok(s.coins > c0, name + `: монеты удвоены (${c0} → ${s.coins})`); ok(/rew:double_coins/.test(s.ads), name + ': вызван ролик double_coins');
     ok(await p.evaluate(() => !window.__hook.btns.find((q) => q.id === 'x2')), name + ': кнопка ×2 спрятана после награды');
-    // «дальше» с 1-го уровня — межстраничной нет (рано)
-    await tap('next'); await p.waitForTimeout(300); s = await st(); ok(s.mode === 'play' && s.lvl === 1 && !/inter/.test(s.ads), name + ': с 1-го уровня — без межстраничной');
+    // «дальше» с 1-го уровня — просим мост о межстраничной (когда показать, решает мост), игра ждёт её конца
+    await tap('next'); await p.waitForTimeout(300); s = await st(); ok(/inter:level_end/.test(s.ads) && s.pend, name + ': после 1-го уровня — просьба о межстраничной');
+    await p.waitForTimeout(1200); s = await st(); ok(s.mode === 'play' && s.lvl === 1, name + ': после рекламы — уровень 2');
     // уровень 3: межстраничная после минуты
     await p.evaluate(() => { window.__hook.pg.t0 = -1e9; window.__hook.pg.lastInter = -1e9; window.__hook.pg.lastRew = -1e9; window.__hook.start(false, 2); }); await p.waitForTimeout(400); await win();
     await tap('next'); await p.waitForTimeout(300); s = await st(); ok(/inter:level_end/.test(s.ads) && s.mode === 'win' && s.pend, name + ': после 3-го уровня — межстраничная, игра ждёт');
@@ -40,7 +41,7 @@ fs.mkdirSync(OUT, { recursive: true });
     const hudMenu = async () => { const m = await p.evaluate(() => { const b = window.__hook.buttons.find((q) => q.id === 'menu'); return [b.x + b.w / 2, b.y + b.h / 2]; }); if (w < 900) await p.touchscreen.tap(m[0], m[1]); else await p.mouse.click(m[0], m[1]); await p.waitForTimeout(400); };
     await hudMenu();
     await p.evaluate(() => { window.__hook.pg.lastInter = -1e9; window.__pg.ads.length = 0; }); await tap('L0'); await p.waitForTimeout(300);
-    s = await st(); ok(s.mode === 'play' && s.lvl === 0 && !/inter/.test(s.ads), name + ': старт 1-го уровня из меню — без рекламы');
+    await p.waitForTimeout(1200); s = await st(); ok(s.mode === 'play' && s.lvl === 0 && /inter/.test(s.ads), name + ': старт 1-го уровня из меню — через мост, потом уровень');
     await hudMenu();
     await tap('L3'); await p.waitForTimeout(300); s = await st(); ok(/inter:level_end/.test(s.ads) && s.mode === 'menu' && s.pend, name + ': старт 4-го уровня из меню — межстраничная, игра ждёт');
     await p.waitForTimeout(1200); s = await st(); ok(s.mode === 'play' && s.lvl === 3, name + ': после рекламы уровень начался');
@@ -71,7 +72,7 @@ fs.mkdirSync(OUT, { recursive: true });
   {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: true, isMobile: true });
     const cloud = JSON.stringify({ stars: [3, 2, 1], best: [], duo: false, ctl: 'auto', coins: 777, own: [0], ownW: [0, 1], ownC: [0, 1], truck: 0, wheels: 1, color: 1, up: { eng: 2, winch: 0 }, tut: [1, 1], ts: Date.now() });
-    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') + ';window.__pg.store.hooktruck_v1=' + JSON.stringify(cloud) + ';' }));
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') + ';window.__pg.store.hooktruck_v1=' + JSON.stringify(cloud) + ';' }));
     const p = await ctx.newPage(); await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500);
     const r = await p.evaluate(() => ({ coins: window.__hook.save().coins, stars: window.__hook.save().stars.join(''), ctl: window.__hook.ctl, wheels: window.__hook.save().wheels }));
     ok(r.coins === 777 && r.stars === '321' && r.ctl === 'auto' && r.wheels === 1, 'облако площадки: прогресс, монеты, колёса и режим управления восстановлены ' + JSON.stringify(r));
@@ -80,7 +81,7 @@ fs.mkdirSync(OUT, { recursive: true });
   // вдвоём: кнопка «тяни» есть и тянет лебёдку
   {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, locale: 'ru-RU', hasTouch: true, isMobile: true });
-    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgLang="ru";' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + 'window.__pgLang="ru";' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
     const p = await ctx.newPage(); await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1200);
     await p.evaluate(() => { window.__hook.setCtl('duo'); window.__hook.start(true, 1); }); await p.waitForTimeout(1300);
     const has = await p.evaluate(() => !!window.__hook.buttons.find((q) => q.id === 'pull'));

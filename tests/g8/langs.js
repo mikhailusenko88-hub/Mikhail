@@ -11,7 +11,7 @@ fs.mkdirSync(OUT, { recursive: true });
     for (const [name, w, h] of [['phone', 390, 844], ['desk', 900, 506]]) {
       const touch = name === 'phone';
       const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, locale: 'en-US', hasTouch: touch, isMobile: touch });
-      await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+      await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
       const p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(lang + ' ' + name + ': ' + e.message));
       await p.addInitScript((lang) => { window.__pgLang = lang; localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [3, 2, 1], best: [], duo: false, coins: 640, ts: 1 })); }, lang);
       await p.goto('file://' + DIR + '/index.html'); await p.waitForTimeout(1500);

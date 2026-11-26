@@ -6,7 +6,7 @@ const DIR = path.resolve(__dirname, '../../dist/hook-truck-pg');
   const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   for (const [name, w, h, cap] of [['A медленный', 240, 400, 0], ['Б потолок кадров', 150, 220, 45]]) {
     const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 2, locale: 'en-US' });
-    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
+    await ctx.route('**/playgama-bridge.js', (r) => r.fulfill({ contentType: 'text/javascript', body: 'window.__pgNoInter = true;' + fs.readFileSync(path.join(__dirname, 'pgstub.js'), 'utf8') }));
     const p = await ctx.newPage();
     await p.addInitScript((cap) => {
       localStorage.setItem('hooktruck_v1', JSON.stringify({ stars: [1, 1, 1, 1, 1], best: [], duo: false, tut: [1, 1], coins: 0, ts: 1 }));

@@ -72,26 +72,24 @@
 
   // ---------- площадка (Playgama Bridge): язык, пауза, звук, реклама, облачное сохранение ----------
   // Без моста (страница проверки) всё это выключено: рекламных кнопок нет, межстраничной нет.
+  const BOOT = window.PG_BOOT || null; // сборка для площадки: загрузчик уже запустил мост, язык и сохранение пришли от него
   const PG = { on: false, rew: false, inter: false, ad: false, paused: false, mutedP: false, ready: false, t0: performance.now(), lastInter: -1e9, lastRew: -1e9, lastFree: -1e9, pend: null, got: false };
   const pgNow = () => performance.now() / 1000;
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
   // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
-  const BUILD = '12', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const BUILD = '13', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
   const stepOf = (l) => ({ step_id: 'L' + String(l + 1).padStart(2, '0'), step_index: l + 1 }); // шаг продвижения по образцу Playgama: имя события постоянное, номер уровня — в данных
   const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
   const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign(stepOf(lvl), { level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
   const runQuit = (how) => { if (TM.live && S && S.state !== 'win') pgEv('progression_failed', runData({ how, assists: TA.n })); TM.live = false; }; // ушёл с уровня, не доехав: в меню или начал заново
   function pgDone(v) { const p = PG.pend; PG.pend = null; PG.ad = false; if (p) { clearTimeout(p.tm); p.cb(v); } }
-  // межстраничная: только в паузах между уровнями (после уровня или перед стартом уровня из меню), начиная с 3-го уровня,
-  // первая — не раньше четырёх минут от запуска, дальше — не чаще раза в три минуты и не сразу после ролика за награду.
-  // Сборка 11: было «минута и минута». По данным первых суток показов было 0,77 на игру при норме 0,30, первая реклама приходила на 2:34,
-  // после каждого четвёртого показа игру закрывали, а среднего времени игры до нормы не хватало.
-  const AD_FIRST = 240, AD_GAP = 180;
-  function pgCanInter(li) { const t = pgNow(); return PG.on && PG.inter && li >= 2 && t - PG.t0 / 1000 > AD_FIRST && t - PG.lastInter > AD_GAP && t - PG.lastRew > 90 && !PG.pend; }
+  // межстраничная: просим мост на каждой паузе между уровнями, а когда её показать (и первую тоже), решает сам мост — правило Playgama, своих таймеров нет.
+  // Мост, которому рано, может промолчать: тогда через 1,5 с игра идёт дальше сама.
+  function pgCanInter() { return PG.on && PG.inter && !PG.pend; }
   function pgInter(cb, li = lvl) {
     if (!pgCanInter(li)) return cb();
-    PG.lastInter = pgNow(); PG.pend = { type: 'inter', cb, tm: setTimeout(() => pgDone(false), 45000) };
+    PG.lastInter = pgNow(); PG.pend = { type: 'inter', cb, tm: setTimeout(() => pgDone(false), 45000) }; const pd = PG.pend; setTimeout(() => { if (PG.pend === pd && !pd.seen) pgDone(false); }, 1500);
     try { window.bridge.advertisement.showInterstitial('level_end'); } catch (e) { pgDone(false); }
   }
   function pgRewarded(place, cb) {
@@ -99,8 +97,8 @@
     PG.got = false; PG.pend = { type: 'rew', cb, tm: setTimeout(() => pgDone(PG.got), 90000) };
     try { window.bridge.advertisement.showRewarded(place); } catch (e) { pgDone(false); }
   }
-  if (window.bridge) {
-    Promise.race([window.bridge.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))]).then(() => {
+  if (window.bridge && (!BOOT || BOOT.ok)) {
+    (BOOT ? Promise.resolve() : Promise.race([window.bridge.initialize(), new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))])).then(() => {
       const B = window.bridge, id = B.platform.id || '';
       PG.on = id !== 'mock' && id !== '';
       try { if (PG.on) B.gameVersion = BUILD; } catch (e) { /* */ } // номер сборки уходит с каждым событием — сборки можно сравнивать
@@ -108,53 +106,42 @@
       try {
         let lg = String(B.platform.language || '').toLowerCase();
         if (id === 'crazy_games') { const si = (window.CrazyGames && window.CrazyGames.SDK && window.CrazyGames.SDK.user && window.CrazyGames.SDK.user.systemInfo) || {}; lg = String(si.locale || 'en').toLowerCase(); }
-        if (lg) setLang(lg);
+        if (lg && !BOOT) setLang(lg); // со сборкой для площадки язык уже выставлен из моста до игры
       } catch (e) { /* */ }
       try { PG.rew = !!B.advertisement.isRewardedSupported; PG.inter = !!B.advertisement.isInterstitialSupported; } catch (e) { /* */ }
       if (window.GAME_ADS === false) { PG.rew = false; PG.inter = false; }
       try { B.platform.on('pause_state_changed', (p) => { PG.paused = !!p; }); B.platform.on('audio_state_changed', (on) => { PG.mutedP = !on; }); PG.mutedP = B.platform.isAudioEnabled === false; } catch (e) { /* */ }
-      B.advertisement.on('interstitial_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'inter') return; if (st === 'opened') PG.ad = true; else if (st === 'closed' || st === 'failed') pgDone(true); });
+      B.advertisement.on('interstitial_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'inter') return; PG.pend.seen = true; if (st === 'opened') PG.ad = true; else if (st === 'closed' || st === 'failed') pgDone(true); });
       B.advertisement.on('rewarded_state_changed', (st) => { if (!PG.pend || PG.pend.type !== 'rew') return; if (st === 'opened') PG.ad = true; else if (st === 'rewarded') PG.got = true; else if (st === 'closed' || st === 'failed') { PG.lastRew = pgNow(); pgDone(PG.got); } });
       // облачное сохранение площадки: берём его, если оно свежее браузерного и игрок ещё не начал заезд
-      if (PG.on) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); duo = !!save.duo; ctl = save.ctl === 'auto' ? 'auto' : 'manual'; ser = H.levels[firstOpen()].ser; applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } firstRun(); }).catch(() => firstRun()); else firstRun();
+      if (PG.on && !BOOT) B.storage.get('hooktruck_v1').then((v) => { try { const q = typeof v === 'string' ? JSON.parse(v) : v; if (q && Array.isArray(q.stars) && (q.ts || 0) > (save.ts || 0) && mode === 'menu') { adopt(q); duo = !!save.duo; ctl = save.ctl === 'auto' ? 'auto' : 'manual'; ser = H.levels[firstOpen()].ser; applyLook(curLook()); try { localStorage.setItem('hooktruck_v1', JSON.stringify(save)); } catch (e) { /* */ } } } catch (e) { /* */ } firstRun(); }).catch(() => firstRun()); else firstRun();
       setTimeout(firstRun, 3500); // облако молчит — не ждём дольше
     }).catch(() => { PG.on = false; firstRun(); });
   } else setTimeout(() => firstRun(), 0);
+  if (BOOT && !BOOT.ok) setTimeout(() => firstRun(), 0); // загрузчик моста не дождался — играем без площадки
   addEventListener('pagehide', () => { if (TM.live && mode === 'play' && S && S.state !== 'win') { pgEv('progression_failed', runData({ how: 'left', assists: TA.n })); TM.live = false; } }); // закрыл игру посреди уровня
   addEventListener('contextmenu', (e) => e.preventDefault()); // долгое нажатие и правый клик не открывают меню браузера
 
-  // ---------- звук (всё синтезом, без файлов) ----------
-  let AC = null, master = null, eng = null, muted = false;
+  // ---------- звук: записи из папки snd (mp3), а не синтез кодом — площадки синтезированный звук не принимают ----------
+  // мотор — петля, высота от оборотов колёс; музыка — тихая петля; остальное — короткие записи по событиям
+  let AC = null, master = null, eng = null, mus = null, muted = false; const SND = {};
+  const SND_LIST = ['engine', 'music', 'hook', 'unhook', 'crash', 'cp', 'star', 'snap', 'win', 'click', 'back', 'pick', 'no', 'boing'];
+  const quiet = () => muted || PG.mutedP || PG.ad || PG.paused || document.hidden;
+  function loopOf(name) { const b = SND[name]; if (!b || !AC) return null; const src = AC.createBufferSource(), g = AC.createGain(); src.buffer = b; src.loop = true; src.loopStart = 0.03; src.loopEnd = b.duration - 0.03; g.gain.value = 0; src.connect(g); g.connect(master); src.start(); return { src, g }; }
   function audio() {
-    if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
-    try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = 0.7; master.connect(AC.destination); } catch (e) { AC = null; }
+    if (AC) { if (AC.state === 'suspended' && !document.hidden) AC.resume().catch(() => {}); return; }
+    try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = quiet() ? 0 : 0.8; master.connect(AC.destination); } catch (e) { AC = null; return; }
+    if (location.protocol === 'file:') return; // страница с диска: браузер не даст прочитать файлы звука — играем молча
+    for (const n of SND_LIST) fetch('snd/' + n + '.mp3').then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status))).then((ab) => new Promise((ok, no) => AC.decodeAudioData(ab, ok, no))).then((buf) => { SND[n] = buf; if (n === 'engine') eng = loopOf('engine'); else if (n === 'music') mus = loopOf('music'); }).catch(() => {});
   }
-  function tone(f, d, type = 'sine', v = 0.2, f2) {
-    if (!AC || muted) return; const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
-    o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + d); o.connect(g); g.connect(master); o.start(t); o.stop(t + d + 0.02);
-  }
-  function noise(d, v = 0.3, f = 1200) {
-    if (!AC || muted) return; const t = AC.currentTime, n = AC.sampleRate * d, b = AC.createBuffer(1, n, AC.sampleRate), a = b.getChannelData(0);
-    for (let i = 0; i < n; i++) a[i] = (Math.random() * 2 - 1) * (1 - i / n);
-    const s = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain(); fl.type = 'lowpass'; fl.frequency.value = f; g.gain.value = v;
-    s.buffer = b; s.connect(fl); fl.connect(g); g.connect(master); s.start(t);
-  }
-  const sfx = {
-    hook: () => { tone(1400, 0.08, 'square', 0.08); tone(900, 0.12, 'triangle', 0.15); },
-    unhook: () => { noise(0.25, 0.12, 2400); tone(500, 0.18, 'sine', 0.06, 900); },
-    crash: () => { noise(0.5, 0.45, 700); tone(120, 0.4, 'sawtooth', 0.12, 50); },
-    cp: () => { tone(660, 0.12, 'triangle', 0.15); setTimeout(() => tone(990, 0.18, 'triangle', 0.15), 110); },
-    star: () => { [880, 1175, 1568].forEach((f, i) => setTimeout(() => tone(f, 0.2, 'triangle', 0.16), i * 90)); },
-    snap: () => { noise(0.18, 0.4, 3000); tone(220, 0.25, 'square', 0.08, 90); },
-    win: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 0.28, 'triangle', 0.18), i * 130)); },
-  };
-  function engineSound(S, gas) {
-    if (!AC) return;
-    if (!eng) { try { const o = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain(); o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 420; g.gain.value = 0; o.connect(f); f.connect(g); g.connect(master); o.start(); eng = { o, g }; } catch (e) { return; } }
-    const rpm = S && S.wheels.length ? Math.abs(S.wheels[0].w) : 0, on = !!S && mode === 'play' && S.state === 'play' && !muted, t = AC.currentTime;
-    eng.o.frequency.setTargetAtTime(48 + rpm * 3.2 + (gas ? 14 : 0), t, 0.06);
-    eng.g.gain.setTargetAtTime(on ? 0.04 + (gas ? 0.05 : 0) : 0, t, 0.08);
+  document.addEventListener('visibilitychange', () => { if (!AC) return; if (document.hidden) AC.suspend().catch(() => {}); else AC.resume().catch(() => {}); }); // свернул игру — тишина сразу
+  function play(n, vol = 1, rate = 1) { if (!AC || !SND[n] || quiet()) return; try { const src = AC.createBufferSource(), g = AC.createGain(); src.buffer = SND[n]; src.playbackRate.value = rate; g.gain.value = vol; src.connect(g); g.connect(master); src.start(); } catch (e) { /* */ } }
+  const sfx = { hook: () => play('hook'), unhook: () => play('unhook', 0.8), crash: () => play('crash'), cp: () => play('cp'), star: () => { play('star'); setTimeout(() => play('star', 0.8, 1.26), 110); }, snap: () => play('snap'), win: () => play('win') };
+  function engineSound(S, gas) { // каждый кадр: общая громкость, мотор, музыка
+    if (!AC) return; const t = AC.currentTime; master.gain.setTargetAtTime(quiet() ? 0 : 0.8, t, 0.05);
+    const rpm = S && S.wheels.length ? Math.abs(S.wheels[0].w) : 0, on = !!S && mode === 'play' && S.state === 'play';
+    if (eng) { eng.src.playbackRate.setTargetAtTime(Math.min(2, 0.7 + rpm * 0.045 + (gas ? 0.12 : 0)), t, 0.06); eng.g.gain.setTargetAtTime(on ? 0.16 + (gas ? 0.16 : 0) : 0, t, 0.08); }
+    if (mus) mus.g.gain.setTargetAtTime(on ? 0.2 : 0.3, t, 0.6);
   }
 
   // ---------- состояние ----------
@@ -167,7 +154,7 @@
     T = RU ? TRU : d ? Object.assign({}, TEN, d.T) : TEN; XD = d ? d.X : null; LANG = RU ? 1 : 0;
   }
   const loc = (a) => (XD && XD[a[0]]) || a[LANG]; // название уровня, подсказка, название в гараже — на языке игрока
-  setLang(navigator.language);
+  setLang(BOOT ? BOOT.lang || 'en' : navigator.language); // на площадке язык — только от моста
   // гараж: монеты дают за финиш и звёзды; на них — колёса, цвета, грузовик и прокачка. Звёзды не тратятся: за них открывается джип
   // три последних — дорогие, с блеском: хром, золото и «радуга» (переливается на ходу)
   const PAINT = [['#ff5a36', '#c63b1f'], ['#2f7df6', '#1c55b8'], ['#3fbf5a', '#2a8a3f'], ['#ffc928', '#d99a00'], ['#ff6fb1', '#d1437f'], ['#3a4047', '#22272c'], ['#bcc9d0', '#8496a0', 'chrome'], ['#f5b400', '#b97c00', 'gold'], ['#b36bff', '#7a3fd0', 'rainbow']];
@@ -186,11 +173,11 @@
     for (const k in OWN) { if (!Array.isArray(s2[OWN[k]]) || !s2[OWN[k]].includes(0)) s2[OWN[k]] = [0]; if (!s2[OWN[k]].includes(s2[k]) || !SHOP[k][s2[k]]) s2[k] = 0; }
     save = s2;
   }
-  try { adopt(JSON.parse(localStorage.getItem('hooktruck_v1') || 'null')); } catch (e) { adopt(null); }
+  try { adopt(BOOT ? (typeof BOOT.save === 'string' ? JSON.parse(BOOT.save) : BOOT.save) : JSON.parse(localStorage.getItem('hooktruck_v1') || 'null')); } catch (e) { adopt(null); } // на площадке — только облако моста
   const store = () => {
     save.ts = Date.now(); const js = JSON.stringify(save);
-    try { localStorage.setItem('hooktruck_v1', js); } catch (e) { /* без сохранения */ }
-    if (PG.on) { try { window.bridge.storage.set('hooktruck_v1', js).catch(() => {}); } catch (e) { /* */ } } // облако площадки (YouTube и др.)
+    if (!BOOT) try { localStorage.setItem('hooktruck_v1', js); } catch (e) { /* без сохранения */ }
+    if (PG.on || (BOOT && BOOT.ok)) { try { window.bridge.storage.set('hooktruck_v1', js).catch(() => {}); } catch (e) { /* */ } } // облако площадки (YouTube и др.)
   };
   const starsTotal = () => save.stars.reduce((a, n) => a + (n || 0), 0);
   const curLook = () => ({ truck: save.truck, wheels: save.wheels, color: save.color });
@@ -287,7 +274,7 @@
     else if (b.id.slice(0, 2) === 'm:') { const m = b.id.slice(2); duo = m === 'duo'; if (!duo) ctl = m; save.duo = duo; save.ctl = ctl; store(); pgEv('settings_changed', { setting: 'control', value: m }); }
     else if (b.id[0] === 'L') { const li = +b.id.slice(1); pgInter(() => startGame(duo, li), li); }
     else if (b.id === 'play') { const li = firstOpen(); pgInter(() => startGame(duo, li), li); }
-    else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); tone(700, 0.05, 'triangle', 0.08); }
+    else if (b.id === 's:prev' || b.id === 's:next') { ser = clamp(ser + (b.id === 's:next' ? 1 : -1), 0, NS - 1); play('click'); }
     else if (b.id === 'x2') pgRewarded('double_coins', (ok) => { if (ok && res && !res.x2) { res.x2 = true; save.coins += res.earn; store(); sfx.star(); } else if (!ok && res) { res.noad = true; toasts.push({ t: 0, text: T.noad, col: '#ffcc80' }); } });
     else if (b.id === 'again') pgInter(() => restart()); else if (b.id === 'next') pgInter(() => { if (canNext()) startGame(duo, lvl + 1); else mode = 'menu'; }); else if (b.id === 'menu') { if (mode === 'win') pgInter(() => { mode = 'menu'; }); else mode = 'menu'; }
   }
@@ -418,10 +405,10 @@
   }
   function openGarage() { gar = { tab: gar ? gar.tab : 0, pick: curLook(), deny: -9 }; lvl = 0; S = H.create(0, { up: save.up }); acc = 0; mode = 'garage'; toasts = []; ptrs.clear(); }
   function garClick(id) {
-    const a = id.split(':'), kind = TABS[gar.tab], no = () => { gar.deny = realT; gar.denyK = a[1] === 'up' ? a[2] : ''; tone(160, 0.18, 'square', 0.08); };
-    if (a[1] === 'back') { applyLook(curLook()); mode = 'menu'; tone(500, 0.06, 'triangle', 0.1); }
-    else if (a[1] === 'tab') { if (kind !== 'up') gar.pick[kind] = save[kind]; gar.tab = +a[2]; applyLook(gar.pick); tone(700, 0.05, 'triangle', 0.08); }
-    else if (a[1] === 'item') { const i = +a[2]; gar.pick[kind] = i; if (save[OWN[kind]].includes(i)) { save[kind] = i; store(); } applyLook(gar.pick); tone(880, 0.06, 'triangle', 0.1); } // тап — примерка; своё сразу надевается
+    const a = id.split(':'), kind = TABS[gar.tab], no = () => { gar.deny = realT; gar.denyK = a[1] === 'up' ? a[2] : ''; play('no'); };
+    if (a[1] === 'back') { applyLook(curLook()); mode = 'menu'; play('back'); }
+    else if (a[1] === 'tab') { if (kind !== 'up') gar.pick[kind] = save[kind]; gar.tab = +a[2]; applyLook(gar.pick); play('click'); }
+    else if (a[1] === 'item') { const i = +a[2]; gar.pick[kind] = i; if (save[OWN[kind]].includes(i)) { save[kind] = i; store(); } applyLook(gar.pick); play('pick'); } // тап — примерка; своё сразу надевается
     else if (a[1] === 'act') {
       const i = gar.pick[kind], it = SHOP[kind][i];
       if (it.stars ? starsTotal() < it.stars : save.coins < it.cost) return no();
@@ -675,7 +662,7 @@
     ctx.fillStyle = col; rr(b.x, b.y + (on ? 3 : 0), b.w, b.h, b.w * 0.28); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.22)'; rr(b.x + 8, b.y + 8 + (on ? 3 : 0), b.w - 16, b.h * 0.36, b.w * 0.2); ctx.fill();
     ctx.globalAlpha = 1; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = `900 ${Math.round(b.h * (sub ? 0.24 : 0.42))}px system-ui, sans-serif`; ctx.fillText(label, b.x + b.w / 2, b.y + b.h / 2 + (on ? 3 : 0) + (sub ? -b.h * 0.12 : 0));
+    ctx.font = `900 ${Math.round(b.h * (sub ? 0.24 : 0.42))}px system-ui, sans-serif`; fillI(label, b.x + b.w / 2, b.y + b.h / 2 + (on ? 3 : 0) + (sub ? -b.h * 0.12 : 0));
     if (sub) { ctx.font = `800 ${Math.round(b.h * 0.15)}px system-ui, sans-serif`; ctx.fillText(sub, b.x + b.w / 2, b.y + b.h * 0.72 + (on ? 3 : 0), b.w - 10); }
     ctx.restore();
   }
@@ -695,7 +682,7 @@
     for (const id of ['restart', 'menu', 'mute']) {
       const b = B[id]; ctx.fillStyle = 'rgba(0,0,0,0.28)'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill();
       ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 24px system-ui, sans-serif';
-      ctx.fillText(id === 'restart' ? '↻' : id === 'menu' ? '☰' : muted ? '🔇' : '🔊', b.x + b.w / 2, b.y + b.h / 2 + 1);
+      fillI(id === 'restart' ? '↻' : id === 'menu' ? '☰' : muted ? '🔇' : '🔊', b.x + b.w / 2, b.y + b.h / 2 + 1);
     }
     const legend = isAuto() ? T.legendAuto : T.legend;
     if (!(touchy || ptrs.size) && S.t < 12 && !tut && !(wait && isAuto())) {
@@ -710,7 +697,7 @@
     ctx.fillStyle = '#ffca28'; rr(bx, by, Math.max(12, bw * k), 12, 6); ctx.fill();
     for (const c of L.cps) { const q = (c.x - x0) / (x1 - x0); ctx.fillStyle = S.cp && S.cp.x >= c.x ? '#00e676' : '#fff'; ctx.beginPath(); ctx.arc(bx + bw * q, by + 6, 6, 0, 7); ctx.fill(); }
     ctx.fillStyle = '#fff'; ctx.font = '800 15px system-ui, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-    ctx.fillText(W < 600 ? `${lvl + 1}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.lvl} ${lvl + 1}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par} ${T.sec}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
+    fillI(W < 600 ? `${lvl + 1}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par}   ${L.star.got ? '★' : '☆'}${duo ? '   👥' : ''}` : `${T.lvl} ${lvl + 1}${duo ? ' · ' + T.duo : ''}   ⏱ ${S.t.toFixed(1)} / ${H.levels[lvl].par} ${T.sec}   ${L.star.got ? '★' : '☆'}`, bx, by + 20);
     // название уровня и подсказка уровня — первые секунды; после возрождения подсказка снова
     const l = H.levels[lvl], hint = loc(l.hint);
     if (hintShown._att !== S.attempts) { hintShown._att = S.attempts; hintShown.t0 = realT; }
@@ -742,20 +729,48 @@
     toasts = toasts.filter((t) => t.t < 1.6);
   }
   function panel(x, y, w, h) { ctx.fillStyle = 'rgba(0,0,0,0.25)'; rr(x, y + 8, w, h, 26); ctx.fill(); ctx.fillStyle = '#fffdf7'; rr(x, y, w, h, 26); ctx.fill(); }
-  function bigBtn(id, x, y, w, h, label, col) { menuBtns.push({ id, x, y, w, h }); ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, y + 5, w, h, 18); ctx.fill(); ctx.fillStyle = col; rr(x, y, w, h, 18); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(h * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, x + w / 2, y + h / 2 + 1, w - 14); }
+  function bigBtn(id, x, y, w, h, label, col) { menuBtns.push({ id, x, y, w, h }); ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, y + 5, w, h, 18); ctx.fill(); ctx.fillStyle = col; rr(x, y, w, h, 18); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(h * 0.4)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; fillI(label, x + w / 2, y + h / 2 + 1, w - 14); }
   function coinIcon(x, y, r) {
     ctx.fillStyle = '#f39c12'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
     ctx.fillStyle = '#ffd54f'; ctx.beginPath(); ctx.arc(x, y, r * 0.74, 0, 7); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.beginPath(); ctx.arc(x - r * 0.28, y - r * 0.28, r * 0.22, 0, 7); ctx.fill();
   }
+  // значки рисуются сами, а не эмодзи: площадки не принимают эмодзи вместо значков, да и на части телефонов их нет
+  const ICON_RE = /(⚓|🔇|🔊|🎬|👆|🎮|👥|🔒|🔧|⚙|⏱)/u;
+  function icon(ch, x, y, s) {
+    const col = ctx.fillStyle; ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = Math.max(1.5, s * 0.13);
+    const L = (pts) => { ctx.beginPath(); pts.forEach(([a, b], i) => (i ? ctx.lineTo(x + a * s, y + b * s) : ctx.moveTo(x + a * s, y + b * s))); ctx.stroke(); };
+    const C = (cx, cy, r, f) => { ctx.beginPath(); ctx.arc(x + cx * s, y + cy * s, r * s, 0, 7); if (f) ctx.fill(); else ctx.stroke(); };
+    if (ch === '⚓') { ctx.beginPath(); ctx.arc(x, y - 0.36 * s, 0.1 * s, 0, 7); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y - 0.26 * s); ctx.lineTo(x, y + 0.14 * s); ctx.arc(x - 0.17 * s, y + 0.14 * s, 0.17 * s, 0, Math.PI); ctx.lineTo(x - 0.24 * s, y + 0.0 * s); ctx.stroke(); } // крюк: кольцо, стержень, загиб с жалом
+    else if (ch === '🔇' || ch === '🔊') { ctx.beginPath(); ctx.moveTo(x - 0.42 * s, y - 0.14 * s); ctx.lineTo(x - 0.24 * s, y - 0.14 * s); ctx.lineTo(x, y - 0.38 * s); ctx.lineTo(x, y + 0.38 * s); ctx.lineTo(x - 0.24 * s, y + 0.14 * s); ctx.lineTo(x - 0.42 * s, y + 0.14 * s); ctx.closePath(); ctx.fill();
+      if (ch === '🔊') for (const r of [0.2, 0.36]) { ctx.beginPath(); ctx.arc(x + 0.06 * s, y, r * s, -0.9, 0.9); ctx.stroke(); } else { L([[0.14, -0.16], [0.44, 0.16]]); L([[0.14, 0.16], [0.44, -0.16]]); } }
+    else if (ch === '🎬') { rr(x - 0.44 * s, y - 0.3 * s, 0.88 * s, 0.6 * s, 0.12 * s); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x - 0.1 * s, y - 0.16 * s); ctx.lineTo(x + 0.18 * s, y); ctx.lineTo(x - 0.1 * s, y + 0.16 * s); ctx.closePath(); ctx.fill(); }
+    else if (ch === '👆') { C(0, 0, 0.14, true); C(0, 0, 0.3); C(0, 0, 0.44); }
+    else if (ch === '🎮') { rr(x - 0.46 * s, y - 0.24 * s, 0.92 * s, 0.48 * s, 0.22 * s); ctx.stroke(); L([[-0.28, 0], [-0.1, 0]]); L([[-0.19, -0.09], [-0.19, 0.09]]); C(0.16, -0.04, 0.05, true); C(0.28, 0.06, 0.05, true); }
+    else if (ch === '👥') { for (const dx of [-0.2, 0.2]) { C(dx, -0.18, 0.14, true); ctx.beginPath(); ctx.arc(x + dx * s, y + 0.34 * s, 0.24 * s, Math.PI, 0); ctx.fill(); } }
+    else if (ch === '🔒') { ctx.beginPath(); ctx.arc(x, y - 0.1 * s, 0.2 * s, Math.PI, 0); ctx.stroke(); rr(x - 0.3 * s, y - 0.1 * s, 0.6 * s, 0.48 * s, 0.07 * s); ctx.fill(); }
+    else if (ch === '🔧') { L([[-0.36, 0.36], [0.08, -0.08]]); ctx.beginPath(); ctx.arc(x + 0.2 * s, y - 0.2 * s, 0.19 * s, 0.6, 5.2); ctx.stroke(); }
+    else if (ch === '⚙') { for (let k = 0; k < 8; k++) { const a = (k * Math.PI) / 4; L([[0.26 * Math.cos(a), 0.26 * Math.sin(a)], [0.42 * Math.cos(a), 0.42 * Math.sin(a)]]); } C(0, 0, 0.26); C(0, 0, 0.08, true); }
+    else if (ch === '⏱') { C(0, 0.06, 0.36); L([[0, 0.06], [0.14, -0.1]]); L([[-0.1, -0.42], [0.1, -0.42]]); }
+    ctx.restore();
+  }
+  function fillI(t, x, y, mw) { // текст со значками на месте их знаков; выравнивание и обрезка по ширине — как у fillText
+    const ps = String(t).split(ICON_RE); if (ps.length < 2) { if (mw) ctx.fillText(t, x, y, mw); else ctx.fillText(t, x, y); return; }
+    const fs = parseFloat((/(\d+(?:\.\d+)?)px/.exec(ctx.font) || [0, 16])[1]), s = fs * 0.95, gap = fs * 0.22;
+    const qs = ps.map((q, i) => (i % 2 ? q : i ? q.replace(/^ /, '') : q.replace(/ $/, ''))), ws = qs.map((q, i) => (i % 2 ? s + (qs[i + 1] ? gap : 0) + (qs[i - 1] ? gap : 0) : ctx.measureText(q).width)), tot = ws.reduce((a, b) => a + b, 0);
+    const k = mw && tot > mw ? mw / tot : 1, al = ctx.textAlign; let cx = al === 'center' ? x - (tot * k) / 2 : al === 'right' ? x - tot * k : x; ctx.textAlign = 'left';
+    qs.forEach((q, i) => { if (i % 2) { const lead = i > 0 && qs[i - 1] ? gap : 0; icon(q, cx + (lead + s / 2) * k, y, s * k); } else if (q) ctx.fillText(q, cx, y, ws[i] * k + 1); cx += ws[i] * k; });
+    ctx.textAlign = al;
+  }
   // строка из кусков — текст, монета, звезда: по центру точки x, слева или справа от неё; dry — только посчитать ширину
   function rich(parts, x, y, fs, align, dry) {
-    const gap = fs * 0.28, ws = parts.map((q) => { if (q.coin || q.star) return fs; ctx.font = `${q.b || 900} ${fs}px system-ui, sans-serif`; return ctx.measureText(q.t).width; });
+    parts = parts.flatMap((q) => (q.t && ICON_RE.test(q.t) ? q.t.split(ICON_RE).map((p) => p.trim()).filter(Boolean).map((p) => (ICON_RE.test(p) ? { ic: p, c: q.c } : { t: p, b: q.b, c: q.c })) : [q])); // значки — отдельными кусками
+    const gap = fs * 0.28, ws = parts.map((q) => { if (q.coin || q.star || q.ic) return fs; ctx.font = `${q.b || 900} ${fs}px system-ui, sans-serif`; return ctx.measureText(q.t).width; });
     const tot = ws.reduce((a, b) => a + b, 0) + gap * (parts.length - 1); if (dry) return tot;
     let cx = align === 'left' ? x : align === 'right' ? x - tot : x - tot / 2;
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     parts.forEach((q, i) => {
-      if (q.coin) coinIcon(cx + ws[i] / 2, y, fs * 0.48); else if (q.star) star5(cx + ws[i] / 2, y - 1, fs * 0.5, '#ffd54f');
+      if (q.coin) coinIcon(cx + ws[i] / 2, y, fs * 0.48); else if (q.star) star5(cx + ws[i] / 2, y - 1, fs * 0.5, '#ffd54f'); else if (q.ic) { ctx.fillStyle = q.c || '#fff'; icon(q.ic, cx + ws[i] / 2, y, fs * 0.95); }
       else { ctx.font = `${q.b || 900} ${fs}px system-ui, sans-serif`; ctx.fillStyle = q.c || '#fff'; ctx.fillText(q.t, cx, y + 1); }
       cx += ws[i] + gap;
     });
@@ -817,7 +832,7 @@
       const ry = y + r * (rh + 8), lv = save.up[k], max = lv >= UPC.length, cost = UPC[lv], ir = Math.min(24, rh * 0.28);
       ctx.fillStyle = '#f1f4f6'; rr(x, ry, w, rh, 14); ctx.fill();
       ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + 14 + ir, ry + rh / 2, ir, 0, 7); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(ir * 1.1)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ic, x + 14 + ir, ry + rh / 2 + 1);
+      ctx.fillStyle = '#fff'; ctx.font = `900 ${Math.round(ir * 1.1)}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; fillI(ic, x + 14 + ir, ry + rh / 2 + 1);
       const tx = x + 14 + ir * 2 + 12, bw = 104, bh = Math.min(46, rh - 20), deny = k === gar.denyK ? Math.max(0, 0.3 - (realT - gar.deny)) : 0, bx = x + w - bw - 10 + Math.sin(deny * 60) * deny * 24, by = ry + (rh - bh) / 2, tw = x + w - bw - 20 - tx;
       ctx.textAlign = 'left'; ctx.fillStyle = '#263238'; ctx.font = '900 17px system-ui, sans-serif'; ctx.fillText(name, tx, ry + rh * 0.26, tw);
       ctx.fillStyle = '#78909c'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(desc, tx, ry + rh * 0.5, tw);
@@ -902,7 +917,7 @@
     [['auto', '👆 ' + T.one, '#43a047'], ['manual', '🎮 ' + T.hand, '#fb8c00'], ['duo', '👥 ' + T.two, '#1e88e5']].forEach(([id, lab, col], i) => {
       const x = mx + 4 + i * sw; menuBtns.push({ id: 'm:' + id, x, y: my, w: sw, h: mh });
       if (cur === id) { ctx.fillStyle = col; rr(x, my + 4, sw, mh - 8, 19); ctx.fill(); }
-      ctx.fillStyle = '#fff'; ctx.font = `900 ${clamp(Math.floor(sw / 7.6), 12, 17)}px system-ui, sans-serif`; ctx.fillText(lab, x + sw / 2, my + mh / 2 + 1, sw - 10);
+      ctx.fillStyle = '#fff'; ctx.font = `900 ${clamp(Math.floor(sw / 7.6), 12, 17)}px system-ui, sans-serif`; fillI(lab, x + sw / 2, my + mh / 2 + 1, sw - 10);
     });
     ctx.font = '700 14px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.92)';
     const coarse = matchMedia('(pointer: coarse)').matches, help = isAuto() ? (coarse ? T.touchAuto : T.keyAuto) : coarse ? (duo ? T.touchDuo : T.touchSolo) : (duo ? T.duoTxt : T.soloTxt).slice(0, 2).join('   ·   ');
@@ -999,7 +1014,7 @@
           else if (e.e === 'star') { sfx.star(); toasts.push({ t: 0, text: T.star, col: '#ffd54f' }); }
           else if (e.e === 'win') { sfx.win(); S.wonAt = S.t; }
           else if (e.e === 'respawn') { wait = auto; ts = 1; }
-          else if (e.e === 'spring') { tone(260, 0.28, 'sine', 0.2, 880); shake = 0.12; toasts.push({ t: 0, text: T.boing, col: '#f48fb1' }); }
+          else if (e.e === 'spring') { play('boing'); shake = 0.12; toasts.push({ t: 0, text: T.boing, col: '#f48fb1' }); }
           else if (e.e === 'snap') { sfx.snap(); shake = 0.25; toasts.push({ t: 0, text: T.snap, col: '#ffab91' }); }
         }
         S.events.length = 0;
