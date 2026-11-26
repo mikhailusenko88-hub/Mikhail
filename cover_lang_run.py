@@ -24,7 +24,11 @@ lz = f"{W}/covers/31/luzha.py"
 if os.path.exists(lz):
     subprocess.run([sys.executable, lz, f"{W}/el"], check=False)
 # свои элементы обложки серии, которых нет в elementy.zip (план ссылается на них): скрипт из covers/<N>/ и его аргументы (пути от папки w/)
-OWN = {"29": [["dub.py", "el/f4_meadow_day.jpg", "el/v_dub.png"], ["strelka.py", "el/v_strelka.png"]]}
+OWN = {"29": [["dub.py", "el/f4_meadow_day.jpg", "el/v_dub.png"], ["strelka.py", "el/v_strelka.png"]],
+       "28": [["zerkalo.py", "el"]], "30": [["luna.py", "el"]]}
+import glob, shutil
+for f in glob.glob(f"{W}/covers/{num}/v_*.png"):          # готовые свои элементы рядом с планом (33 — шишки)
+    shutil.copy(f, f"{W}/el/")
 for sc, *args in OWN.get(num, []):
     r = subprocess.run([sys.executable, f"covers/{num}/{sc}", *args], cwd=W, capture_output=True, text=True)
     print("элемент", sc, "ok" if r.returncode == 0 else "ОШИБКА " + r.stderr[-500:])
