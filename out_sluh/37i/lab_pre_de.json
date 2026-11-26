@@ -1,0 +1,466 @@
+{
+ "what": "pre",
+ "rows": [
+  {
+   "i": 15,
+   "name": "Филя",
+   "text": "Schaut, unser Schneemann! Er steht noch!",
+   "base": {
+    "mos": 2.93,
+    "sim": 0.579,
+    "clear": 83.3,
+    "heard": "Schaut, unser Schneemann, der steht noch.",
+    "end": -3.4,
+    "dur": 2.36,
+    "shift": 2.8
+   },
+   "pre": {
+    "mos": 3.23,
+    "sim": 0.574,
+    "clear": 66.7,
+    "heard": "Schaut, unser Schiemann, wer steht noch?",
+    "end": -5.6,
+    "dur": 2.24,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 19,
+   "name": "Филя",
+   "text": "Das ist unsere Pfütze. Jetzt eine Eisbahn!",
+   "base": {
+    "mos": 2.22,
+    "sim": 0.651,
+    "clear": 71.4,
+    "heard": "Das ist unser Hauptschlitzer. Jetzt eine Eisbahn.",
+    "end": -2.4,
+    "dur": 2.44,
+    "shift": 3.3
+   },
+   "pre": {
+    "mos": 2.66,
+    "sim": 0.7,
+    "clear": 57.1,
+    "heard": "Das ist unser Pfritzer jetzt deine Eisbahn.",
+    "end": -2.9,
+    "dur": 2.56,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 29,
+   "name": "Филя",
+   "text": "Mach ganz kleine Schritte. Wie ein Pinguin!",
+   "base": {
+    "mos": 2.93,
+    "sim": 0.659,
+    "clear": 100.0,
+    "heard": "Mach ganz kleine Schritte, wie ein Pinguin.",
+    "end": -7.2,
+    "dur": 2.4,
+    "shift": 2.4
+   },
+   "pre": {
+    "mos": 2.99,
+    "sim": 0.653,
+    "clear": 85.7,
+    "heard": "Mach ganz kleine Schritte, wie ein Pimorin.",
+    "end": -8.5,
+    "dur": 2.28,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 35,
+   "name": "Филя",
+   "text": "Sie macht nicht auf. Sie ist gefroren!",
+   "base": {
+    "mos": 2.9,
+    "sim": 0.654,
+    "clear": 85.7,
+    "heard": "Sie macht mit auf. Sie ist gefroren.",
+    "end": -2.6,
+    "dur": 2.08,
+    "shift": 4.1
+   },
+   "pre": {
+    "mos": 3.01,
+    "sim": 0.652,
+    "clear": 85.7,
+    "heard": "Sie macht mich auf. Sie ist gefroren.",
+    "end": -2.4,
+    "dur": 2.12,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 39,
+   "name": "Филя",
+   "text": "Wasser ist nass. Man kann es eingießen und ausgießen.",
+   "base": {
+    "mos": 3.05,
+    "sim": 0.652,
+    "clear": 100.0,
+    "heard": "Wasser ist nass. Man kann es eingießen und ausgießen.",
+    "end": -2.3,
+    "dur": 2.99,
+    "shift": 2.8
+   },
+   "pre": {
+    "mos": 3.06,
+    "sim": 0.76,
+    "clear": 100.0,
+    "heard": "Wasser ist nass. Man kann es eingießen und ausgießen.",
+    "end": -11.1,
+    "dur": 3.0,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 47,
+   "name": "Филя",
+   "text": "Nein, Ron. Du bist doch warm!",
+   "base": {
+    "mos": 3.33,
+    "sim": 0.663,
+    "clear": 66.7,
+    "heard": "Nein, Ton, du bist doch arm.",
+    "end": -1.5,
+    "dur": 1.84,
+    "shift": 3.6
+   },
+   "pre": {
+    "mos": 3.54,
+    "sim": 0.673,
+    "clear": 66.7,
+    "heard": "Nein, Hun, du bist doch wann.",
+    "end": -6.1,
+    "dur": 1.68,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 79,
+   "name": "Филя",
+   "text": "Das gilt nicht!",
+   "base": {
+    "mos": 3.04,
+    "sim": 0.522,
+    "clear": 66.7,
+    "heard": "Das geht nicht.",
+    "end": -1.4,
+    "dur": 0.81,
+    "shift": 3.5
+   },
+   "pre": {
+    "mos": 3.25,
+    "sim": 0.564,
+    "clear": 100.0,
+    "heard": "Das gilt nicht.",
+    "end": -1.0,
+    "dur": 0.8,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 87,
+   "name": "Филя",
+   "text": "Darf ich mal fühlen? Oh, ist das kalt!",
+   "base": {
+    "mos": 3.59,
+    "sim": 0.604,
+    "clear": 100.0,
+    "heard": "Darf ich mal fühlen? Oh, ist das kalt.",
+    "end": -5.4,
+    "dur": 2.84,
+    "shift": 0.0
+   },
+   "pre": {
+    "mos": 3.5,
+    "sim": 0.619,
+    "clear": 75.0,
+    "heard": "Darf ich mal fliegen, wo ist das kalt?",
+    "end": -9.6,
+    "dur": 2.66,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 89,
+   "name": "Филя",
+   "text": "Dreh sie um, Ron!",
+   "base": {
+    "mos": 2.3,
+    "sim": 0.696,
+    "clear": 0.0,
+    "heard": "Träisiung, Bon.",
+    "end": -1.9,
+    "dur": 1.44,
+    "shift": 3.2
+   },
+   "pre": {
+    "mos": 2.96,
+    "sim": 0.63,
+    "clear": 0.0,
+    "heard": "3G Wung Hohan.",
+    "end": -2.1,
+    "dur": 1.44,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 99,
+   "name": "Филя",
+   "text": "Ins Warme? Los, probieren wir's!",
+   "base": {
+    "mos": 3.34,
+    "sim": 0.742,
+    "clear": 66.7,
+    "heard": "Ins Warmer. Los, probieren wir es.",
+    "end": -4.6,
+    "dur": 2.39,
+    "shift": 2.5
+   },
+   "pre": {
+    "mos": 3.36,
+    "sim": 0.664,
+    "clear": 50.0,
+    "heard": "In Spanner. Los. Probieren wir es.",
+    "end": -5.4,
+    "dur": 2.2,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 0,
+   "name": "Рон",
+   "text": "Schaut, unsere Pfütze! Jetzt, platsch!",
+   "base": {
+    "mos": 3.16,
+    "sim": 0.625,
+    "clear": 80.0,
+    "heard": "Schaut unsere Pfetze jetzt platsch.",
+    "end": 0.7,
+    "dur": 3.0,
+    "shift": 2.9
+   },
+   "pre": {
+    "mos": 2.98,
+    "sim": 0.454,
+    "clear": 60.0,
+    "heard": "Schaut, unsere Plätze jetzt klatscht.",
+    "end": -0.1,
+    "dur": 2.83,
+    "shift": -1.8
+   }
+  },
+  {
+   "i": 2,
+   "name": "Рон",
+   "text": "Oh! Kein Platsch! Sie ist hart!",
+   "base": {
+    "mos": 3.46,
+    "sim": 0.532,
+    "clear": 50.0,
+    "heard": "Oh, kein Platsch, süßes Tag.",
+    "end": -2.9,
+    "dur": 1.98,
+    "shift": 3.5
+   },
+   "pre": {
+    "mos": 4.08,
+    "sim": 0.545,
+    "clear": 66.7,
+    "heard": "Oh, kein Plutsch, sie ist tot.",
+    "end": -6.7,
+    "dur": 2.07,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 6,
+   "name": "Рон",
+   "text": "Wo ist das Wasser? Weg?",
+   "base": {
+    "mos": 3.12,
+    "sim": 0.658,
+    "clear": 80.0,
+    "heard": "Wo ist das Wasser, Rick?",
+    "end": -0.0,
+    "dur": 1.71,
+    "shift": 4.0
+   },
+   "pre": {
+    "mos": 2.58,
+    "sim": 0.523,
+    "clear": 60.0,
+    "heard": "Woh, ist das Wasser? Woh, ist das Wasser?",
+    "end": -2.3,
+    "dur": 1.8,
+    "shift": -2.0
+   }
+  },
+  {
+   "i": 10,
+   "name": "Рон",
+   "text": "Das riecht nach Kälte.",
+   "base": {
+    "mos": 3.73,
+    "sim": 0.594,
+    "clear": 75.0,
+    "heard": "Das riecht nach Gelte.",
+    "end": -2.2,
+    "dur": 1.24,
+    "shift": 0.0
+   },
+   "pre": {
+    "mos": 3.01,
+    "sim": 0.506,
+    "clear": 50.0,
+    "heard": "Was riecht nach Kinte.",
+    "end": -1.6,
+    "dur": 1.12,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 16,
+   "name": "Рон",
+   "text": "Flocki der Zweite! Nicht geschmolzen!",
+   "base": {
+    "mos": 3.29,
+    "sim": 0.536,
+    "clear": 80.0,
+    "heard": "Floki, der zweite. Nicht geschmolzen.",
+    "end": -2.8,
+    "dur": 2.12,
+    "shift": 3.8
+   },
+   "pre": {
+    "mos": 3.38,
+    "sim": 0.559,
+    "clear": 60.0,
+    "heard": "Floki der Zweite, nicht die Schwanzung.",
+    "end": -2.0,
+    "dur": 2.0,
+    "shift": 0.0
+   }
+  },
+  {
+   "i": 20,
+   "name": "Рон",
+   "text": "Ich rutsche! Ich bin der Beste!",
+   "base": {
+    "mos": 3.88,
+    "sim": 0.596,
+    "clear": 100.0,
+    "heard": "Ich rutsche. Ich bin der Beste.",
+    "end": -5.7,
+    "dur": 1.68,
+    "shift": 0.0
+   },
+   "pre": {
+    "mos": 3.13,
+    "sim": 0.505,
+    "clear": 100.0,
+    "heard": "Ich rutsche. Ich bin der Beste.",
+    "end": -1.9,
+    "dur": 1.8,
+    "shift": -1.6
+   }
+  },
+  {
+   "i": 22,
+   "name": "Рон",
+   "text": "Au. Hier ist's auch hart.",
+   "base": {
+    "mos": 3.57,
+    "sim": 0.563,
+    "clear": 50.0,
+    "heard": "Oh, hier ist's so hot.",
+    "end": -5.6,
+    "dur": 1.56,
+    "shift": 3.7
+   },
+   "pre": {
+    "mos": 3.31,
+    "sim": 0.562,
+    "clear": 50.0,
+    "heard": "Oh, hier ist es so hart.",
+    "end": -9.5,
+    "dur": 1.72,
+    "shift": -2.8
+   }
+  },
+  {
+   "i": 33,
+   "name": "Рон",
+   "text": "Klopf, klopf! Pfütze, bist du da?",
+   "base": {
+    "mos": 2.52,
+    "sim": 0.44,
+    "clear": 83.3,
+    "heard": "Klopf, klopf. Fütze, bist du da?",
+    "end": 3.9,
+    "dur": 2.56,
+    "shift": 3.8
+   },
+   "pre": {
+    "mos": 2.37,
+    "sim": 0.356,
+    "clear": 83.3,
+    "heard": "Klopf, klopf, Schütze, bist du da?",
+    "end": 4.2,
+    "dur": 2.52,
+    "shift": -2.8
+   }
+  },
+  {
+   "i": 40,
+   "name": "Рон",
+   "text": "Wasser, werd hart! Eins, zwei, drei!",
+   "base": {
+    "mos": 2.89,
+    "sim": 0.482,
+    "clear": 50.0,
+    "heard": "Passer, wer tat? Eins, zwei, drei.",
+    "end": -1.0,
+    "dur": 2.76,
+    "shift": 4.3
+   },
+   "pre": {
+    "mos": 2.46,
+    "sim": 0.438,
+    "clear": 0.0,
+    "heard": "Puzzle Retard 1, 2, 3.",
+    "end": 0.3,
+    "dur": 3.24,
+    "shift": -1.8
+   }
+  },
+  {
+   "i": 41,
+   "name": "Рон",
+   "text": "Klappt nicht. Es hört nicht auf mich.",
+   "base": {
+    "mos": 2.58,
+    "sim": 0.523,
+    "clear": 100.0,
+    "heard": "Klappt nicht. Es hört nicht auf mich.",
+    "end": -2.4,
+    "dur": 1.92,
+    "shift": 1.6
+   },
+   "pre": {
+    "mos": 3.27,
+    "sim": 0.529,
+    "clear": 100.0,
+    "heard": "klappt nicht, es hört nicht auf mich.",
+    "end": -3.6,
+    "dur": 1.95,
+    "shift": 0.0
+   }
+  }
+ ],
+ "minutes": 13.8
+}
