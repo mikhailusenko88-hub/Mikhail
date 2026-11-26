@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 32
-32dub 32 plan.json
-en;EPISODE 32;THE STUBBORN NEEDLE?
-fr;ÉPISODE 32;UNE AIGUILLE TÊTUE ?
-ar;الحلقة 32;إبرة عنيدة؟
+# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 30
+30dub 30 plan.json
+en;EPISODE 30;WHO BIT THE MOON?
+fr;ÉPISODE 30;QUI A CROQUÉ LA LUNE ?
+ar;الحلقة 30;من قضم القمر؟
