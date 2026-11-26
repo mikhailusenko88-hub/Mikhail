@@ -54,7 +54,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for b in 38g 39f golosa23 golosa24 golosa25 golosa26 golosa27 golosa28 golosa29; do
+          for b in 38g 39f golosa23 golosa24 golosa25 golosa26 golosa27 golosa28 golosa29 golosa30; do
             mkdir -p dubz/$b
             gh release download studio-$b -R ${{ github.repository }} -p dub.zip -D dubz/$b || { echo "нет сборки $b"; continue; }
             (cd dubz/$b && unzip -q -o dub.zip 'dub/lines/*' 'dub/lines.json' && rm dub.zip)
