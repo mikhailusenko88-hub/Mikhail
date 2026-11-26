@@ -1,5 +1,5 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 27
-27dub 27 plan.json
-en;EPISODE 27;WHY DOESN'T|THE BOAT SINK?
-fr;ÉPISODE 27;POURQUOI LE BATEAU|NE COULE PAS ?
-ar;الحلقة 27;لماذا لا يغرق|القارب؟
+# 2026-11-26 — обложки fr и ar, серия 34 — элементы из studio-34 (в 34dub нет f6_meadow_day)
+34 34 v2.py
+en;EPISODE 34;DID THE ACORN WAKE UP?
+fr;ÉPISODE 34;LE GLAND S'EST RÉVEILLÉ ?
+ar;الحلقة 34;هل استيقظت البلوطة؟
