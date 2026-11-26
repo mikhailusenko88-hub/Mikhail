@@ -297,6 +297,9 @@ def make_ornament(cx, col):
     dyn.append(cap)
     NSHARD += len(pieces) + 1
     if ANIM:
+        if BRK:                                      # те же вызовы генератора, что при расчёте физики: иначе осколки второго шара выйдут другими
+            for _ in range(len(adj) + 3):
+                rng_o.integers(0, 2)
         return cz
     top = sorted(pieces, key=lambda k: -pieces[k][1][2])[:3]
     links = list(adj) + [(-1, t) for t in top]
