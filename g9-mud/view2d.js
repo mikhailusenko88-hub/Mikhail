@@ -245,7 +245,7 @@
     if (fromCp && resume) { S.cp = { x: resume.x, y: resume.y, fuel: S.cfg.tank }; S.respawn(); rebuilds++; } else rebuilds = 0;
     S.events.length = 0; mode = 'play'; camX = S.truck.x + 200; camY = S.truck.y - 70; ptrs.clear(); toast = null; fuelLvl = 2; idleT = 0; idleX = -1e9; coach = ''; asst = 0; spinT = 0; spinNeed = ''; hold = ''; holdT = 0; ak = {}; trapX = -1e9; trapT = 0; stuckSand = false;
     TM.t0 = performance.now(); TM.deaths = 0; TM.holds = 0; TM.live = career;
-    if (career) { pgEv('progression_started', Object.assign(stepOf(cur), { first_run: !Object.keys(save.stars).length, first_time: !(save.stars[M.CONTRACTS[cur].id] > 0), load: nlogs, cap: M.capOf(S.cfg, kindOf(cur)), coins: save.coins, build_version: VER })); pgMsg('level_started', { level: cur + 1 }); }
+    if (career && cur >= 0) { pgEv('progression_started', Object.assign(stepOf(cur), { first_run: !Object.keys(save.stars).length, first_time: !(save.stars[M.CONTRACTS[cur].id] > 0), load: nlogs, cap: M.capOf(S.cfg, kindOf(cur)), coins: save.coins, build_version: VER })); pgMsg('level_started', { level: cur + 1 }); }
     pgMsg('gameplay_started');
     save.seen = save.seen || {}; newKey = career ? ['first', 'awd', 'lock', 'low'].find((k) => (k === 'first' ? cur === 0 && !Object.keys(save.stars).length : S.cfg.b[k]) && !save.seen[k]) || '' : ''; if (newKey) { save.seen[newKey] = 1; persist(); }
   }
@@ -562,6 +562,7 @@
   function audio() {
     if (AC) { if (AC.state === 'suspended' && !document.hidden) AC.resume().catch(() => {}); return; }
     try { AC = new (window.AudioContext || window.webkitAudioContext)(); out = AC.createGain(); out.gain.value = silent() ? 0 : 1; out.connect(AC.destination); } catch (e) { AC = null; return; }
+    if (location.protocol === 'file:') return; // страница открыта с диска: браузер не даст прочитать файлы звука — играем молча, без ошибок
     for (const n of LOOPS.concat(SFX)) {
       fetch('snd/' + n + '.mp3').then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status))).then((ab) => new Promise((ok, no) => AC.decodeAudioData(ab, ok, no))).then((buf) => {
         SND[n] = buf; if (n === 'engine') eng = loopOf('engine', 0); else if (n === 'music') mus = loopOf('music', 0);
@@ -924,7 +925,7 @@
         if (e.e === 'respawn') { trapX = -1e9; trapT = 0; idleX = -1e9; idleT = 0; }
         else if (e.e === 'cp') { toast = { s: T.cp, t: realT }; sfx('cp'); } else if (e.e === 'can') { toast = { s: T.can(e.l || M.CAN), t: realT }; sfx('can'); }
         else if (e.e === 'dead') { sfx('fail'); TM.deaths++; if (career && TM.deaths <= 30) pgEv('crash', runData({ reason: S.why || 'flip', soil: S.soil || '', in_mud: S.inMud, awd: sw.awd, lock: sw.lock, low: sw.low, spin_sec: Math.round(spinT), need: spinNeed })); } else if (e.e === 'hook') sfx('hook', 0.8); else if (e.e === 'log') { lostT = realT; toast = { s: T.logLost, t: realT, bad: true }; sfx('thud'); }
-        else if (e.e === 'win') { mode = 'win'; sfx('win'); if (career) finish(); }
+        else if (e.e === 'win') { mode = 'win'; sfx('win'); if (career && cur >= 0) finish(); }
       }
       S.events.length = 0;
     }
