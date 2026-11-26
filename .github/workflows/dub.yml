@@ -55,6 +55,14 @@ jobs:
           pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
           pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
           python -m spacy download en_core_web_sm -q || true
+      - name: SILMA TTS для арабского (26.11; одним заданием ~4 ч — быстрее через dub-parts, 6 долей)
+        if: matrix.lang == 'ar'
+        run: |
+          python -m venv ~/silma
+          ~/silma/bin/pip install -q torch==2.6.0 torchaudio==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cpu
+          ~/silma/bin/pip install -q --no-deps silma-tts==1.0.5
+          ~/silma/bin/pip install -q cached_path click "ema_pytorch>=0.5.2" "hydra-core>=1.3.0" omegaconf librosa matplotlib "numpy<=1.26.4" pydub safetensors soundfile tomli torchdiffeq tqdm transformers unidecode vocos "x_transformers>=1.31.14" huggingface_hub onnxruntime "catt_tashkeel==1.0.2" "torch==2.6.0" --extra-index-url https://download.pytorch.org/whl/cpu
+          curl -fsSL -o ~/silma_ref.wav https://raw.githubusercontent.com/SILMA-AI/silma-tts/main/src/silma_tts/infer/ref_audio_samples/silma-ref-voice-commercial.wav
       - name: Файлы сборки
         run: |
           mkdir -p "tmp_dubsrc/$NAME"
