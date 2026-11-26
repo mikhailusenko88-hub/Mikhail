@@ -5,4 +5,6 @@
 # 2026-11-26 14:06 UTC — чат «Свой голос»: пробы для «да» Михаила — Барсик и Рон (паспорта golosa29) и свой Пик (svoy_pik, два паспорта)
 # (собрано 26.11 14:31) golosa30 --std --voice=multik-voice-svoy --golos=Мурзик:girl…
 # 2026-11-26 14:52 UTC — чат «Свой голос»: свой Пик, круг 2 — темп как у нынешнего (+10 %), форманты выше (слух: «голос крупнее» −5,8 %)
-golosa31 --std --voice=multik-voice-svoy --golos=Пуся:girl:speaker=svoy_pik:P=1.72:F=1.32:T=1.48:R=1.2:qrise=3,Пуша:girl:speaker=svoy_pik:P=1.70:F=1.38:T=1.48:R=1.2:qrise=3
+# (собрано 26.11 15:14) golosa31 --std --voice=multik-voice-svoy --golos=Пуся:girl:s…
+# 2026-11-26 16:00 UTC — чат «Свой голос»: 37-я своими голосами (Михаил 18:52: Пик утверждён, медленнее; Барсик медленнее и чётче; Рон — новый). Движок как у 37h (eng-37i = mebel-3d 6d69398)
+37i --shorts --eng=eng-37i --voice=multik-voice-svoy --golos=Барсик:girl:speaker=svoy_barsik:P=1.10:F=1.09:T=1.12:R=0.9:gap=0.3:qrise=3,Рон:girl:speaker=svoy_ron:P=1.10:F=1.10:R=1.7:T=1.07:vend=1.7:gap=0.8:qrise=3:laugh=F16,Пик:girl:speaker=svoy_pik:P=1.70:F=1.38:T=1.33:R=1.2:qrise=3
