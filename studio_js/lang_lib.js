@@ -4,13 +4,16 @@ window.vis=()=>[...document.querySelectorAll('tp-yt-paper-dialog')].filter(d=>d.
 window.btnIn=(root,re)=>[...root.querySelectorAll('ytcp-button, button')].find(b=>b.getClientRects().length && re.test(b.innerText.trim()));
 window.getBlob=async function(url){for(let i=0;i<4;i++){try{const r=await fetch(url,{credentials:'omit'}); if(r.ok) return await r.blob();}catch(e){} await sleep(1500);} return null;}
 // Названия и описания на языках (решение Михаила 25.11.2026): к названию — главный запрос страны, к описанию — строка поиска первой и хэштеги языка.
+// 26.11.2026 — добавлены French и Arabic (Михаил: «давай всё внедрять»). В Studio язык общий, без страны.
 // trTitle/trDesc переводят любое название/описание в этот вид; job() применяет их сам.
 window.TR_CFG={
  English:{brand:'Barsik the Cat',kw:'Cartoon for Kids',ep:'Episode',line:'Cat cartoon for kids: Barsik the Cat and friends — educational cartoons for kids and toddlers, in English.',tags:['#cartoonforkids','#catcartoon','#kidscartoon','#barsik']},
  Spanish:{brand:'Barsik el Gato',kw:'Dibujos animados para niños',ep:'Episodio',line:'Dibujos animados para niños en español: Barsik el Gato y sus amigos — caricaturas educativas para niños de 3 a 7 años.',tags:['#dibujosanimados','#caricaturas','#dibujosanimadosparaniños','#barsik']},
  Portuguese:{brand:'Barsik o Gato',kw:'Desenho animado infantil',ep:'Episódio',line:'Desenho animado infantil em português: Barsik o Gato e seus amigos — desenho educativo para crianças de 3 a 7 anos.',tags:['#desenhoanimado','#desenhoinfantil','#desenhoeducativo','#barsik']},
  German:{brand:'Barsik der Kater',kw:'Zeichentrick für Kinder',ep:'Folge',line:'Zeichentrickfilm für Kinder auf Deutsch: Barsik der Kater und seine Freunde — lehrreicher Zeichentrick für Kinder von 3 bis 7 Jahren.',tags:['#zeichentrick','#kinderfilme','#zeichentrickfürkinder','#barsik']},
- Hindi:{brand:null,kw:'Billi wala cartoon | Hindi Cartoon | बच्चों का कार्टून',ep:'एपिसोड',line:'Hindi cartoon for kids: Barsik billi wala cartoon — बच्चों का कार्टून हिंदी में, 3 से 7 साल के बच्चों के लिए शैक्षिक कहानी (cartoon hindi kahani).',tags:['#hindicartoon','#cartoonhindi','#billiwalacartoon','#barsik']}
+ Hindi:{brand:null,kw:'Billi wala cartoon | Hindi Cartoon | बच्चों का कार्टून',ep:'एपिसोड',line:'Hindi cartoon for kids: Barsik billi wala cartoon — बच्चों का कार्टून हिंदी में, 3 से 7 साल के बच्चों के लिए शैक्षिक कहानी (cartoon hindi kahani).',tags:['#hindicartoon','#cartoonhindi','#billiwalacartoon','#barsik']},
+ French:{brand:"Barsik le Chat",kw:"Dessin animé pour enfant",ep:"Épisode",line:"Dessin animé pour enfant en français : Barsik le Chat et ses amis — dessin animé éducatif pour les enfants de 3 à 7 ans.",tags:["#dessinanimé", "#dessinanimépourenfant", "#dessinaniméenfrançais", "#barsik"]},
+ Arabic:{brand:"القط بارسيك",kw:"كرتون اطفال تعليمي",ep:"الحلقة",line:"كرتون اطفال تعليمي بالعربي: القط بارسيك وأصدقاؤه — كرتون قطط للاطفال الصغار من 3 إلى 7 سنوات.",tags:["#كرتون_اطفال", "#كرتون_تعليمي", "#كرتون_قطط", "#barsik"]}
 };
 window.TR_L=s=>[...s].length;
 window.trTitle=function(lang,t){
