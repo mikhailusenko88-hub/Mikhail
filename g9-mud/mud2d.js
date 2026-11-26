@@ -431,8 +431,41 @@
       b.sign(-190, 'soil', 'peat').tree(450).tree(900).tree(1300).tree(1650).tree(2100).mud(1200, ZONES.peat).flat(1200).can(-750, 3).cp(-900).sign(-170, 'climb', 24).slope(1400, 520).flat(1300).can(-900, 3).cp(-700).sign(-170, 'crest', 0.8).crest(300, 80).flat(800).can(-300, 3).cp(-400);
       b.sign(-190, 'soil', 'screeDown').mudOn(1000, -300, ZONES.scree).flat(300).sign(-170, 'rocks', 0.55).rocks(900, 30, 12).flat(700).can(-250, 3).cp(-400).sign(-190, 'soil', 'clayDown').mudOn(900, -280, ZONES.clay).flat(300).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(700);
       b.sign(-190, 'soil', 'medium').mud(600, ZONES.medium).sign(-30, 'soil', 'sticky').mud(600, ZONES.sticky).flat(1000).can(-550, 3).cp(-700).sign(-190, 'soil', 'screeUp').mudOn(1100, 300, ZONES.scree).flat(800).can(-300, 3).cp(-400).sign(-170, 'climb', 24).slope(1400, 520); }) },
+
+    // ---------- большие заказы: минимум груза, который берёт только большая машина; платят в разы больше. Открываются после последнего заказа района ----------
+    { id: 'sawmill', r: 3, big: 1, after: 'bog', min: 11, name: ['Full timber truck through the taiga', 'Полный лесовоз через тайгу'], cargo: 'log', pay: 110, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // длинная база: грязь, холм, вязкая, брод, долгий подъём
+      b.sign(-190, 'soil', 'medium').mud(800, ZONES.medium).flat(600).can(-300).cp(-300).hill(1000, 120).flat(400).sign(-190, 'soil', 'sticky').mud(800, ZONES.sticky).flat(700).can(-250).cp(-300);
+      b.sign(-170, 'ford', 1.1).ford(800, 60).flat(600).sign(-170, 'climb', 22).slope(1400, 520).flat(700).can(-300).cp(-300).sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1150).mud(800, ZONES.swamp).flat(1100).can(-600).cp(-700);
+      b.hill(1100, 140).flat(400).sign(-190, 'soil', 'soft').mud(700, ZONES.soft).sign(-30, 'soil', 'medium').mud(900, ZONES.medium).flat(800).can(-300).cp(-400);
+      b.sign(-170, 'ford', 0.9).ford(800, 49).flat(600).sign(-170, 'climb', 20).slope(1400, 480); }) },
+    { id: 'depot', r: 3, big: 1, after: 'bog', min: 9, name: ['Barrels to the fuel depot', 'Бочки на нефтебазу'], cargo: 'barrel', pay: 320, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford']], build: mk((b) => { // тяжёлый кузов: вязкая грязь, глина, брод, подъём и торф у деревьев
+      b.sign(-190, 'soil', 'medium').mud(700, ZONES.medium).flat(700).can(-300).cp(-300).sign(-190, 'soil', 'clay').mud(600, ZONES.clay).flat(800).sign(-170, 'climb', 18).slope(1300, 400).flat(700).can(-250).cp(-300);
+      b.sign(-170, 'ford', 1.1).ford(800, 60).flat(600).sign(-190, 'soil', 'medium').mud(800, ZONES.medium).flat(900).can(-300).cp(-400).sign(-190, 'soil', 'peat').tree(400).tree(850).tree(1250).mud(900, ZONES.peat).flat(1000).can(-500).cp(-600);
+      b.sign(-190, 'soil', 'clayUp').mudOn(1000, 220, ZONES.clay).flat(900).can(-300).cp(-400).sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1150).mud(800, ZONES.swamp).flat(1100).can(-600).cp(-700);
+      b.sign(-170, 'climb', 20).slope(1400, 460); }) },
+    { id: 'timber', r: 3, big: 1, after: 'longhaul', min: 20, name: ['Logs with a cart across the marshes', 'Брёвна с тележкой через болота'], cargo: 'log', pay: 230, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // автопоезд: торф, болото, брод 1,1, подъём, вязкая подряд
+      b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).mud(1000, ZONES.peat).flat(1000).can(-500, 2).cp(-600).sign(-170, 'ford', 1.1).ford(800, 60).flat(700).sign(-170, 'climb', 20).slope(1400, 460).flat(800).can(-300).cp(-400);
+      b.sign(-190, 'soil', 'medium').mud(900, ZONES.medium).flat(1000).can(-500, 2).cp(-600).sign(-190, 'soil', 'clayUp').mudOn(1100, 240, ZONES.clay).flat(900).can(-300).cp(-400);
+      b.sign(-190, 'soil', 'medium').mud(900, ZONES.medium).flat(900).can(-400, 2).cp(-500).sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).flat(700);
+      b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).mud(1000, ZONES.peat).flat(1100).can(-600, 2).cp(-700).sign(-170, 'climb', 22).slope(1400, 500); }) },
+    { id: 'swampoil', r: 3, big: 1, after: 'longhaul', min: 13, name: ['Barrels across the deep marsh', 'Бочки через глубокое болото'], cargo: 'barrel', pay: 420, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 1], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // тринадцать бочек: болото, глина в гору, брод с илом, торф и вязкая
+      b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).mud(1000, ZONES.peat).flat(1100).can(-600, 2).cp(-700).sign(-190, 'soil', 'clayUp').mudOn(1200, 300, ZONES.clay).flat(900).can(-500).cp(-500);
+      b.sign(-170, 'ford', 1.3).ford(900, 51, ZONES.silt).flat(800).can(-300, 2).cp(-300).sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).mud(1100, ZONES.peat).flat(1100).can(-600).cp(-700);
+      b.sign(-170, 'climb', 22).slope(1400, 500).flat(900).can(-300, 2).cp(-400).sign(-190, 'soil', 'medium').mud(700, ZONES.medium).sign(-30, 'soil', 'sticky').mud(700, ZONES.sticky).flat(900).can(-400).cp(-500);
+      b.sign(-190, 'soil', 'swamp').tree(350).tree(700).tree(1000).mud(700, ZONES.swamp).flat(1100).can(-600).cp(-700).sign(-170, 'climb', 18).slope(1300, 400); }) },
+    { id: 'melonfest', r: 3, big: 1, after: 'summit', min: 30, name: ['Melon road train over the pass', 'Арбузная фура через перевал'], cargo: 'melon', pay: 280, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp'], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // тридцать арбузов на большом прицепе: подъёмы, мелкие камни, броды — гонишь, теряешь груз
+      b.sign(-170, 'climb', 20).slope(1400, 460).flat(800).can(-300, 2).cp(-300).sign(-170, 'rocks', 0.3).rocks(1000, 18, 21).flat(800).can(-300, 2).cp(-400);
+      b.sign(-170, 'ford', 1.3).ford(900, 38, ZONES.soft).flat(700).sign(-190, 'soil', 'clayUp').mudOn(1200, 320, ZONES.clay).flat(900).can(-500, 2).cp(-500).sign(-170, 'climb', -20).slope(1300, -400).flat(800);
+      b.sign(-170, 'rocks', 0.35).rocks(900, 20, 22).flat(700).can(-300, 2).cp(-400).sign(-190, 'soil', 'sand').mud(800, ZONES.sand).flat(700).sign(-190, 'soil', 'screeUp').mudOn(1100, 260, ZONES.scree).flat(900).can(-500, 2).cp(-500);
+      b.sign(-190, 'soil', 'medium').mud(700, ZONES.medium).flat(800).can(-300).cp(-400).sign(-170, 'climb', 22).slope(1400, 500); }) },
+    { id: 'convoy', r: 3, big: 1, after: 'summit', min: 24, name: ['Barrel convoy to the mountain site', 'Колонна бочек на горную стройку'], cargo: 'barrel', pay: 650, need: [['awd', 1], ['low', 1], ['lock', 1], ['tires', 2, 'clayUp'], ['snorkel', 1, 'ford'], ['tank', 1, 'opt']], build: mk((b) => { // самый тяжёлый рейс игры: 24 бочки в гору — мотор, мосты и прицеп работают вместе
+      b.sign(-190, 'soil', 'medium').mud(700, ZONES.medium).flat(800).can(-300, 2).cp(-300).sign(-170, 'climb', 22).slope(1400, 500).flat(900).can(-300, 2).cp(-400);
+      b.sign(-190, 'soil', 'clayUp').mudOn(1300, 360, ZONES.clay).flat(900).can(-500, 2).cp(-500).sign(-170, 'ford', 1.5).ford(900, 51, ZONES.silt).flat(800).can(-300, 2).cp(-300);
+      b.sign(-190, 'soil', 'peat').tree(450).tree(950).tree(1400).mud(1100, ZONES.peat).flat(1100).can(-600, 2).cp(-700).sign(-170, 'climb', 24).slope(1400, 520).flat(900).can(-300, 2).cp(-400);
+      b.sign(-190, 'soil', 'screeUp').mudOn(1100, 260, ZONES.scree).flat(900).can(-500, 2).cp(-500).sign(-190, 'soil', 'swamp').tree(350).tree(800).tree(1150).mud(900, ZONES.swamp).flat(1100).can(-600).cp(-700);
+      b.sign(-190, 'soil', 'sticky').mud(800, ZONES.sticky).flat(800).sign(-170, 'climb', 24).slope(1400, 520); }) },
   ];
 
-  const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }, { name: ['High pass', 'Перевал'], from: 12, n: 6 }];
+  const REGIONS = [{ name: ['Taiga', 'Тайга'], from: 0, n: 6 }, { name: ['Marshes', 'Болота'], from: 6, n: 6 }, { name: ['High pass', 'Перевал'], from: 12, n: 6 }, { name: ['Big orders', 'Большие заказы'], from: 18, n: 6, big: 1 }];
   root.MudSide = { create, spec, capOf, spaceOf, spaceTruck, payT, ENG_T, TR_T, REGIONS, CARGO, CAN, F_AWD, Route, DEF, PX, ZONES, CONTRACTS, routes: [{ name: ['Proving ground', 'Полигон'], build: polygon }] };
 })(typeof window !== 'undefined' ? window : globalThis);

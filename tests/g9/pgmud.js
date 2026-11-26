@@ -1,4 +1,5 @@
 // «Mud Haul» как на площадке: заглушка моста Playgama (tests/g8/pgstub.js) вместо настоящего. Проверяет: game_ready и сразу рейс у новичка;
+const VER0 = (require('fs').readFileSync(__dirname + '/../../g9-mud/view2d.js', 'utf8').match(/VER = '([\d.]+)'/) || [])[1];
 // язык с площадки (8 языков + запасной английский); облачное сохранение; отметки progression_* / crash / assist / part_bought / performance_sample;
 // межстраничная — не после обучающих заказов, не раньше 4 минут, не чаще раза в 3 минуты; награда только после «досмотрел»; пауза площадки останавливает мир;
 // без поддержки роликов кнопок «за ролик» нет. node tests/g9/pgmud.js
@@ -15,7 +16,7 @@ const DIR = path.resolve(__dirname, '../../dist/mud-pg'), STUB = fs.readFileSync
   const DONE4 = { coins: 900, own: { awd: [1], low: [1], lock: [1], tires: [1], lift: [1] }, build: { awd: 1, low: 1, lock: 1, tires: 1, lift: 1 }, stars: { village: 3, farm: 3, creek: 3, pit: 3 }, seen: { first: 1, awd: 1, low: 1, lock: 1 }, tl: { awd: 2, low: 2, lock: 2 }, ts: 1 };
   { // новичок
     const [ctx, p] = await open(); const s = await p.evaluate(() => ({ mode: window.__mud.mode, msgs: window.__pg.msgs.slice(), ver: window.__pg.ver, cur: window.__mud.cur, load: window.__mud.S.cargo0 }));
-    ok(s.msgs.includes('game_ready') && s.mode === 'play' && s.cur === 0, 'новичок: game_ready и сразу рейс 1 — ' + JSON.stringify(s)); ok(s.ver === '6.5', 'номер сборки передан мосту: ' + s.ver); ok(s.load === 7, 'первый рейс — полный кузов: ' + s.load);
+    ok(s.msgs.includes('game_ready') && s.mode === 'play' && s.cur === 0, 'новичок: game_ready и сразу рейс 1 — ' + JSON.stringify(s)); ok(s.ver === VER0, 'номер сборки передан мосту: ' + s.ver); ok(s.load === 7, 'первый рейс — полный кузов: ' + s.load);
     const st = (await ev(p, 'progression_started'))[0]; ok(st && st.step_id === 'C01' && st.first_run === true, 'progression_started C01, first_run — ' + JSON.stringify(st));
     await p.keyboard.down('ArrowRight'); await p.waitForFunction(() => window.__mud.mode === 'win', null, { timeout: 60000 }); await p.keyboard.up('ArrowRight'); await p.waitForFunction(() => window.__mud.buttons.some((q) => q.id === 'menu'), null, { timeout: 20000 }); await p.waitForTimeout(300);
     const pc = (await ev(p, 'progression_completed'))[0]; ok(pc && pc.step_id === 'C01' && pc.delivered === 7 && pc.first_time === true, 'progression_completed C01 — ' + JSON.stringify(pc && { d: pc.delivered, e: pc.earned, a: pc.assists, t: pc.duration_sec }));
