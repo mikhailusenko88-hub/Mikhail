@@ -31,10 +31,20 @@ NAME, LANG = sys.argv[1], sys.argv[2]
 # долю реплик и сохранить; «merge» — собрать доли и свести. Без третьего слова — как раньше, всё одним заданием.
 MODE = sys.argv[3] if len(sys.argv) > 3 else ""
 PART = tuple(int(x) for x in MODE[5:].split("/")) if MODE.startswith("part=") else None
+# Пробы (26.11): DUB_TAG — суффикс файлов (report_ar<тег>, parts_ar<тег>, dub_ar<тег>), чтобы не затереть основную дорожку;
+# DUB_TKEY — какой ключ перевода брать (например ar_v2); DUB_SRC — другой источник голоса для языка (silma).
+TAG = os.environ.get("DUB_TAG", "")
+TKEY = os.environ.get("DUB_TKEY") or None
+SRC_PRESET = {"silma": {"engine": "silma", "nfe": 32}}
+LT = LANG + TAG
 SRM = 44100                       # частота сведения студии
 OUT = os.path.join("out_dub", NAME)
 os.makedirs(OUT, exist_ok=True)
 G = json.load(open("geroi.json", encoding="utf-8"))
+if os.environ.get("DUB_SRC"):
+    G["src"][LANG] = dict(SRC_PRESET.get(os.environ["DUB_SRC"]) or json.loads(os.environ["DUB_SRC"]))
+    for _h in G["heroes"].values():
+        (_h.get("src") or {}).pop(LANG, None)
 
 
 def lufs(path):
@@ -109,7 +119,7 @@ def main():
         ln["name"] = rn.get(ln["name"], ln["name"]) if rn.get(ln["name"]) != "-" else ln["name"]
     ep = G.get("builds", {}).get(NAME, NAME)
     P = json.load(open(f"perevod/{ep}.json", encoding="utf-8"))
-    T = P[LANG]
+    T = P[TKEY or LANG]
     D.log(f"{NAME} → {LANG}: реплик {len(L['lines'])}, длина {L['dur']:.1f} с, перевод perevod/{ep}.json")
 
     # русские реплики (44.1 кГц), проверка, что перевод от этой же серии
@@ -176,7 +186,10 @@ def main():
                 if LANG in G.get("by_chars", []):       # хинди: написание слов «плавает» — считаем по буквам
                     clear, extra = D.char_pct(text, heard), 0
                 cand = {"a": a, "heard": heard, "clear": clear, "extra": extra, "shift": info["shift_st"],
-                        "speed": used.get("speed", 1.0), "ratio": round(ratio, 2)}
+                        "speed": used.get("speed", 1.0), "ratio": round(ratio, 2), "tk": D.LAST.get("tk")}
+                if LANG in G.get("by_chars", []):       # и по словам (без огласовок, алиф = алиф) — строже, для сравнения проб
+                    cand["words"] = D.clear_pct(" ".join(D.norm_chars(w) for w in text.split()),
+                                                " ".join(D.norm_chars(w) for w in heard.split()))[0]
                 if best is None or (clear - 10 * extra) > (best["clear"] - 10 * best["extra"]):
                     best = cand
                 if clear >= 85 and extra <= 1:
@@ -199,6 +212,10 @@ def main():
         if ln.get("soft"):
             a = a * 0.65
         dub[i] = a
+        if best.get("words") is not None:
+            row["words"] = best["words"]
+        if best.get("tk"):
+            row["tk"] = best["tk"]
         row.update(heard=best["heard"], clear=best["clear"], extra=best["extra"], shift=best["shift"],
                    speed=best["speed"], tempo=round(max(1.0, k_t), 2), over=round(max(0.0, len(a) / SRM - window), 2),
                    sec=round(len(a) / SRM, 2), window=round(window, 2), ru_sec=round(ln["bdur"], 2),
@@ -207,7 +224,7 @@ def main():
         rows.append(row)
         D.log(f"{i:3d} {name:7s} понято {best['clear']:5.1f}% лишних {best['extra']} темп ×{row['tempo']} | {text}")
 
-    pdir = os.path.join(OUT, f"parts_{LANG}")
+    pdir = os.path.join(OUT, f"parts_{LT}")
     if PART:
         os.makedirs(pdir, exist_ok=True)
         np.savez_compressed(os.path.join(pdir, f"p{PART[0]}.npz"), **{str(i): np.asarray(a, dtype=np.float32) for i, a in dub.items()})
@@ -277,15 +294,15 @@ def main():
     mix = ga * me.astype(np.float64) + gb * v_dub
     pk = float(np.max(np.abs(mix))) or 1.0
     mix = mix / pk * 0.89
-    raw = os.path.join(OUT, f"mix_{LANG}.wav")
+    raw = os.path.join(OUT, f"mix_{LT}.wav")
     sf.write(raw, mix.astype(np.float32), SRM)
-    fin = os.path.join(OUT, f"dub_{LANG}.wav")
+    fin = os.path.join(OUT, f"dub_{LT}.wav")
     I0, I1 = normalize(raw, fin)
     os.remove(raw)
     D.log(f"громкость {I0} → {I1} LUFS; длина {n / SRM:.1f} с (русская {len(full) / SRM:.1f} с)")
 
     ok = [r for r in rows if "clear" in r]
-    report = {"build": NAME, "lang": LANG, "fit": round(fit, 4), "gain_music": round(float(ga), 4), "gain_voice": round(float(gb), 4),
+    report = {"build": NAME, "lang": LANG, "tag": TAG, "tkey": TKEY or LANG, "src": G["src"][LANG], "fit": round(fit, 4), "gain_music": round(float(ga), 4), "gain_voice": round(float(gb), 4),
               "lufs": I1, "dur": round(n / SRM, 2), "lines": len(rows), "done": len(ok),
               "clear_avg": round(float(np.mean([r["clear"] for r in ok])), 1) if ok else None,
               "low": [r["i"] for r in ok if r["clear"] < 80 or r["extra"] > 1],
@@ -295,8 +312,10 @@ def main():
               "syl": round(float(np.median([r["syl"] for r in ok])), 1) if ok else None,
               "len_ratio": round(float(np.median([r["sec"] / max(0.3, r["ru_sec"]) for r in ok])), 2) if ok else None,
               "fast": [r["i"] for r in ok if r["speed"] > 1.25], "rows": rows}
-    json.dump(report, open(os.path.join(OUT, f"report_{LANG}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    md = [f"# Дубляж {NAME} → {LANG}", "",
+    if any("words" in r for r in ok):
+        report["words_avg"] = round(float(np.mean([r.get("words", 0) for r in ok])), 1)
+    json.dump(report, open(os.path.join(OUT, f"report_{LT}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    md = [f"# Дубляж {NAME} → {LT}", "",
           f"Реплик {report['lines']}, озвучено {report['done']}, понято в среднем {report['clear_avg']}%; "
           f"плохо понятых {len(report['low'])}: {report['low']}; ускорено больше ×1,15: {report['stretched']}; "
           f"вылезли за окно: {report['over']}. Сведение совпало с русским на {fit:.3f}. Громкость {I1} LUFS. {report['minutes']} мин.", "",
@@ -307,7 +326,7 @@ def main():
     for r in rows:
         md.append(f"| {r['i']} | {r['name']} | {r['ru']} | {r.get('text') or ''} | {r.get('clear', r.get('error', ''))} | "
                   f"{r.get('extra', '')} | {r.get('speed', '')} | {r.get('tempo', '')} | {r.get('sec', '')} ({r.get('ru_sec', '')}) | {r.get('heard', '')} |")
-    open(os.path.join(OUT, f"report_{LANG}.md"), "w", encoding="utf-8").write("\n".join(md) + "\n")
+    open(os.path.join(OUT, f"report_{LT}.md"), "w", encoding="utf-8").write("\n".join(md) + "\n")
     D.log("готово", report["minutes"], "мин")
 
 

@@ -2,6 +2,8 @@ name: dub-parts
 # Дубляж долгого языка долями (арабский — весь через Chatterbox Multilingual, на процессоре минуты на реплику).
 # Запуск — строка в dubp-request.txt: «<сборка> <язык> <долей>», например «36f ar 8». Доли озвучиваются параллельно (dub.py … part=k/N),
 # потом одно задание собирает их и сводит (dub.py … merge) — превью, релиз, dub-files и отчёт как в обычном dub.
+# Пробы (26.11): после числа долей можно «tag=_s1 src=silma tkey=ar_v2» — файлы с тегом (report_ar_s1…), основная дорожка
+# и dub-files не трогаются; src=silma — арабский источник SILMA TTS (отдельное окружение ~/silma, сервер silma_srv.py).
 on:
   push:
     branches: [golos-en]
@@ -19,6 +21,9 @@ jobs:
       lang: ${{ steps.r.outputs.lang }}
       n: ${{ steps.r.outputs.n }}
       parts: ${{ steps.r.outputs.parts }}
+      tag: ${{ steps.r.outputs.tag }}
+      src: ${{ steps.r.outputs.src }}
+      tkey: ${{ steps.r.outputs.tkey }}
     steps:
       - uses: actions/checkout@v4
       - id: r
@@ -26,6 +31,7 @@ jobs:
           L=$(grep -v '^#' dubp-request.txt | head -1); set -- $L
           echo "name=$1" >> $GITHUB_OUTPUT; echo "lang=$2" >> $GITHUB_OUTPUT; echo "n=${3:-6}" >> $GITHUB_OUTPUT
           echo "parts=$(python3 -c "import json;print(json.dumps(list(range(int('${3:-6}')))))")" >> $GITHUB_OUTPUT
+          for kv in "${@:4}"; do case "$kv" in tag=*|src=*|tkey=*) echo "$kv" >> $GITHUB_OUTPUT;; esac; done
           echo "Сборка $L"
   part:
     needs: plan
@@ -41,6 +47,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       NAME: ${{ needs.plan.outputs.name }}
       LANGC: ${{ needs.plan.outputs.lang }}
+      DUB_TAG: ${{ needs.plan.outputs.tag }}
+      DUB_SRC: ${{ needs.plan.outputs.src }}
+      DUB_TKEY: ${{ needs.plan.outputs.tkey }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -59,6 +68,16 @@ jobs:
           pip install -q chatterbox-tts --extra-index-url https://download.pytorch.org/whl/cpu
           pip install -q "kokoro>=0.9.4" piper-tts speechbrain openai-whisper faster-whisper praat-parselmouth soundfile edge-tts --extra-index-url https://download.pytorch.org/whl/cpu
           python -m spacy download en_core_web_sm -q || true
+      - name: SILMA TTS (только src=silma) — своё окружение
+        if: needs.plan.outputs.src == 'silma'
+        run: |
+          python -m venv ~/silma
+          ~/silma/bin/pip install -q torch==2.6.0 torchaudio==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cpu
+          ~/silma/bin/pip install -q --no-deps silma-tts==1.0.5
+          ~/silma/bin/pip install -q cached_path click "ema_pytorch>=0.5.2" "hydra-core>=1.3.0" omegaconf librosa matplotlib "numpy<=1.26.4" pydub safetensors soundfile tomli torchdiffeq tqdm transformers unidecode vocos "x_transformers>=1.31.14" huggingface_hub onnxruntime "catt_tashkeel==1.0.2" "torch==2.6.0" --extra-index-url https://download.pytorch.org/whl/cpu
+          curl -fsSL -o ~/silma_ref.wav https://raw.githubusercontent.com/SILMA-AI/silma-tts/main/src/silma_tts/infer/ref_audio_samples/silma-ref-voice-commercial.wav
+          ls -la ~/silma_ref.wav
+          ~/silma/bin/python -c "import sys,types; [sys.modules.__setitem__(n, types.ModuleType(n)) for n in ('nemo_text_processing','nemo_text_processing.text_normalization','nemo_text_processing.text_normalization.normalize')]; sys.modules['nemo_text_processing.text_normalization.normalize'].Normalizer=object; import silma_tts.api; print('SILMA ok')"
       - name: Файлы сборки
         run: |
           mkdir -p "tmp_dubsrc/$NAME"
@@ -72,7 +91,7 @@ jobs:
         if: always()
         with:
           name: DP-${{ matrix.part }}
-          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}/p${{ matrix.part }}.*
+          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}${{ needs.plan.outputs.tag }}/p${{ matrix.part }}.*
           retention-days: 7
   final:
     needs: [plan, part]
@@ -87,6 +106,9 @@ jobs:
       TOKENIZERS_PARALLELISM: 'false'
       GH_TOKEN: ${{ github.token }}
       NAME: ${{ needs.plan.outputs.name }}
+      DUB_TAG: ${{ needs.plan.outputs.tag }}
+      DUB_SRC: ${{ needs.plan.outputs.src }}
+      DUB_TKEY: ${{ needs.plan.outputs.tkey }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -116,15 +138,15 @@ jobs:
         with:
           pattern: 'DP-*'
           merge-multiple: true
-          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}/
+          path: out_dub/${{ needs.plan.outputs.name }}/parts_${{ needs.plan.outputs.lang }}${{ needs.plan.outputs.tag }}/
       - name: Дубляж — сборка долей и сведение
         run: |
-          ls -la "out_dub/$NAME/parts_${{ matrix.lang }}"
+          ls -la "out_dub/$NAME/parts_${{ matrix.lang }}$DUB_TAG"
           python dub.py "$NAME" "${{ matrix.lang }}" merge
       - name: Превью и релиз
         if: always()
         run: |
-          O="out_dub/$NAME"; L="${{ matrix.lang }}"; V="tmp_dubsrc/$NAME/ep-$NAME-540.mp4"
+          O="out_dub/$NAME"; L="${{ matrix.lang }}$DUB_TAG"; V="tmp_dubsrc/$NAME/ep-$NAME-540.mp4"
           if [ -f "$O/dub_$L.wav" ] && [ -f "$V" ]; then ffmpeg -y -loglevel error -i "$V" -i "$O/dub_$L.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 128k -shortest -movflags +faststart "$O/ep-$NAME-$L-540.mp4"; fi
           if [ -f "$O/dub_$L.wav" ]; then ffmpeg -y -loglevel error -i "$O/dub_$L.wav" -c:a libmp3lame -b:a 192k "$O/dub_$L.mp3"; fi
           gh release create "dub-$NAME" --target golos-en --prerelease --title "Дубляж: $NAME" --notes "Дорожки на других языках для YouTube Studio → Языки → Дубляж. Отчёты — ветка golos-en, out_dub/$NAME." >/dev/null 2>&1 || true
@@ -132,7 +154,7 @@ jobs:
       - name: Дорожка — в ветку dub-files (оттуда страница Studio берёт файл для загрузки)
         if: always()
         run: |
-          O="out_dub/$NAME"; L="${{ matrix.lang }}"; [ -f "$O/dub_$L.mp3" ] || exit 0
+          O="out_dub/$NAME"; L="${{ matrix.lang }}"; [ -z "$DUB_TAG" ] || exit 0; [ -f "$O/dub_$L.mp3" ] || exit 0
           git clone -q --depth 1 -b dub-files "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" df
           mkdir -p "df/$NAME"; cp "$O/dub_$L.mp3" "df/$NAME/"
           cd df && git config user.name dub && git config user.email dub@users.noreply.github.com
@@ -142,6 +164,6 @@ jobs:
         if: always()
         run: |
           git config user.name dub; git config user.email dub@users.noreply.github.com
-          git add out_dub/$NAME/report_${{ matrix.lang }}.md out_dub/$NAME/report_${{ matrix.lang }}.json 2>/dev/null || true
-          git commit -qm "dub $NAME ${{ matrix.lang }}" || echo nothing
+          git add out_dub/$NAME/report_${{ matrix.lang }}$DUB_TAG.md out_dub/$NAME/report_${{ matrix.lang }}$DUB_TAG.json 2>/dev/null || true
+          git commit -qm "dub $NAME ${{ matrix.lang }}$DUB_TAG" || echo nothing
           for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done

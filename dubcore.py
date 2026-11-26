@@ -186,6 +186,9 @@ def source(text, spec):
     if spec["engine"] == "mtl":
         # Chatterbox Multilingual с образцом родного голоса (например, сделанным Piper) — родное произношение, звук 24 кГц
         return mtl(text, spec["lang"], spec_ref(spec), spec.get("speed", 1.0), spec.get("cfg", 0.5), spec.get("exag", 0.5))
+    if spec["engine"] == "silma":
+        # SILMA TTS (арабский): отдельное окружение, сервер silma_srv.py; огласовки ставит CATT
+        return silma(text, spec)
     if spec["engine"] == "edge":
         import edge_tts
         mp3 = os.path.join(TMP, "edge.mp3")
@@ -197,6 +200,51 @@ def source(text, spec):
 
 
 _mtl, _refcache = None, {}
+_silma, LAST = None, {}
+
+
+def silma_ref():
+    """Образец для SILMA: silma-ref-voice-commercial.wav (разрешён для коммерции; путь — SILMA_REF), не длиннее 7,9 с
+    (иначе SILMA режет его сама и зовёт свой распознаватель), и его текст — по faster-whisper."""
+    src = os.environ.get("SILMA_REF") or os.path.expanduser("~/silma_ref.wav")
+    a = load(src)
+    if len(a) > 7.9 * SR:
+        fr = SR // 50
+        lo, hi = int(5.5 * SR) // fr, int(7.9 * SR) // fr
+        e = [rms(a[k * fr:(k + 1) * fr]) for k in range(lo, hi)]
+        cut = (lo + int(np.argmin(e))) * fr + fr // 2
+        a = a[:cut]
+    p = os.path.join(TMP, "silma_ref.wav")
+    save(a, p)
+    txt = heard(a, "ar", "fw:large-v3-turbo")
+    log("образец SILMA:", round(len(a) / SR, 2), "с —", txt)
+    return p, txt
+
+
+def silma(text, spec):
+    import json as _json
+    global _silma
+    if _silma is None or _silma[0].poll() is not None:
+        ref, ref_text = silma_ref()
+        py = os.environ.get("SILMA_PY") or os.path.expanduser("~/silma/bin/python")
+        srv = os.path.join(os.path.dirname(os.path.abspath(__file__)), "silma_srv.py")
+        p = subprocess.Popen([py, srv], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+        ready = p.stdout.readline()
+        if '"ready"' not in ready:
+            raise RuntimeError("SILMA не запустилась: " + ready[:200])
+        _silma = (p, ref, ref_text)
+    p, ref, ref_text = _silma
+    out = os.path.abspath(os.path.join(TMP, "silma_out.wav"))
+    q = {"text": text, "out": out, "ref": os.path.abspath(ref), "ref_text": ref_text, "speed": spec.get("speed", 1.0),
+         "nfe": spec.get("nfe", 32), "seed": spec.get("seed", 1234), "tashkeel": spec.get("tashkeel", True)}
+    p.stdin.write(_json.dumps(q, ensure_ascii=False) + "\n")
+    p.stdin.flush()
+    ans = _json.loads(p.stdout.readline() or '{"ok": false, "error": "сервер SILMA упал"}')
+    if not ans.get("ok"):
+        raise RuntimeError("SILMA: " + str(ans.get("error")))
+    LAST.clear()
+    LAST.update(tk=ans.get("tk"), sec=ans.get("sec"))
+    return load(out)
 
 
 def spec_ref(spec):
