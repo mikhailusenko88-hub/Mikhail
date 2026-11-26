@@ -23,6 +23,11 @@ print("элементов:", len(os.listdir(f"{W}/el")))
 lz = f"{W}/covers/31/luzha.py"
 if os.path.exists(lz):
     subprocess.run([sys.executable, lz, f"{W}/el"], check=False)
+# свои элементы обложки серии, которых нет в elementy.zip (план ссылается на них): скрипт из covers/<N>/ и его аргументы (пути от папки w/)
+OWN = {"29": [["dub.py", "el/f4_meadow_day.jpg", "el/v_dub.png"], ["strelka.py", "el/v_strelka.png"]]}
+for sc, *args in OWN.get(num, []):
+    r = subprocess.run([sys.executable, f"covers/{num}/{sc}", *args], cwd=W, capture_output=True, text=True)
+    print("элемент", sc, "ok" if r.returncode == 0 else "ОШИБКА " + r.stderr[-500:])
 out = os.path.abspath(f"out_cover/{build}"); os.makedirs(out, exist_ok=True)
 bad = 0
 for l in lines[1:]:
