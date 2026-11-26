@@ -41,6 +41,7 @@ SRM = 44100                       # частота сведения студии
 OUT = os.path.join("out_dub", NAME)
 os.makedirs(OUT, exist_ok=True)
 G = json.load(open("geroi.json", encoding="utf-8"))
+LENK = float(os.environ.get("DUB_LENK") or G.get("len_k_lang", {}).get(LANG, 1.0))
 if os.environ.get("DUB_SRC"):
     G["src"][LANG] = dict(SRC_PRESET.get(os.environ["DUB_SRC"]) or json.loads(os.environ["DUB_SRC"]))
     for _h in G["heroes"].values():
@@ -175,7 +176,9 @@ def main():
         pre = (hero.get("pre") or {}).get(LANG) or hero.get("pre_all")
         nxt = min([s for s in starts if s > ln["t"] + 0.05] + [L["dur"]])
         window = max(ln["bdur"], nxt - ln["t"] - 0.08)
-        target = min(window, max(ln["bdur"], 0.4) * hero.get("len_k", 1.0))   # длина русской реплики (и не дальше следующей)
+        # длина русской реплики (и не дальше следующей); LENK — языку можно чуть длиннее русской, в паузу (хинди 26.11: голос медленный,
+        # реплики ускорялись до ×1,45 — речь «торопится»)
+        target = min(window, max(ln["bdur"], 0.4) * hero.get("len_k", 1.0) * LENK)
         best = None
         for attempt in range(3):
             try:
@@ -302,7 +305,7 @@ def main():
     D.log(f"громкость {I0} → {I1} LUFS; длина {n / SRM:.1f} с (русская {len(full) / SRM:.1f} с)")
 
     ok = [r for r in rows if "clear" in r]
-    report = {"build": NAME, "lang": LANG, "tag": TAG, "tkey": TKEY or LANG, "src": G["src"][LANG], "fit": round(fit, 4), "gain_music": round(float(ga), 4), "gain_voice": round(float(gb), 4),
+    report = {"build": NAME, "lang": LANG, "tag": TAG, "lenk": LENK, "tkey": TKEY or LANG, "src": G["src"][LANG], "fit": round(fit, 4), "gain_music": round(float(ga), 4), "gain_voice": round(float(gb), 4),
               "lufs": I1, "dur": round(n / SRM, 2), "lines": len(rows), "done": len(ok),
               "clear_avg": round(float(np.mean([r["clear"] for r in ok])), 1) if ok else None,
               "low": [r["i"] for r in ok if r["clear"] < 80 or r["extra"] > 1],

@@ -2,7 +2,7 @@ name: dub-parts
 # Дубляж долгого языка долями (арабский — весь через Chatterbox Multilingual, на процессоре минуты на реплику).
 # Запуск — строка в dubp-request.txt: «<сборка> <язык> <долей>», например «36f ar 8». Доли озвучиваются параллельно (dub.py … part=k/N),
 # потом одно задание собирает их и сводит (dub.py … merge) — превью, релиз, dub-files и отчёт как в обычном dub.
-# Пробы (26.11): после числа долей можно «tag=_s1 src=silma tkey=ar_v2» — файлы с тегом (report_ar_s1…), основная дорожка
+# Пробы (26.11): после числа долей можно «tag=_s1 src=silma tkey=ar_v2 lenk=1.25» (lenk — реплике можно быть длиннее русской во столько раз) — файлы с тегом (report_ar_s1…), основная дорожка
 # и dub-files не трогаются; src=silma — арабский источник SILMA TTS (отдельное окружение ~/silma, сервер silma_srv.py).
 on:
   push:
@@ -24,6 +24,7 @@ jobs:
       tag: ${{ steps.r.outputs.tag }}
       src: ${{ steps.r.outputs.src }}
       tkey: ${{ steps.r.outputs.tkey }}
+      lenk: ${{ steps.r.outputs.lenk }}
     steps:
       - uses: actions/checkout@v4
       - id: r
@@ -31,7 +32,7 @@ jobs:
           L=$(grep -v '^#' dubp-request.txt | head -1); set -- $L
           echo "name=$1" >> $GITHUB_OUTPUT; echo "lang=$2" >> $GITHUB_OUTPUT; echo "n=${3:-6}" >> $GITHUB_OUTPUT
           echo "parts=$(python3 -c "import json;print(json.dumps(list(range(int('${3:-6}')))))")" >> $GITHUB_OUTPUT
-          for kv in "${@:4}"; do case "$kv" in tag=*|src=*|tkey=*) echo "$kv" >> $GITHUB_OUTPUT;; esac; done
+          for kv in "${@:4}"; do case "$kv" in tag=*|src=*|tkey=*|lenk=*) echo "$kv" >> $GITHUB_OUTPUT;; esac; done
           echo "Сборка $L"
   part:
     needs: plan
@@ -50,6 +51,7 @@ jobs:
       DUB_TAG: ${{ needs.plan.outputs.tag }}
       DUB_SRC: ${{ needs.plan.outputs.src }}
       DUB_TKEY: ${{ needs.plan.outputs.tkey }}
+      DUB_LENK: ${{ needs.plan.outputs.lenk }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -109,6 +111,7 @@ jobs:
       DUB_TAG: ${{ needs.plan.outputs.tag }}
       DUB_SRC: ${{ needs.plan.outputs.src }}
       DUB_TKEY: ${{ needs.plan.outputs.tkey }}
+      DUB_LENK: ${{ needs.plan.outputs.lenk }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
