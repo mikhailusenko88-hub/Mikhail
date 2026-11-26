@@ -148,11 +148,12 @@ async function serpAnon(q) {   // тот же запрос «как постор
   }
   return true;
 }
-async function serp(q, wide, p) {
+async function serp(q, wide, p, retry) {
   const fr = mk('/sankt-peterburg?q=' + encodeURIComponent(q) + (p > 1 ? '&p=' + p : ''));
   await until(() => { const dd = fr.contentDocument; return dd && (dd.querySelectorAll('[data-marker="item"]').length >= 30 || blocked(dd)); }, 20000);
   await sleep(900);
   let d = null; try { d = fr.contentDocument; } catch (e) {}
+  if (!d && !retry) { L('фрейм поиска не читается, одна повторная попытка через 8 с:', q); await sleep(8000); return serp(q, wide, p, true); }   // 26.11: через 2 минуты после свежего входа фрейм ушёл на чужой адрес уже на втором запросе (22.11 — на пятом широком)
   if (!d) { L('фрейм поиска не читается', q); S('!! страница поиска не прочиталась на «' + q + '» (фрейм ушёл на другой адрес или пропал) — дальше не иду'); return false; }   // 22.11: на пятом широком запросе contentDocument оказался null, обход упал с ошибкой
   if (blocked(d)) { L('БЛОК на поиске', q); S('!! блок на «' + q + '»'); return false; }
   const cards = [...d.querySelectorAll('[data-marker="item"]')];   // все 50 карточек страницы, не блок catalog-serp
