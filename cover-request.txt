@@ -1,4 +1,4 @@
-# 2026-11-26 — 29-я: обложки fr и ar (en — для сверки с выложенной)
+# 2026-11-26 — 29-я: обложки fr и ar (en — для сверки с выложенной); второй запуск — путь к элементам
 29dub 29 plan.json
 en;EPISODE 29;AN OAK FROM AN ACORN?
 fr;ÉPISODE 29;UN CHÊNE DANS UN GLAND ?
