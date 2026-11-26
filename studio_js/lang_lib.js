@@ -43,7 +43,9 @@ window.trDesc=function(lang,d){
   return c.line+'\n\n'+lines.join('\n').trim()+'\n\n'+tags.join(' ');
 }
 window.openLang=async function(lang){
-  // 26.11: окно языка после обычной навигации открывается дольше 2,5 с («нет окна») — ждать до 10 с; уже открытое не трогать
+  // 26–27.11: окно языка после обычной навигации открывается дольше 2,5 с («нет окна») — ждать до 10 с; уже открытое не трогать.
+  // Если панель браузера на Маке скрыта, окна Studio не раскладываются (getClientRects пуст) и «нет окна» бывает и через 25 с —
+  // сделать снимок экрана (computer screenshot) — окно появится — и повторить вызов (вернёт «уже открыто»).
   const dl=()=>vis().find(d=>d.innerText.trim().startsWith(lang));
   if(dl()) return 'уже открыто';
   let row=[...document.querySelectorAll('ytgn-video-translation-row')].find(r=>r.innerText.trim().startsWith(lang));
