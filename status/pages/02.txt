@@ -1,7 +1,198 @@
-URL: https://polozov.design
-КОД: ошибка: <urlopen error [Errno 101] Network is unreachable>
+URL: http://polozov.design
+КОД: 200
 ЗАГОЛОВКИ:
+Server: nginx/1.30.7
+Date: Thu, 26 Nov 2026 06:24:40 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: close
+Vary: Accept-Encoding
+Set-Cookie: SESS6246b9eded7667a598c120a0776445fd=443e56d510410de0ad053cae18ce246c; path=/; HttpOnly
+Cache-Control: private, no-cache, no-store
+Last-Modified: Fri, 08 Jan 2021 20:13:28 GMT
 
-
+Дизайн интерьера для жилых и коммерческих помещений в студии Станислава Полозова 
+ Студия 
+ Жилые интерьеры Квартиры и апартаменты 
+ Коммерческие интерьеры Гостиницы и отели 
+ Реализация Авторский надзор 
+ Ремонт и отделка 
+ Комплектация 
+ Портфолио 
+ Контакты 
+ Отправить заявку 
+ Студия 
+ Жилые интерьеры Квартиры и апартаменты 
+ Коммерческие интерьеры Гостиницы и отели 
+ Реализация Авторский надзор 
+ Ремонт и отделка 
+ Комплектация 
+ Портфолио 
+ Контакты 
+ Ru
+ En 
+ Санкт-Петербург 26-я линия Васильевского острова, 5к4 +7 (906) 255-41-55 
+ Москва 3-й Хорошевский проезд, 1С1 +7 (925) 685-64-93 
+ hello@polozov.design 
+ Instagram Facebook 
+ Отправить заявку
+ Мы перезвоним, расскажем о нашей работе и ответим подробно на все Ваши вопросы.
+ Ваше имя 
+ Ваш телефон* 
+ Опишите ваш проект (по желанию) 
+ Возраст 
+ Отправить заявку Отправляя форму, я даю согласие на обработку персональных данных .
+ * — Поля, обязательные для заполнения
+ Интерьер квартир и домов по всему миру
+ Мы создаем уникальные интерьеры в индивидуальной стилистике.
+ Жилой Комплекс в Нью-Джерси, США 
+ Создаем продуманные интерьеры в сегменте HoReCa
+ Студия Станислава Полозова помогает создать яркие, удобные и продоваемые интерьеры.
+ Апарт-отель «Калейдоскоп» 
+ Коммерческие интерьеры для бизнеса
+ Создаем цепляющие коммерческие интерьеры, в которые возвращаются.
+ Входная группа 2763 Morris Ave, The Bronx, NY 
+ Коротко о студии
+ Воплощаем дизайн-проекты в жизнь от идеи до полной реализации
+ Мы создаем продуманные планировочные решения с функциональностью каждого метра, которые будут соответствовать вашим жизненным сценариям.
+ Наши услуги
+ Жилые интерьеры 
+ Реалистичный дизайн, как на визуализации и весь комплекс услуг в одном месте: дизайн, отделка, закупки, декор.​ Качественный клиентский сервис и 100% ответственность.​ 
+ Квартиры и апартаменты 
+ Наши услуги
+ Коммерческие интерьеры 
+ Реалистичный дизайн, как на визуализации и весь комплекс услуг в одном месте: дизайн, отделка, закупки, декор.​ Качественный клиентский сервис и 100% ответственность.​ 
+ Гостиницы и отели 
+ Реализация
+ Мы создаем реалистичный дизайн на картинке и воплощаем его реальность. Весь комплекс услуг в одном месте.
+ Авторский надзор 
+ Контролируем исполнение согласованного дизайн-проекта и соответствие рабочей документации.
+ Ремонт и отделка 
+ Подбираем ремонтную бригаду и подрядчиков на специальные работы без вашего участия.
+ Комплектация 
+ Обеспечиваем полную комплектацию проекта от мебели до декора.
+ Коммерческие интерьеры
+ Отель Калейдоскоп Gold 4*, Санкт-Петербург ул. Малая Морская, дом 15 
+ Открыть карточку проекта Открыть фото проекта 
+ Коммерческие интерьеры
+ Отель Greenfeel Hotel Pskov, г. Псков, ул. Металлистов д.25 
+ Открыть карточку проекта Открыть фото проекта 
+ Жилые интерьеры
+ Квартира в ЖК Галактика общей площадью 42,3 м2 
+ Открыть карточку проекта Открыть фото проекта 
+ Жилые интерьеры
+ Жилой комплекс в Нью-Джерси, США 
+ Открыть карточку проекта Открыть фото проекта 
+ Жилые интерьеры
+ Квартира ЖК «Scandi Clubb» 
+ Открыть карточку проекта Открыть фото проекта 
+ Жилые интерьеры
+ Квартира ЖК «Дом-Мегалит на Неве» 
+ Открыть карточку проекта Открыть фото проекта 
+ Коммерческие интерьеры
+ Апарт-отель Greenfeel Невский 154 
+ Открыть карточку проекта Открыть фото проекта 
+ Коммерческие интерьеры
+ Апарт-отель Калейдоскоп Малая Морская 5 
+ Открыть карточку проекта Открыть фото проекта 
+ Наши преимущества
+ 17 лет практики создания уникальных авторских дизайнов. Мы создаем и ценим доверительные отношения с клиентами.
+ Индивидуальный дизайн
+ Мы создаем каждый проект индивидуально с учетом Ваших требований, желаний и образа жизни.
+ Уменьшение стоимости
+ Мы имеем скидки у партнеров и поставщиков, благодаря постоянному объему заказов.
+ Прозрачность работ
+ Мы создали сервис, в котором Вы можете отслеживать каждый этап работ в деталях – от создания концепции до полной реализации проекта.
+ Все работы под ключ
+ Мы создаем наши интерьеры под ключ и берем на себя все сложности по реализации Вашего проекта.
+ Команда профессионалов
+ Мы работаем с проверенными строителями, соблюдающими технологии и имеющими широкие компетенции, поэтому гарантируем Вам совпадение готового объекта и 3D визуализации практически на 95 % и выше.
+ Качество и Авторский надзор
+ Дизайнер участвует в Вашем проекте и постоянно на связи от стадии планирования до момента сдачи объекта.
+ На счету каждого сотрудника студии от 5 лет практики создания уникальных авторских дизайнов.
+ Наш накопленный опыт позволил отойти от шаблонов и повторений в проектах, поэтому они всегда уникальны.
+ Этот принцип мы используем при создании каждого нового интерьера или архитектурного объекта. Наши проекты обладают грамотной планировкой, функциональностью, интересными цветовыми решениями и контрастами, а архитектурные объекты - гармонией и объемами. 
+ Вместе с командой дизайнеров мы управляем всеми процессами оформления Вашего интерьера – освещением, вентиляцией, отделкой стен, полов, сантехникой, мебелью и т.д., мы осуществляем авторский надзор и помогаем Вам на каждом этапе, до полного завершения проекта.
+ — Станислав Полозов, руководитель студии
+ Год основания: 2004
+ Более: 200 довольных клиентов
+ Экономия бюджета строительства: до 30%
+ Дизайн жилых и коммерческих интерьеров по всему миру с офисом в Санкт-Петербурге и Нью-Йорке от дизайн-студии Polozov Interior Design
+ Хотите воплотить мечты в реальность?
+ Отправьте заявку, и мы расскажем о себе и вариантах воплощения ваших идей, а дальше Вы примете решение о сотрудничестве. Отправить заявку
+ Получить консультацию Ru
+ En 
+ +7 (906) 255-41-55 
+ Instagram Facebook
 
 ССЫЛКИ:
+https://polozov.design//userfls/ab/full/101_kvartira-zhk-dom-megalit-na.jpg
+https://polozov.design//userfls/ab/full/102_kvartira-zhk-dom-megalit-na.jpg
+https://polozov.design//userfls/ab/full/103_kvartira-zhk-dom-megalit-na.jpg
+https://polozov.design//userfls/ab/full/104_kvartira-zhk-dom-megalit-na.jpg
+https://polozov.design//userfls/ab/full/105_kvartira-zhk-dom-megalit-na.jpg
+https://polozov.design//userfls/ab/full/110_apart-otel-greenfeel-nevskiy-154.jpg
+https://polozov.design//userfls/ab/full/111_apart-otel-greenfeel-nevskiy-154.jpg
+https://polozov.design//userfls/ab/full/112_apart-otel-greenfeel-nevskiy-154.jpg
+https://polozov.design//userfls/ab/full/113_apart-otel-greenfeel-nevskiy-154.jpg
+https://polozov.design//userfls/ab/full/114_apart-otel-greenfeel-nevskiy-154.jpg
+https://polozov.design//userfls/ab/full/117_apart-otel-kaleydoskop--.jpg
+https://polozov.design//userfls/ab/full/118_apart-otel-kaleydoskop--.jpg
+https://polozov.design//userfls/ab/full/119_apart-otel-kaleydoskop--.jpg
+https://polozov.design//userfls/ab/full/120_apart-otel-kaleydoskop--.jpg
+https://polozov.design//userfls/ab/full/121_apart-otel-kaleydoskop--.jpg
+https://polozov.design//userfls/ab/full/268_1-1.jpg
+https://polozov.design//userfls/ab/full/269_42.jpg
+https://polozov.design//userfls/ab/full/270_3.jpg
+https://polozov.design//userfls/ab/full/271_6f.jpg
+https://polozov.design//userfls/ab/full/272_1f_post.jpg
+https://polozov.design//userfls/ab/full/297_kvartira-v-zhk-galaktika-obsch.jpg
+https://polozov.design//userfls/ab/full/298_kvartira-v-zhk-galaktika-obsch.jpg
+https://polozov.design//userfls/ab/full/299_kvartira-v-zhk-galaktika-obsch.jpg
+https://polozov.design//userfls/ab/full/300_kvartira-v-zhk-galaktika-obsch.jpg
+https://polozov.design//userfls/ab/full/301_kvartira-v-zhk-galaktika-obsch.jpg
+https://polozov.design//userfls/ab/full/375_otel-kaleydoskop-gold-4-san.jpg
+https://polozov.design//userfls/ab/full/377_otel-kaleydoskop-gold-4-san.jpg
+https://polozov.design//userfls/ab/full/378_otel-kaleydoskop-gold-4-san.jpg
+https://polozov.design//userfls/ab/full/380_otel-kaleydoskop-gold-4-san.jpg
+https://polozov.design//userfls/ab/full/381_otel-kaleydoskop-gold-4-san.jpg
+https://polozov.design//userfls/ab/full/414_otel-greenfeel-hotel-pskov-g-pskov-.jpg
+https://polozov.design//userfls/ab/full/415_otel-greenfeel-hotel-pskov-g-pskov-.jpg
+https://polozov.design//userfls/ab/full/416_otel-greenfeel-hotel-pskov-g-pskov-.jpg
+https://polozov.design//userfls/ab/full/417_otel-greenfeel-hotel-pskov-g-pskov-.jpg
+https://polozov.design//userfls/ab/full/418_otel-greenfeel-hotel-pskov-g-pskov-.jpg
+https://polozov.design//userfls/ab/full/80_kvartira-zhk-scandi-clubb.jpg
+https://polozov.design//userfls/ab/full/81_kvartira-zhk-scandi-clubb.jpg
+https://polozov.design//userfls/ab/full/82_kvartira-zhk-scandi-clubb.jpg
+https://polozov.design//userfls/ab/full/83_kvartira-zhk-scandi-clubb.jpg
+https://polozov.design//userfls/ab/full/84_kvartira-zhk-scandi-clubb.jpg
+https://polozov.design/about
+https://polozov.design/cache/css/47b3641c8d88c2ce39d896b61df9fc4c.css
+https://polozov.design/contacts
+https://polozov.design/custom/polozov/fonts/FuturaPT-Book.woff2
+https://polozov.design/custom/polozov/fonts/FuturaPT-Medium.woff2
+https://polozov.design/custom/polozov/img/icon/180.png
+https://polozov.design/eng/
+https://polozov.design/favicon.ico
+https://polozov.design/kommercheskie-interery
+https://polozov.design/kommercheskie-interery/gostinitsy-i-oteli
+https://polozov.design/manifest.json
+https://polozov.design/portfolio
+https://polozov.design/portfolio/apart-otel-kaleydoskop
+https://polozov.design/portfolio/kvartira-v-zhk-galaktika-obschey-ploschadyu-423-m2
+https://polozov.design/portfolio/kvartira-zhk-dom-megalit-na-neve
+https://polozov.design/portfolio/kvartira-zhk-dom-megalit-na-neve-2
+https://polozov.design/portfolio/kvartira-zhk-scandi-clubb
+https://polozov.design/portfolio/otel-greenfeel-hotel-pskov-g-pskov-ul-metallistov-
+https://polozov.design/portfolio/otel-kaleydoskop-gold-4-sankt-peterburg-ul-malaya-
+https://polozov.design/portfolio/proekt-zhilogo-kompleksa-v-nyu-dzhersi-ssha
+https://polozov.design/privacy
+https://polozov.design/realizatsiya
+https://polozov.design/realizatsiya/avtorskiy-nadzor
+https://polozov.design/realizatsiya/komplektatsiya
+https://polozov.design/realizatsiya/remont-i-otdelka
+https://polozov.design/zhilye-interery
+https://polozov.design/zhilye-interery/kvartiry-i-apartamenty
+https://www.instagram.com/polozov.design/
+javascript:;
+tel:+79062554155
