@@ -1,5 +1,9 @@
-# 2026-11-26 — обложки fr и ar (en — для сверки с выложенной), серия 39 (новая 39g, элементы 39c — как у en/es/pt/hi/de)
-39g 39 v1.py el=39c
-en;EPISODE 39;WHY DOES A SNOWFLAKE|HAVE RAYS?
-fr;ÉPISODE 39;POURQUOI LE FLOCON|A SIX BRANCHES ?
-ar;الحلقة 39;لماذا للندفة ستة أشعة؟
+# 2026-11-27 — серия 40 (сборка 40b, элементы 40): обложки на 7 языках, en — для сверки картинки с русской
+40b 40 v1.py el=40
+en;EPISODE 40;THE SLED GOES|BY ITSELF?
+es;EPISODIO 40;¿EL TRINEO|VA SOLO?
+pt;EPISÓDIO 40;O TRENÓ ANDA|SOZINHO?
+de;FOLGE 40;FÄHRT DER SCHLITTEN|VON ALLEIN?
+hi;एपिसोड 40;स्लेज अपने आप|चलती है?
+fr;ÉPISODE 40;LA LUGE AVANCE|TOUTE SEULE ?
+ar;الحلقة 40;المزلجة تنزل وحدها؟
