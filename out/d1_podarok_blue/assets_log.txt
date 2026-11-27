@@ -1,0 +1,3 @@
+fetched hdri studio_small_09 2k 1 files
+fetched hdri brown_photostudio_02 2k 1 files
+assets ready: 2 of 2
