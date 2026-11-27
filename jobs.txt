@@ -1,4 +1,4 @@
-# имя  параметры для boxes.py (черновики 800x800/48)
-d2_pb_ev0 box=podarok_blue res=800x800 samples=48
-d2_pb_evm1 box=podarok_blue res=800x800 samples=48 ev=-1
-d2_wp_ev0 box=wow_pink res=800x800 samples=48
+d3_pb box=podarok_blue res=800x800 samples=48 ev=-0.4
+d3_pp box=podarok_pink res=800x800 samples=48 ev=-0.4
+d3_wb box=wow_blue res=800x800 samples=48 ev=-0.4
+d3_wp box=wow_pink res=800x800 samples=48 ev=-0.4

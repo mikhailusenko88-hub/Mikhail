@@ -241,7 +241,7 @@ def shred_meshes(n=5):
     mes = []
     for k in range(n):
         bm = bmesh.new()
-        L = random.uniform(0.035, 0.06); seg = int(L / 0.0035); wdt = random.uniform(0.0028, 0.0042)
+        L = random.uniform(0.018, 0.032) if k < 3 else random.uniform(0.009, 0.014); seg = max(4, int(L / 0.0028)); wdt = random.uniform(0.0026, 0.0036)
         prev = None; tw = 0
         for i in range(seg + 1):
             x = -L / 2 + L * i / seg
@@ -256,17 +256,25 @@ def shred_meshes(n=5):
         me = bpy.data.meshes.new(f'shred{k}'); bm.to_mesh(me); bm.free(); mes.append(me)
     return mes
 
+SHRED_MES = None
 def fill_shred(w, top, mat, count, mound=0.012, bottom=0.003, margin=0.006):
-    mes = shred_meshes(6)
-    for me in mes: me.materials.append(mat)
+    global SHRED_MES
+    if SHRED_MES is None:
+        SHRED_MES = shred_meshes(6)
+        for me in SHRED_MES: me.materials.append(mat)
+    mes = SHRED_MES
     col = bpy.data.collections.new('shred'); sc.collection.children.link(col)
     half = w / 2 - margin
     for i in range(count):
-        x, y = random.uniform(-half, half), random.uniform(-half, half)
+        me = random.choice(mes)
+        hl = max(me.vertices[j].co.x for j in range(len(me.vertices))) * 1.25 + 0.003
+        lim = half - hl
+        if lim <= 0.005: continue
+        x, y = random.uniform(-lim, lim), random.uniform(-lim, lim)
         r = max(abs(x), abs(y)) / half
         zmax = top + mound * (1 - r * r)
-        z = random.uniform(bottom, zmax) if random.random() < 0.35 else random.uniform(zmax - 0.01, zmax)
-        ob = bpy.data.objects.new('s', random.choice(mes)); col.objects.link(ob)
+        z = random.uniform(bottom, zmax) if random.random() < 0.3 else random.uniform(zmax - 0.012, zmax)
+        ob = bpy.data.objects.new('s', me); col.objects.link(ob)
         ob.location = (x, y, z)
         ob.rotation_euler = (random.uniform(-0.6, 0.6), random.uniform(-0.6, 0.6), random.uniform(0, math.tau))
         s = random.uniform(0.8, 1.25); ob.scale = (s, s, s)
@@ -340,12 +348,12 @@ def place_stand(ob, x, y, z, yaw, lean):
 # ---------------- name card
 def name_card(line1, line2, loc, rot):
     root = bpy.data.objects.new('card', None); link(root)
-    cw, ch = 0.10, 0.06
+    cw, ch = 0.088, 0.052
     m, b = principled('card', srgb('FFFDF7'), 0.7); paper_bump(m, b, 800, 0.04)
     c = cuboid('cardp', cw, ch, 0.0006, (0, 0, 0), m, bevel=0); c.parent = root
     fnt = bpy.data.fonts.load(os.path.abspath('fonts/Lora-Italic.ttf'))
-    tm, tb = principled('ink', srgb('5A3C32'), 0.6)
-    for txt, sz, y in ((line1, 0.014, 0.006), (line2, 0.0085, -0.014)):
+    tm, tb = principled('ink', srgb('3A2620'), 0.6)
+    for txt, sz, y in ((line1, 0.017, 0.006), (line2, 0.0095, -0.0135)):
         cu = bpy.data.curves.new('t', 'FONT'); cu.body = txt; cu.font = fnt; cu.size = sz; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
         cu.materials.append(tm)
         t = bpy.data.objects.new('t', cu); link(t); t.location = (0, y, 0.00035); t.parent = root
@@ -355,7 +363,7 @@ def name_card(line1, line2, loc, rot):
 # ---------------- scenes
 THEME = {
     'blue': dict(box='2E5FC0', rib='A9C8F2', shred=['8DB6EE', 'C9DDF7', 'F4F7FC', '6E9BE0', 'B3CFF4']),
-    'pink': dict(box='E77FAB', rib='FBE3EE', shred=['F4B3CC', 'FAD3E1', 'FFF3F7', 'EE96B9', 'FBC6D8']),
+    'pink': dict(box='E06C9F', rib='FBE3EE', shred=['F4B3CC', 'FAD3E1', 'FFF3F7', 'EE96B9', 'FBC6D8']),
 }
 # items: key, x, y, yaw, tilt/lean, mode ('flat' or 'stand'), layer
 LAYOUT = {
@@ -368,28 +376,28 @@ LAYOUT = {
         ('KJ', -0.010, -0.018, 20, 55, 'stand', 1), ('FINI', -0.056, -0.042, 14, 14, 'flat', 1), ('CHUPA', 0.044, -0.028, -10, 12, 'flat', 1),
         ('TW20', 0.020, -0.048, 8, 10, 'flat', 2), ('KK', 0.000, -0.068, -3, 8, 'flat', 3)], card=('Соне', 'С Новым годом!')),
     'wow_blue': dict(theme='blue', w=0.30, h=0.08, items=[
-        ('BB', -0.080, 0.045, 6, 24, 'flat', 0), ('PCHOC', 0.000, 0.050, -2, 26, 'flat', 0), ('HAR', 0.082, 0.042, -7, 24, 'flat', 0),
-        ('TW42', -0.095, -0.040, 8, 6, 'stand', 0), ('FINI', -0.040, -0.030, 10, 16, 'flat', 1), ('KJ', 0.020, -0.012, -20, 55, 'stand', 1),
-        ('PMINI', 0.085, -0.030, -12, 18, 'flat', 1), ('TW20', 0.030, -0.065, 7, 10, 'flat', 2), ('TW20', -0.040, -0.088, -4, 8, 'flat', 2),
-        ('KK', 0.060, -0.100, -3, 8, 'flat', 3)], card=('Диме', 'С Новым годом!')),
+        ('BB', -0.080, 0.023, 6, 24, 'flat', 0), ('PCHOC', 0.000, 0.028, -2, 26, 'flat', 0), ('HAR', 0.082, 0.020, -7, 24, 'flat', 0),
+        ('TW42', -0.095, -0.062, 8, 6, 'stand', 0), ('FINI', -0.040, -0.052, 10, 16, 'flat', 1), ('KJ', 0.020, -0.034, -20, 55, 'stand', 1),
+        ('PMINI', 0.085, -0.052, -12, 18, 'flat', 1), ('TW20', 0.030, -0.087, 7, 10, 'flat', 2), ('TW20', -0.040, -0.110, -4, 8, 'flat', 2),
+        ('KK', 0.060, -0.122, -3, 8, 'flat', 3)], card=('Диме', 'С Новым годом!')),
     'wow_pink': dict(theme='pink', w=0.30, h=0.08, items=[
-        ('BB', -0.080, 0.045, 6, 24, 'flat', 0), ('PSTR', 0.000, 0.050, -2, 26, 'flat', 0), ('HAR', 0.082, 0.042, -7, 24, 'flat', 0),
-        ('PMINI', -0.092, -0.035, 10, 16, 'flat', 1), ('FINI', -0.040, -0.030, 10, 16, 'flat', 1), ('KJ', 0.020, -0.012, -20, 55, 'stand', 1),
-        ('CHUPA', 0.080, -0.010, -10, 12, 'flat', 1), ('PMINI', 0.090, -0.050, -12, 16, 'flat', 2), ('TW20', 0.030, -0.065, 7, 10, 'flat', 2),
-        ('TW20', -0.040, -0.088, -4, 8, 'flat', 2), ('KK', 0.060, -0.100, -3, 8, 'flat', 3)], card=('Алисе', 'С Новым годом!')),
+        ('BB', -0.080, 0.023, 6, 24, 'flat', 0), ('PSTR', 0.000, 0.028, -2, 26, 'flat', 0), ('HAR', 0.082, 0.020, -7, 24, 'flat', 0),
+        ('PMINI', -0.092, -0.057, 10, 16, 'flat', 1), ('FINI', -0.040, -0.052, 10, 16, 'flat', 1), ('KJ', 0.020, -0.034, -20, 55, 'stand', 1),
+        ('CHUPA', 0.080, -0.032, -10, 12, 'flat', 1), ('PMINI', 0.090, -0.072, -12, 16, 'flat', 2), ('TW20', 0.030, -0.087, 7, 10, 'flat', 2),
+        ('TW20', -0.040, -0.110, -4, 8, 'flat', 2), ('KK', 0.060, -0.122, -3, 8, 'flat', 3)], card=('Алисе', 'С Новым годом!')),
 }
 
 L = LAYOUT[BOX]; T = THEME[L['theme']]
 w, h, t = L['w'], L['h'], 0.0022
 world()
-backdrop(A.get('bg', 'F1E7DC'))
+backdrop(A.get('bg', 'F2E2D2'))
 boxmat = cardboard('box', T['box'])
 rib = satin('ribbon', T['rib'])
 open_box(w, h, t, boxmat, boxmat)
 shred = shred_mat(T['shred'])
 top = h - 0.016
-fill_shred(w - 2 * t, top, shred, int(A.get('shred', str(int(5200 * (w / 0.2) ** 2)))))
-sc_ = float(A.get('iscale', '0.92'))
+fill_shred(w - 2 * t, top, shred, int(A.get('shred', str(int(9000 * (w / 0.2) ** 2)))), margin=0.001)
+sc_ = float(A.get('iscale', '1.0' if w > 0.25 else '0.92'))
 for key, x, y, yaw, tl, mode, layer in L['items']:
     ob, W, H, D = product(key, sc_)
     zb = top + 0.006 + layer * 0.007
@@ -402,14 +410,14 @@ for key, x, y, yaw, tl, mode, layer in L['items']:
     else:
         place_stand(ob, x, y, top - 0.012 + H / 2, yaw, tl)
 # a few strands of shred over the front items for depth
-fill_shred(w - 2 * t, top + 0.004, shred, int(A.get('shred2', str(int(260 * (w / 0.2) ** 2)))), mound=0.004, bottom=top, margin=0.02)
+fill_shred(w - 2 * t, top + 0.004, shred, int(A.get('shred2', str(int(220 * (w / 0.2) ** 2)))), mound=0.004, bottom=top, margin=0.004)
 
 lw = w + 0.004
 ld = lid(lw, 0.022 if w < 0.25 else 0.028, t, boxmat, rib)
-lean = math.radians(float(A.get('lid_lean', '68')))
+lean = math.radians(float(A.get('lid_lean', '50')))
 # lid stands behind the box, lower edge on the floor, leaning back; its top (window, bow) faces the camera
-ld.rotation_euler = (lean, 0, math.radians(float(A.get('lid_yaw', '-8'))))
-ld.location = (w * float(A.get('lid_x', '0.16')), w / 2 + 0.012 + math.cos(lean) * lw / 2, math.sin(lean) * lw / 2 + 0.001)
+ld.rotation_euler = (lean, 0, math.radians(float(A.get('lid_yaw', '-12'))))
+ld.location = (w * float(A.get('lid_x', '0.22')), w / 2 + 0.012 + math.cos(lean) * lw / 2, math.sin(lean) * lw / 2 + 0.001)
 if L.get('card'):
     ct = math.radians(float(A.get('card_tilt', '64')))
     name_card(*L['card'], loc=(w * 0.30, -w / 2 - 0.004 - 0.03 * math.cos(ct), 0.03 * math.sin(ct) + 0.001), rot=(math.degrees(ct), 0, float(A.get('card_yaw', '-10'))))
@@ -420,9 +428,9 @@ area('fill', (0.65, -0.35, 0.35), (0, 0, 0.03), 0.7, float(A.get('fill', '7')), 
 area('rim', (0.1, 0.65, 0.55), (0, 0, 0.05), 0.6, float(A.get('rim', '9')))
 
 # camera
-el = math.radians(float(A.get('cam_el', '48'))); az = math.radians(float(A.get('cam_az', '-12')))
-dist = float(A.get('cam_d', '0.78')) * (w / 0.2) ** 0.95
-tgt = Vector((0, 0.02 * w / 0.2, 0.035))
+el = math.radians(float(A.get('cam_el', '44'))); az = math.radians(float(A.get('cam_az', '-12')))
+dist = float(A.get('cam_d', '0.80')) * (w / 0.2) ** 0.95
+tgt = Vector((0.01 * w / 0.2, 0.05 * w / 0.2, 0.05 * w / 0.2))
 cpos = tgt + Vector((math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el))) * dist
 cd = bpy.data.cameras.new('cam'); cd.lens = float(A.get('lens', '60'))
 cam = bpy.data.objects.new('cam', cd); link(cam); cam.location = cpos
