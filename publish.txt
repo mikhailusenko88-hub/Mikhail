@@ -1,2 +1,2 @@
-# 27.11 14:30 МСК — сверка обложки серии 40 (размер файла со страницы)
-thumb 9WkWQUeXjCk 40
+# 27.11 16:00 МСК — проба: закрытые дубли перезалитых 37–39 (старые голоса) и их Shorts
+delete --dry ZEQyEyFngUk 9QT3Rapwjrc nfDYiVC-dpo B86QuwSDoB8 M2qZeQuFbzM EtxnmePX5RY
