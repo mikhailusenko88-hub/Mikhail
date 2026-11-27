@@ -163,6 +163,7 @@ FAQ = {
         ("Что такое плинтус из дюрополимера?", "Дюрополимер — ударопрочный полистирол. Плинтус из него твёрдый и ровный: держит удар пылесоса и мебели, не крошится при запиле, не боится влажной уборки, красится любой краской для стен."),
         ("Как крепить напольный плинтус?", "На монтажный клей (жидкие гвозди на водной основе) к стене; углы запиливаются под 45° в стусле, стыки шпаклюются и красятся."),
         ("Какую высоту плинтуса выбрать?", "Под потолок 2,5 м обычно берут 65–80 мм, под 2,7–3 м — 100 мм и выше (A701, A704, A707, A004 119 мм, A702 150 мм)."),
+        ("Есть ли высокий напольный плинтус под покраску?", "Да. Высокий плинтус — 100 мм (9 моделей, в том числе с подсветкой), 108 мм (A105), 119 мм (A004), 126 мм (A50), 138 мм (A31) и 150 мм (A702). Его обычно берут под потолок от 2,7 м; запиливать удобнее в стусле с высокими бортами."),   # 27.11.2026: «высокий плинтус» — 411 запросов в месяц (СПб и ЛО)
         ("Есть ли плинтус с подсветкой и с кабель-каналом?", "С пазом под LED-ленту — A11-80, A11-100, A12-100. Кабель-канал есть у молдингов A35/2 и A157/2; у плинтусов провод прячется за полостью профиля."),
         ("Сколько плинтуса нужно?", "Периметр комнаты без дверных проёмов ÷ 2 м, плюс 10 % на подрезку; в коробке от 10 до 48 шт в зависимости от модели."),
     ],
@@ -440,8 +441,8 @@ def about(x):
 ART_FOR = {"panel": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
            "color": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
            "wall": ("rejki-na-stenu-v-interere", "montazh-stenovyh-panelej"),
-           "plinth": ("kak-kleit-plintus-iz-duropolimera", "kak-pokrasit-plintus-i-paneli"),
-           "led": ("kak-vybrat-potolochnyj-plintus", "kak-kleit-plintus-iz-duropolimera"),
+           "plinth": ("kak-sdelat-ugol-napolnogo-plintusa", "kak-kleit-plintus-iz-duropolimera", "kak-pokrasit-plintus-i-paneli"),
+           "led": ("kak-sdelat-podsvetku-plintusom", "kak-vybrat-potolochnyj-plintus", "kak-kleit-plintus-iz-duropolimera"),
            "cornice": ("kak-vybrat-potolochnyj-plintus", "kak-otrezat-ugol-potolochnogo-plintusa"),
            "mold": ("moldingi-na-stene-v-interere", "kak-pokrasit-plintus-i-paneli"),
            "corner": ("montazh-stenovyh-panelej",)}
@@ -612,7 +613,7 @@ def product_page(x):
 
     body = (header(ROOT) + '<main><div class="wrap">' + crumbs(crumb_items) +
             '<div class="ptop"><div><div class="ptitle"><h1>%s</h1><p class="lead">%s</p></div>' % (esc(x["n"]), esc(x["d"])) + tabs + stage + colors + gal_html + int_gallery(x, ROOT) + prof_html + specs_html +
-            '<div class="about"><h2>О товаре</h2>%s</div>%s%s</div>%s</div></div>' % (about(x), read_more(c, ROOT), revs_html, buy) +
+            '<div class="about"><h2>О товаре</h2>%s</div>%s%s</div>%s</div></div>' % (about(x), read_more("led" if a in LED_ARTS else c, ROOT), revs_html, buy) +
             with_it + related + lead_form(x) + "</main>" + footer(ROOT) +
             ('<script src="/mebel/_lib/three.min.js"></script><script src="/mebel/_lib/OrbitControls.js"></script>' if has3d else "") +
             '<script>window.P=%s</script><script src="%sassets/p.js?v=%s"></script></body></html>' % (json.dumps(data, ensure_ascii=False), ROOT, VER))
