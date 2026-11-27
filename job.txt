@@ -1,3 +1,9 @@
-# 2026-11-27 12:40 МСК — H50: один ёлочный шар крупно на тёмном полу с неоновыми сотами, разбился → собрался (петля); пробы физики и вида
-hp1 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 samples=24 res=540x960 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 frames=4,14,17,20,26,40,70,120
-hp2 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.20 ts=0.3 seed=11 end=120 samples=24 res=540x960 tz=0.14 cy0=-0.58 cy1=-0.66 cz0=0.22 cz1=0.24 frames=4,19,22,26,32,46,76,120
+# 2026-11-27 12:50 МСК — H50: рендер пробы hp1 (один красный шар, неоновые соты hs=0.08), кадры 8–95, сборка с LOOP=1 (разбился → собрался)
+hr01 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=8-18
+hr02 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=19-29
+hr03 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=30-40
+hr04 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=41-51
+hr05 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=52-62
+hr06 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=63-73
+hr07 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=74-84
+hr08 py=ornament.py cols=red bg=neon lp=0.8 ev=-0.8 thr=1000 spread=4 brest=0.5 h0=0.12 ts=0.3 seed=11 end=120 tz=0.12 cy0=-0.52 cy1=-0.62 cz0=0.20 cz1=0.22 hs=0.08 anim=out/hp1/anim.npz samples=40 res=1080x1920 range=85-95
