@@ -1,4 +1,4 @@
-2026-11-27 08:42 UTC
+2026-11-27 21:23 UTC
 200 https://www.youtube.com/@TheHandwriting_of_Silence
 200 avatar TheHandwriting_of_Silence
 200 banner TheHandwriting_of_Silence
@@ -38,4 +38,13 @@
 200 avatar cartoon_friend3
 200 banner cartoon_friend3
 200 https://www.youtube.com/@cartoon_friend3/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+200 https://www.youtube.com/@cartoon_friend3/videos
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
 200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+200 https://www.youtube.com/@cartoon_friend3/shorts
+RSS cartoon_friend3: ответил с попытки 5

@@ -5,17 +5,23 @@
  "title": "Beautiful_shorts",
  "description": "",
  "header": [
-  "238 подписчиков",
-  "152 видео"
+  "240 подписчиков",
+  "153 видео"
  ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/3SkKQKzbtqBO-oV1lqFtoaDen4tgg8hlao1TVZcMdY9LUtqppGJBftTFyKYp3H1P5pTekG9tog=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/6_IYCMEMtoe0Q__Y2_zj7OKcLMKAO9UGQ8aCjGFh5-3XlnsPQBUApKWlK2iCM9InaG-mlW-rq7A=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-27 08:42 UTC",
+ "checked": "2026-11-27 21:23 UTC",
  "shorts_status": 200,
  "shorts": [
+  {
+   "id": "6TSl7E9VaYQ",
+   "title": "Christmas Ornament With 925 Balls Shatters… Then Rebuilds 🎄 Satisfying 3D Simulation #shorts #asmr",
+   "views": "1,3 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Christmas Ornament With 925 Balls Shatters… Then Rebuilds 🎄 Satisfying 3D Simulation #shorts #asmr, 1,3 тысячи просмотров\""
+  },
   {
    "id": "iEd3d9m7PlQ",
    "title": "Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr",
@@ -25,20 +31,20 @@
   {
    "id": "RxTYbB3I4JY",
    "title": "Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr",
-   "views": "3 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr, 3 тысячи просмотров\""
+   "views": "3,1 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr, 3,1 тысячи просмотров\""
   },
   {
    "id": "1tZcFYIjxJk",
    "title": "3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr",
-   "views": "1,9 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr, 1,9 тысячи просмотров\""
+   "views": "2 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr, 2 тысячи просмотров\""
   },
   {
    "id": "2_3HjiQtR8s",
    "title": "3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr",
-   "views": "2,8 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr, 2,8 тысячи просмотров\""
+   "views": "2,9 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr, 2,9 тысячи просмотров\""
   },
   {
    "id": "QGUnVac9rbs",
@@ -121,8 +127,8 @@
   {
    "id": "viBQgmzXg88",
    "title": "1 bullet vs 5 objects — how far does it go? 😳 #shorts",
-   "views": "753 просмотра",
-   "a11y": "Воспроизвести короткое видео \"1 bullet vs 5 objects — how far does it go? 😳 #shorts, 753 просмотра\""
+   "views": "755 просмотров",
+   "a11y": "Воспроизвести короткое видео \"1 bullet vs 5 objects — how far does it go? 😳 #shorts, 755 просмотров\""
   },
   {
    "id": "98lnRofeeH8",
@@ -193,8 +199,8 @@
   {
    "id": "TDj4LWSysdk",
    "title": "Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts",
-   "views": "921 просмотр",
-   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 921 просмотр\""
+   "views": "923 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts, 923 просмотра\""
   },
   {
    "id": "PiIV46k2M8A",
@@ -297,42 +303,43 @@
    "title": "Russian Spiderman",
    "views": "121 просмотр",
    "a11y": "Воспроизвести короткое видео \"Russian Spiderman, 121 просмотр\""
-  },
-  {
-   "id": "lZnl2raR4JA",
-   "title": "Montenegro, Crnagora",
-   "views": "8 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Montenegro, Crnagora, 8 просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "6TSl7E9VaYQ",
+   "published": "2026-11-27T16:47:34+00:00",
+   "title": "Christmas Ornament With 925 Balls Shatters… Then Rebuilds 🎄 Satisfying 3D Simulation #shorts #asmr",
+   "views": 1078,
+   "desc": "A glass Christmas ornament with 925 colorful balls inside hits the floor and shatters… then everything rewinds and rebuilds itself 🎄\nWatch it loop — which part is more satisfying: the shatter or the rebuild?\n#satisfying #christmas #3danimation #asmr #shorts"
+  },
+  {
    "id": "iEd3d9m7PlQ",
    "published": "2026-11-26T22:33:23+00:00",
    "title": "Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr",
-   "views": 1848,
+   "views": 1881,
    "desc": "Two glass Christmas ornaments — red and gold — each packed with 925 tiny colorful balls. They drop, shatter, and every ball spills across the floor. 🎄✨\n\nRed or Gold — which one would you pick? Comment below! 👇\n\nReal physics 3D simulation, every sound comes from a real impact.\n\n#christmas #christmasornaments #satisfying #oddlysatisfying #asmr #3d #simulation #shorts"
   },
   {
    "id": "RxTYbB3I4JY",
    "published": "2026-11-25T17:56:36+00:00",
    "title": "Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr",
-   "views": 3002,
+   "views": 3133,
    "desc": "Two buckets, 1,555 balls each — one glass cat, one glass bear. Who holds more? Pick your side before the counter stops 👀\nEvery sound is a real collision from the simulation 🔊\n\n#asmr #satisfying #oddlysatisfying #3dsimulation #blender #catvsbear"
   },
   {
    "id": "1tZcFYIjxJk",
    "published": "2026-11-24T21:03:16+00:00",
    "title": "3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr",
-   "views": 1976,
+   "views": 2004,
    "desc": "3,294 glossy balls pour from a bucket into a glass bear — then time runs backwards and it starts again 🔄 How many fit inside? Watch the counter 👀\nEvery sound is a real collision from the simulation 🔊\n\n#asmr #satisfying #oddlysatisfying #3dsimulation #blender #loop"
   },
   {
    "id": "2_3HjiQtR8s",
    "published": "2026-11-23T18:43:25+00:00",
    "title": "3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr",
-   "views": 2896,
+   "views": 2953,
    "desc": "3,294 glossy marbles pour from a bucket into a glass cat. How many fit inside? Watch the counter 👀\nGuess before the end: will the cat fill all the way up? Comment your number 👇\n\nSatisfying 3D simulation made in Blender (Cycles + Bullet physics). Every sound is generated from the real collisions of the balls — no music.\n\n#asmr #satisfying #3danimation #simulation #blender"
   },
   {
@@ -404,13 +411,6 @@
    "title": "What are 1,189 balls drawing? 🤔 Guess before the end! #shorts",
    "views": 1628,
    "desc": "Every ball has its own spot. They bounce until they find it 👀 At what number did you guess the picture? Comment below 👇\n\n#satisfying #oddlysatisfying #physics #simulation #asmr #shorts"
-  },
-  {
-   "id": "Dw-O_K8qMds",
-   "published": "2026-11-12T15:26:32+00:00",
-   "title": "Can it break out of 6 rings? 🚀 Space edition #shorts",
-   "views": 259,
-   "desc": "6 spinning rings, one tiny ball, deep space. Will it break free before the music ends? 👀 Watch till the last ring and comment how many bounces you guessed!\n\n🎵 Original music\n\n#satisfying #oddlysatisfying #physics #simulation #space #shorts"
   }
  ],
  "rss_tries": 1
