@@ -1,0 +1,3 @@
+# имя  параметры для boxes.py (черновики 800x800/48)
+d1_podarok_blue box=podarok_blue res=800x800 samples=48
+d1_wow_pink box=wow_pink res=800x800 samples=48

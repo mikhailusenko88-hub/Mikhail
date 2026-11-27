@@ -1,0 +1,3 @@
+# kind id res
+hdri studio_small_09 2k
+hdri brown_photostudio_02 2k

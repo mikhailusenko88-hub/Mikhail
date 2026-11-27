@@ -1,0 +1,87 @@
+name: boxes-render
+on:
+  push:
+    branches: [boxes-render]
+    paths: [jobs.txt]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: boxes-render
+  cancel-in-progress: false
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          jobs = []
+          for ln in open('jobs.txt', encoding='utf-8'):
+              ln = ln.strip()
+              if not ln or ln.startswith('#'):
+                  continue
+              name, _, cmd = ln.partition(' ')
+              jobs.append({'name': name, 'cmd': cmd.strip()})
+          print('matrix=' + json.dumps({'include': jobs}))
+          PY
+  job:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    env:
+      NAME: ${{ matrix.name }}
+      CMD: ${{ matrix.cmd }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Blender
+        uses: actions/cache@v4
+        with:
+          path: blender
+          key: blender-4.2.0-linux-x64-dir
+      - name: Cache assets
+        uses: actions/cache@v4
+        with:
+          path: assets
+          key: boxassets-${{ hashFiles('assets.txt') }}
+      - name: Run
+        run: |
+          set -o pipefail
+          mkdir -p "out/$NAME"
+          if [ ! -x blender/blender ]; then
+            for u in https://download.blender.org/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz https://mirror.clarkson.edu/blender/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz https://ftp.nluug.nl/pub/graphics/blender/release/Blender4.2/blender-4.2.0-linux-x64.tar.xz; do
+              wget -q --tries=3 --waitretry=5 -O blender.tar.xz "$u" && break
+            done
+            mkdir -p blender && tar xf blender.tar.xz -C blender --strip-components=1 && rm -f blender.tar.xz
+          fi
+          if ! ./blender/blender --version >/dev/null 2>&1; then
+            sudo apt-get update -qq >/dev/null
+            sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libegl1 >/dev/null || true
+          fi
+          pip install -q pillow
+          python3 fetch_assets.py 2>&1 | tee "out/$NAME/assets_log.txt" | tail -10
+          ./blender/blender -b --factory-startup --python-exit-code 1 -P boxes.py -- name=$NAME $CMD 2>&1 | grep --line-buffered -v "^Fra:\| Sample \|Rendered \|Updating \|Loading render kernels\|Path Tracing\|Denoising\|Synchronizing\|Waiting for" | tee "out/$NAME/log.txt" | tail -80
+          python3 -c "from PIL import Image; import sys; im=Image.open('out/$NAME/$NAME.png').convert('RGB'); im.save('out/$NAME/$NAME.jpg', quality=92); im.resize((im.width//2, im.height//2)).save('out/$NAME/small.jpg', quality=85)" || true
+          rm -f "out/$NAME/$NAME.png"
+      - name: Commit result
+        if: always()
+        run: |
+          git config user.name render-bot
+          git config user.email render-bot@users.noreply.github.com
+          rm -rf /tmp/res && cp -r "out/$NAME" /tmp/res
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            git fetch -q --depth=5 origin "$GITHUB_REF_NAME" && git reset -q --hard FETCH_HEAD || { sleep 3; continue; }
+            rm -rf "out/$NAME" && mkdir -p out && cp -r /tmp/res "out/$NAME"
+            git add -A "out/$NAME"
+            git commit -q -m "render: $NAME" || { echo nothing to commit; break; }
+            git push -q origin "HEAD:$GITHUB_REF_NAME" && break
+            sleep $((RANDOM % 8 + 2))
+          done
