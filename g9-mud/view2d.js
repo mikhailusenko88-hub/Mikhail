@@ -2,7 +2,7 @@
 /* Грязь, вид сбоку — рисование и управление, версия 2. Мир рисует объёмный вид Hook Truck (r3d.js); здесь — гараж-конструктор, свой грузовик
    (каждая деталь видна), живая грязь (колея остаётся), вода с вешками, указатели, брызги и дым, кнопки. Правая рука — газ и назад, левая — остальное. */
 (function () {
-  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.9';
+  const P = window.TPhys, M = window.MudSide, R3 = window.Hook3D, PX = M.PX, VER = '6.10';
   const cv = document.getElementById('c'), ctx = cv.getContext('2d'), glc = document.getElementById('gl');
   // языки: русский и английский здесь, ещё восемь — в i18n.js (es, pt, tr, de, fr, it, pl, id); чего нет в переводе — берётся из английского
   const TX = { ru: {
@@ -188,7 +188,7 @@
   let save = { coins: 0, own: {}, build: Object.assign({}, START), stars: {} };
   try { const q = BOOT ? (typeof BOOT.save === 'string' ? JSON.parse(BOOT.save) : BOOT.save) : JSON.parse(localStorage.getItem('mud4.save') || 'null'); if (q && q.build) { save = Object.assign(save, q); save.build = Object.assign({}, START, q.build); } } catch (e) { /* */ }
   const persist = () => { save.ts = Date.now(); const js = JSON.stringify(save); if (!BOOT) try { localStorage.setItem('mud4.save', js); localStorage.setItem('mud3.build', JSON.stringify(build)); } catch (e) { /* */ } if (PG.on || (BOOT && BOOT.ok)) { try { window.bridge.storage.set('mud4.save', js).catch(() => {}); } catch (e) { /* */ } } };
-  let newKey = '', fuelLvl = 2, idleT = 0, idleX = -1e9, coach = '', asst = 0, spinT = 0, spinNeed = '', hold = '', holdT = 0, preEdge = false, ak = {}, preSg = null, trapX = -1e9, trapT = 0, stuckSand = false; // подсказка про только что купленную кнопку; ступень предупреждения о топливе
+  let newKey = '', newAt = -1e9, newT0 = -1, fuelLvl = 2, idleT = 0, idleX = -1e9, coach = '', asst = 0, spinT = 0, spinNeed = '', hold = '', holdT = 0, preEdge = false, ak = {}, preSg = null, trapX = -1e9, trapT = 0, stuckSand = false; // подсказка про только что купленную кнопку; ступень предупреждения о топливе
   let career = true, cur = -1, sel = -1, reg = 0, nlogs = 4, pend = null, res = null, lvlKey = 1, paused = false, adTow = 0, lostT = -9; let shownNote = '';
   const kindOf = (i) => (career && i >= 0 ? M.CONTRACTS[i].cargo : 'log'), capNow = () => M.capOf(M.spec(EB()), kindOf(Math.max(0, sel))), minOf = (i) => (career && i >= 0 && M.CONTRACTS[i].min) || 1;
   const optIdx = (k, v) => PARTS.find((q) => q[0] === k)[1].indexOf(v), priceOf = (k, v) => (PRICE[k] ? PRICE[k][optIdx(k, v)] : 0);
@@ -262,6 +262,7 @@
     if (career && cur >= 0) { pgEv('progression_started', Object.assign(stepOf(cur), { first_run: !Object.keys(save.stars).length, first_time: !(save.stars[M.CONTRACTS[cur].id] > 0), load: nlogs, cap: M.capOf(S.cfg, kindOf(cur)), coins: save.coins, build_version: VER })); pgMsg('level_started', { level: cur + 1 }); }
     pgMsg('gameplay_started');
     save.seen = save.seen || {}; newKey = career ? ['first', 'awd', 'lock', 'low'].find((k) => (k === 'first' ? cur === 0 && !Object.keys(save.stars).length : S.cfg.b[k]) && !save.seen[k]) || '' : ''; if (newKey) { save.seen[newKey] = 1; persist(); }
+    newAt = -1e9; newT0 = -1; if (newKey === 'low') { const up = S.L.signs.find((q) => q.kind === 'climb' && q.val > 0), sand = S.L.signs.find((q) => q.kind === 'soil' && q.val === 'sand'); if (up && sand && sand.x < up.x) newAt = up.x - 500; } // 27.11: новичок жал «новую ПОНИЖ» на старте 3-го заказа и закапывался в песке — про ПОНИЖ говорим перед подъёмом
   }
   // рейс закончен: считаем деньги и звёзды
   function finish() { rent = null;
@@ -838,11 +839,12 @@
       if (coach === 'pre:lowoff') { if (career && (learning('low') || cur < GUIDE_N) && preSg && S.truck.x > preSg.x - 420) { sw.low = false; asst++; coach = ''; toast = { s: T.aOff.low, t: realT, long: true }; sfx('off'); pgEv('assist', Object.assign(stepOf(cur), { part: 'low_off', how: 'sand', x_m: Math.round(S.truck.x / PX) })); } } // новичку игра сама выключает пониженную перед песком
       else if (coach && preEdge && inp.gas && learning(coach.slice(4))) { hold = coach.slice(4); holdT = 0; TM.holds++; } } // перед первой грязью без 4×4 игра останавливается: въехать без неё — значит сесть до конца бака
   }
+  const newOn = () => { if (!newKey || S.truck.x < newAt) return false; if (newT0 < 0) newT0 = S.t; return S.t - newT0 < 7 && !(S.soil === 'sand' && newKey === 'low'); }; // подсказка про новую кнопку: 7 с с того места, где она нужна
   function hint() {
     if (S.state === 'dead') return [S.why === 'fuel' ? T.dFuel : S.why === 'water' ? T.dWater : S.why === 'stuck' ? T.dStuck : T.dFlip, 'rgba(183,28,28,0.88)'];
     const nf = S.L.signs.find((q) => q.x + 200 > S.truck.x && q.x - 700 < S.truck.x && tooDeep(q)); if (nf && S.depth < 6) return [T.hDeep(fmt(nf.val), fmt(S.cfg.ford / PX, 2)), Math.sin(realT * 6) > 0 ? 'rgba(198,40,40,0.95)' : 'rgba(230,81,0,0.95)'];
     if (toast && realT - toast.t < (toast.long ? 3.2 : 1.6)) return [toast.s, toast.bad ? 'rgba(183,28,28,0.9)' : 'rgba(46,125,50,0.88)'];
-    if (newKey && S.t < 7 && S.stuckT < 1) return [T.hNew[newKey], 'rgba(21,101,192,0.94)'];
+    if (newOn() && S.stuckT < 1) return [T.hNew[newKey], 'rgba(21,101,192,0.94)'];
     if (S.hung && S.stuckT > 0.8) return [S.truck.a > 0.06 ? T.hHungF : S.cfg.b.base ? T.hHungL : T.hHung, 'rgba(230,81,0,0.92)'];
     const nt = S.stuckT > 1 ? needTog() : ''; if (nt && !S.hung) return [nt === 'awd' ? T.hAwd : nt === 'lock' ? T.hLock : T.hLow, 'rgba(230,81,0,0.92)']; // есть выключенная кнопка, которая вытащит, — сначала про неё, а не «назад и с хода»
     if (S.soil === 'sand' && S.stuckT > 1 && sw.low) return [T.hSandLow, 'rgba(230,81,0,0.92)'];
@@ -876,7 +878,7 @@
     TOG.forEach((q) => { const b = B(q); if (!b) return; btn(b, q === 'soft' ? T.soft + (sw.soft ? ' ▼' : '') : T[q], sw[q] ? '#fb8c00' : '#546e7a', sw[q]); ctx.fillStyle = sw[q] ? '#b9f6ca' : 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.arc(b.x + b.w - 11, b.y + 11 + (sw[q] ? 3 : 0), 4.5, 0, 7); ctx.fill(); }); // лампочка: включено
     for (const [id, ch] of [['gar', '🔧 ' + T.garage], ['rescue', '↺'], ['pause', '❚❚'], ['mute', muted ? '🔇' : '🔊']]) { const b = B(id); if (!b) continue; ctx.fillStyle = id === 'gar' ? 'rgba(239,108,0,0.92)' : 'rgba(0,0,0,0.34)'; rr(b.x, b.y, b.w, b.h, 12); ctx.fill(); ctx.fillStyle = '#fff'; font(id === 'gar' ? 16 : id === 'pause' ? 15 : 21); ctx.textAlign = 'center'; fillC(ch, b.x + b.w / 2, b.y + b.h / 2 + 1, b.w - 8); }
     const h = hint(); if (h) { if (H2 < 330 && W > 560) { const l = Math.max(fx + fw + 90, W * 0.42), r = W - 124; bubble(h[0], 6, h[1], (l + r) / 2, r - l, 13); } else bubble(h[0], wy + 40, h[1]); } // низкий экран (телефон лёжа в окне площадки): подсказка справа вверху, грузовик не закрывает
-    ring(coach ? (coach === 'pre:lowoff' ? 'low' : coach.replace('pre:', '')) : newKey && newKey !== 'first' && S.t < 7 ? newKey : '');
+    ring(coach ? (coach === 'pre:lowoff' ? 'low' : coach.replace('pre:', '')) : newKey !== 'first' && newOn() ? newKey : '');
     if (!matchMedia('(pointer: coarse)').matches && !ptrs.size && S.t < 14 && !rebuilds) { font(13, 800); const tw = Math.min(ctx.measureText(T.keys).width + 36, W - 16), ky = h ? wy + 96 : wy + 40; ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(W / 2 - tw / 2, ky, tw, 30, 15); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(T.keys, W / 2, ky + 15, tw - 24); }
   }
   function drawFail() {
