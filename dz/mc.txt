@@ -1,8 +1,28 @@
-# проверка почт: site <сайт> / mx <домен>
-site https://dhschool.ru
-site https://artfuture.ru
-site https://mashablackschool.ru
-site https://spb.hse.ru/design/
-site https://sutd.ru
-site https://stieglitz.ru
-site https://design.spbstu.ru
+# проверка почт: site <сайт> / mx <домен> — ремонтные компании 27.11
+site https://riparare.ru
+site https://remart-group.ru
+site https://master-remonta.spb.ru
+site https://onprime.ru
+site https://remont-otdelka.ru
+site https://remont-spb.ru
+site https://toremont.ru
+site https://remont-right.ru
+site https://rsk-renovatsia.ru
+site https://nevskyremont.ru
+site https://evskyremont.ru
+site https://xn--b1agjmbhbhc.xn--p1ai
+site https://remelle.ru
+site https://spbremontstroy.ru
+site https://arcadesign.ru
+site https://pik-remont.ru
+site https://lenremont.ru
+site https://reroom-interiors.ru
+site https://dsdreams.ru
+site https://inside-remont.ru
+site https://remont-key.com
+site https://profstroy98.ru
+site https://lebren-remont.ru
+site https://mihalychstroy.ru
+site https://perimetr-remonta.ru
+site https://art-a.ru
+site https://s-komanda.ru
