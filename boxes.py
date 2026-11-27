@@ -168,7 +168,7 @@ def world():
         mp.inputs['Rotation'].default_value[2] = math.radians(float(A.get('hdri_rot', '140')))
         nt.links.new(tc.outputs['Generated'], mp.inputs['Vector']); nt.links.new(mp.outputs['Vector'], env.inputs['Vector'])
         nt.links.new(env.outputs['Color'], bg.inputs['Color'])
-        bg.inputs['Strength'].default_value = float(A.get('hdrik', '0.7'))
+        bg.inputs['Strength'].default_value = float(A.get('hdrik', '0.25'))
         print('HDRI', hd)
     else:
         bg.inputs['Color'].default_value = (0.8, 0.78, 0.75, 1); bg.inputs['Strength'].default_value = 0.4
@@ -415,9 +415,9 @@ if L.get('card'):
     name_card(*L['card'], loc=(w * 0.30, -w / 2 - 0.004 - 0.03 * math.cos(ct), 0.03 * math.sin(ct) + 0.001), rot=(math.degrees(ct), 0, float(A.get('card_yaw', '-10'))))
 
 # lights
-area('key', (-0.55, -0.45, 0.75), (0, 0, 0.03), 0.9, float(A.get('key', '260')))
-area('fill', (0.65, -0.35, 0.35), (0, 0, 0.03), 0.7, float(A.get('fill', '70')), (1, 0.97, 0.94))
-area('rim', (0.1, 0.65, 0.55), (0, 0, 0.05), 0.6, float(A.get('rim', '90')))
+area('key', (-0.55, -0.45, 0.75), (0, 0, 0.03), 0.9, float(A.get('key', '28')))
+area('fill', (0.65, -0.35, 0.35), (0, 0, 0.03), 0.7, float(A.get('fill', '7')), (1, 0.97, 0.94))
+area('rim', (0.1, 0.65, 0.55), (0, 0, 0.05), 0.6, float(A.get('rim', '9')))
 
 # camera
 el = math.radians(float(A.get('cam_el', '48'))); az = math.radians(float(A.get('cam_az', '-12')))
