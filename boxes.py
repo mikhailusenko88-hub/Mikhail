@@ -102,7 +102,11 @@ def image_mat(key, rough=0.35, coat=0.25, proj=None):
     if proj == 'front':
         inv = nt.nodes.new('ShaderNodeMath'); inv.operation = 'SUBTRACT'; inv.inputs[0].default_value = 1
         nt.links.new(im.outputs['Alpha'], inv.inputs[1]); nt.links.new(inv.outputs[0], mix.inputs[0])
-        nt.links.new(mix.outputs[2], b.inputs['Base Color'])
+        hs = nt.nodes.new('ShaderNodeHueSaturation')
+        hs.inputs['Saturation'].default_value = 1.35 if key == 'TW42' else 1.0
+        hs.inputs['Value'].default_value = 0.78 if key == 'TW42' else 1.0
+        nt.links.new(mix.outputs[2], hs.inputs['Color']); nt.links.new(hs.outputs['Color'], b.inputs['Base Color'])
+        if key == 'TW42': b.inputs['Specular IOR Level'].default_value = 0.3
     else:
         nt.links.new(im.outputs['Color'], b.inputs['Base Color'])
         nt.links.new(im.outputs['Alpha'], b.inputs['Alpha'])

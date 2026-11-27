@@ -1,3 +1,5 @@
-d5_pb box=podarok_blue res=800x800 samples=48 ev=-0.4
-d5_wb box=wow_blue res=800x800 samples=48 ev=-0.4
-d5_mini box=mini res=1000x800 samples=48 ev=-0.4
+f_podarok_blue box=podarok_blue res=1600x1600 samples=160 noise=0.03 ev=-0.4
+f_podarok_pink box=podarok_pink res=1600x1600 samples=160 noise=0.03 ev=-0.4
+f_wow_blue box=wow_blue res=1600x1600 samples=160 noise=0.03 ev=-0.4
+f_wow_pink box=wow_pink res=1600x1600 samples=160 noise=0.03 ev=-0.4
+f_mini box=mini res=2000x1500 samples=160 noise=0.03 ev=-0.4
