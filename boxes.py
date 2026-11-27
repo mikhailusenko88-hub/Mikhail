@@ -363,7 +363,7 @@ def name_card(line1, line2, loc, rot):
 
 # ---------------- mini: kraft bags with window
 def kraft_mat():
-    m, b = principled('kraft', srgb('C49A6C'), 0.75, **{'Specular IOR Level': 0.25})
+    m, b = principled('kraft', srgb('A97E55'), 0.75, **{'Specular IOR Level': 0.25})
     nt = m.node_tree
     n = nt.nodes.new('ShaderNodeTexNoise'); n.inputs['Scale'].default_value = 60; n.inputs['Detail'].default_value = 8
     v = nt.nodes.new('ShaderNodeTexVoronoi'); v.inputs['Scale'].default_value = 9
@@ -372,7 +372,7 @@ def kraft_mat():
     bp = nt.nodes.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.25; bp.inputs['Distance'].default_value = 0.0008
     nt.links.new(mx.outputs[0], bp.inputs['Height']); nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
     hs = nt.nodes.new('ShaderNodeHueSaturation'); hs.inputs['Value'].default_value = 1.0
-    cr = nt.nodes.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].color = srgb('B48A5E'); cr.color_ramp.elements[1].color = srgb('CFA678')
+    cr = nt.nodes.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].color = srgb('9A7049'); cr.color_ramp.elements[1].color = srgb('B48B62')
     n2 = nt.nodes.new('ShaderNodeTexNoise'); n2.inputs['Scale'].default_value = 400
     nt.links.new(n2.outputs['Fac'], cr.inputs['Fac']); nt.links.new(cr.outputs['Color'], b.inputs['Base Color'])
     return m
@@ -512,8 +512,8 @@ area('rim', (0.1, 0.65, 0.55), (0, 0, 0.05), 0.6, float(A.get('rim', '9')))
 
 # camera
 el = math.radians(float(A.get('cam_el', '44'))); az = math.radians(float(A.get('cam_az', '-12')))
-dist = float(A.get('cam_d', '0.72')) * (w / 0.2) ** 0.95
-tgt = Vector((0.01 * w / 0.2, float(A.get('tgt_y', '0.035')) * w / 0.2, 0.03 * w / 0.2))
+dist = float(A.get('cam_d', '0.76')) * (w / 0.2) ** 0.95
+tgt = Vector((0.01 * w / 0.2, float(A.get('tgt_y', '0.05')) * w / 0.2, 0.035 * w / 0.2))
 cpos = tgt + Vector((math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el))) * dist
 cd = bpy.data.cameras.new('cam'); cd.lens = float(A.get('lens', '60'))
 cam = bpy.data.objects.new('cam', cd); link(cam); cam.location = cpos

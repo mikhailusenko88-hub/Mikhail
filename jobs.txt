@@ -1,4 +1,3 @@
-d4_pb box=podarok_blue res=800x800 samples=48 ev=-0.4
-d4_wp box=wow_pink res=800x800 samples=48 ev=-0.4
-d4_pb_l45 box=podarok_blue res=800x800 samples=48 ev=-0.4 lid_lean=45 lid_x=0.20
-d4_mini box=mini res=1000x800 samples=48 ev=-0.4
+d5_pb box=podarok_blue res=800x800 samples=48 ev=-0.4
+d5_wb box=wow_blue res=800x800 samples=48 ev=-0.4
+d5_mini box=mini res=1000x800 samples=48 ev=-0.4
