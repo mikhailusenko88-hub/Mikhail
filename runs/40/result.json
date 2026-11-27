@@ -1,0 +1,74 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 40,
+  "title": "Санки едут сами?!",
+  "scenes": 11,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+   "Рон: {\"speaker\":\"svoy_ron\",\"F\":1.1,\"P\":1.1,\"R\":1.7,\"T\":1.07,\"vend\":1.7,\"gap\":0.8,\"qrise\":3,\"laugh\":\"F16\"}",
+   "Барсик: {\"speaker\":\"svoy_barsik\",\"F\":1.09,\"P\":1.1,\"R\":0.9,\"T\":1.12,\"gap\":0.3,\"qrise\":3}",
+   "Пик: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.33,\"qrise\":3}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 40. Санки едут сами!",
+  "path": "video/Кот Барсик - 40. Санки едут сами!.mp4",
+  "frames": 12743,
+  "sec": 1791,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 509.7134188518926,
+  "video": "video/Кот Барсик - 40. Санки едут сами!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "f5c5238",
+   "intro": "overlay",
+   "open": "new",
+   "q": "hq",
+   "at": null,
+   "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 8,
+   "e": 127,
+   "b": 4,
+   "w": 1,
+   "n": 12740,
+   "at": 12740,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 4,
+  "ttsFail": 0,
+  "voice": 120,
+  "voiceFail": 0,
+  "voiceSec": 76,
+  "ttsSec": 1,
+  "frames": 13368,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -24.9,
+  "lufs_out": -15.2,
+  "gain_db": 10.7
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 4386,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
