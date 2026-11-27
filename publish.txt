@@ -1,2 +1,2 @@
-# 27.11 16:00 МСК — проба: закрытые дубли перезалитых 37–39 (старые голоса) и их Shorts
-delete --dry ZEQyEyFngUk 9QT3Rapwjrc nfDYiVC-dpo B86QuwSDoB8 M2qZeQuFbzM EtxnmePX5RY
+# 27.11 16:20 МСК — Михаил: старые копии перезалитых удалять (правило). Закрытые дубли 37–39 и их Shorts
+delete ZEQyEyFngUk 9QT3Rapwjrc nfDYiVC-dpo B86QuwSDoB8 M2qZeQuFbzM EtxnmePX5RY
