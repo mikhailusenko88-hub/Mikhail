@@ -78,7 +78,7 @@
   const pgMsg = (m, d) => { if (!PG.on) return; try { window.bridge.platform.sendMessage(m, d); } catch (e) { /* */ } };
   // Отметки для разбора «где игроки застревают и уходят». Старт и финиш уровня мост записывает сам по сообщениям level_started / level_completed;
   // сюда идёт то, что знает только игра: авария (где и от чего), уход с уровня, итог заезда, покупки. Данные плоские, ничего личного.
-  const BUILD = '13', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
+  const BUILD = '14', TM = { t0: 0, deaths: 0, fn: 0, fs: 0, live: false };
   const stepOf = (l) => ({ step_id: 'L' + String(l + 1).padStart(2, '0'), step_index: l + 1 }); // шаг продвижения по образцу Playgama: имя события постоянное, номер уровня — в данных
   const pgEv = (name, data) => { if (!PG.on) return; try { window.bridge.analytics.send(name, data); } catch (e) { /* */ } };
   const runData = (extra) => { const L = S.L, x0 = L.polys[0][0][0] + 320; return Object.assign(stepOf(lvl), { level: lvl + 1, control: duo ? 'duo' : ctl, progress: Math.round(100 * Math.max(0, Math.min(1, (S.truck.x - x0) / (L.fin - x0)))), deaths: TM.deaths, duration_sec: Math.round((performance.now() - TM.t0) / 1000), fps: TM.fs > 0 ? Math.round(TM.fn / TM.fs) : 0, quality: Math.round(gq * 100) / 100 }, extra); };
@@ -400,8 +400,8 @@
   function garPort() { return W < H2 * 1.15 || W < 560; }
   function garLayout() {
     const port = garPort(), px = port ? 8 : Math.round(W * 0.5), pw = port ? W - 16 : W - px - 10;
-    const ph = port ? Math.min(Math.round(H2 * 0.56), 134 + 2 * Math.min(124, (pw - 20) / 2, (pw - 20) / 3 + 6)) : H2 - 74, py = H2 - 8 - ph;
-    return { port, px, py, pw, ph };
+    const short = !port && H2 < 330, ph = port ? Math.min(Math.round(H2 * 0.56), 134 + 2 * Math.min(124, (pw - 20) / 2, (pw - 20) / 3 + 6)) : short ? H2 - 16 : H2 - 74, py = H2 - 8 - ph; // short — телефон лёжа в окне площадки: панель во всю высоту
+    return { port, px, py, pw, ph, short };
   }
   function openGarage() { gar = { tab: gar ? gar.tab : 0, pick: curLook(), deny: -9 }; lvl = 0; S = H.create(0, { up: save.up }); acc = 0; mode = 'garage'; toasts = []; ptrs.clear(); }
   function garClick(id) {
@@ -701,17 +701,18 @@
     // название уровня и подсказка уровня — первые секунды; после возрождения подсказка снова
     const l = H.levels[lvl], hint = loc(l.hint);
     if (hintShown._att !== S.attempts) { hintShown._att = S.attempts; hintShown.t0 = realT; }
-    const hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0; let hintB = 0;
-    if (hint && hAl > 0 && S.state === 'play' && S.t > 0.4) {
+    const shortH = H2 < 330 && W > 560, hAl = hint ? clamp(8 - (realT - hintShown.t0), 0, 1) : 0; let hintB = 0; // shortH — телефон лёжа в окне площадки
+    if (hint && hAl > 0 && S.state === 'play' && S.t > (shortH ? 1.4 : 0.4)) {
       ctx.globalAlpha = hAl;
-      const fs = W < 600 ? 17 : 22; ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center';
-      const ls = lines(hint, W - 60), tw = Math.max(...ls.map((q) => ctx.measureText(q).width)) + 36, lh = fs * 1.3, hh = ls.length * lh + 18, hx = W / 2 - tw / 2, hy = W < H2 ? 96 : 70;
+      const fs = shortH ? 14 : W < 600 ? 17 : 22; ctx.font = `900 ${fs}px system-ui, sans-serif`; ctx.textAlign = 'center';
+      const rB = Math.min(W, ...buttons.filter((b) => b.y < 80).map((b) => b.x)) - 10, l0 = bx + bw + 10, cxH = shortH ? (l0 + rB) / 2 : W / 2; // на низком экране — между полосой хода и кнопками, кольца не закрывает
+      const ls = lines(hint, shortH ? rB - l0 - 36 : W - 60), tw = Math.max(...ls.map((q) => ctx.measureText(q).width)) + 36, lh = fs * 1.3, hh = ls.length * lh + 18, hx = cxH - tw / 2, hy = shortH ? 8 : W < H2 ? 96 : 70;
       ctx.fillStyle = 'rgba(0,0,0,0.45)'; rr(hx, hy, tw, hh, 20); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle';
-      ls.forEach((q, i) => ctx.fillText(q, W / 2, hy + 9 + lh * (i + 0.5)));
+      ls.forEach((q, i) => ctx.fillText(q, cxH, hy + 9 + lh * (i + 0.5)));
       ctx.globalAlpha = 1; hintB = hy + hh;
     }
     if (S.t < 1.4) { // название уровня: ниже подсказки, чтобы надписи не ложились друг на друга
-      const fs = W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp((1.4 - S.t) * 2, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
+      const fs = shortH ? 24 : W < 600 || H2 < 480 ? 30 : 40; ctx.globalAlpha = clamp((1.4 - S.t) * 2, 0, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${fs}px system-ui, sans-serif`;
       const ty = Math.max(H2 * 0.3, hintB + fs * 0.9); ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; const tt = `${T.lvl} ${lvl + 1} · ${loc(l.name)}`; ctx.strokeText(tt, W / 2, ty, W - 24); ctx.fillStyle = '#fff'; ctx.fillText(tt, W / 2, ty, W - 24); ctx.globalAlpha = 1;
     }
     // обучение: «нажми — поехали», «держи», «отпусти»
@@ -722,8 +723,8 @@
     }
     // всплывающие надписи
     toasts.forEach((t, i) => {
-      if (t.s === undefined) t.s = realT; t.t = realT - t.s; const al = clamp(1.6 - t.t, 0, 1), ty = H2 * 0.36 - t.t * 30 + i * 54;
-      ctx.globalAlpha = al; ctx.font = '900 44px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (t.s === undefined) t.s = realT; t.t = realT - t.s; const al = clamp(1.6 - t.t, 0, 1), sm = H2 < 330, ty = H2 * (sm ? 0.3 : 0.36) - t.t * 30 + i * (sm ? 38 : 54);
+      ctx.globalAlpha = al; ctx.font = `900 ${sm ? 30 : 44}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.lineWidth = 8; ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.strokeText(t.text, W / 2, ty); ctx.fillStyle = t.col; ctx.fillText(t.text, W / 2, ty); ctx.globalAlpha = 1;
     });
     toasts = toasts.filter((t) => t.t < 1.6);
@@ -849,9 +850,9 @@
     const bb = { id: 'g:back', x: 10, y: 10, w: 46, h: 46 }; menuBtns.push(bb);
     ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(bb.x, bb.y, bb.w, bb.h, 12); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '900 30px system-ui, sans-serif'; ctx.fillText('‹', bb.x + bb.w / 2, bb.y + bb.h / 2 - 3);
-    let wl = W - 10 - wallet(W - 10, 17);
+    const GL = garLayout(), wr = GL.short ? GL.px - 10 : W - 10; let wl = wr - wallet(wr, 17); // на низком экране кошелёк слева от панели, иначе панель его закроет
     if (PG.on && PG.rew && !PG.pend && pgNow() - PG.lastFree > 180) { // «+100 монет за ролик»: на телефоне под кошельком, на широком экране — слева от него
-      const aw = 128, ab = port ? { id: 'g:ad', x: W - 10 - aw, y: 56, w: aw, h: 36 } : { id: 'g:ad', x: wl - 8 - aw, y: 15, w: aw, h: 36 }; menuBtns.push(ab); if (!port) wl = ab.x;
+      const aw = 128, ab = port || GL.short ? { id: 'g:ad', x: wr - aw, y: 56, w: aw, h: 36 } : { id: 'g:ad', x: wl - 8 - aw, y: 15, w: aw, h: 36 }; menuBtns.push(ab); if (!port && !GL.short) wl = ab.x;
       ctx.fillStyle = 'rgba(0,0,0,0.2)'; rr(ab.x, ab.y + 3, ab.w, ab.h, 14); ctx.fill(); ctx.fillStyle = '#7e57c2'; rr(ab.x, ab.y, ab.w, ab.h, 14); ctx.fill();
       rich([{ t: '🎬 +100' }, { coin: 1 }], ab.x + ab.w / 2, ab.y + ab.h / 2, 16);
     }
@@ -859,15 +860,15 @@
     if (68 + ctx.measureText(T.garage).width + 10 < wl) { ctx.strokeText(T.garage, 68, 34); ctx.fillStyle = '#fff'; ctx.fillText(T.garage, 68, 34); }
     if (window.HOOK_TEST) { const tb = { id: 'g:test', x: W - 132, y: 56, w: 122, h: 30 }; menuBtns.push(tb); ctx.fillStyle = 'rgba(0,0,0,0.34)'; rr(tb.x, tb.y, tb.w, tb.h, 15); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '800 14px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.fillText(T.test, tb.x + tb.w / 2, tb.y + tb.h / 2 + 1); }
     // панель: вкладки, плитки, кнопка
-    const { px, py, pw, ph } = garLayout();
+    const { px, py, pw, ph, short } = GL;
     panel(px, py, pw, ph);
-    const tw = (pw - 20) / 4, th = 40, tx0 = px + 10, ty0 = py + 10, tfs = clamp(Math.floor(tw / 5.6), 12, 16);
+    const tw = (pw - 20) / 4, th = short ? 32 : 40, tx0 = px + 10, ty0 = py + 10, tfs = clamp(Math.floor(tw / 5.6), 12, 16);
     TABS.forEach((k, i) => {
       const x = tx0 + i * tw; menuBtns.push({ id: 'g:tab:' + i, x, y: ty0, w: tw, h: th });
       ctx.fillStyle = gar.tab === i ? '#ffca28' : '#eceff1'; rr(x + 2, ty0, tw - 4, th, 12); ctx.fill();
       ctx.fillStyle = gar.tab === i ? '#3e2723' : '#546e7a'; ctx.font = `900 ${tfs}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(T.tabs[i], x + tw / 2, ty0 + th / 2 + 1, tw - 12);
     });
-    const cy0 = ty0 + th + 10, ah = 52, ay = py + ph - 12 - ah;
+    const cy0 = ty0 + th + (short ? 6 : 10), ah = short ? 42 : 52, ay = py + ph - (short ? 8 : 12) - ah;
     if (kind === 'up') { drawUps(px + 12, cy0, pw - 24, py + ph - 12 - cy0); return; }
     const items = SHOP[kind], n = items.length, cH = ay - 10 - cy0, cap = port ? 124 : 170;
     let cols = n, cell = 0; for (let c = n; c >= 2; c--) { if (n % c) continue; const q = Math.min((pw - 20) / c, (cH * c) / n, cap); if (q > cell + 0.5) { cell = q; cols = c; } } // только ровные сетки: 3, 4 или 2×2, 6 или 3×2
@@ -957,6 +958,7 @@
   function drawWin() {
     menuBtns = [];
     ctx.fillStyle = 'rgba(10,40,70,0.4)'; ctx.fillRect(0, 0, W, H2);
+    if (H2 < 330 && W > 560) return drawWinShort();
     const w = Math.min(W - 32, 460), h = Math.min(H2 - 24, 374), x = W / 2 - w / 2, y = H2 / 2 - h / 2, tight = h < 352;
     panel(x, y, w, h);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 28px system-ui, sans-serif';
@@ -982,6 +984,26 @@
     bigBtn('menu', b0, byy, bw, bh, '☰', '#78909c');
     bigBtn('again', b0 + bw + 10, byy, bw, bh, '↻', '#fb8c00');
     if (canNext()) bigBtn('next', b0 + 2 * (bw + 10), byy, bw, bh, T.next + ' ▶', '#43a047'); else bigBtn('menu', b0 + 2 * (bw + 10), byy, bw, bh, T.levels, '#43a047');
+  }
+
+  function drawWinShort() { // телефон лёжа в окне площадки: две колонки, ничто ни на что не налезает
+    const w = Math.min(W - 16, 760), h = H2 - 12, x = W / 2 - w / 2, y = 6, lw = w * 0.56, rx = x + lw, rw = w - lw - 16;
+    panel(x, y, w, h);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#2e7d32'; ctx.font = '900 22px system-ui, sans-serif'; ctx.fillText(T.win, x + lw / 2, y + 22, lw - 20);
+    ctx.fillStyle = '#78909c'; ctx.font = '800 13px system-ui, sans-serif'; ctx.fillText(`${T.lvl} ${lvl + 1} · ${loc(H.levels[lvl].name)}`, x + lw / 2, y + 44, lw - 20);
+    const labs = [T.fin, T.starW, `≤ ${res.par} ${T.sec}`], on = [true, res.got, res.fast];
+    for (let k = 0; k < 3; k++) {
+      const cx = x + lw / 2 + (k - 1) * lw * 0.3, cy = y + 84, big = k === 1 ? 24 : 20, pop = clamp((realT - (res.t0 || (res.t0 = realT)) - k * 0.25) * 4, 0, 1);
+      star5(cx, cy, big * (on[k] ? 0.6 + 0.4 * pop : 1), on[k] && pop > 0 ? '#ffd54f' : '#cfd8dc');
+      ctx.fillStyle = on[k] ? '#37474f' : '#90a4ae'; ctx.font = '800 12px system-ui, sans-serif'; ctx.fillText(labs[k], cx, cy + 32, lw * 0.3);
+    }
+    ctx.fillStyle = '#37474f'; ctx.font = '800 13px system-ui, sans-serif'; ctx.fillText(`${T.time}: ${res.t.toFixed(1)} ${T.sec}   ·   ${T.tries}: ${res.tries}`, x + lw / 2, y + 142, lw - 20);
+    const shown = Math.round(res.earn * clamp((realT - res.t0 - 0.9) * 1.6, 0, 1)), canX2 = PG.on && PG.rew && !res.x2 && !res.noad, gain = res.x2 ? res.earn * 2 : shown;
+    rich([{ t: '+' + gain, c: '#ef6c00' }, { coin: 1 }, { t: ' ' }, { t: `${T.total} ${save.coins - (res.x2 ? 0 : res.earn - shown)}`, c: '#90a4ae', b: 800 }], x + lw / 2, Math.min(y + h - 20, y + 176), 19);
+    const n = canX2 ? 3 : 2, g = 8, bh = Math.min(54, (h - 20 - g * (n - 1)) / n); let by = y + (h - (bh * n + g * (n - 1))) / 2;
+    if (canX2) { const b = { id: 'x2', x: rx, y: by, w: rw, h: bh }; menuBtns.push(b); ctx.fillStyle = 'rgba(0,0,0,0.18)'; rr(b.x, b.y + 3, b.w, b.h, 14); ctx.fill(); ctx.fillStyle = '#7e57c2'; rr(b.x, b.y, b.w, b.h, 14); ctx.fill(); rich([{ t: '🎬 ' + T.x2 }, { t: '+' + res.earn }, { coin: 1 }], b.x + b.w / 2, b.y + b.h / 2, 17); by += bh + g; }
+    if (canNext()) bigBtn('next', rx, by, rw, bh, T.next + ' ▶', '#43a047'); else bigBtn('menu', rx, by, rw, bh, T.levels, '#43a047');
+    by += bh + g; const hw = (rw - g) / 2; bigBtn('menu', rx, by, hw, bh, '☰', '#78909c'); bigBtn('again', rx + hw + g, by, hw, bh, '↻', '#fb8c00');
   }
 
   // ---------- главный цикл ----------
