@@ -1,1 +1,1 @@
-30dub ar 6
+28dub ar 6
