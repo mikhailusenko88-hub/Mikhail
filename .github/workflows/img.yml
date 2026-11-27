@@ -1,0 +1,49 @@
+name: boxes-img
+on:
+  push:
+    branches: [boxes-render]
+    paths: [img/urls.txt]
+permissions:
+  contents: write
+jobs:
+  get:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, re, os
+          UA = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'}
+          def get(u):
+              return urllib.request.urlopen(urllib.request.Request(u, headers=UA), timeout=40).read()
+          log = []
+          for ln in open('img/urls.txt', encoding='utf-8'):
+              ln = ln.strip()
+              if not ln or ln.startswith('#'): continue
+              name, url = ln.split(None, 1)
+              try:
+                  if url.endswith('.json'):
+                      d = json.loads(get(url))['product']
+                      srcs = [i['src'] for i in d.get('images', [])]
+                  else:
+                      h = get(url).decode('utf-8', 'ignore')
+                      srcs = re.findall(r'property="og:image" content="([^"]+)"', h)
+                  for k, s in enumerate(srcs[:4]):
+                      if s.startswith('//'): s = 'https:' + s
+                      b = get(s)
+                      fn = f'img/{name}_{k}.' + ('png' if '.png' in s.lower() else 'jpg')
+                      open(fn, 'wb').write(b)
+                      log.append(f'{name} {k} {len(b)} {s}')
+              except Exception as e:
+                  log.append(f'{name} ERR {e!r}')
+          open('img/log.txt', 'w').write('\n'.join(log) + '\n')
+          print('\n'.join(log))
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add img
+          git commit -m "img fetched [skip ci]" || exit 0
+          for i in 1 2 3; do git pull --rebase -q origin boxes-render && git push -q && break; sleep 5; done
