@@ -1,11 +1,11 @@
 # Kim yutadi?  (@kimyutadi_uz)
-Проверено: 2026-11-27 08:25 UTC
+Проверено: 2026-11-27 08:42 UTC
 
 - Страница канала: HTTP 200; ID: UC93S31Qkgoz4cFgKBzz-mLA
 - Шапка: 11 подписчиков · 66 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-27 07:19 · 0 просм. · 1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts · ZBf3N5pqN9I
+- 2026-11-27 07:19 · 7 просм. · 1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts · ZBf3N5pqN9I
 - 2026-11-26 14:36 · 282 просм. · 1000 ta shar! Nexia, Gentra, Equinox… Qaysi mashina yutadi? Какая машина победит? №11 #shorts · Ki0KPOMteic
 - 2026-11-26 10:37 · 309 просм. · 1000 ta shar! Samarqand, Qarshi, Chirchiq… Qaysi shahar yutadi? Какой город победит? №5 #shorts · 5r3Ae6cv9C4
 - 2026-11-26 06:36 · 612 просм. · 1000 ta shar! Cobalt, Labo, Gentra… Qaysi mashina yutadi? Какая машина победит? №10 #shorts · B5xutGPfsh8
@@ -22,7 +22,7 @@
 - 2026-11-22 10:36 · 974 просм. · 1000 ta shar! Samarqand, Toshkent, Shahrisabz… Qaysi shahar yutadi? Какой город победит? №1 #shorts · Zr9iRlRDw5Q
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 2 просмотра · 1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts · ZBf3N5pqN9I
+- 7 просмотров · 1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts · ZBf3N5pqN9I
 - 267 просмотров · 1000 ta shar! Nexia, Gentra, Equinox… Qaysi mashina yutadi? Какая машина победит? №11 #shorts · Ki0KPOMteic
 - 309 просмотров · 1000 ta shar! Samarqand, Qarshi, Chirchiq… Qaysi shahar yutadi? Какой город победит? №5 #shorts · 5r3Ae6cv9C4
 - 607 просмотров · 1000 ta shar! Cobalt, Labo, Gentra… Qaysi mashina yutadi? Какая машина победит? №10 #shorts · B5xutGPfsh8

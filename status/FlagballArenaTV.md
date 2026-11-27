@@ -1,5 +1,5 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-27 08:04 UTC
+Проверено: 2026-11-27 08:42 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 25 подписчиков · 93 видео
@@ -25,10 +25,10 @@
 - 53 просмотра · Last chance for Italy 😱 Vietnam vs Thailand vs Italy | Country Marble Race #shorts · R80c42VFMUg
 - 14 просмотров · Brazil vs UK vs Egypt 😱 Who Survives? Country Marble Race #shorts · fMINMQRXyuI
 - 828 просмотров · Mexico on its LAST life ❤️ Mexico vs Germany vs Ukraine — Who Survives? #shorts · Y_YmMMSFvko
-- 370 просмотров · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
-- 182 просмотра · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
-- 998 просмотров · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
-- 643 просмотра · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
+- 372 просмотра · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
+- 189 просмотров · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
+- 1 тыс. просмотров · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
+- 639 просмотров · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE
 - 1 тыс. просмотров · Race 50/67: 8 of 24 lose a life 😱 Russia vs France vs Korea #shorts · OaxkESiOdNA
 - 1 тыс. просмотров · Last chance for Colombia 😱 Philippines vs Thailand vs Colombia | Country Marble Race #shorts · KsgnzXH1L2o
 - 959 просмотров · Last chance for India 😱 India vs Indonesia vs Mexico | Country Marble Race #shorts · TEIczLtjmMw
