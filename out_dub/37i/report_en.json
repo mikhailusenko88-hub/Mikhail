@@ -16,22 +16,20 @@
  "dur": 355.13,
  "lines": 91,
  "done": 91,
- "clear_avg": 97.4,
+ "clear_avg": 97.7,
  "low": [
   20,
-  27,
-  66,
-  70,
-  87
+  66
  ],
  "stretched": [],
  "over": [],
- "minutes": 94.5,
+ "minutes": 186.5,
  "syl_ru": 3.6,
  "syl": 3.9,
  "len_ratio": 0.85,
  "fast": [
-  79
+  65,
+  105
  ],
  "rows": [
   {
@@ -40,18 +38,23 @@
    "t": 0.25,
    "ru": "Смотри́те, вот наша лужа. Сейчас — плюх!",
    "text": "Look, here's our puddle. Now, splash!",
-   "heard": "Look, here's our puddle. Now splash.",
+   "takes": [
+    4.42,
+    4.38
+   ],
+   "mos": 4.42,
+   "heard": "Look, here's our puddle, now splash.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.5,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.62,
+   "sec": 2.23,
    "window": 5.43,
    "ru_sec": 4.26,
    "syl_ru": 2.6,
-   "syl": 3.1
+   "syl": 3.6
   },
   {
    "i": 2,
@@ -59,14 +62,19 @@
    "t": 6.708,
    "ru": "Ой! Она не плюхает! Она твёрдая!",
    "text": "Oh! No splash! It's hard!",
+   "takes": [
+    3.95,
+    3.33
+   ],
+   "mos": 3.95,
    "heard": "Oh no splash, it's hard.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.3,
+   "shift": 2.2,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.01,
+   "sec": 2.0,
    "window": 4.99,
    "ru_sec": 4.62,
    "syl_ru": 2.2,
@@ -78,6 +86,11 @@
    "t": 13.757,
    "ru": "Лужа замёрзла! Теперь это лёд!",
    "text": "The puddle froze! Now it's ice!",
+   "takes": [
+    4.39,
+    4.32
+   ],
+   "mos": 4.39,
    "heard": "The puddle froze, now it's ice.",
    "clear": 100.0,
    "extra": 0,
@@ -85,7 +98,7 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.92,
+   "sec": 1.93,
    "window": 2.5,
    "ru_sec": 2.28,
    "syl_ru": 4.4,
@@ -97,6 +110,11 @@
    "t": 16.337,
    "ru": "Блестит, как стекло. И скользкий-скользкий.",
    "text": "It shines like glass. And it's so slippery.",
+   "takes": [
+    4.45,
+    4.46
+   ],
+   "mos": 4.46,
    "heard": "It shines like glass, and it's so slippery.",
    "clear": 100.0,
    "extra": 0,
@@ -104,11 +122,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.64,
+   "sec": 2.63,
    "window": 4.39,
    "ru_sec": 3.57,
    "syl_ru": 2.8,
-   "syl": 4.5
+   "syl": 4.6
   },
   {
    "i": 6,
@@ -116,10 +134,16 @@
    "t": 20.806,
    "ru": "А где вода? Она пропала?",
    "text": "Where's the water? Is it gone?",
+   "takes": [
+    3.88,
+    4.06
+   ],
+   "qrise": 3.0,
+   "mos": 4.06,
    "heard": "Where's the water? Is it gone?",
    "clear": 100.0,
    "extra": 0,
-   "shift": 3.1,
+   "shift": 3.7,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -127,7 +151,7 @@
    "window": 3.53,
    "ru_sec": 3.31,
    "syl_ru": 2.7,
-   "syl": 5.0
+   "syl": 4.9
   },
   {
    "i": 7,
@@ -135,6 +159,11 @@
    "t": 24.42,
    "ru": "Никуда. Вода здесь. Только она стала твёрдой.",
    "text": "It's not gone. The water's here. It just got hard.",
+   "takes": [
+    4.46,
+    4.46
+   ],
+   "mos": 4.46,
    "heard": "It's not gone. The water's here. It just got hard.",
    "clear": 100.0,
    "extra": 0,
@@ -142,11 +171,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.86,
+   "sec": 2.87,
    "window": 3.5,
    "ru_sec": 3.28,
    "syl_ru": 4.3,
-   "syl": 4.6
+   "syl": 4.5
   },
   {
    "i": 8,
@@ -154,6 +183,11 @@
    "t": 27.999,
    "ru": "Ночью пришёл мороз. И заморозил лужу.",
    "text": "Frost came at night. And froze the puddle.",
+   "takes": [
+    4.44,
+    4.45
+   ],
+   "mos": 4.45,
    "heard": "Frost came at night and froze the puddle.",
    "clear": 100.0,
    "extra": 0,
@@ -161,11 +195,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.01,
+   "sec": 3.0,
    "window": 3.58,
    "ru_sec": 3.21,
    "syl_ru": 4.0,
-   "syl": 3.6
+   "syl": 3.7
   },
   {
    "i": 10,
@@ -173,10 +207,15 @@
    "t": 33.11,
    "ru": "Пахнет… холодом.",
    "text": "Smells like cold.",
+   "takes": [
+    4.29,
+    4.25
+   ],
+   "mos": 4.29,
    "heard": "Smells like cold.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.5,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -192,14 +231,19 @@
    "t": 37.873,
    "ru": "Смотри́те, вот наш снеговик! Он стои́т!",
    "text": "Look, there's our snowman! He's still standing!",
+   "takes": [
+    4.16,
+    4.25
+   ],
+   "mos": 4.25,
    "heard": "Look, there's our snowman. He's still standing.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.3,
+   "shift": 2.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.45,
+   "sec": 2.44,
    "window": 3.05,
    "ru_sec": 2.83,
    "syl_ru": 3.5,
@@ -211,6 +255,11 @@
    "t": 41.004,
    "ru": "Снежок Второй! Ты не растаял!",
    "text": "Snowy the Second! You didn't melt!",
+   "takes": [
+    4.27,
+    4.4
+   ],
+   "mos": 4.4,
    "heard": "Snowy the second, you didn't melt.",
    "clear": 100.0,
    "extra": 0,
@@ -218,11 +267,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.09,
+   "sec": 2.06,
    "window": 3.34,
    "ru_sec": 3.12,
    "syl_ru": 2.6,
-   "syl": 3.8
+   "syl": 3.9
   },
   {
    "i": 17,
@@ -230,14 +279,19 @@
    "t": 44.427,
    "ru": "Ночью было очень холодно. А в холоде снег не та́ет.",
    "text": "It was very cold last night. Snow doesn't melt in the cold.",
+   "takes": [
+    4.43,
+    4.39
+   ],
+   "mos": 4.43,
    "heard": "It was very cold last night. Snow doesn't melt in the cold.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.6,
+   "shift": 0.0,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.33,
+   "sec": 3.32,
    "window": 4.1,
    "ru_sec": 3.88,
    "syl_ru": 4.4,
@@ -249,6 +303,11 @@
    "t": 48.606,
    "ru": "Мороз растопить не может. Мороз — замораживает.",
    "text": "Frost can't melt things. Frost freezes them.",
+   "takes": [
+    4.39,
+    4.36
+   ],
+   "mos": 4.39,
    "heard": "Frost can't melt things. Frost freezes them.",
    "clear": 100.0,
    "extra": 0,
@@ -268,10 +327,15 @@
    "t": 56.565,
    "ru": "Это наша лужа. А теперь это каток!",
    "text": "This was our puddle. And now it's a skating rink!",
+   "takes": [
+    4.38,
+    4.37
+   ],
+   "mos": 4.38,
    "heard": "This was our puddle, and now it's a skating rink.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": 1.6,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
@@ -290,7 +354,7 @@
    "heard": "I'm skating on the best skater.",
    "clear": 75.0,
    "extra": 1,
-   "shift": 1.5,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -306,10 +370,15 @@
    "t": 65.128,
    "ru": "Ой. Тут тоже твёрдо.",
    "text": "Oof. It's hard here too.",
+   "takes": [
+    4.21,
+    4.29
+   ],
+   "mos": 4.29,
    "heard": "Oof, it's hard here too.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": 1.9,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -325,6 +394,12 @@
    "t": 70.162,
    "ru": "Можно я тоже попробую?",
    "text": "Can I try too?",
+   "takes": [
+    4.43,
+    4.38
+   ],
+   "qrise": 3.0,
+   "mos": 4.43,
    "heard": "Can I try too?",
    "clear": 100.0,
    "extra": 0,
@@ -344,18 +419,19 @@
    "t": 73.344,
    "ru": "Ой! Лапы сами разъезжаются!",
    "text": "Whoa! My paws are sliding!",
-   "heard": "Well, my pods are sliding.",
-   "clear": 60.0,
-   "extra": 2,
+   "mos": 4.48,
+   "heard": "Whoa, my paws are sliding.",
+   "clear": 100.0,
+   "extra": 0,
    "shift": 0.0,
    "speed": 0.8,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.86,
+   "sec": 2.4,
    "window": 2.42,
    "ru_sec": 2.2,
    "syl_ru": 4.1,
-   "syl": 3.8
+   "syl": 2.9
   },
   {
    "i": 28,
@@ -363,6 +439,11 @@
    "t": 75.848,
    "ru": "Держись, Топа! Вставай потихоньку.",
    "text": "Hold on, Topa! Get up slowly.",
+   "takes": [
+    4.41,
+    4.44
+   ],
+   "mos": 4.44,
    "heard": "Hold on Topa, get up slowly.",
    "clear": 100.0,
    "extra": 0,
@@ -370,11 +451,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.02,
+   "sec": 2.07,
    "window": 2.57,
    "ru_sec": 2.35,
    "syl_ru": 4.3,
-   "syl": 4.0
+   "syl": 3.9
   },
   {
    "i": 29,
@@ -382,6 +463,11 @@
    "t": 78.499,
    "ru": "Надо ходить маленькими шажками. Как пингвин!",
    "text": "Take tiny steps. Like a penguin!",
+   "takes": [
+    4.36,
+    4.43
+   ],
+   "mos": 4.43,
    "heard": "Take tiny steps like a penguin.",
    "clear": 100.0,
    "extra": 0,
@@ -389,11 +475,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.08,
+   "sec": 2.12,
    "window": 4.47,
    "ru_sec": 3.35,
    "syl_ru": 4.2,
-   "syl": 4.8
+   "syl": 4.7
   },
   {
    "i": 30,
@@ -401,18 +487,23 @@
    "t": 83.051,
    "ru": "А ещё на льду нельзя бегать. Можно упасть.",
    "text": "And no running on ice. You can fall.",
-   "heard": "and no running on ice, you can fall.",
+   "takes": [
+    4.4,
+    4.13
+   ],
+   "mos": 4.4,
+   "heard": "and no running on ice. You can fall.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.24,
+   "sec": 2.26,
    "window": 2.85,
    "ru_sec": 2.63,
    "syl_ru": 4.9,
-   "syl": 4.5
+   "syl": 4.4
   },
   {
    "i": 31,
@@ -420,18 +511,23 @@
    "t": 85.982,
    "ru": "И на речку не ходим. Там лёд бывает тонким.",
    "text": "And we don't go on river ice. It can be thin.",
+   "takes": [
+    3.38,
+    2.97
+   ],
+   "mos": 3.38,
    "heard": "And we don't go on river ice. It can be thin.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.1,
+   "shift": 1.6,
    "speed": 0.88,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.74,
+   "sec": 2.73,
    "window": 3.33,
    "ru_sec": 2.46,
    "syl_ru": 5.3,
-   "syl": 4.7
+   "syl": 4.8
   },
   {
    "i": 33,
@@ -439,18 +535,24 @@
    "t": 90.738,
    "ru": "Тук-тук! Лужа, ты до́ма?",
    "text": "Knock knock! Puddle, are you home?",
+   "takes": [
+    3.27,
+    4.18
+   ],
+   "qrise": 3.0,
+   "mos": 4.18,
    "heard": "Knock knock, puddle are you home?",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.9,
-   "speed": 0.9,
+   "shift": 1.6,
+   "speed": 0.8,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.33,
+   "sec": 2.66,
    "window": 3.08,
    "ru_sec": 2.86,
    "syl_ru": 2.5,
-   "syl": 3.9
+   "syl": 3.4
   },
   {
    "i": 35,
@@ -458,6 +560,11 @@
    "t": 94.824,
    "ru": "Она не откроет. Она замёрзла!",
    "text": "It won't open. It's frozen!",
+   "takes": [
+    3.28,
+    2.77
+   ],
+   "mos": 3.28,
    "heard": "It won't open, it's frozen.",
    "clear": 100.0,
    "extra": 0,
@@ -477,6 +584,12 @@
    "t": 98.097,
    "ru": "А можно сделать лёд самим? До́ма?",
    "text": "Can we make ice ourselves? At home?",
+   "takes": [
+    4.44,
+    4.36
+   ],
+   "qrise": 3.0,
+   "mos": 4.44,
    "heard": "Can we make ice ourselves at home?",
    "clear": 100.0,
    "extra": 0,
@@ -484,7 +597,7 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.67,
+   "sec": 2.68,
    "window": 3.01,
    "ru_sec": 2.79,
    "syl_ru": 3.6,
@@ -496,18 +609,23 @@
    "t": 101.184,
    "ru": "Давайте попробуем! Нужна вода и мороз.",
    "text": "Let's try! We need water and frost.",
+   "takes": [
+    4.44,
+    4.43
+   ],
+   "mos": 4.44,
    "heard": "Let's try. We need water and frost.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.9,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.25,
+   "sec": 2.11,
    "window": 4.68,
    "ru_sec": 2.46,
    "syl_ru": 5.3,
-   "syl": 3.6
+   "syl": 3.8
   },
   {
    "i": 38,
@@ -515,18 +633,23 @@
    "t": 105.945,
    "ru": "Вот миска. В ней вода.",
    "text": "Here's a bowl. With water.",
+   "takes": [
+    2.96,
+    3.7
+   ],
+   "mos": 3.7,
    "heard": "Here's a bowl with water.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.9,
-   "speed": 1.136,
+   "shift": 2.1,
+   "speed": 0.88,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.4,
+   "sec": 1.66,
    "window": 2.13,
    "ru_sec": 1.41,
    "syl_ru": 4.2,
-   "syl": 5.0
+   "syl": 4.2
   },
   {
    "i": 39,
@@ -534,10 +657,15 @@
    "t": 108.156,
    "ru": "Вода мокрая. Её можно налить и вылить.",
    "text": "Water is wet. You can pour it in and out.",
+   "takes": [
+    3.95,
+    4.19
+   ],
+   "mos": 4.19,
    "heard": "Water is wet, you can pour it in and out.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.5,
+   "shift": 1.6,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -553,10 +681,15 @@
    "t": 111.556,
    "ru": "Вода, стань твёрдой! Раз, два, три!",
    "text": "Water, get hard! One, two, three!",
+   "takes": [
+    3.63,
+    4.32
+   ],
+   "mos": 4.32,
    "heard": "Water get hard, one, two, three.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.7,
+   "shift": 1.6,
    "speed": 0.92,
    "tempo": 1.0,
    "over": 0.0,
@@ -572,6 +705,11 @@
    "t": 117.513,
    "ru": "Не получилось. Она меня не слушает.",
    "text": "It didn't work. It won't listen to me.",
+   "takes": [
+    3.88,
+    3.4
+   ],
+   "mos": 3.88,
    "heard": "It didn't work. It won't listen to me.",
    "clear": 100.0,
    "extra": 0,
@@ -591,10 +729,16 @@
    "t": 124.174,
    "ru": "А если подуть? Ффф! Стала твёрдая?",
    "text": "What if I blow? Fff! Is it hard now?",
+   "takes": [
+    3.7,
+    3.72
+   ],
+   "qrise": 3.0,
+   "mos": 3.72,
    "heard": "What if I blow? FFF, is it hard now?",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.5,
+   "shift": 3.3,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -610,18 +754,18 @@
    "t": 130.017,
    "ru": "Нет, Рон. Ты же тёплый!",
    "text": "No, Ron. You're warm!",
-   "heard": "No, Ron, you're warm.",
-   "clear": 100.0,
-   "extra": 0,
-   "shift": 2.2,
-   "speed": 1.0,
+   "heard": "Snow Ron, you're warm.",
+   "clear": 80.0,
+   "extra": 1,
+   "shift": 2.1,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.52,
+   "sec": 1.39,
    "window": 2.36,
    "ru_sec": 2.14,
    "syl_ru": 2.8,
-   "syl": 3.3
+   "syl": 3.6
   },
   {
    "i": 48,
@@ -629,6 +773,11 @@
    "t": 132.46,
    "ru": "На кухне тепло. Здесь вода не замёрзнет.",
    "text": "It's warm in the kitchen. Water won't freeze here.",
+   "takes": [
+    4.46,
+    4.43
+   ],
+   "mos": 4.46,
    "heard": "It's warm in the kitchen, water won't freeze here.",
    "clear": 100.0,
    "extra": 0,
@@ -636,7 +785,7 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.62,
+   "sec": 2.59,
    "window": 2.98,
    "ru_sec": 2.76,
    "syl_ru": 4.3,
@@ -648,6 +797,11 @@
    "t": 135.519,
    "ru": "Надо поставить её на мороз. На всю ночь.",
    "text": "We have to put it out in the cold. All night.",
+   "takes": [
+    3.18,
+    3.84
+   ],
+   "mos": 3.84,
    "heard": "We have to put it out in the cold, all night.",
    "clear": 100.0,
    "extra": 0,
@@ -667,6 +821,11 @@
    "t": 138.175,
    "ru": "Ночью мороз сильнее всего.",
    "text": "Night is the coldest time.",
+   "takes": [
+    3.97,
+    4.04
+   ],
+   "mos": 4.04,
    "heard": "Night is the coldest time.",
    "clear": 100.0,
    "extra": 0,
@@ -686,6 +845,11 @@
    "t": 140.302,
    "ru": "Давайте я! Я осторожно!",
    "text": "Let me! I'll be careful!",
+   "takes": [
+    4.23,
+    4.15
+   ],
+   "mos": 4.23,
    "heard": "Let me, I'll be careful.",
    "clear": 100.0,
    "extra": 0,
@@ -693,11 +857,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.44,
+   "sec": 1.41,
    "window": 8.47,
    "ru_sec": 2.82,
    "syl_ru": 3.2,
-   "syl": 4.9
+   "syl": 5.0
   },
   {
    "i": 52,
@@ -705,6 +869,11 @@
    "t": 148.85,
    "ru": "Только не разле́й.",
    "text": "Don't spill it.",
+   "takes": [
+    3.78,
+    4.12
+   ],
+   "mos": 4.12,
    "heard": "Don't spill it.",
    "clear": 100.0,
    "extra": 0,
@@ -712,7 +881,7 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.97,
+   "sec": 0.96,
    "window": 6.01,
    "ru_sec": 1.19,
    "syl_ru": 4.2,
@@ -724,18 +893,23 @@
    "t": 154.938,
    "ru": "Вот. Стой тут, миска. Жди мороз.",
    "text": "There. Stay here, bowl. Wait for the frost.",
-   "heard": "There, stay here, bowl. Wait for the frost.",
-   "clear": 100.0,
-   "extra": 0,
-   "shift": 1.9,
+   "takes": [
+    4.29,
+    4.32
+   ],
+   "mos": 4.32,
+   "heard": "There, stay here, Bull. Wait for the frost.",
+   "clear": 87.5,
+   "extra": 1,
+   "shift": 1.7,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.93,
+   "sec": 2.49,
    "window": 4.86,
    "ru_sec": 4.64,
    "syl_ru": 1.7,
-   "syl": 3.4
+   "syl": 4.0
   },
   {
    "i": 54,
@@ -743,6 +917,11 @@
    "t": 159.881,
    "ru": "Смотри́те, вот наш снеговик. Он будет за ней смотреть.",
    "text": "Look, there's our snowman. He'll keep an eye on it.",
+   "takes": [
+    4.43,
+    4.41
+   ],
+   "mos": 4.43,
    "heard": "Look, there's our snowman. He'll keep an eye on it.",
    "clear": 100.0,
    "extra": 0,
@@ -762,6 +941,11 @@
    "t": 163.574,
    "ru": "Я тоже буду сторожить. Всю ночь!",
    "text": "I'll guard it too. All night!",
+   "takes": [
+    4.1,
+    3.91
+   ],
+   "mos": 4.1,
    "heard": "I'll guard it too, all night.",
    "clear": 100.0,
    "extra": 0,
@@ -769,7 +953,7 @@
    "speed": 0.8,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.53,
+   "sec": 2.54,
    "window": 4.34,
    "ru_sec": 3.52,
    "syl_ru": 2.8,
@@ -781,7 +965,12 @@
    "t": 167.994,
    "ru": "Рон, на у́лице мороз. У тебя нос замёрзнет.",
    "text": "Ron, it's frosty outside. Your nose will freeze.",
-   "heard": "Rollin' it's frosty outside, your nose will freeze.",
+   "takes": [
+    4.45,
+    4.45
+   ],
+   "mos": 4.45,
+   "heard": "Run, it's frosty outside. Your nose will freeze.",
    "clear": 88.9,
    "extra": 1,
    "shift": 0.0,
@@ -800,18 +989,23 @@
    "t": 171.957,
    "ru": "Мой нос храбрый.",
    "text": "My nose is brave.",
+   "takes": [
+    4.31,
+    4.32
+   ],
+   "mos": 4.32,
    "heard": "My nose is brave.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 1.0,
-   "tempo": 1.03,
-   "over": 0.02,
-   "sec": 1.61,
+   "tempo": 1.02,
+   "over": 0.01,
+   "sec": 1.6,
    "window": 1.59,
    "ru_sec": 1.32,
    "syl_ru": 3.0,
-   "syl": 3.7
+   "syl": 3.8
   },
   {
    "i": 59,
@@ -819,18 +1013,23 @@
    "t": 174.89,
    "ru": "Будь здоров!",
    "text": "Bless you!",
+   "takes": [
+    3.56,
+    4.06
+   ],
+   "mos": 4.06,
    "heard": "Bless you.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 3.1,
-   "speed": 0.9,
+   "shift": 3.4,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.73,
+   "sec": 0.85,
    "window": 1.14,
    "ru_sec": 0.92,
    "syl_ru": 3.3,
-   "syl": 2.8
+   "syl": 2.4
   },
   {
    "i": 60,
@@ -838,6 +1037,11 @@
    "t": 176.105,
    "ru": "Ладно. Носу холодно. Идёмте греться.",
    "text": "Okay. My nose is cold. Let's go warm up.",
+   "takes": [
+    4.45,
+    4.25
+   ],
+   "mos": 4.45,
    "heard": "Okay, my nose is cold. Let's go warm up.",
    "clear": 100.0,
    "extra": 0,
@@ -857,6 +1061,12 @@
    "t": 184.997,
    "ru": "Давайте поиграем. Я скажу слово, а вы — твёрдое оно или мягкое.",
    "text": "Let's play a game. I say a word, and you say: is it hard or soft?",
+   "takes": [
+    4.52,
+    4.51
+   ],
+   "qrise": 3.0,
+   "mos": 4.52,
    "heard": "Let's play a game. I say a word and you say, is it hard or soft?",
    "clear": 100.0,
    "extra": 0,
@@ -864,7 +1074,7 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 4.11,
+   "sec": 4.12,
    "window": 5.6,
    "ru_sec": 5.38,
    "syl_ru": 3.7,
@@ -876,18 +1086,23 @@
    "t": 190.677,
    "ru": "Давай!",
    "text": "Okay!",
+   "takes": [
+    2.77,
+    3.43
+   ],
+   "mos": 3.43,
    "heard": "Okay.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.8,
-   "speed": 1.0,
+   "shift": 2.4,
+   "speed": 1.285,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.65,
+   "sec": 0.53,
    "window": 0.9,
    "ru_sec": 0.68,
    "syl_ru": 3.0,
-   "syl": 3.1
+   "syl": 3.7
   },
   {
    "i": 66,
@@ -895,18 +1110,18 @@
    "t": 191.653,
    "ru": "Подушка!",
    "text": "Pillow!",
-   "heard": "Tyler",
+   "heard": "Telly.",
    "clear": 0.0,
    "extra": 1,
    "shift": 0.0,
-   "speed": 0.8,
+   "speed": 0.92,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.78,
+   "sec": 1.11,
    "window": 3.14,
    "ru_sec": 0.92,
    "syl_ru": 3.3,
-   "syl": 2.6
+   "syl": 1.8
   },
   {
    "i": 67,
@@ -914,6 +1129,11 @@
    "t": 194.868,
    "ru": "Мя́гкая!",
    "text": "Soft!",
+   "takes": [
+    3.9,
+    3.94
+   ],
+   "mos": 3.94,
    "heard": "Soft.",
    "clear": 100.0,
    "extra": 0,
@@ -933,6 +1153,11 @@
    "t": 196,
    "ru": "Камень!",
    "text": "Stone!",
+   "takes": [
+    4.26,
+    4.24
+   ],
+   "mos": 4.26,
    "heard": "Stone",
    "clear": 100.0,
    "extra": 0,
@@ -940,11 +1165,11 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.65,
+   "sec": 0.63,
    "window": 2.82,
    "ru_sec": 0.6,
    "syl_ru": 3.3,
-   "syl": 3.1
+   "syl": 3.2
   },
   {
    "i": 69,
@@ -952,18 +1177,23 @@
    "t": 198.901,
    "ru": "Твёрдый!",
    "text": "Hard!",
+   "takes": [
+    3.76,
+    2.73
+   ],
+   "mos": 3.76,
    "heard": "Hard.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.6,
-   "speed": 0.828,
+   "shift": 0.0,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.8,
+   "sec": 0.72,
    "window": 1.0,
    "ru_sec": 0.78,
    "syl_ru": 2.6,
-   "syl": 1.3
+   "syl": 1.4
   },
   {
    "i": 70,
@@ -971,18 +1201,19 @@
    "t": 199.98,
    "ru": "Вода в миске!",
    "text": "Water in the bowl!",
-   "heard": "Water in the Bould.",
-   "clear": 75.0,
-   "extra": 1,
+   "mos": 4.13,
+   "heard": "Water in the bowl.",
+   "clear": 100.0,
+   "extra": 0,
    "shift": 0.0,
-   "speed": 0.92,
+   "speed": 1.094,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.07,
+   "sec": 0.95,
    "window": 3.17,
    "ru_sec": 0.95,
    "syl_ru": 4.2,
-   "syl": 4.7
+   "syl": 5.2
   },
   {
    "i": 71,
@@ -990,18 +1221,23 @@
    "t": 203.232,
    "ru": "Она плюхает!",
    "text": "It splashes!",
+   "takes": [
+    4.24,
+    3.88
+   ],
+   "mos": 4.24,
    "heard": "It splashes.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 1.0,
-   "tempo": 1.0,
-   "over": 0.0,
-   "sec": 0.95,
+   "tempo": 1.06,
+   "over": 0.02,
+   "sec": 1.34,
    "window": 1.33,
    "ru_sec": 1.11,
    "syl_ru": 3.6,
-   "syl": 3.2
+   "syl": 2.2
   },
   {
    "i": 76,
@@ -1009,18 +1245,23 @@
    "t": 206.629,
    "ru": "Снежок!",
    "text": "Snowball!",
+   "takes": [
+    4.05,
+    3.88
+   ],
+   "mos": 4.05,
    "heard": "Snowball.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.92,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.72,
+   "sec": 0.73,
    "window": 2.98,
    "ru_sec": 0.76,
    "syl_ru": 2.6,
-   "syl": 2.8
+   "syl": 2.7
   },
   {
    "i": 77,
@@ -1028,14 +1269,19 @@
    "t": 209.689,
    "ru": "Холодный!",
    "text": "Cold!",
+   "takes": [
+    1.4,
+    1.92
+   ],
+   "mos": 1.92,
    "heard": "Cold!",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.8,
+   "shift": 2.4,
    "speed": 0.8,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.75,
+   "sec": 0.76,
    "window": 0.89,
    "ru_sec": 0.68,
    "syl_ru": 4.4,
@@ -1047,18 +1293,23 @@
    "t": 211.573,
    "ru": "Это не ответ!",
    "text": "That's no answer!",
+   "takes": [
+    3.56,
+    3.53
+   ],
+   "mos": 3.56,
    "heard": "That's no answer.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.7,
-   "speed": 1.273,
+   "shift": 3.4,
+   "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.87,
+   "sec": 1.05,
    "window": 1.21,
    "ru_sec": 0.99,
    "syl_ru": 5.0,
-   "syl": 4.6
+   "syl": 3.8
   },
   {
    "i": 80,
@@ -1066,18 +1317,23 @@
    "t": 212.865,
    "ru": "Лёд!",
    "text": "Ice!",
+   "takes": [
+    3.87,
+    4.0
+   ],
+   "mos": 4.0,
    "heard": "Ice.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.0,
+   "speed": 1.179,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.57,
+   "sec": 0.49,
    "window": 2.7,
    "ru_sec": 0.48,
    "syl_ru": 2.1,
-   "syl": 3.5
+   "syl": 4.1
   },
   {
    "i": 81,
@@ -1085,14 +1341,19 @@
    "t": 215.643,
    "ru": "Твёрдый! И скользкий!",
    "text": "Hard! And slippery!",
+   "takes": [
+    4.28,
+    3.98
+   ],
+   "mos": 4.28,
    "heard": "Hard and slippery.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
+   "shift": -1.7,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.26,
+   "sec": 1.23,
    "window": 1.95,
    "ru_sec": 1.74,
    "syl_ru": 2.9,
@@ -1104,14 +1365,19 @@
    "t": 217.678,
    "ru": "А вода в миске утром, может быть, будет твёрдая.",
    "text": "And by morning, the water in the bowl may be hard.",
+   "takes": [
+    3.39,
+    2.91
+   ],
+   "mos": 3.39,
    "heard": "And by morning, the water in the bowl may be hard.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 0.0,
-   "speed": 0.976,
-   "tempo": 1.03,
+   "shift": 1.7,
+   "speed": 0.978,
+   "tempo": 1.02,
    "over": 0.0,
-   "sec": 3.03,
+   "sec": 3.02,
    "window": 3.03,
    "ru_sec": 2.66,
    "syl_ru": 5.3,
@@ -1123,14 +1389,19 @@
    "t": 223.091,
    "ru": "А я пойду спать. Утром узнаем.",
    "text": "And I'm off to bed. We'll find out in the morning.",
-   "heard": "And I'm off to bed. We'll find out in the morning.",
+   "takes": [
+    4.01,
+    4.15
+   ],
+   "mos": 4.15,
+   "heard": "and I'm off to bed. We'll find out in the morning.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.21,
+   "sec": 3.2,
    "window": 5.41,
    "ru_sec": 3.79,
    "syl_ru": 2.4,
@@ -1142,7 +1413,12 @@
    "t": 228.583,
    "ru": "Смотри́те, вот миска!",
    "text": "Look, here's the bowl!",
-   "heard": "Look here's the bowl.",
+   "takes": [
+    4.38,
+    4.38
+   ],
+   "mos": 4.38,
+   "heard": "Look, here's the bowl.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
@@ -1161,10 +1437,15 @@
    "t": 230.47,
    "ru": "Вода замёрзла! Теперь там лёд!",
    "text": "The water froze! It's ice now!",
+   "takes": [
+    3.76,
+    3.83
+   ],
+   "mos": 3.83,
    "heard": "The water froze. It's ice now.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.7,
+   "shift": 2.9,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1180,18 +1461,23 @@
    "t": 234.003,
    "ru": "Можно потрогать? Ой, какой холодный!",
    "text": "Can I touch it? Ooh, so cold!",
-   "heard": "Can I touch it? It was so cold.",
+   "takes": [
+    3.84,
+    3.87
+   ],
+   "mos": 3.87,
+   "heard": "Can I touch it? You so cold.",
    "clear": 85.7,
-   "extra": 2,
-   "shift": 0.0,
-   "speed": 0.9,
+   "extra": 1,
+   "shift": 1.8,
+   "speed": 0.828,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.0,
+   "sec": 2.24,
    "window": 3.65,
    "ru_sec": 2.83,
    "syl_ru": 3.9,
-   "syl": 3.5
+   "syl": 3.1
   },
   {
    "i": 88,
@@ -1199,6 +1485,11 @@
    "t": 237.734,
    "ru": "Тяжёлая. И холодная!",
    "text": "Heavy. And cold!",
+   "takes": [
+    4.27,
+    4.13
+   ],
+   "mos": 4.27,
    "heard": "Heavy and cold.",
    "clear": 100.0,
    "extra": 0,
@@ -1206,11 +1497,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.76,
+   "sec": 1.26,
    "window": 3.02,
    "ru_sec": 2.8,
    "syl_ru": 2.5,
-   "syl": 2.3
+   "syl": 3.2
   },
   {
    "i": 89,
@@ -1218,18 +1509,23 @@
    "t": 240.839,
    "ru": "Переверни её, Рон!",
    "text": "Turn it over, Ron!",
-   "heard": "Turn it over Ron.",
+   "takes": [
+    4.07,
+    4.27
+   ],
+   "mos": 4.27,
+   "heard": "Turn it over, Ron.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.0,
-   "speed": 0.9,
+   "shift": 0.0,
+   "speed": 0.846,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.78,
+   "sec": 1.67,
    "window": 1.95,
    "ru_sec": 1.73,
    "syl_ru": 3.5,
-   "syl": 2.8
+   "syl": 3.0
   },
   {
    "i": 90,
@@ -1237,10 +1533,15 @@
    "t": 242.866,
    "ru": "Не выливается! Ни капельки!",
    "text": "Nothing comes out! Not a drop!",
+   "takes": [
+    4.39,
+    4.38
+   ],
+   "mos": 4.39,
    "heard": "Nothing comes out, not a drop.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.8,
+   "shift": 2.3,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1256,18 +1557,23 @@
    "t": 246.345,
    "ru": "Конечно. Он твёрдый. Как камень.",
    "text": "Of course. It's hard. Like a stone.",
+   "takes": [
+    3.25,
+    3.91
+   ],
+   "mos": 3.91,
    "heard": "Of course, it's hard like a stone.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.2,
-   "speed": 0.88,
+   "shift": 0.0,
+   "speed": 0.94,
    "tempo": 1.0,
-   "over": 0.0,
-   "sec": 2.09,
+   "over": 0.01,
+   "sec": 2.42,
    "window": 2.41,
    "ru_sec": 2.19,
    "syl_ru": 4.1,
-   "syl": 4.8
+   "syl": 4.1
   },
   {
    "i": 92,
@@ -1275,6 +1581,11 @@
    "t": 248.836,
    "ru": "Её не попьёшь! Только грызть!",
    "text": "You can't drink it! Just crunch it!",
+   "takes": [
+    4.21,
+    4.3
+   ],
+   "mos": 4.3,
    "heard": "You can't drink it, just crunch it.",
    "clear": 100.0,
    "extra": 0,
@@ -1282,11 +1593,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.33,
+   "sec": 1.92,
    "window": 3.39,
    "ru_sec": 3.17,
    "syl_ru": 2.2,
-   "syl": 3.0
+   "syl": 3.6
   },
   {
    "i": 97,
@@ -1294,14 +1605,19 @@
    "t": 254.311,
    "ru": "Мы сделали лёд сами! С морозом.",
    "text": "We made ice ourselves! With the frost.",
+   "takes": [
+    4.45,
+    4.46
+   ],
+   "mos": 4.46,
    "heard": "We made ice ourselves with the frost.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.086,
+   "speed": 1.088,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.05,
+   "sec": 2.03,
    "window": 2.15,
    "ru_sec": 1.93,
    "syl_ru": 5.2,
@@ -1313,6 +1629,11 @@
    "t": 256.539,
    "ru": "А что будет, если лёд принести домой?",
    "text": "What if we bring the ice inside?",
+   "takes": [
+    4.43,
+    4.32
+   ],
+   "mos": 4.43,
    "heard": "What if we bring the ice inside?",
    "clear": 100.0,
    "extra": 0,
@@ -1320,11 +1641,11 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.71,
+   "sec": 1.72,
    "window": 2.43,
    "ru_sec": 2.21,
    "syl_ru": 5.4,
-   "syl": 5.9
+   "syl": 5.8
   },
   {
    "i": 99,
@@ -1332,14 +1653,19 @@
    "t": 259.047,
    "ru": "В тепло? Пойдёмте проверим!",
    "text": "Where it's warm? Let's go see!",
+   "takes": [
+    4.36,
+    3.69
+   ],
+   "mos": 4.36,
    "heard": "Where it's warm, let's go see.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.0,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.67,
+   "sec": 1.65,
    "window": 4.39,
    "ru_sec": 2.27,
    "syl_ru": 3.5,
@@ -1351,18 +1677,23 @@
    "t": 263.514,
    "ru": "Вот. Тут тепло, лёд.",
    "text": "There, ice. It's warm here.",
+   "takes": [
+    3.85,
+    3.63
+   ],
+   "mos": 3.85,
    "heard": "There ice, it's warm here.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.3,
-   "speed": 0.9,
+   "shift": 0.0,
+   "speed": 0.828,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.62,
+   "sec": 2.24,
    "window": 5.41,
    "ru_sec": 2.79,
    "syl_ru": 1.8,
-   "syl": 4.9
+   "syl": 3.6
   },
   {
    "i": 101,
@@ -1370,10 +1701,15 @@
    "t": 269.005,
    "ru": "А я пока погреюсь чаем.",
    "text": "And I'll warm up with some tea.",
+   "takes": [
+    4.14,
+    3.93
+   ],
+   "mos": 4.14,
    "heard": "and I'll warm up with some tea.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -2.4,
+   "shift": -2.3,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
@@ -1389,10 +1725,15 @@
    "t": 271.068,
    "ru": "Смотри́те, по краю уже́ мокро!",
    "text": "Look, the edge is already wet!",
+   "takes": [
+    3.69,
+    3.5
+   ],
+   "mos": 3.69,
    "heard": "Look, the edge is already wet.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.9,
+   "shift": 2.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1408,14 +1749,19 @@
    "t": 273.73,
    "ru": "Он тает. Скоро снова будет вода.",
    "text": "It's melting. Soon it'll be water again.",
-   "heard": "It's melting! Soon it'll be water again.",
+   "takes": [
+    3.24,
+    2.6
+   ],
+   "mos": 3.24,
+   "heard": "It's melting, soon it'll be water again.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.9,
-   "speed": 0.964,
+   "shift": 0.0,
+   "speed": 0.97,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.4,
+   "sec": 2.39,
    "window": 2.84,
    "ru_sec": 2.02,
    "syl_ru": 5.0,
@@ -1427,10 +1773,15 @@
    "t": 276.65,
    "ru": "Я подожду. Глаза́ открыты.",
    "text": "I'll wait. Eyes open.",
+   "takes": [
+    3.97,
+    3.43
+   ],
+   "mos": 3.97,
    "heard": "I'll wait, eyes open.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.5,
+   "shift": 3.1,
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
@@ -1446,18 +1797,23 @@
    "t": 280.891,
    "ru": "Опять.",
    "text": "Again.",
+   "takes": [
+    3.29,
+    2.12
+   ],
+   "mos": 3.29,
    "heard": "Again.",
    "clear": 100.0,
    "extra": 0,
    "shift": 2.2,
-   "speed": 1.0,
+   "speed": 1.45,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 0.77,
+   "sec": 0.75,
    "window": 2.92,
    "ru_sec": 0.7,
    "syl_ru": 2.8,
-   "syl": 2.6
+   "syl": 2.7
   },
   {
    "i": 106,
@@ -1465,18 +1821,23 @@
    "t": 283.896,
    "ru": "Вот миска. Что в ней?",
    "text": "Here's the bowl. What's in it?",
+   "takes": [
+    3.28,
+    3.4
+   ],
+   "mos": 3.4,
    "heard": "Here's the bowl. What's in it?",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 0.966,
-   "tempo": 1.0,
-   "over": 0.0,
-   "sec": 1.57,
+   "speed": 0.88,
+   "tempo": 1.1,
+   "over": 0.02,
+   "sec": 1.61,
    "window": 1.6,
    "ru_sec": 1.38,
    "syl_ru": 3.6,
-   "syl": 4.5
+   "syl": 4.3
   },
   {
    "i": 107,
@@ -1484,6 +1845,11 @@
    "t": 285.574,
    "ru": "Снова вода! Можно пить!",
    "text": "Water again! I can drink it!",
+   "takes": [
+    4.4,
+    4.4
+   ],
+   "mos": 4.4,
    "heard": "Water again, I can drink it.",
    "clear": 100.0,
    "extra": 0,
@@ -1503,6 +1869,11 @@
    "t": 288.678,
    "ru": "На морозе вода стала твёрдой. А в тепле снова стала водой.",
    "text": "In the frost, the water got hard. And in the warmth, it became water again.",
+   "takes": [
+    4.27,
+    4.43
+   ],
+   "mos": 4.43,
    "heard": "In the frost, the water got hard, and in the warmth, it became water again.",
    "clear": 100.0,
    "extra": 0,
@@ -1510,7 +1881,7 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 4.19,
+   "sec": 4.2,
    "window": 4.38,
    "ru_sec": 4.16,
    "syl_ru": 4.6,
@@ -1522,14 +1893,19 @@
    "t": 293.135,
    "ru": "Вода — как Рон. То бегает, то стои́т.",
    "text": "Water is like Ron. Sometimes it runs, sometimes it stops.",
-   "heard": "Water is like Ron. Sometimes it runs, sometimes it stops.",
-   "clear": 100.0,
-   "extra": 0,
+   "takes": [
+    4.3,
+    4.05
+   ],
+   "mos": 4.3,
+   "heard": "Water is like run. Sometimes it runs, sometimes it stops.",
+   "clear": 90.0,
+   "extra": 1,
    "shift": 0.0,
-   "speed": 1.222,
+   "speed": 1.224,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 3.05,
+   "sec": 3.04,
    "window": 3.11,
    "ru_sec": 2.89,
    "syl_ru": 3.1,
@@ -1541,6 +1917,12 @@
    "t": 298.31,
    "ru": "А снеговик? Он всё ещё на морозе?",
    "text": "And the snowman? Is he still out in the cold?",
+   "takes": [
+    4.41,
+    4.48
+   ],
+   "qrise": 3.0,
+   "mos": 4.48,
    "heard": "And the snowman is he still out in the cold.",
    "clear": 100.0,
    "extra": 0,
@@ -1548,7 +1930,7 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.47,
+   "sec": 2.48,
    "window": 3.01,
    "ru_sec": 2.79,
    "syl_ru": 4.3,
@@ -1560,6 +1942,11 @@
    "t": 301.398,
    "ru": "Да. Пока на у́лице холодно, он не раста́ет.",
    "text": "Yes. While it's cold outside, he won't melt.",
+   "takes": [
+    4.39,
+    4.41
+   ],
+   "mos": 4.41,
    "heard": "Yes, while it's cold outside, he won't melt.",
    "clear": 100.0,
    "extra": 0,
@@ -1579,6 +1966,11 @@
    "t": 309.12,
    "ru": "Мороз делает лёд. А тепло́ делает воду.",
    "text": "Frost makes ice. And warmth makes water.",
+   "takes": [
+    4.42,
+    4.43
+   ],
+   "mos": 4.43,
    "heard": "Frost makes ice and warmth makes water.",
    "clear": 100.0,
    "extra": 0,
@@ -1586,7 +1978,7 @@
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 2.62,
+   "sec": 2.63,
    "window": 3.3,
    "ru_sec": 3.08,
    "syl_ru": 3.9,
@@ -1598,7 +1990,12 @@
    "t": 312.5,
    "ru": "А медве́ди делают сон. Спокойной ночи.",
    "text": "And bears make naps. Good night.",
-   "heard": "and Bears make naps. Good night.",
+   "takes": [
+    4.48,
+    4.44
+   ],
+   "mos": 4.48,
+   "heard": "and bears make naps. Good night.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
@@ -1617,10 +2014,15 @@
    "t": 320.965,
    "ru": "А кто ночью рисует на окнах?",
    "text": "Who draws on the windows at night?",
+   "takes": [
+    3.73,
+    4.26
+   ],
+   "mos": 4.26,
    "heard": "who draws on the windows at night.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.2,
+   "shift": 2.6,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1636,18 +2038,24 @@
    "t": 323.495,
    "ru": "Рисует? На окнах?",
    "text": "Draws? On the windows?",
-   "heard": "Draws on the windows.",
+   "takes": [
+    3.66,
+    4.32
+   ],
+   "qrise": 3.0,
+   "mos": 4.32,
+   "heard": "draws on the windows.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
-   "speed": 1.0,
+   "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.54,
+   "sec": 1.44,
    "window": 1.91,
    "ru_sec": 1.69,
    "syl_ru": 3.0,
-   "syl": 3.2
+   "syl": 3.5
   },
   {
    "i": 123,
@@ -1655,10 +2063,15 @@
    "t": 325.483,
    "ru": "Я видел. Белые веточки и звёздочки.",
    "text": "I saw it. White twigs and little stars.",
+   "takes": [
+    4.11,
+    4.27
+   ],
+   "mos": 4.27,
    "heard": "I saw it, white twigs and little stars.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 2.8,
+   "shift": 3.2,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
@@ -1674,18 +2087,23 @@
    "t": 329.901,
    "ru": "Может, это мороз? Он приходит, когда темно.",
    "text": "Maybe it's the frost? It comes when it's dark.",
+   "takes": [
+    4.19,
+    3.75
+   ],
+   "mos": 4.19,
    "heard": "Maybe it's the frost. It comes when it's dark.",
    "clear": 100.0,
    "extra": 0,
    "shift": 0.0,
    "speed": 0.88,
-   "tempo": 1.12,
-   "over": 0.01,
-   "sec": 2.88,
+   "tempo": 1.0,
+   "over": 0.0,
+   "sec": 2.76,
    "window": 2.87,
    "ru_sec": 2.65,
    "syl_ru": 5.3,
-   "syl": 3.8
+   "syl": 4.0
   },
   {
    "i": 125,
@@ -1693,18 +2111,23 @@
    "t": 332.847,
    "ru": "Или ёлки приходи́ли в гости.",
    "text": "Or the fir trees came to visit.",
+   "takes": [
+    4.4,
+    4.33
+   ],
+   "mos": 4.4,
    "heard": "or the fir trees came to visit.",
    "clear": 100.0,
    "extra": 0,
-   "shift": -1.5,
+   "shift": 0.0,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.81,
+   "sec": 1.82,
    "window": 2.56,
    "ru_sec": 2.34,
    "syl_ru": 4.3,
-   "syl": 5.0
+   "syl": 4.9
   },
   {
    "i": 127,
@@ -1719,7 +2142,7 @@
    "speed": 1.0,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 1.58,
+   "sec": 1.57,
    "window": 1.92,
    "ru_sec": 1.7,
    "syl_ru": 4.1,
@@ -1731,6 +2154,11 @@
    "t": 338.404,
    "ru": "Вот это загадка! Завтра утром посмотрим на окно.",
    "text": "What a mystery! Tomorrow morning, we'll check the window.",
+   "takes": [
+    4.42,
+    4.42
+   ],
+   "mos": 4.42,
    "heard": "What a mystery. Tomorrow morning we'll check the window.",
    "clear": 100.0,
    "extra": 0,
@@ -1750,18 +2178,36 @@
    "t": 343.371,
    "ru": "Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!",
    "text": "Did you like the cartoon? Ask mom or dad to like it and subscribe to the channel. See you in the next episode!",
+   "takes": [
+    4.39,
+    3.28
+   ],
+   "mos": 4.39,
    "heard": "Did you like the cartoon? Ask mom or dad to like it and subscribe to the channel. See you in the next episode.",
    "clear": 100.0,
    "extra": 0,
-   "shift": 1.8,
+   "shift": 1.7,
    "speed": 0.9,
    "tempo": 1.0,
    "over": 0.0,
-   "sec": 6.78,
+   "sec": 6.77,
    "window": 11.18,
    "ru_sec": 9.66,
    "syl_ru": 3.5,
    "syl": 4.7
   }
+ ],
+ "mos_avg": 4.14,
+ "takes": 2,
+ "qrise": 3.0,
+ "q_rise": [
+  6,
+  25,
+  33,
+  36,
+  45,
+  64,
+  114,
+  122
  ]
 }
