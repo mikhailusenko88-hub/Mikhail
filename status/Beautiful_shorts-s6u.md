@@ -1,15 +1,16 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-26 21:39 UTC
+Проверено: 2026-11-27 08:04 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
-- Шапка: 237 подписчиков · 151 видео
+- Шапка: 238 подписчиков · 152 видео
 
 ## Последние открытые ролики (RSS, точные просмотры) — 15 шт.
-- 2026-11-25 17:56 · 2881 просм. · Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr · RxTYbB3I4JY
-- 2026-11-24 21:03 · 1838 просм. · 3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr · 1tZcFYIjxJk
-- 2026-11-23 18:43 · 2879 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
-- 2026-11-22 17:31 · 1364 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
-- 2026-11-21 20:22 · 1208 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
+- 2026-11-26 22:33 · 1781 просм. · Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr · iEd3d9m7PlQ
+- 2026-11-25 17:56 · 3002 просм. · Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr · RxTYbB3I4JY
+- 2026-11-24 21:03 · 1946 просм. · 3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr · 1tZcFYIjxJk
+- 2026-11-23 18:43 · 2885 просм. · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
+- 2026-11-22 17:31 · 1365 просм. · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
+- 2026-11-21 20:22 · 1210 просм. · 1,932 Balls vs a Smaller Box — Will They Fit? 😳 Satisfying 3D Simulation #shorts #asmr · NQaXjwgZuUk
 - 2026-11-20 18:12 · 2869 просм. · 3,294 Balls — How Many Fit in the Glass Cat? 🐱 Satisfying 3D Simulation #shorts #asmr · d12Mk5yTGGo
 - 2026-11-19 14:11 · 5858 просм. · 1,932 Balls — How Many Land in the Box? 😳 Satisfying 3D Simulation #shorts #asmr · EjiTsX0dWHQ
 - 2026-11-18 19:19 · 2405 просм. · 1,932 Balls Pour Into a Glass Box! 🔊 Satisfying 3D Simulation #shorts #asmr · 7mG_xtPN52w
@@ -19,10 +20,10 @@
 - 2026-11-15 17:03 · 3289 просм. · Can 1 ball fill the CAT? 🐱 Wait for 100%… 😳 #shorts · a9xDYsPrIa4
 - 2026-11-15 10:28 · 1628 просм. · What are 1,189 balls drawing? 🤔 Guess before the end! #shorts · p46Y16_FUkM
 - 2026-11-12 15:26 · 259 просм. · Can it break out of 6 rings? 🚀 Space edition #shorts · Dw-O_K8qMds
-- 2026-11-12 11:29 · 1135 просм. · Sunrise watercolor 🌅 wait for the tape peel! #shorts · YGXQpqT2ur0
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 2,9 тыс. просмотров · Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr · RxTYbB3I4JY
+- 1,8 тыс. просмотров · Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr · iEd3d9m7PlQ
+- 3 тыс. просмотров · Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr · RxTYbB3I4JY
 - 1,9 тыс. просмотров · 3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr · 1tZcFYIjxJk
 - 2,8 тыс. просмотров · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s
 - 1,3 тыс. просмотров · 1,932 GOLD Balls — How Many Land in the Box? ✨ Satisfying 3D Simulation #shorts #asmr · QGUnVac9rbs
@@ -51,4 +52,3 @@
 - 1,5 тыс. просмотров · Can it break out of 5 RINGS? 😱 #shorts · 7YIpYrIIfCA
 - 1,9 тыс. просмотров · Every bounce = +1 ball… how many to break 8 rings? 😱 #shorts · dxhgeNxbpPE
 - 921 просмотр · Which TREND wins? 6-7 vs Rizz vs Aura 😱 #shorts · TDj4LWSysdk
-- 1,2 тыс. просмотров · Can it break out of 7 rings? 😱 #shorts · PiIV46k2M8A

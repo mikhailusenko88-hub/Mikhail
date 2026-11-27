@@ -2,85 +2,97 @@
  "handle": "MarbleRunREAL",
  "page_status": 200,
  "channel_id": "UCWTc6oyuyeCjAlrER7TmKXA",
- "title": "Marble Run REAL",
- "description": "This is the Real Marble Run channel, dedicated to sharing the wonders of Marble Run with all our heart and soul! May the world be filled with happiness! ⭐︎",
- "header": [
-  "139 тыс. подписчиков",
-  "848 видео"
- ],
+ "title": null,
+ "description": "",
+ "header": [],
  "alerts": [],
- "images": {
-  "avatar": "https://yt3.googleusercontent.com/quxiPt8oh55LnVqJTIziBzaEvqD_oagfPCTy90K0xrlweYatF2pv-OVZKNxJDuC6axj570HKrQ=s900-c-k-c0x00ffffff-no-rj",
-  "banner": "https://yt3.googleusercontent.com/wVEfyrNL84f1pnxWWpA3jaW_ZTP5Kcx68zbK77zSzikOCSzos9OxxUi8xowR3h7nxmHK_hDgvA=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
- },
- "checked": "2026-11-26 06:54 UTC",
+ "images": {},
+ "checked": "2026-11-27 08:04 UTC",
  "shorts_status": 200,
  "shorts": [
   {
+   "id": "xOhMnxOPJY4",
+   "title": "Гонка шариков ⭐︎ Бесконечные, прыгающие шарики 2",
+   "views": "11 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Бесконечные, прыгающие шарики 2, 11 тысяч просмотров\""
+  },
+  {
+   "id": "-hhKfII5auk",
+   "title": "Marble Run ⭐︎ Genius Mii-tan’s Rainbow Race",
+   "views": "5 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Mii-tan’s Rainbow Race, 5 тысяч просмотров\""
+  },
+  {
+   "id": "HPzUZSEoXJQ",
+   "title": "Гонка шариков ⭐︎ Соревнование сверкающих шариков на специальной трассе",
+   "views": "32 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Соревнование сверкающих шариков на специальной трассе, 32 тысячи просмотров\""
+  },
+  {
    "id": "soXTUxf6HFo",
    "title": "Мраморная трасса ⭐︎ Бесконечные лопающиеся шарики 1",
-   "views": "948 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Мраморная трасса ⭐︎ Бесконечные лопающиеся шарики 1, 948 просмотров\""
+   "views": "33 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Мраморная трасса ⭐︎ Бесконечные лопающиеся шарики 1, 33 тысячи просмотров\""
   },
   {
    "id": "H9066k3F1C8",
    "title": "Гонка шариков ⭐︎ Соревнование сверкающих шариков на специальной трассе",
-   "views": "94 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Соревнование сверкающих шариков на специальной трассе, 94 тысячи просмотров\""
+   "views": "150 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Соревнование сверкающих шариков на специальной трассе, 150 тысяч просмотров\""
   },
   {
    "id": "BqXmowIj1Yw",
    "title": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course",
-   "views": "5,7 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A race where gleaming marbles compete on a special course, 5,7 тысячи просмотров\""
+   "views": "7,5 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A race where gleaming marbles compete on a special course, 7,5 тысячи просмотров\""
   },
   {
    "id": "tlcnn9NW__c",
    "title": "Гонка шариков ⭐︎ Бесконечные прыгающие шарики",
-   "views": "37 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Бесконечные прыгающие шарики, 37 тысяч просмотров\""
+   "views": "49 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Бесконечные прыгающие шарики, 49 тысяч просмотров\""
   },
   {
    "id": "4uAopxV0gt0",
    "title": "Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Жемчуг дракона 13",
-   "views": "33 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Жемчуг дракона 13, 33 тысячи просмотров\""
+   "views": "35 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Жемчуг дракона 13, 35 тысяч просмотров\""
   },
   {
    "id": "eVC4EIxN8aI",
    "title": "Гонка шариков ⭐︎ Marble Run, где бесконечно вылетают Жемчуг дракона 12",
-   "views": "107 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Marble Run, где бесконечно вылетают Жемчуг дракона 12, 107 тысяч просмотров\""
+   "views": "111 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Marble Run, где бесконечно вылетают Жемчуг дракона 12, 111 тысяч просмотров\""
   },
   {
    "id": "x8EyRnL8CE0",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 11",
-   "views": "46 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 11, 46 тысяч просмотров\""
+   "views": "47 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 11, 47 тысяч просмотров\""
   },
   {
    "id": "ScZ3w8DLlQ0",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 10",
-   "views": "8,1 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 10, 8,1 тысячи просмотров\""
+   "views": "9,4 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 10, 9,4 тысячи просмотров\""
   },
   {
    "id": "pHo2aewrSjw",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 13",
-   "views": "50 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 13, 50 тысяч просмотров\""
+   "views": "54 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 13, 54 тысячи просмотров\""
   },
   {
    "id": "6YtZCUODT_4",
    "title": "Marble Run ⭐︎ Гонка шариков, в которой бесконечно вылетают Жемчуг дракона 12",
-   "views": "61 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Гонка шариков, в которой бесконечно вылетают Жемчуг дракона 12, 61 тысяча просмотров\""
+   "views": "63 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Гонка шариков, в которой бесконечно вылетают Жемчуг дракона 12, 63 тысячи просмотров\""
   },
   {
    "id": "iGnx1C7efpg",
    "title": "Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают жемчужины дракона 11",
-   "views": "87 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают жемчужины дракона 11, 87 тысяч просмотров\""
+   "views": "88 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают жемчужины дракона 11, 88 тысяч просмотров\""
   },
   {
    "id": "fNdxedNTFRE",
@@ -91,50 +103,50 @@
   {
    "id": "EJXAXHhfwGc",
    "title": "Гонка шариков ⭐︎ Гонка, в которой бесконечно появляются Dragon Ball 1",
-   "views": "62 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно появляются Dragon Ball 1, 62 тысячи просмотров\""
+   "views": "63 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно появляются Dragon Ball 1, 63 тысячи просмотров\""
   },
   {
    "id": "0e-4q4FwYaw",
    "title": "Marble Run ⭐︎ A race to collect dragon orbs and come out on top!",
-   "views": "9,3 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A race to collect dragon orbs and come out on top!, 9,3 тысячи просмотров\""
+   "views": "9,8 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ A race to collect dragon orbs and come out on top!, 9,8 тысячи просмотров\""
   },
   {
    "id": "U2b9hV0f2XI",
    "title": "Гонки шариков ⭐︎ Собери жемчуг дракона и стань первым! 1",
-   "views": "72 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонки шариков ⭐︎ Собери жемчуг дракона и стань первым! 1, 72 тысячи просмотров\""
+   "views": "76 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонки шариков ⭐︎ Собери жемчуг дракона и стань первым! 1, 76 тысяч просмотров\""
   },
   {
    "id": "znOvmb4q3mc",
    "title": "Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Dragon Ball",
-   "views": "401 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Dragon Ball, 401 тысяча просмотров\""
+   "views": "465 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Гонка, в которой бесконечно вылетают Dragon Ball, 465 тысяч просмотров\""
   },
   {
    "id": "eQJf5qXtnk8",
    "title": "Гонка шариков ⭐︎ Жемчуг дракона и колючий шар ②",
-   "views": "53 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Жемчуг дракона и колючий шар ②, 53 тысячи просмотров\""
+   "views": "57 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонка шариков ⭐︎ Жемчуг дракона и колючий шар ②, 57 тысяч просмотров\""
   },
   {
    "id": "2mcfXvZ7mWU",
    "title": "Гонки шариков ⭐︎ Жемчуг дракона & Шипастый шар ④",
-   "views": "71 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Гонки шариков ⭐︎ Жемчуг дракона & Шипастый шар ④, 71 тысяча просмотров\""
+   "views": "73 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Гонки шариков ⭐︎ Жемчуг дракона & Шипастый шар ④, 73 тысячи просмотров\""
   },
   {
    "id": "aU80GKARla8",
    "title": "Marble Run ⭐︎ Dragon Ball & Spiky Ball ①",
-   "views": "13 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Dragon Ball & Spiky Ball ①, 13 тысяч просмотров\""
+   "views": "14 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Dragon Ball & Spiky Ball ①, 14 тысяч просмотров\""
   },
   {
    "id": "rxUlMkyo0cU",
    "title": "Marble Run ⭐︎ Dragon Ball & Spiky Ball",
-   "views": "266 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Dragon Ball & Spiky Ball, 266 тысяч просмотров\""
+   "views": "298 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Dragon Ball & Spiky Ball, 298 тысяч просмотров\""
   },
   {
    "id": "32d_OEAFcTY",
@@ -175,8 +187,8 @@
   {
    "id": "uAs1dkxmdec",
    "title": "Marble Run ⭐︎ Genius Guppy Special Course ⭐︎7",
-   "views": "86 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Course ⭐︎7, 86 тысяч просмотров\""
+   "views": "87 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Course ⭐︎7, 87 тысяч просмотров\""
   },
   {
    "id": "0VMZF82S6eg",
@@ -187,8 +199,8 @@
   {
    "id": "jJIcQems_zw",
    "title": "Marble Run ⭐︎ Genius Guppy Special Course ⭐︎4",
-   "views": "75 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Course ⭐︎4, 75 тысяч просмотров\""
+   "views": "76 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Course ⭐︎4, 76 тысяч просмотров\""
   },
   {
    "id": "zb5PQ3RUIIk",
@@ -235,8 +247,8 @@
   {
    "id": "Q2QUPZdJkdk",
    "title": "Marble Run 🌈 Dragon Balls traveling from pipes into outer space⁉️ Mr. Guppy Special5",
-   "views": "206 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run 🌈 Dragon Balls traveling from pipes into outer space⁉️ Mr. Guppy Special5, 206 тысяч просмотров\""
+   "views": "207 тыс. просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run 🌈 Dragon Balls traveling from pipes into outer space⁉️ Mr. Guppy Special5, 207 тысяч просмотров\""
   },
   {
    "id": "_j9qslvwLs0",
@@ -283,134 +295,116 @@
   {
    "id": "fjmxzxPDLAg",
    "title": "Marble Run ⭐︎ Genius Guppy Special Performance 🎭9",
-   "views": "1,9 млн просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Performance 🎭9, 1,9 миллиона просмотров\""
-  },
-  {
-   "id": "F7z2ngzZ11g",
-   "title": "Marble Run ⭐︎ Genius Guppy Special Performance 🎭7",
-   "views": "64 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Performance 🎭7, 64 тысячи просмотров\""
-  },
-  {
-   "id": "D2ekdDIwVkY",
-   "title": "Marble Run ⭐︎ Genius Guppy Special Performance 🎭6",
-   "views": "140 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Performance 🎭6, 140 тысяч просмотров\""
-  },
-  {
-   "id": "zhXjgnENOzQ",
-   "title": "Marble Run ⭐︎ Genius Guppy Special Performance 🎭5",
-   "views": "64 тыс. просмотров",
-   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Performance 🎭5, 64 тысячи просмотров\""
+   "views": "2 млн просмотров",
+   "a11y": "Воспроизвести короткое видео \"Marble Run ⭐︎ Genius Guppy Special Performance 🎭9, 2 миллиона просмотров\""
   }
  ],
  "rss_status": 200,
  "rss": [
   {
+   "id": "xOhMnxOPJY4",
+   "published": "2026-11-27T06:00:31+00:00",
+   "title": "Marble Run ⭐︎ Endless, Popping Balls 2",
+   "views": 11979,
+   "desc": "Marble Run ⭐︎ Endless, Popping Balls"
+  },
+  {
+   "id": "-hhKfII5auk",
+   "published": "2026-11-26T14:00:40+00:00",
+   "title": "Marble Run ⭐︎ Genius Mii-tan’s Rainbow Race",
+   "views": 5079,
+   "desc": "Marble Run ⭐︎ Genius Mii-tan’s Rainbow Race"
+  },
+  {
+   "id": "HPzUZSEoXJQ",
+   "published": "2026-11-26T12:00:15+00:00",
+   "title": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course",
+   "views": 32923,
+   "desc": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course"
+  },
+  {
+   "id": "IOH7ignT5so",
+   "published": "2026-11-26T11:00:13+00:00",
+   "title": "Water Marble Run ⭐︎ One-Hour Compilation Packed with Special Videos",
+   "views": 1683,
+   "desc": "Water Marble Run ⭐︎ One-Hour Compilation Packed with Special Videos\n＃Marblerun \n#satisfying\n#marblerun\n#マーブルラン\n#satisfying\n#relaxing\n#marblerunbuild\n#marbleruncourse\n#oddlysatisfying\n#relaxingvideo"
+  },
+  {
    "id": "soXTUxf6HFo",
    "published": "2026-11-26T06:00:31+00:00",
    "title": "Marble Run ⭐︎ Endless, Popping Balls 1",
-   "views": 948,
+   "views": 33243,
    "desc": "Marble Run ⭐︎ Endless, Popping Balls"
   },
   {
    "id": "H9066k3F1C8",
    "published": "2026-11-25T14:00:24+00:00",
    "title": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course",
-   "views": 94398,
+   "views": 150035,
    "desc": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course"
   },
   {
    "id": "BqXmowIj1Yw",
    "published": "2026-11-25T12:00:21+00:00",
    "title": "Marble Run ⭐︎ A race where gleaming marbles compete on a special course",
-   "views": 5767,
+   "views": 7502,
    "desc": "Marble Run ⭐︎ An Exciting, Thrilling Marble Run Race"
   },
   {
    "id": "tlcnn9NW__c",
    "published": "2026-11-25T06:00:11+00:00",
    "title": "Marble Run ⭐︎ Endless, Popping Balls",
-   "views": 37606,
+   "views": 49418,
    "desc": "Marble Run ⭐︎ Endless, Popping Balls"
   },
   {
    "id": "4uAopxV0gt0",
    "published": "2026-11-24T14:00:03+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 13",
-   "views": 33468,
+   "views": 35129,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
   },
   {
    "id": "eVC4EIxN8aI",
    "published": "2026-11-24T12:00:17+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 12",
-   "views": 107706,
+   "views": 111524,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
   },
   {
    "id": "x8EyRnL8CE0",
    "published": "2026-11-23T14:00:34+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 11",
-   "views": 46681,
+   "views": 47583,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
   },
   {
    "id": "ScZ3w8DLlQ0",
    "published": "2026-11-23T12:00:28+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 10",
-   "views": 8176,
+   "views": 9428,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
   },
   {
    "id": "pHo2aewrSjw",
    "published": "2026-11-22T14:00:05+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 13",
-   "views": 50314,
+   "views": 54479,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
   },
   {
    "id": "6YtZCUODT_4",
    "published": "2026-11-22T12:00:36+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 12",
-   "views": 61946,
+   "views": 63385,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 1"
   },
   {
    "id": "iGnx1C7efpg",
    "published": "2026-11-21T14:00:15+00:00",
    "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 11",
-   "views": 87699,
+   "views": 88790,
    "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
-  },
-  {
-   "id": "fNdxedNTFRE",
-   "published": "2026-11-21T12:00:08+00:00",
-   "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 10",
-   "views": 13323,
-   "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
-  },
-  {
-   "id": "bPkOUuzqYDk",
-   "published": "2026-11-21T11:00:04+00:00",
-   "title": "Water Marble Run ⭐︎ An exciting compilation featuring popping sponge balls!",
-   "views": 14295,
-   "desc": "Water Marble Run ⭐︎ An exciting compilation featuring popping sponge balls!\n\n＃Marblerun \n#satisfying\n#marblerun\n#マーブルラン\n#satisfying\n#relaxing\n#marblerunbuild\n#marbleruncourse\n#oddlysatisfying\n#relaxingvideo"
-  },
-  {
-   "id": "EJXAXHhfwGc",
-   "published": "2026-11-20T14:00:22+00:00",
-   "title": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly 1",
-   "views": 62488,
-   "desc": "Marble Run ⭐︎ A marble race where Dragon Balls keep popping out endlessly"
-  },
-  {
-   "id": "0e-4q4FwYaw",
-   "published": "2026-11-20T12:00:23+00:00",
-   "title": "Marble Run ⭐︎ A race to collect dragon orbs and come out on top!",
-   "views": 9382,
-   "desc": "Marble Run ⭐︎ A race to collect dragon orbs and come out on top!"
   }
  ],
  "rss_tries": 1
