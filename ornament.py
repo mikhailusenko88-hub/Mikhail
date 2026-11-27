@@ -115,8 +115,62 @@ else:
     w.node_tree.nodes["Background"].inputs[0].default_value = (0.004, 0.005, 0.009, 1)
     w.node_tree.nodes["Background"].inputs[1].default_value = 1.0
 
+def neon_hex_floor():
+    """Тёмный глянцевый пол со светящимися сотами (как у соседей с ёлочными шарами, 27.11.2026).
+    hs — радиус соты (м), hw — толщина линии (м), hcol — цвет линий r,g,b, hem — сила свечения."""
+    s = float(A.get("hs", "0.05"))
+    lw = float(A.get("hw", "0.0035"))
+    ppm = float(A.get("hppm", "6000"))                  # пикселей на метр
+    hc = [float(v) for v in A.get("hcol", "0.0,0.85,1.0").split(",")]
+    s3 = math.sqrt(3.0)
+    tw, th = int(round(3 * s * ppm)), int(round(s3 * s * ppm))   # плитка повторения сетки (плоский верх): 3s × √3·s
+    X, Y = np.meshgrid((np.arange(tw) + 0.5) / ppm, (np.arange(th) + 0.5) / ppm)
+    cx_ = (2.0 / 3.0) * X / s
+    cz_ = (-1.0 / 3.0 * X + s3 / 3.0 * Y) / s
+    cy_ = -cx_ - cz_
+    rx, ry, rz = np.round(cx_), np.round(cy_), np.round(cz_)
+    dx, dy, dz = np.abs(rx - cx_), np.abs(ry - cy_), np.abs(rz - cz_)
+    m1 = (dx > dy) & (dx > dz)
+    m2 = ~m1 & (dy > dz)
+    rx = np.where(m1, -ry - rz, rx)
+    ry = np.where(m2, -rx - rz, ry)
+    rz = np.where(~m1 & ~m2, -rx - ry, rz)
+    px, py = X - s * 1.5 * rx, Y - s * s3 * (rz + rx / 2.0)
+    c30 = s3 / 2.0
+    mx = np.maximum(np.abs(py), np.maximum(np.abs(c30 * px + 0.5 * py), np.abs(c30 * px - 0.5 * py)))
+    d = np.clip(s * s3 / 2.0 - mx, 0, None)              # расстояние до ребра соты
+    v = np.clip(np.clip(1.0 - d / lw, 0, 1) + 0.35 * np.exp(-d / (lw * 2.5)), 0, 1)
+    rgba = np.zeros((th, tw, 4), np.float32)
+    for k in range(3):
+        rgba[..., k] = v * hc[k]
+    rgba[..., 3] = 1.0
+    img = bpy.data.images.new("hexneon", tw, th, alpha=False, float_buffer=True)
+    img.pixels.foreach_set(rgba.ravel())
+    img.pack()
+    mt = bpy.data.materials.new("neonfloor")
+    mt.use_nodes = True
+    ntf = mt.node_tree
+    p = ntf.nodes["Principled BSDF"]
+    p.inputs["Base Color"].default_value = (0.004, 0.006, 0.010, 1)
+    p.inputs["Roughness"].default_value = float(A.get("frough", "0.22"))
+    p.inputs["Specular IOR Level"].default_value = 0.6
+    tc = ntf.nodes.new("ShaderNodeTexCoord")
+    mp = ntf.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = (1.0 / (3 * s), 1.0 / (s3 * s), 1.0)
+    it = ntf.nodes.new("ShaderNodeTexImage")
+    it.image = img
+    it.extension = "REPEAT"
+    ntf.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    ntf.links.new(mp.outputs["Vector"], it.inputs["Vector"])
+    ntf.links.new(it.outputs["Color"], p.inputs["Emission Color"])
+    p.inputs["Emission Strength"].default_value = float(A.get("hem", "4.0"))
+    return mt
+
+
 bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, 0))
 floor = bpy.context.active_object
+if BG == "neon":
+    m_floor = neon_hex_floor()
 floor.data.materials.append(m_floor)
 if BG == "light":                                # циклорама: пол плавно переходит в стену — фон без линии горизонта
     prof = [(0.45 + 0.9 * math.sin(math.radians(a)), 0.9 - 0.9 * math.cos(math.radians(a))) for a in range(0, 91, 5)] + [(1.35, 4.0)]
