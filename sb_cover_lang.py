@@ -25,7 +25,9 @@ def main(line):
     for y in range(H):
         t = y / H; d.line([(0, y), (W, y)], fill=(int(120 + 110 * t), int(190 + 50 * t), int(240 + 12 * t)))
     def card(b, cx, cy, w, ang):
-        p = f"df/{b}/cover_{lang}.jpg"
+        p = next((f"df/{x}/cover_{lang}.jpg" for x in b.split("|") if os.path.exists(f"df/{x}/cover_{lang}.jpg")), None)   # «35d|35dub» — обложки на разных языках лежат у разных сборок
+        if not p:
+            raise SystemExit(f"нет обложки {b} {lang}")
         im = Image.open(p).convert("RGB").resize((w, int(w * 9 / 16)), Image.LANCZOS)
         bd = 8; c = Image.new("RGBA", (im.width + 2 * bd, im.height + 2 * bd), (255, 255, 255, 255)); c.paste(im, (bd, bd))
         m = Image.new("L", c.size, 0); ImageDraw.Draw(m).rounded_rectangle([0, 0, c.width - 1, c.height - 1], 18, fill=255); c.putalpha(m)

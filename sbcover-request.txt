@@ -1,7 +1,7 @@
 # 2026-11-27 — обложки сборников fr/ar (en — для сверки с выложенной)
-sb-32-36 en 28 32dub 33dub 34dub 35d 36f
-sb-32-36 fr 28 32dub 33dub 34dub 35d 36f
-sb-32-36 ar 28 32dub 33dub 34dub 35d 36f
+sb-32-36 en 28 32dub 33dub 34dub 35d|35dub 36f|36dub
+sb-32-36 fr 28 32dub 33dub 34dub 35d|35dub 36f|36dub
+sb-32-36 ar 28 32dub 33dub 34dub 35d|35dub 36f|36dub
 sb-27-31 en 30 27dub 28dub 29dub 30dub 31dub
 sb-27-31 fr 30 27dub 28dub 29dub 30dub 31dub
 sb-27-31 ar 30 27dub 28dub 29dub 30dub 31dub

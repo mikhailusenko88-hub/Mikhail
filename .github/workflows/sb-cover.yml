@@ -20,7 +20,7 @@ jobs:
       - name: Обложки серий на языках (ветка dub-files)
         run: |
           git fetch -q --depth 1 origin dub-files
-          mkdir -p df && git archive FETCH_HEAD $(grep -v '^#' sbcover-request.txt | awk '{for(i=4;i<=NF;i++) print $i}' | sort -u) | tar -x -C df
+          mkdir -p df && git archive FETCH_HEAD $(grep -v '^#' sbcover-request.txt | awk '{for(i=4;i<=NF;i++){n=split($i,a,"|"); for(k=1;k<=n;k++) print a[k]}}' | sort -u | while read d; do git ls-tree -d --name-only FETCH_HEAD "$d" ; done) | tar -x -C df
           ls df
       - name: Обложки сборников
         run: python3 sb_cover_lang.py
