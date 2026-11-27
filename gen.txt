@@ -1,272 +1,99 @@
-k35r_000_ref | edge:ru-RU-SvetlanaNeural | Ой! Снег! Где наш росток?
-k35r_001_ref | edge:ru-RU-SvetlanaNeural | Нашёл! Смотри́те! Вот наш росток!
-k35f_002_ref | edge:ru-RU-SvetlanaNeural | Он зелёный! Сидел под снегом и не замё́рз!
-k35t_003_ref | edge:ru-RU-SvetlanaNeural | Ночью был мороз. А ему́ хоть бы что!
-k35b_004_ref | edge:ru-RU-SvetlanaNeural | Как же он не замё́рз? Ему́ же холодно!
-k35n_005_ref | edge:ru-RU-SvetlanaNeural | Рон достал из рюкзака красную подушку.
-k35r_006_ref | edge:ru-RU-SvetlanaNeural | Держись, малыш! Вот тебе подушка. Мя́гкая!
-k35p_009_ref | edge:ru-RU-SvetlanaNeural | Рон, у ростка есть одеяло.
-k35r_010_ref | edge:ru-RU-SvetlanaNeural | Где? Я ничего не вижу.
-k35p_011_ref | edge:ru-RU-SvetlanaNeural | Вот оно. Снег!
-k35r_012_ref | edge:ru-RU-SvetlanaNeural | Снег? Но снег холодный!
-k35t_013_ref | edge:ru-RU-SvetlanaNeural | И он совсем целый!
-k35b_014_ref | edge:ru-RU-SvetlanaNeural | Вот это загадка. Холодный снег, а под ним росток не мёрзнет.
-k35f_015_ref | edge:ru-RU-SvetlanaNeural | Может, снег не такой уж холодный?
-k35f_017_ref | edge:ru-RU-SvetlanaNeural | Топа, ты зеваешь уже́ десятый раз!
-k35t_018_ref | edge:ru-RU-SvetlanaNeural | Не знаю почему. Зимой мне всё время хочется спать.
-k35b_019_ref | edge:ru-RU-SvetlanaNeural | Это потому, что ты медвежонок. Медве́ди спят всю зи́му!
-k35r_020_ref | edge:ru-RU-SvetlanaNeural | Всю зи́му? А как же завтрак?
-k35t_021_ref | edge:ru-RU-SvetlanaNeural | Осенью медве́ди много едят. А пото́м спят и не голодают.
-k35f_022_ref | edge:ru-RU-SvetlanaNeural | Как жёлудь! Запас еды на пото́м!
-k35r_023_ref | edge:ru-RU-SvetlanaNeural | Тогда мне тоже нужен запас. Начну прямо сейчас.
-k35r_024_ref | edge:ru-RU-SvetlanaNeural | Всё! Запас готов. Я тоже буду спать всю зи́му!
-k35r_025_ref | edge:ru-RU-SvetlanaNeural | Спокойной ночи!
-k35r_026_ref | edge:ru-RU-SvetlanaNeural | Всё! Я выспался! Можно завтракать?
-k35t_028_ref | edge:ru-RU-SvetlanaNeural | Рон, прошла одна минутка!
-k35b_033_ref | edge:ru-RU-SvetlanaNeural | А где медве́ди спят?
-k35t_034_ref | edge:ru-RU-SvetlanaNeural | В берлоге. Это ямка под ёлкой. Сверху её засыпает снег.
-k35t_035_ref | edge:ru-RU-SvetlanaNeural | В берлоге тепло, даже когда снаружи сильный мороз.
-k35f_036_ref | edge:ru-RU-SvetlanaNeural | Опять снег гре́ет?
-k35b_037_ref | edge:ru-RU-SvetlanaNeural | Снег сам не гре́ет. Он как шарф. Шарф не печка, а нам в нём тепло.
-k35f_038_ref | edge:ru-RU-SvetlanaNeural | Потому что шарф не выпускает наше тепло?
-k35b_039_ref | edge:ru-RU-SvetlanaNeural | Да! В снегу много воздуха. И он бережёт тепло земли́. Как пуши́стое одеяло.
-k35r_040_ref | edge:ru-RU-SvetlanaNeural | Значит, росток спит под одеялом. Как Топа!
-k35f_041_ref | edge:ru-RU-SvetlanaNeural | Ти́ше. Топа уже́ спит.
-k35b_042_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, ёлки зелёные! Зимой!
-k35t_043_ref | edge:ru-RU-SvetlanaNeural | У ёлки иголки. Тонкие и крепкие. Им мороз не страшен.
-k35f_044_ref | edge:ru-RU-SvetlanaNeural | А вот листик дуба. Он сухой и коричневый.
-k35b_045_ref | edge:ru-RU-SvetlanaNeural | Осенью дуб сбрасывает листья. И засыпает до весны.
-k35r_046_ref | edge:ru-RU-SvetlanaNeural | Дуб тоже медве́дь?
-k35t_052_ref | edge:ru-RU-SvetlanaNeural | Нет. Но спит он, как я!
-k35t_053_ref | edge:ru-RU-SvetlanaNeural | Смотри́те! Жёлудь! Прямо под снегом!
-k35p_054_ref | edge:ru-RU-SvetlanaNeural | Он тоже спит. Как наш росток.
-k35b_055_ref | edge:ru-RU-SvetlanaNeural | А весной снег раста́ет. И жёлудь проснётся.
-k35r_056_ref | edge:ru-RU-SvetlanaNeural | Так долго ждать?
-k35f_057_ref | edge:ru-RU-SvetlanaNeural | Ничего. Мы подождём вместе.
-k35f_058_ref | edge:ru-RU-SvetlanaNeural | А давайте пока в прятки! Рон водит!
-k35r_059_ref | edge:ru-RU-SvetlanaNeural | Раз, два, три! Иду искать!
-k35r_060_ref | edge:ru-RU-SvetlanaNeural | Где Филя? Тут только снег!
-k35r_062_ref | edge:ru-RU-SvetlanaNeural | Ой! Филя! Ты белый, как снег!
-k35b_063_ref | edge:ru-RU-SvetlanaNeural | Зайцы к зиме становятся белыми. На снегу их не ви́дно.
-k35f_064_ref | edge:ru-RU-SvetlanaNeural | А я белый всегда. Я готов к зиме заранее!
-k35r_070_ref | edge:ru-RU-SvetlanaNeural | Я придумал! Росток будет охранять снежный сторож!
-k35r_071_ref | edge:ru-RU-SvetlanaNeural | Готово! Вот он, снежный сторож! Он не мёрзнет и никогда не спит!
-k35t_072_ref | edge:ru-RU-SvetlanaNeural | Повезло́ ему́.
-k35b_074_ref | edge:ru-RU-SvetlanaNeural | А ну, кто поймает?
-k35r_075_ref | edge:ru-RU-SvetlanaNeural | Поймал! Я быстрый сторож!
-k35p_077_ref | edge:ru-RU-SvetlanaNeural | Мимо!
-k35r_078_ref | edge:ru-RU-SvetlanaNeural | Это я ему́ показал, как надо.
-k35t_079_ref | edge:ru-RU-SvetlanaNeural | Тёплое молоко. И сразу хочется спать.
-k35b_080_ref | edge:ru-RU-SvetlanaNeural | Нам тепло в доме. А ростку тепло под снегом.
-k35r_081_ref | edge:ru-RU-SvetlanaNeural | А наш снежный сторож? Ему́ тоже тепло?
-k35t_082_ref | edge:ru-RU-SvetlanaNeural | Ему́ нельзя гре́ться. Он раста́ет.
-k35r_083_ref | edge:ru-RU-SvetlanaNeural | Тогда пусть ему́ будет холодно! Самую чуточку.
-k35f_085_ref | edge:ru-RU-SvetlanaNeural | Давайте поиграем! Я спрашиваю, а вы отвечаете.
-k35b_086_ref | edge:ru-RU-SvetlanaNeural | Начинай!
-k35f_087_ref | edge:ru-RU-SvetlanaNeural | Почему росток под снегом не замё́рз?
-k35p_088_ref | edge:ru-RU-SvetlanaNeural | Его укрыл снег, как одеяло.
-k35f_089_ref | edge:ru-RU-SvetlanaNeural | Правильно! А кто спит всю зи́му?
-k35t_090_ref | edge:ru-RU-SvetlanaNeural | Медве́ди. И я.
-k35f_091_ref | edge:ru-RU-SvetlanaNeural | А почему ёлка зимой зелёная?
-k35b_092_ref | edge:ru-RU-SvetlanaNeural | У неё иголки. Им мороз не страшен.
-k35r_093_ref | edge:ru-RU-SvetlanaNeural | А кто никогда не спит?
-k35f_094_ref | edge:ru-RU-SvetlanaNeural | Кто?
-k35r_095_ref | edge:ru-RU-SvetlanaNeural | Снежный сторож! И я! Почти.
-k35r_101_ref | edge:ru-RU-SvetlanaNeural | Вот наш росток. Спит под одеялом.
-k35b_102_ref | edge:ru-RU-SvetlanaNeural | А вот и снеговик. Сторожит.
-k35r_103_ref | edge:ru-RU-SvetlanaNeural | Мы с ним вдвоём. Я и мой помощник.
-k35r_105_ref | edge:ru-RU-SvetlanaNeural | Сторож, ты точно не спишь?
-k35f_106_ref | edge:ru-RU-SvetlanaNeural | Он молчит. Значит, сторожит.
-k35r_107_ref | edge:ru-RU-SvetlanaNeural | Тогда я закрою один глаз. Только один.
-k35b_108_ref | edge:ru-RU-SvetlanaNeural | Спокойной ночи, сторож.
-k35n_109_ref | edge:ru-RU-SvetlanaNeural | Снег кончился.
-k35r_110_ref | edge:ru-RU-SvetlanaNeural | Я не спал! Я сторожил вместе с помощником!
-k35f_112_ref | edge:ru-RU-SvetlanaNeural | Ура, со́лнце вышло! Сегодня оно́ гре́ет.
-k35b_113_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наш снеговик. Он блестит на со́лнце.
-k35b_114_ref | edge:ru-RU-SvetlanaNeural | Если станет тепло, снег начнёт таять.
-k35r_115_ref | edge:ru-RU-SvetlanaNeural | А мой сторож? Он же снежный!
-k35t_116_ref | edge:ru-RU-SvetlanaNeural | Ой. Он тоже раста́ет?
-k35r_117_ref | edge:ru-RU-SvetlanaNeural | Не отдам! Он мой сторож!
-k35b_118_ref | edge:ru-RU-SvetlanaNeural | Не знаю, Рон. Это новая загадка.
-k35b_119_ref | edge:ru-RU-SvetlanaNeural | Завтра узнаем, куда уходят снеговики.
-k35r_120_ref | edge:ru-RU-SvetlanaNeural | Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!
-k36b_000_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот лужа! А снеговика нет!
-k36r_001_ref | edge:ru-RU-SvetlanaNeural | Где мой сторож? Его нет!
-k36r_002_ref | edge:ru-RU-SvetlanaNeural | И моя подушка тут. Мокрая!
-k36t_003_ref | edge:ru-RU-SvetlanaNeural | Кто-то его унёс?
-k36r_004_ref | edge:ru-RU-SvetlanaNeural | Его украли! Я найду вора!
-k36r_005_ref | edge:ru-RU-SvetlanaNeural | Вижу… лужу. Очень большую лужу.
-k36r_008_ref | edge:ru-RU-SvetlanaNeural | Пахнет… тоже лужей.
-k36p_009_ref | edge:ru-RU-SvetlanaNeural | Следов нет. Никто сюда не приходил.
-k36f_010_ref | edge:ru-RU-SvetlanaNeural | Значит, он ушёл сам?
-k36b_011_ref | edge:ru-RU-SvetlanaNeural | Ушёл? У него же нет ног!
-k36r_012_ref | edge:ru-RU-SvetlanaNeural | Может, он улетел? Как пар?
-k36t_013_ref | edge:ru-RU-SvetlanaNeural | Посмотрите на со́лнце. Сегодня оно́ сильно гре́ет.
-k36b_014_ref | edge:ru-RU-SvetlanaNeural | Вот это загадка. Был сторож — а стала лужа.
-k36r_015_ref | edge:ru-RU-SvetlanaNeural | Пропал сторож. Белый. Круглый. Очень храбрый
-k36f_017_ref | edge:ru-RU-SvetlanaNeural | Рон, а где у него нос?
-k36r_018_ref | edge:ru-RU-SvetlanaNeural | Носа у него не было. Не успели.
-k36t_019_ref | edge:ru-RU-SvetlanaNeural | А вдруг он просто пошёл гулять?
-k36r_020_ref | edge:ru-RU-SvetlanaNeural | Без ног? Далеко не уйдёт.
-k36t_024_ref | edge:ru-RU-SvetlanaNeural | Помните, как со́лнце вы́пило лужу?
-k36f_025_ref | edge:ru-RU-SvetlanaNeural | Может, и сторожа выпило со́лнце?
-k36b_026_ref | edge:ru-RU-SvetlanaNeural | Давайте лучше проверим, куда уходит снег.
-k36p_027_ref | edge:ru-RU-SvetlanaNeural | Я знаю как. Нужна миска и снежок.
-k36f_028_ref | edge:ru-RU-SvetlanaNeural | Я принесу! Я быстрый!
-k36f_029_ref | edge:ru-RU-SvetlanaNeural | Вот снежок! Круглый, как маленький снеговик!
-k36r_030_ref | edge:ru-RU-SvetlanaNeural | Я буду за ним сле́дить. Чтобы его тоже не похитили.
-k36b_031_ref | edge:ru-RU-SvetlanaNeural | А мы пока попьём чаю.
-k36t_032_ref | edge:ru-RU-SvetlanaNeural | Ух, горячий! На кухне тепло, как летом.
-k36f_033_ref | edge:ru-RU-SvetlanaNeural | А снежку тут нравится?
-k36p_034_ref | edge:ru-RU-SvetlanaNeural | Сейчас увидим.
-k36t_036_ref | edge:ru-RU-SvetlanaNeural | После чая всегда хочется спать.
-k36f_037_ref | edge:ru-RU-SvetlanaNeural | Топа, только не на всю зи́му!
-k36r_039_ref | edge:ru-RU-SvetlanaNeural | А я смотрю на снежок очень внимательно. Одним глазом.
-k36f_040_ref | edge:ru-RU-SvetlanaNeural | Опять уснул.
-k36r_041_ref | edge:ru-RU-SvetlanaNeural | Где снежок? Я же за ним сле́дил!
-k36p_042_ref | edge:ru-RU-SvetlanaNeural | Вот миска. Что в ней?
-k36f_043_ref | edge:ru-RU-SvetlanaNeural | Снежка нет. Одна вода!
-k36b_044_ref | edge:ru-RU-SvetlanaNeural | Снег растаял. В тепле снег становится водой.
-k36p_045_ref | edge:ru-RU-SvetlanaNeural | Снежинки — это тоже вода. Только замёрзшая.
-k36r_046_ref | edge:ru-RU-SvetlanaNeural | Значит, мой сторож — это теперь лужа?
-k36t_047_ref | edge:ru-RU-SvetlanaNeural | Выходит, так. Со́лнце его растопило.
-k36r_048_ref | edge:ru-RU-SvetlanaNeural | Он был такой храбрый.
-k36b_049_ref | edge:ru-RU-SvetlanaNeural | Не грусти, Рон. Сне́га ещё много. Сле́пим ещё одного!
-k36r_050_ref | edge:ru-RU-SvetlanaNeural | А он опять раста́ет?
-k36b_051_ref | edge:ru-RU-SvetlanaNeural | А лепить будем в те́ни. Там со́лнце не доста́нет.
-k36r_052_ref | edge:ru-RU-SvetlanaNeural | Тогда скорее! Пока не стемнело!
-k36t_053_ref | edge:ru-RU-SvetlanaNeural | Ух! Санки е́ле едут. Снег стал мокрый и липкий.
-k36f_054_ref | edge:ru-RU-SvetlanaNeural | Это от тепла́. Снег начал та́ять.
-k36b_055_ref | edge:ru-RU-SvetlanaNeural | Зато́ из липкого сне́га лучше лепить!
-k36b_056_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот ёлка. А под ней тень.
-k36f_057_ref | edge:ru-RU-SvetlanaNeural | Ёлка будет ему́ зонтиком от со́лнца!
-k36r_058_ref | edge:ru-RU-SvetlanaNeural | Готово! Новый сторож! Теперь в те́ни.
-k36t_059_ref | edge:ru-RU-SvetlanaNeural | А давайте дади́м ему́ имя.
-k36f_060_ref | edge:ru-RU-SvetlanaNeural | Пусть будет Снежок Второй!
-k36r_061_ref | edge:ru-RU-SvetlanaNeural | Здравствуй, Снежок Второй. Не тай, пожалуйста.
-k36r_066_ref | edge:ru-RU-SvetlanaNeural | Смотри́те! Теперь я тоже белый! Я снеговик!
-k36f_068_ref | edge:ru-RU-SvetlanaNeural | Только ты тёплый. И с хвостом.
-k36r_069_ref | edge:ru-RU-SvetlanaNeural | Ой. Снег за шиворотом. Холодно!
-k36t_074_ref | edge:ru-RU-SvetlanaNeural | А наш росток? Снег над ним тает!
-k36b_075_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наш росток. Он на месте.
-k36b_076_ref | edge:ru-RU-SvetlanaNeural | Снег та́ет поне́многу. Вода уходит в землю.
-k36f_077_ref | edge:ru-RU-SvetlanaNeural | Значит, росток попьёт?
-k36b_078_ref | edge:ru-RU-SvetlanaNeural | Да. Талая вода — это его питьё на весну.
-k36r_079_ref | edge:ru-RU-SvetlanaNeural | А если опять станет холодно?
-k36p_080_ref | edge:ru-RU-SvetlanaNeural | Тогда снова пойдёт снег. И укроет его.
-k36r_081_ref | edge:ru-RU-SvetlanaNeural | Вот! Ещё одно одеяло. Запасное. Из подушки.
-k36f_083_ref | edge:ru-RU-SvetlanaNeural | Рон, она же мо́края!
-k36r_084_ref | edge:ru-RU-SvetlanaNeural | Зато́ мя́гкая.
-k36t_085_ref | edge:ru-RU-SvetlanaNeural | Хорошо, что у ростка такое одеяло.
-k36f_086_ref | edge:ru-RU-SvetlanaNeural | Давайте поиграем! Я спрашиваю, а вы отвечаете.
-k36b_087_ref | edge:ru-RU-SvetlanaNeural | Начинай!
-k36f_088_ref | edge:ru-RU-SvetlanaNeural | Во что превращается снег в тепле?
-k36p_089_ref | edge:ru-RU-SvetlanaNeural | Он тает. И будет вода!
-k36f_090_ref | edge:ru-RU-SvetlanaNeural | Правильно! А где снеговик живёт дольше: на со́лнце или в те́ни?
-k36t_091_ref | edge:ru-RU-SvetlanaNeural | В те́ни. Туда со́лнце не достаёт.
-k36f_092_ref | edge:ru-RU-SvetlanaNeural | А куда уходит вода, когда снег тает?
-k36b_093_ref | edge:ru-RU-SvetlanaNeural | В землю. К ростку.
-k36r_094_ref | edge:ru-RU-SvetlanaNeural | А мой первый сторож — в лужу.
-k36f_096_ref | edge:ru-RU-SvetlanaNeural | Все́ отве́тили!
-k36b_097_ref | edge:ru-RU-SvetlanaNeural | Со́лнце садится. Становится холодно.
-k36b_098_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наш снеговик. Стои́т в те́ни.
-k36r_099_ref | edge:ru-RU-SvetlanaNeural | Вот лужа. Тут был мой сторож.
-k36r_100_ref | edge:ru-RU-SvetlanaNeural | Спокойной ночи, Снежок Второй. Стой крепко.
-k36f_101_ref | edge:ru-RU-SvetlanaNeural | В тепле снег становится водой
-k36p_102_ref | edge:ru-RU-SvetlanaNeural | А что будет с лужей, когда придёт мороз?
-k36r_103_ref | edge:ru-RU-SvetlanaNeural | Она замёрзнет? Как мой нос?
-k36b_108_ref | edge:ru-RU-SvetlanaNeural | Не знаю. Это новая загадка.
-k36t_110_ref | edge:ru-RU-SvetlanaNeural | А я пойду спать. Медведям зимой можно.
-k36b_111_ref | edge:ru-RU-SvetlanaNeural | Завтра узнаем, что мороз сделает с лужей.
-k36r_112_ref | edge:ru-RU-SvetlanaNeural | Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!
-k37r_000_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наша лужа. Сейчас — плюх!
-k37r_002_ref | edge:ru-RU-SvetlanaNeural | Ой! Она не плюхает! Она твёрдая!
-k37b_004_ref | edge:ru-RU-SvetlanaNeural | Лужа замёрзла! Теперь это лёд!
-k37t_005_ref | edge:ru-RU-SvetlanaNeural | Блестит, как стекло. И скользкий-скользкий.
-k37r_006_ref | edge:ru-RU-SvetlanaNeural | А где вода? Она пропала?
-k37b_007_ref | edge:ru-RU-SvetlanaNeural | Никуда. Вода здесь. Только она стала твёрдой.
-k37t_008_ref | edge:ru-RU-SvetlanaNeural | Ночью пришёл мороз. И заморозил лужу.
-k37r_010_ref | edge:ru-RU-SvetlanaNeural | Пахнет… холодом.
-k37f_015_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наш снеговик! Он стои́т!
-k37r_016_ref | edge:ru-RU-SvetlanaNeural | Снежок Второй! Ты не растаял!
-k37t_017_ref | edge:ru-RU-SvetlanaNeural | Ночью было очень холодно. А в холоде снег не та́ет.
-k37b_018_ref | edge:ru-RU-SvetlanaNeural | Мороз растопить не может. Мороз — замораживает.
-k37f_019_ref | edge:ru-RU-SvetlanaNeural | Это наша лужа. А теперь это каток!
-k37r_020_ref | edge:ru-RU-SvetlanaNeural | Я катаюсь! Я лучше всех катаюсь!
-k37r_022_ref | edge:ru-RU-SvetlanaNeural | Ой. Тут тоже твёрдо.
-k37t_025_ref | edge:ru-RU-SvetlanaNeural | Можно я тоже попробую?
-k37t_027_ref | edge:ru-RU-SvetlanaNeural | Ой! Лапы сами разъезжаются!
-k37b_028_ref | edge:ru-RU-SvetlanaNeural | Держись, Топа! Вставай потихоньку.
-k37f_029_ref | edge:ru-RU-SvetlanaNeural | Надо ходить маленькими шажками. Как пингвин!
-k37b_030_ref | edge:ru-RU-SvetlanaNeural | А ещё на льду нельзя бегать. Можно упасть.
-k37p_031_ref | edge:ru-RU-SvetlanaNeural | И на речку не ходим. Там лёд бывает тонким.
-k37r_033_ref | edge:ru-RU-SvetlanaNeural | Тук-тук! Лужа, ты до́ма?
-k37f_035_ref | edge:ru-RU-SvetlanaNeural | Она не откроет. Она замёрзла!
-k37t_036_ref | edge:ru-RU-SvetlanaNeural | А можно сделать лёд самим? До́ма?
-k37b_037_ref | edge:ru-RU-SvetlanaNeural | Давайте попробуем! Нужна вода и мороз.
-k37p_038_ref | edge:ru-RU-SvetlanaNeural | Вот миска. В ней вода.
-k37f_039_ref | edge:ru-RU-SvetlanaNeural | Вода мокрая. Её можно налить и вылить.
-k37r_040_ref | edge:ru-RU-SvetlanaNeural | Вода, стань твёрдой! Раз, два, три!
-k37r_041_ref | edge:ru-RU-SvetlanaNeural | Не получилось. Она меня не слушает.
-k37r_045_ref | edge:ru-RU-SvetlanaNeural | А если подуть? Ффф! Стала твёрдая?
-k37f_047_ref | edge:ru-RU-SvetlanaNeural | Нет, Рон. Ты же тёплый!
-k37b_048_ref | edge:ru-RU-SvetlanaNeural | На кухне тепло. Здесь вода не замёрзнет.
-k37p_049_ref | edge:ru-RU-SvetlanaNeural | Надо поставить её на мороз. На всю ночь.
-k37t_050_ref | edge:ru-RU-SvetlanaNeural | Ночью мороз сильнее всего.
-k37r_051_ref | edge:ru-RU-SvetlanaNeural | Давайте я! Я осторожно!
-k37f_052_ref | edge:ru-RU-SvetlanaNeural | Только не разлей.
-k37r_053_ref | edge:ru-RU-SvetlanaNeural | Вот. Стой тут, миска. Жди мороз.
-k37b_054_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот наш снеговик. Он будет за ней смотреть.
-k37r_055_ref | edge:ru-RU-SvetlanaNeural | Я тоже буду сторожить. Всю ночь!
-k37p_056_ref | edge:ru-RU-SvetlanaNeural | Рон, на улице мороз. У тебя нос замёрзнет.
-k37r_057_ref | edge:ru-RU-SvetlanaNeural | Мой нос храбрый.
-k37f_059_ref | edge:ru-RU-SvetlanaNeural | Будь здоров!
-k37r_060_ref | edge:ru-RU-SvetlanaNeural | Ладно. Носу холодно. Идёмте греться.
-k37b_065_ref | edge:ru-RU-SvetlanaNeural | Давайте поиграем. Я скажу слово, а вы — твёрдое оно или мягкое.
-k37f_066_ref | edge:ru-RU-SvetlanaNeural | Давай!
-k37b_067_ref | edge:ru-RU-SvetlanaNeural | Подушка!
-k37t_068_ref | edge:ru-RU-SvetlanaNeural | Мя́гкая!
-k37b_069_ref | edge:ru-RU-SvetlanaNeural | Камень!
-k37f_070_ref | edge:ru-RU-SvetlanaNeural | Твёрдый!
-k37b_071_ref | edge:ru-RU-SvetlanaNeural | Вода в миске!
-k37r_072_ref | edge:ru-RU-SvetlanaNeural | Она плюхает!
-k37b_077_ref | edge:ru-RU-SvetlanaNeural | Снежок!
-k37p_078_ref | edge:ru-RU-SvetlanaNeural | Холодный!
-k37f_080_ref | edge:ru-RU-SvetlanaNeural | Это не ответ!
-k37b_081_ref | edge:ru-RU-SvetlanaNeural | Лёд!
-k37t_082_ref | edge:ru-RU-SvetlanaNeural | Твёрдый! И скользкий!
-k37p_083_ref | edge:ru-RU-SvetlanaNeural | А вода в миске утром, может быть, будет твёрдая.
-k37t_085_ref | edge:ru-RU-SvetlanaNeural | А я пойду спать. Утром узнаем.
-k37b_086_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, вот миска!
-k37r_087_ref | edge:ru-RU-SvetlanaNeural | Вода замёрзла! Теперь там лёд!
-k37f_088_ref | edge:ru-RU-SvetlanaNeural | Можно потрогать? Ой, какой холодный!
-k37r_089_ref | edge:ru-RU-SvetlanaNeural | Тяжёлая. И холодная!
-k37f_090_ref | edge:ru-RU-SvetlanaNeural | Переверни её, Рон!
-k37r_091_ref | edge:ru-RU-SvetlanaNeural | Не выливается! Ни капельки!
-k37p_092_ref | edge:ru-RU-SvetlanaNeural | Конечно. Он твёрдый. Как камень.
-k37r_093_ref | edge:ru-RU-SvetlanaNeural | Её не попьёшь! Только грызть!
-k37t_098_ref | edge:ru-RU-SvetlanaNeural | Мы сделали лёд сами! С морозом.
-k37b_099_ref | edge:ru-RU-SvetlanaNeural | А что будет, если лёд принести домой?
-k37f_100_ref | edge:ru-RU-SvetlanaNeural | В тепло? Пойдёмте проверим!
-k37r_101_ref | edge:ru-RU-SvetlanaNeural | Вот. Тут тепло, лёд.
-k37t_102_ref | edge:ru-RU-SvetlanaNeural | А я пока погреюсь чаем.
-k37f_103_ref | edge:ru-RU-SvetlanaNeural | Смотри́те, по краю уже́ мокро!
-k37p_104_ref | edge:ru-RU-SvetlanaNeural | Он тает. Скоро снова будет вода.
-k37r_105_ref | edge:ru-RU-SvetlanaNeural | Я подожду. Глаза́ открыты.
-k37f_106_ref | edge:ru-RU-SvetlanaNeural | Опять.
-k37p_107_ref | edge:ru-RU-SvetlanaNeural | Вот миска. Что в ней?
-k37r_108_ref | edge:ru-RU-SvetlanaNeural | Снова вода! Можно пить!
-k37b_109_ref | edge:ru-RU-SvetlanaNeural | На морозе вода стала твёрдой. А в тепле снова стала водой.
-k37f_110_ref | edge:ru-RU-SvetlanaNeural | Вода — как Рон. То бегает, то стои́т.
-k37t_115_ref | edge:ru-RU-SvetlanaNeural | А снеговик? Он всё ещё на морозе?
-k37b_116_ref | edge:ru-RU-SvetlanaNeural | Да. Пока на улице холодно, он не раста́ет.
-k37f_117_ref | edge:ru-RU-SvetlanaNeural | Мороз делает лёд. А тепло́ делает воду.
-k37t_118_ref | edge:ru-RU-SvetlanaNeural | А медве́ди делают сон. Спокойной ночи.
-k37r_122_ref | edge:ru-RU-SvetlanaNeural | А кто ночью рисует на окнах?
-k37f_123_ref | edge:ru-RU-SvetlanaNeural | Рисует? На окнах?
-k37r_124_ref | edge:ru-RU-SvetlanaNeural | Я видел. Белые веточки и звёздочки.
-k37p_125_ref | edge:ru-RU-SvetlanaNeural | Может, это мороз? Он приходит, когда темно.
-k37t_126_ref | edge:ru-RU-SvetlanaNeural | Или ёлки приходили в гости.
-k37f_128_ref | edge:ru-RU-SvetlanaNeural | Ёлки не ходят, Топа!
-k37b_129_ref | edge:ru-RU-SvetlanaNeural | Вот это загадка! Завтра утром посмотрим на окно.
-k37r_130_ref | edge:ru-RU-SvetlanaNeural | Понравился мультик? Попроси маму или папу поставить лайк и подписаться на канал. До встречи в новой серии!
+k40r_000_ref | edge:ru-RU-SvetlanaNeural | Ура! Смотр+ите, санки едут сами!
+k40f_002_ref | edge:ru-RU-SvetlanaNeural | Вжух! И мои едут! Сами!
+k40r_003_ref | edge:ru-RU-SvetlanaNeural | Ох, наверх тяжело! А вниз — легко!
+k40p_004_ref | edge:ru-RU-SvetlanaNeural | Внизу санки остановились. А наверх их надо тащить.
+k40t_006_ref | edge:ru-RU-SvetlanaNeural | Рон, санки хитрые. Вниз едут, а наверх ленятся!
+k40b_011_ref | edge:ru-RU-SvetlanaNeural | С горки санки едут сами. А в гору — нет. Почему так? Вот это загадка!
+k40r_012_ref | edge:ru-RU-SvetlanaNeural | Я знаю! У санок внутри моторчик!
+k40p_013_ref | edge:ru-RU-SvetlanaNeural | Никакого моторчика. Только дощечки и полозья.
+k40r_014_ref | edge:ru-RU-SvetlanaNeural | Даже батарейки нет?
+k40p_016_ref | edge:ru-RU-SvetlanaNeural | Даже батарейки.
+k40f_017_ref | edge:ru-RU-SvetlanaNeural | А может, их толкает ветер?
+k40t_018_ref | edge:ru-RU-SvetlanaNeural | Сейчас ветра нет. Тихо-тихо.
+k40b_019_ref | edge:ru-RU-SvetlanaNeural | И внизу санки стоят. Сами никуда не едут.
+k40r_020_ref | edge:ru-RU-SvetlanaNeural | Значит, им нужна горка. Горка — это волшебство!
+k40b_026_ref | edge:ru-RU-SvetlanaNeural | Давайте проверим на ровном месте. Без горки.
+k40r_027_ref | edge:ru-RU-SvetlanaNeural | По ровному тоже надо тащить. Но легче, чем в гору.
+k40f_028_ref | edge:ru-RU-SvetlanaNeural | Проехали чуть-чуть. И встали!
+k40t_029_ref | edge:ru-RU-SvetlanaNeural | Снег их держит. Как будто тормозит.
+k40r_030_ref | edge:ru-RU-SvetlanaNeural | А если толкнуть сильно-сильно?
+k40r_035_ref | edge:ru-RU-SvetlanaNeural | Санки уехали. А я остался.
+k40p_036_ref | edge:ru-RU-SvetlanaNeural | Санки проехали дальше. Но всё равно встали.
+k40b_037_ref | edge:ru-RU-SvetlanaNeural | Значит, сами они едут только с горки. Вниз.
+k40f_038_ref | edge:ru-RU-SvetlanaNeural | А почему только вниз?
+k40b_039_ref | edge:ru-RU-SvetlanaNeural | Пока не знаю. Проверим ещё!
+k40t_040_ref | edge:ru-RU-SvetlanaNeural | Смотр+ите! Я прыгну высоко-высоко. До самого неба!
+k40f_041_ref | edge:ru-RU-SvetlanaNeural | Прыгнул вверх. И сразу вниз!
+k40t_043_ref | edge:ru-RU-SvetlanaNeural | До неба не долетел. Что-то тянет меня назад.
+k40r_044_ref | edge:ru-RU-SvetlanaNeural | Топа тоже не любит летать наверх. Как санки!
+k40p_045_ref | edge:ru-RU-SvetlanaNeural | И снежинки падают вниз. И снег на горке лежит, не улетает.
+k40r_046_ref | edge:ru-RU-SvetlanaNeural | Я проверю сам. Побегу на горку без санок!
+k40r_053_ref | edge:ru-RU-SvetlanaNeural | Я тоже скатился вниз. Сам! Без санок!
+k40f_055_ref | edge:ru-RU-SvetlanaNeural | Рон, ты как снежный колобок!
+k40b_056_ref | edge:ru-RU-SvetlanaNeural | Топа, снежинки, санки и Рон. Все летят вниз. Кто же тянет всех вниз?
+k40r_057_ref | edge:ru-RU-SvetlanaNeural | Вот наш снеговик! Он сто+ит на горке.
+k40f_058_ref | edge:ru-RU-SvetlanaNeural | А почему снеговик с горки не едет? Он же тоже на горке!
+k40t_059_ref | edge:ru-RU-SvetlanaNeural | Он сто+ит в снегу, как в валенках. Снег его держит.
+k40b_060_ref | edge:ru-RU-SvetlanaNeural | А санки снизу гладкие. Они скользят по снегу.
+k40p_061_ref | edge:ru-RU-SvetlanaNeural | Гладкие скользят. Но кто их тянет вниз? Пока загадка.
+k40r_062_ref | edge:ru-RU-SvetlanaNeural | Тогда я сделаю снеговику санки! Пусть тоже катается!
+k40f_069_ref | edge:ru-RU-SvetlanaNeural | Рон, снеговик боится скорости!
+k40r_070_ref | edge:ru-RU-SvetlanaNeural | Ладно. Пусть сто+ит и смотрит, как мы катаемся.
+k40t_071_ref | edge:ru-RU-SvetlanaNeural | Пойдёмте греться. Там подумаем.
+k40b_072_ref | edge:ru-RU-SvetlanaNeural | Смотр+ите, чай льётся вниз. Из чайника в чашку.
+k40f_073_ref | edge:ru-RU-SvetlanaNeural | А вверх он не льётся?
+k40b_075_ref | edge:ru-RU-SvetlanaNeural | Никогда. Только вниз.
+k40t_076_ref | edge:ru-RU-SvetlanaNeural | Вкусно. И тепло.
+k40f_077_ref | edge:ru-RU-SvetlanaNeural | А я думаю, санки просто любят кататься. Как мы!
+k40b_079_ref | edge:ru-RU-SvetlanaNeural | Может быть. Но наверх они не хотят.
+k40r_080_ref | edge:ru-RU-SvetlanaNeural | Может, внизу живёт великан? И всех тянет к себе. Как магнит!
+k40p_085_ref | edge:ru-RU-SvetlanaNeural | Великана нет. Но ты почти угадал, Рон.
+k40f_086_ref | edge:ru-RU-SvetlanaNeural | Почти? Кто же тогда тянет?
+k40p_087_ref | edge:ru-RU-SvetlanaNeural | Пойдёмте в комнату. Я нарисую, и всё станет понятно.
+k40p_088_ref | edge:ru-RU-SvetlanaNeural | Это горка. А это земля внизу. Наша Земля очень большая. И она тянет к себе всё. Это называется притяжение.
+k40r_089_ref | edge:ru-RU-SvetlanaNeural | Земля тянет? А рук у неё нет!
+k40p_090_ref | edge:ru-RU-SvetlanaNeural | Рук нет. А тянет всегда. И снежинки, и чай, и санки. И даже нас.
+k40t_091_ref | edge:ru-RU-SvetlanaNeural | Поэтому я не улетаю, когда прыгаю?
+k40p_092_ref | edge:ru-RU-SvetlanaNeural | Да! Прыгнул — и сразу вниз.
+k40b_093_ref | edge:ru-RU-SvetlanaNeural | Санки на горке тоже тянет вниз Земля. Поэтому с горки они едут сами!
+k40f_094_ref | edge:ru-RU-SvetlanaNeural | А в гору?
+k40p_095_ref | edge:ru-RU-SvetlanaNeural | В гору санки надо тянуть против притяжения. Земля тянет их назад, вниз. Поэтому тяжело.
+k40b_096_ref | edge:ru-RU-SvetlanaNeural | А снег гладкий и скользкий. Санки по нему легко скользят.
+k40t_097_ref | edge:ru-RU-SvetlanaNeural | А на ровном месте?
+k40p_098_ref | edge:ru-RU-SvetlanaNeural | На ровном месте вниз некуда. Снег немножко тормозит. И санки стоят.
+k40r_099_ref | edge:ru-RU-SvetlanaNeural | Значит, Земля любит, когда мы катаемся с горки!
+k40t_105_ref | edge:ru-RU-SvetlanaNeural | А я тяжёлый. Меня Земля тянет сильнее?
+k40p_106_ref | edge:ru-RU-SvetlanaNeural | Да, Топа. Тяжёлого тянет сильнее. А пёрышко — совсем чуть-чуть.
+k40r_107_ref | edge:ru-RU-SvetlanaNeural | Тогда я съем ещё пирожок. И поеду быстрее всех!
+k40b_113_ref | edge:ru-RU-SvetlanaNeural | Проверим! Чем выше горка, тем быстрее едешь.
+k40b_114_ref | edge:ru-RU-SvetlanaNeural | Ура-а-а! Как быстро!
+k40t_115_ref | edge:ru-RU-SvetlanaNeural | Земля, спасибо!
+k40f_119_ref | edge:ru-RU-SvetlanaNeural | Мы вместе! И оба сами!
+k40p_120_ref | edge:ru-RU-SvetlanaNeural | Видите? Санки едут туда, куда тянет Земля.
+k40r_121_ref | edge:ru-RU-SvetlanaNeural | Теперь я тащу санки наверх. Сам!
+k40r_122_ref | edge:ru-RU-SvetlanaNeural | Наверх тяжело. Земля тянет санки назад!
+k40r_123_ref | edge:ru-RU-SvetlanaNeural | А вниз она мне помогает!
+k40p_124_ref | edge:ru-RU-SvetlanaNeural | Ура! Я тоже еду!
+k40f_125_ref | edge:ru-RU-SvetlanaNeural | Пик маленький, а едет быстро!
+k40b_126_ref | edge:ru-RU-SvetlanaNeural | Земля тянет всех: и маленьких, и больших.
+k40t_127_ref | edge:ru-RU-SvetlanaNeural | Последний раз! Кто быстрее?
+k40f_128_ref | edge:ru-RU-SvetlanaNeural | Ничья! Оба приехали вместе!
+k40t_130_ref | edge:ru-RU-SvetlanaNeural | Я тяжёлый, а Барсик лёгкий. А приехали вместе!
+k40p_131_ref | edge:ru-RU-SvetlanaNeural | Земля тянет каждого. Поэтому едут почти одинаково.
+k40r_132_ref | edge:ru-RU-SvetlanaNeural | А я буду судьёй. Я снизу всё видел!
+k40b_138_ref | edge:ru-RU-SvetlanaNeural | Смотр+ите, с+олнце садится. Пора домой.
+k40t_139_ref | edge:ru-RU-SvetlanaNeural | Домой санки тоже надо тащить. Тут ровно.
+k40f_141_ref | edge:ru-RU-SvetlanaNeural | Топа, ты как паровозик! Ту-ту!
+k40b_144_ref | edge:ru-RU-SvetlanaNeural | Сегодня мы узнали секрет горки.
+k40p_145_ref | edge:ru-RU-SvetlanaNeural | Земля тянет всё вниз. Даже санки.
+k40r_146_ref | edge:ru-RU-SvetlanaNeural | А я узнал, что катиться без санок тоже весело!
+k40p_152_ref | edge:ru-RU-SvetlanaNeural | Земля тянет всё вниз. Поэтому с горки едешь сам. В гору надо тащить. На ровном месте снег тормозит.
+k40r_153_ref | edge:ru-RU-SvetlanaNeural | А я запишу ещё: на горке очень весело!
+k40f_154_ref | edge:ru-RU-SvetlanaNeural | И падать в снег мягко.
+k40b_156_ref | edge:ru-RU-SvetlanaNeural | Особенно Рону. Он сегодня падал целых три раза!
+k40r_157_ref | edge:ru-RU-SvetlanaNeural | Это я проверял притяжение.
+k40t_163_ref | edge:ru-RU-SvetlanaNeural | Ой, как спать хочется. Накатались мы сегодня!
+k40f_164_ref | edge:ru-RU-SvetlanaNeural | А на небе уж+е звёзды. Много-много!
+k40r_165_ref | edge:ru-RU-SvetlanaNeural | А днём их не было. Куда звёзды прячутся днём?
+k40b_166_ref | edge:ru-RU-SvetlanaNeural | Вот это загадка! Завтра узнаем!
+k40p_167_ref | edge:ru-RU-SvetlanaNeural | Т+ише. Топа уж+е спит.
