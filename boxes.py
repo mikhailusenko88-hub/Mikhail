@@ -68,7 +68,7 @@ def satin(name, hexcol):
     return m
 
 def film():
-    m, b = principled('film', [1, 1, 1, 1], 0.03, **{'Transmission Weight': 1.0, 'IOR': 1.35})
+    m, b = principled('film', [1, 1, 1, 1], 0.04, **{'Transmission Weight': 1.0, 'IOR': 1.52, 'Specular IOR Level': 0.9})
     return m
 
 def shred_mat(hexes):
@@ -353,11 +353,75 @@ def name_card(line1, line2, loc, rot):
     c = cuboid('cardp', cw, ch, 0.0006, (0, 0, 0), m, bevel=0); c.parent = root
     fnt = bpy.data.fonts.load(os.path.abspath('fonts/Lora-Italic.ttf'))
     tm, tb = principled('ink', srgb('3A2620'), 0.6)
-    for txt, sz, y in ((line1, 0.017, 0.006), (line2, 0.0095, -0.0135)):
+    for txt, sz, y in ((line1, 0.018, 0.007), (line2, 0.0115, -0.0135)):
         cu = bpy.data.curves.new('t', 'FONT'); cu.body = txt; cu.font = fnt; cu.size = sz; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
         cu.materials.append(tm)
         t = bpy.data.objects.new('t', cu); link(t); t.location = (0, y, 0.00035); t.parent = root
     root.location = loc; root.rotation_euler = [math.radians(a) for a in rot]
+    return root
+
+
+# ---------------- mini: kraft bags with window
+def kraft_mat():
+    m, b = principled('kraft', srgb('C49A6C'), 0.75, **{'Specular IOR Level': 0.25})
+    nt = m.node_tree
+    n = nt.nodes.new('ShaderNodeTexNoise'); n.inputs['Scale'].default_value = 60; n.inputs['Detail'].default_value = 8
+    v = nt.nodes.new('ShaderNodeTexVoronoi'); v.inputs['Scale'].default_value = 9
+    mx = nt.nodes.new('ShaderNodeMath'); mx.operation = 'ADD'
+    nt.links.new(n.outputs['Fac'], mx.inputs[0]); nt.links.new(v.outputs['Distance'], mx.inputs[1])
+    bp = nt.nodes.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.25; bp.inputs['Distance'].default_value = 0.0008
+    nt.links.new(mx.outputs[0], bp.inputs['Height']); nt.links.new(bp.outputs['Normal'], b.inputs['Normal'])
+    hs = nt.nodes.new('ShaderNodeHueSaturation'); hs.inputs['Value'].default_value = 1.0
+    cr = nt.nodes.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].color = srgb('B48A5E'); cr.color_ramp.elements[1].color = srgb('CFA678')
+    n2 = nt.nodes.new('ShaderNodeTexNoise'); n2.inputs['Scale'].default_value = 400
+    nt.links.new(n2.outputs['Fac'], cr.inputs['Fac']); nt.links.new(cr.outputs['Color'], b.inputs['Base Color'])
+    return m
+
+def sticker_obj(name_txt, loc, rot, d=0.058):
+    root = bpy.data.objects.new('stk', None); link(root)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=d / 2, depth=0.0004)
+    c = bpy.context.active_object; c.rotation_euler = (math.radians(90), 0, 0)
+    m, b = principled('stk', srgb('F6EBDD'), 0.5); c.data.materials.append(m); c.parent = root
+    fnt = bpy.data.fonts.load(os.path.abspath('fonts/Lora-Italic.ttf'))
+    tm, tb = principled('ink2', srgb('6B3B26'), 0.6)
+    cu = bpy.data.curves.new('t', 'FONT'); cu.body = name_txt; cu.font = fnt; cu.size = d * 0.30; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
+    cu.materials.append(tm)
+    t = bpy.data.objects.new('t', cu); link(t); t.location = (0, -0.00025, 0); t.rotation_euler = (math.radians(90), 0, 0); t.parent = root
+    root.location = loc; root.rotation_euler = rot
+    return root
+
+def bag(cx, cy, yaw, name_txt, ribcol):
+    root = bpy.data.objects.new('bag', None); link(root)
+    W, D, H, t = 0.14, 0.06, 0.23, 0.0006
+    km = kraft_mat()
+    wx0, wx1, wz0, wz1 = -0.042, 0.042, 0.035, 0.165
+    parts = []
+    # front wall with window
+    parts.append(cuboid('f1', W, t, wz0, (0, -D / 2, wz0 / 2), km, bevel=0))
+    parts.append(cuboid('f2', W, t, H - wz1, (0, -D / 2, (H + wz1) / 2), km, bevel=0))
+    parts.append(cuboid('f3', W / 2 + wx0, t, wz1 - wz0, ((-W / 2 + wx0) / 2, -D / 2, (wz0 + wz1) / 2), km, bevel=0))
+    parts.append(cuboid('f4', W / 2 - wx1, t, wz1 - wz0, ((W / 2 + wx1) / 2, -D / 2, (wz0 + wz1) / 2), km, bevel=0))
+    parts.append(cuboid('win', wx1 - wx0 + 0.004, 0.0003, wz1 - wz0 + 0.004, (0, -D / 2 + 0.0008, (wz0 + wz1) / 2), film(), bevel=0))
+    parts.append(cuboid('back', W, t, H, (0, D / 2, H / 2), km, bevel=0))
+    for sg in (-1, 1):
+        parts.append(cuboid('side', t, D, H, (sg * W / 2, 0, H / 2), km, bevel=0))
+    parts.append(cuboid('bot', W, D, t, (0, 0, t / 2), km, bevel=0))
+    # folded top: flap over the front
+    fl = cuboid('flap', W + 0.002, 0.0012, 0.05, (0, -D / 2 - 0.0012, H - 0.022), km, bevel=0)
+    parts.append(fl)
+    parts.append(cuboid('topc', W + 0.002, D + 0.003, 0.004, (0, 0, H + 0.001), km, bevel=0.001))
+    rm = satin('rib_' + name_txt, ribcol)
+    parts.append(cuboid('band', W + 0.004, D + 0.006, 0.012, (0, 0, H - 0.05), rm, bevel=0))
+    # contents (standing inside, facing front)
+    inside = [('PMINI', -0.030, 0.012, 0.0, 0), ('FINI', 0.032, 0.012, 0.0, 0), ('CHUPA', 0.0, 0.0, 0.118, 1), ('TW20', 0.0, -0.010, 0.085, 2), ('KK', 0.0, -0.018, 0.050, 3)]
+    for key, x, y, z, lay in inside:
+        ob, Wd, Hd, Dd = product(key, 0.95 if key in ('TW20', 'KK') else 0.9)
+        ob.rotation_euler = (math.radians(90 - 6), 0, 0)
+        ob.location = (x, y, (z if z else 0.012) + Hd / 2)
+        ob.parent = root
+    for p in parts: p.parent = root
+    sticker_obj(name_txt, (0, -D / 2 - 0.004, H - 0.026), (0, 0, 0)).parent = root
+    root.location = (cx, cy, 0); root.rotation_euler = (0, 0, math.radians(yaw))
     return root
 
 # ---------------- scenes
@@ -387,6 +451,25 @@ LAYOUT = {
         ('TW20', -0.040, -0.110, -4, 8, 'flat', 2), ('KK', 0.060, -0.122, -3, 8, 'flat', 3)], card=('Алисе', 'С Новым годом!')),
 }
 
+if BOX == 'mini':
+    world(); backdrop(A.get('bg', 'F2E2D2'))
+    bag(-0.165, 0.02, 8, 'Маша', 'F4B3CC'); bag(0.0, -0.02, 0, 'Артём', 'A9C8F2'); bag(0.165, 0.02, -8, 'Соня', 'F4B3CC')
+    area('key', (-0.6, -0.6, 0.7), (0, 0, 0.1), 0.9, float(A.get('key', '30')))
+    area('fill', (0.7, -0.4, 0.3), (0, 0, 0.1), 0.7, float(A.get('fill', '8')), (1, 0.97, 0.94))
+    area('rim', (0.0, 0.6, 0.6), (0, 0, 0.12), 0.6, float(A.get('rim', '10')))
+    el = math.radians(float(A.get('cam_el', '16'))); az = math.radians(float(A.get('cam_az', '0')))
+    tgt = Vector((0, 0, 0.115)); dist = float(A.get('cam_d', '1.05'))
+    cpos = tgt + Vector((math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el))) * dist
+    cd = bpy.data.cameras.new('cam'); cd.lens = float(A.get('lens', '60'))
+    cam = bpy.data.objects.new('cam', cd); link(cam); cam.location = cpos
+    cam.rotation_euler = (tgt - cpos).to_track_quat('-Z', 'Y').to_euler()
+    cd.dof.use_dof = True; cd.dof.focus_distance = (tgt - cpos).length; cd.dof.aperture_fstop = float(A.get('fstop', '11'))
+    sc.camera = cam
+    sc.render.image_settings.file_format = 'PNG'
+    sc.render.filepath = os.path.abspath(f'{OUT}/{NAME}.png')
+    bpy.ops.render.render(write_still=True)
+    print('DONE', sc.render.filepath)
+    sys.exit(0)
 L = LAYOUT[BOX]; T = THEME[L['theme']]
 w, h, t = L['w'], L['h'], 0.0022
 world()
@@ -414,10 +497,10 @@ fill_shred(w - 2 * t, top + 0.004, shred, int(A.get('shred2', str(int(220 * (w /
 
 lw = w + 0.004
 ld = lid(lw, 0.022 if w < 0.25 else 0.028, t, boxmat, rib)
-lean = math.radians(float(A.get('lid_lean', '50')))
+lean = math.radians(float(A.get('lid_lean', '28')))
 # lid stands behind the box, lower edge on the floor, leaning back; its top (window, bow) faces the camera
 ld.rotation_euler = (lean, 0, math.radians(float(A.get('lid_yaw', '-12'))))
-ld.location = (w * float(A.get('lid_x', '0.22')), w / 2 + 0.012 + math.cos(lean) * lw / 2, math.sin(lean) * lw / 2 + 0.001)
+ld.location = (w * float(A.get('lid_x', '0.12')), w / 2 + float(A.get('lid_gap', '0.004')) + math.cos(lean) * lw / 2, math.sin(lean) * lw / 2 + 0.001)
 if L.get('card'):
     ct = math.radians(float(A.get('card_tilt', '64')))
     name_card(*L['card'], loc=(w * 0.30, -w / 2 - 0.004 - 0.03 * math.cos(ct), 0.03 * math.sin(ct) + 0.001), rot=(math.degrees(ct), 0, float(A.get('card_yaw', '-10'))))
@@ -429,8 +512,8 @@ area('rim', (0.1, 0.65, 0.55), (0, 0, 0.05), 0.6, float(A.get('rim', '9')))
 
 # camera
 el = math.radians(float(A.get('cam_el', '44'))); az = math.radians(float(A.get('cam_az', '-12')))
-dist = float(A.get('cam_d', '0.80')) * (w / 0.2) ** 0.95
-tgt = Vector((0.01 * w / 0.2, 0.05 * w / 0.2, 0.05 * w / 0.2))
+dist = float(A.get('cam_d', '0.72')) * (w / 0.2) ** 0.95
+tgt = Vector((0.01 * w / 0.2, float(A.get('tgt_y', '0.035')) * w / 0.2, 0.03 * w / 0.2))
 cpos = tgt + Vector((math.sin(az) * math.cos(el), -math.cos(az) * math.cos(el), math.sin(el))) * dist
 cd = bpy.data.cameras.new('cam'); cd.lens = float(A.get('lens', '60'))
 cam = bpy.data.objects.new('cam', cd); link(cam); cam.location = cpos
