@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-26 слот 3: mass_cars №11 https://youtube.com/shorts/Ki0KPOMteic, за 33 с
+ВЫЛОЖЕНО 2026-11-27 слот 1: mass_cars №12 https://youtube.com/shorts/ZBf3N5pqN9I, за 36 с
 
 {
- "title": "1000 ta shar! Nexia, Gentra, Equinox… Qaysi mashina yutadi? Какая машина победит? №11 #shorts",
- "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Lacetti, Nexia, Equinox, Tracker, Gentra, Captiva, Kia K5, Damas, Tico, Cobalt\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
+ "title": "1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts",
+ "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Cobalt, Matiz, Gentra, Tahoe, Onix, BYD Song, Chery Tiggo, Nexia, Labo, Spark\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -18,25 +18,25 @@
   "mashina",
   "chevrolet",
   "1000 marbles",
-  "Lacetti",
-  "Nexia",
-  "Equinox",
-  "Tracker"
+  "Cobalt",
+  "Matiz",
+  "Gentra",
+  "Tahoe"
  ]
 }
 
 --- журнал (время Ташкента) ---
-19:35:35 режим publish, событие workflow_dispatch
-19:35:36 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-19:35:48 комментарии: роликов просмотрено: 15, комментариев: 1
-19:35:49 «1000 ta shar» (cars) №11: Lacetti, Nexia, Equinox, Tracker, Gentra, Captiva, Kia K5, Damas, Tico, Cobalt
-19:35:52 «1000 шарик»: действие 19.7 с, ролик 24.2 с; в кубке 393; победа Tico 45
-19:35:52 кадр 0 / 727
-19:35:55 кадр 150 / 727
-19:35:57 кадр 300 / 727
-19:35:59 кадр 450 / 727
-19:36:01 кадр 600 / 727
-19:36:06 ролик готов: 24 с, 12 МБ, сборка 30 с; победил Tico, топ-3: Tico, Kia K5, Damas, в кубке 393
-19:36:08 YouTube: https://youtube.com/shorts/Ki0KPOMteic
-19:36:08 в плейлисте
-19:36:09 статус: public uploaded
+12:18:41 режим publish, событие workflow_dispatch
+12:18:41 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+12:18:52 комментарии: роликов просмотрено: 15, комментариев: 1
+12:18:53 «1000 ta shar» (cars) №12: Cobalt, Matiz, Gentra, Tahoe, Onix, BYD Song, Chery Tiggo, Nexia, Labo, Spark
+12:18:58 «1000 шарик»: действие 19.3 с, ролик 23.8 с; в кубке 408; победа Tahoe 48
+12:18:58 кадр 0 / 715
+12:19:01 кадр 150 / 715
+12:19:04 кадр 300 / 715
+12:19:06 кадр 450 / 715
+12:19:09 кадр 600 / 715
+12:19:14 ролик готов: 24 с, 11 МБ, сборка 33 с; победил Tahoe, топ-3: Tahoe, BYD Song, Labo, в кубке 408
+12:19:16 YouTube: https://youtube.com/shorts/ZBf3N5pqN9I
+12:19:17 в плейлисте
+12:19:17 статус: public uploaded
