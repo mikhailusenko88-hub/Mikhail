@@ -292,7 +292,7 @@ def main():
                 for r in J["rows"]:
                     if "clear" not in r or str(r["i"]) not in z.files:
                         continue
-                    sc = r["clear"] - 10 * r.get("extra", 0) - 30 * max(0.0, r.get("over", 0.0))
+                    sc = r["clear"] - 10 * r.get("extra", 0) - 150 * max(0.0, r.get("over", 0.0) - 0.05)   # 27.11: −30/с проигрывал короткой реплике (одно слово распознаётся хуже) — за окном 0,2–0,3 с оставалось
                     if r["i"] not in cand or sc > cand[r["i"]][0]:
                         cand[r["i"]] = (sc, dict(r, pick=d.rstrip("/").split("/")[-1]), z[str(r["i"])])
         rows = sorted((c[1] for c in cand.values()), key=lambda r: r["i"])
