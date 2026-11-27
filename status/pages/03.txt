@@ -1,36 +1,19 @@
-URL: https://max.ru/id470331302505_biz
+URL: https://crm.nashdekor.ru/api/outbox/status/f7e698bf-273b-42c5-a977-ab4fd27df1c8
 КОД: 200
 ЗАГОЛОВКИ:
-Server: kittenx
-Date: Fri, 27 Nov 2026 05:56:02 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 33226
+Server: nginx
+Date: Fri, 27 Nov 2026 08:24:54 GMT
+Content-Type: application/json
+Content-Length: 67
 Connection: close
-Vary: Accept-Encoding
-Vary: Accept-Encoding
-etag: "wjnqhj"
-link: <./_app/immutable/assets/0.9JB6QHOA.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/TechLandingButton.Dr--mBck.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/2.ChnDz0HO.css>; rel="preload"; as="style"; nopush, <./_app/immutable/assets/8.D9B4HlxB.css>; rel="preload"; as="style"; nopush, <./_app/immutable/entry/start.Pd6YWkzf.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CyUAOAlP.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DR7I_LvJ.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/5n0K6iJJ.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DdQeYc57.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/D0iwhpLH.js>; rel="modulepreload"; nopush, <./_app/immutable/entry/app.DPmEmkp0.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/PPVm8Dsz.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DsnmJJEf.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CyW4ndQS.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CRs47EFS.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BoQrTr2l.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/C_6_LVaS.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/0.DAg68twj.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BhdLFtmy.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/Eyj1p50w.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/2.D23p_Efp.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/Bv3D6Ci5.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BXCJLiVg.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BQdRCpZ9.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/C_bNp1w0.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/CJs1kZJZ.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BISuz8ay.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/jc0umckB.js>; rel="modulepreload"; nopush, <./_app/immutable/nodes/8.Y9aGqduM.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/7o7NEJzb.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/C3N3U4Z7.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BaryGbeF.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/DuKLRT7v.js>; rel="modulepreload"; nopush, <./_app/immutable/chunks/BfFI67zY.js>; rel="modulepreload"; nopush
-x-sveltekit-page: true
-Referrer-Policy: origin
+Cache-Control: no-store
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: same-origin
+Vary: Cookie
+Strict-Transport-Security: max-age=15552000
+X-Robots-Tag: noindex, nofollow
 
-Наш декор — стеновые панели и молдинги в мессенджере MAX 
- Наш декор — стеновые панели и молдинги 
- @id470331302505_biz 
- Стеновые реечные панели под покраску и под дерево, плинтусы и молдинги. Санкт-Петербург и Ленобласть, отправка по России. Каталог и расчёт стены в 3D — nashdekor.ru. Цены, наличие и заказ — в боте «Наш декор»: max.ru/id470331302505_bot 
- Перейти в канал Открыть в браузере 
- Если у вас установлено приложение, 
-вы можете сразу перейти в канал
+{"error":"","sent_at":"2026-11-27T11:09:05+03:00","status":"sent"}
 
 ССЫЛКИ:
-./_app/immutable/assets/0.9JB6QHOA.css
-./_app/immutable/assets/2.ChnDz0HO.css
-./_app/immutable/assets/8.D9B4HlxB.css
-./_app/immutable/assets/TechLandingButton.Dr--mBck.css
-/apple-touch-icon.png
-/favicon.ico
-/favicon.svg
-/manifest.json
-android-app://ru.oneme.app/https/play.google.com/store/apps/details?id=ru.oneme.app
-https://max.ru
-https://web.max.ru/id470331302505_biz
-max://max.ru/id470331302505_biz
