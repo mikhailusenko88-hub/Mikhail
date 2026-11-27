@@ -1,0 +1,43 @@
+name: boxes-pages
+on:
+  push:
+    branches: [boxes-render]
+    paths: [pages/urls.txt]
+permissions:
+  contents: write
+jobs:
+  get:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: |
+          python3 - <<'PY'
+          import urllib.request, gzip, os, time
+          UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml', 'Accept-Language': 'ru-RU,ru;q=0.9', 'Accept-Encoding': 'gzip'}
+          os.makedirs('pages/raw', exist_ok=True)
+          log = []
+          for ln in open('pages/urls.txt', encoding='utf-8'):
+              ln = ln.strip()
+              if not ln or ln.startswith('#'): continue
+              name, url = ln.split(None, 1)
+              try:
+                  r = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40)
+                  b = r.read()
+                  if r.headers.get('Content-Encoding') == 'gzip': b = gzip.decompress(b)
+                  open(f'pages/raw/{name}.html', 'wb').write(b)
+                  log.append(f'{name} {r.status} {len(b)} {r.geturl()}')
+              except Exception as e:
+                  log.append(f'{name} ERR {e!r}')
+              time.sleep(1)
+          open('pages/log.txt', 'w').write('\n'.join(log) + '\n')
+          print('\n'.join(log))
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add pages
+          git commit -m "pages fetched [skip ci]" || exit 0
+          for i in 1 2 3; do git pull --rebase -q origin boxes-render && git push -q && break; sleep 5; done
