@@ -1,13 +1,2 @@
-# 26.11 23:25 новое для Beautiful Shorts: ёлочные шары, петли, «1 vs 1 000 000» — кадры
-info:oO0Vuhmh4sM
-info:h35gVDqYaMA
-info:s-7m6FJ6m1c
-info:wkr7AREWYgA
-info:oCicqnosClY
-@FizzArcade
-@EnbiLoop
-@Loopcraft-o2b
-@Mellometry
-@SimOrbit3D
-scan:search-month:christmas ornament shatter
-scan:search-month:satisfying 3d loop
+# 27.11 06:55 UTC ежедневный обход: daily 06:23 не пришёл — полный сбор
+all
