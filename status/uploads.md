@@ -93,3 +93,4 @@
 | shorts | 2026-11-26 | 2 | Mexico vs Germany vs Ukraine | https://youtube.com/shorts/Y_YmMMSFvko | public (только Shorts) |
 | shorts | 2026-11-26 | 3 | Brazil vs UK vs Egypt | https://youtube.com/shorts/fMINMQRXyuI | public (только Shorts) |
 | shorts | 2026-11-27 | 1 | Vietnam vs Thailand vs Italy | https://youtube.com/shorts/R80c42VFMUg | public (только Shorts) |
+| shorts | 2026-11-27 | 2 | Mexico vs Germany vs Philippines | https://youtube.com/shorts/PUs313igFkU | public (только Shorts) |
