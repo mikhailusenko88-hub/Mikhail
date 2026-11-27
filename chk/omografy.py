@@ -67,7 +67,7 @@ def fix(path, out, iphone):
 def main():
     path = sys.argv[1]
     g = json.load(open(sys.argv[sys.argv.index('--golos') + 1])) if '--golos' in sys.argv else {}
-    iphone = {'Пик'} | ({'Рон'} if 'Рон' not in g else set())
+    iphone = {w for w in ('Пик', 'Рон') if w not in g}   # 27.11.2026: с 37-й Пик — свой нейроголос (svoy_pik в golosa.json)
     if '--fix' in sys.argv:
         fix(path, sys.argv[sys.argv.index('--fix') + 1], iphone); path = sys.argv[sys.argv.index('--fix') + 1]
     n = 0
