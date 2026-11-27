@@ -42,6 +42,27 @@ OUT = os.path.join("out_dub", NAME)
 os.makedirs(OUT, exist_ok=True)
 G = json.load(open("geroi.json", encoding="utf-8"))
 LENK = float(os.environ.get("DUB_LENK") or G.get("len_k_lang", {}).get(LANG, 1.0))
+# 27.11.2026 (Михаил: «да»): каждую реплику озвучивать в TAKES дублях (перекраска каждый раз звучит по-своему: одна реплика 3,2…4,2 UTMOS)
+# и брать самый естественный из разборчивых. Если задание идёт дольше BUDGET минут — дальше по одному дублю (лимит задания 330 мин).
+_TK = G.get("takes", {})
+TAKES = int(os.environ.get("DUB_TAKES") or _TK.get(LANG, _TK.get("default", 1)))
+BUDGET = float(os.environ.get("DUB_BUDGET_MIN") or _TK.get("budget_min", 200))
+# 27.11.2026 (Михаил: «да, не много»): вопрос «да/нет» — подъём в конце на QRISE полутонов (в этих языках такой вопрос идёт вверх)
+QRISE = float(os.environ.get("DUB_QRISE") or G.get("qrise", {}).get(LANG, 0) or 0)
+WH = {"en": r"^(what|where|who|whom|whose|why|how|when|which)\b", "de": r"^(was|wo|wer|wen|wem|wessen|warum|wieso|weshalb|wie|wann|welche[rsmn]?|woher|wohin)\b",
+      "es": r"^(qué|dónde|quién|quiénes|por qué|cómo|cuándo|cuál|cuánto|adónde)\b", "pt": r"^(o que|que|onde|quem|por que|porque|como|quando|qual|quanto)\b",
+      "fr": r"^(qu[e']|quoi|où|qui|pourquoi|comment|quand|quel|combien)"}
+
+
+def yesno(text):
+    """Вопрос «да/нет»: последняя фраза кончается «?» и не начинается с вопросительного слова (с «и/а/но» в начале — тоже)."""
+    import re
+    t = text.strip().rstrip("!").rstrip()
+    if not t.endswith("?") or LANG not in WH:
+        return False
+    last = re.split(r"(?<=[.!?])\s+", t)[-1].lower().strip("¿¡ ")
+    last = re.sub(r"^(and|but|so|und|aber|y|pero|e|mas|et|mais)\s+", "", last)
+    return not re.search(WH[LANG], last)
 if os.environ.get("DUB_SRC"):
     G["src"][LANG] = dict(SRC_PRESET.get(os.environ["DUB_SRC"]) or json.loads(os.environ["DUB_SRC"]))
     for _h in G["heroes"].values():
@@ -179,10 +200,11 @@ def main():
         # длина русской реплики (и не дальше следующей); LENK — языку можно чуть длиннее русской, в паузу (хинди 26.11: голос медленный,
         # реплики ускорялись до ×1,45 — речь «торопится»)
         target = min(window, max(ln["bdur"], 0.4) * hero.get("len_k", 1.0) * LENK)
-        best = None
-        for attempt in range(3):
+        best, good, failed = None, [], 0
+        n_takes = TAKES if (time.time() - t_start) / 60 < BUDGET else 1
+        for attempt in range(3 + n_takes - 1):
             try:
-                tgt = target if attempt == 0 else min(window, target * 1.3)   # вторая попытка — можно чуть длиннее (в паузу)
+                tgt = target if not failed else min(window, target * 1.3)   # после неразборчивой попытки — можно чуть длиннее (в паузу)
                 a, info, used, ratio = render_fit(text, spec, refs[name], f0s[name], pre, tgt)
                 heard = D.heard(a, LANG, G.get("whisper_lang", {}).get(LANG, G.get("whisper", "small")))
                 clear, extra = D.clear_pct(text, heard)
@@ -196,15 +218,37 @@ def main():
                 if best is None or (clear - 10 * extra) > (best["clear"] - 10 * best["extra"]):
                     best = cand
                 if clear >= 85 and extra <= 1:
+                    if n_takes > 1:
+                        try:
+                            cand["mos"] = D.utmos(a)
+                        except Exception:
+                            traceback.print_exc()
+                            cand["mos"] = 0.0
+                    good.append(cand)
+                    if len(good) >= n_takes:
+                        break
+                    continue                          # следующий дубль — с теми же настройками
+                failed += 1
+                if failed >= 3:
                     break
-                spec = with_speed(spec, 0.92)   # вторая попытка — медленнее (разборчивее)
+                spec = with_speed(spec, 0.92)   # следующая попытка — медленнее (разборчивее)
             except Exception as ex:
                 traceback.print_exc()
                 row["error"] = f"{type(ex).__name__}: {ex}"[:200]
         if best is None:
             rows.append(row)
             continue
+        if good:
+            best = max(good, key=lambda c: c.get("mos", 0.0))   # из разборчивых — самый естественный
+            if len(good) > 1:
+                row["takes"] = [c.get("mos") for c in good]
         a = best["a"]
+        if QRISE and yesno(text):
+            try:
+                a = D.qrise(a, QRISE)
+                row["qrise"] = QRISE
+            except Exception:
+                traceback.print_exc()
         k_t = len(a) / D.SR / window
         if k_t > 1.0:
             a = D.tempo(a, min(k_t, 1.3))
@@ -219,6 +263,8 @@ def main():
             row["words"] = best["words"]
         if best.get("tk"):
             row["tk"] = best["tk"]
+        if best.get("mos") is not None:
+            row["mos"] = best["mos"]
         row.update(heard=best["heard"], clear=best["clear"], extra=best["extra"], shift=best["shift"],
                    speed=best["speed"], tempo=round(max(1.0, k_t), 2), over=round(max(0.0, len(a) / SRM - window), 2),
                    sec=round(len(a) / SRM, 2), window=round(window, 2), ru_sec=round(ln["bdur"], 2),
@@ -334,7 +380,9 @@ def main():
               "syl_ru": round(float(np.median([r["syl_ru"] for r in ok])), 1) if ok else None,
               "syl": round(float(np.median([r["syl"] for r in ok])), 1) if ok else None,
               "len_ratio": round(float(np.median([r["sec"] / max(0.3, r["ru_sec"]) for r in ok])), 2) if ok else None,
-              "fast": [r["i"] for r in ok if r["speed"] > 1.25], "rows": rows}
+              "fast": [r["i"] for r in ok if r["speed"] > 1.25], "rows": rows,
+              "mos_avg": round(float(np.mean([r["mos"] for r in ok if r.get("mos")])), 2) if any(r.get("mos") for r in ok) else None,
+              "takes": TAKES, "qrise": QRISE, "q_rise": [r["i"] for r in ok if r.get("qrise")]}
     if any("pick" in r for r in ok):
         from collections import Counter
         report["picks"] = dict(Counter(r.get("pick") for r in ok))
@@ -345,6 +393,7 @@ def main():
           f"Реплик {report['lines']}, озвучено {report['done']}, понято в среднем {report['clear_avg']}%; "
           f"плохо понятых {len(report['low'])}: {report['low']}; ускорено больше ×1,15: {report['stretched']}; "
           f"вылезли за окно: {report['over']}. Сведение совпало с русским на {fit:.3f}. Громкость {I1} LUFS. {report['minutes']} мин.", "",
+          f"Дублей на реплику: {report['takes']}; естественность выбранных (UTMOS): {report['mos_avg']}. Подъём вопросов +{report['qrise']} пт: {report['q_rise']}.", "",
           f"Темп: по-русски {report['syl_ru']} слог/с, здесь {report['syl']} слог/с; реплика длиннее русской в {report['len_ratio']} раза (медиана). "
           f"Пришлось ускорять голос больше ×1,25 (перевод длинноват — сократить): {report['fast']}.", "",
           "| № | Герой | Русский | Перевод | Понято | Лишних | Скорость голоса | Растяжка | Сек (рус) | Услышано |",

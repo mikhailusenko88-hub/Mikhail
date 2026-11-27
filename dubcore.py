@@ -382,3 +382,42 @@ def edge_label(text, path, voice="ru-RU-SvetlanaNeural"):
     except Exception:
         traceback.print_exc()
         return False
+
+
+# ---------- 27.11.2026: естественность и подъём вопроса (решение Михаила 27.11 08:09: «1 — да, не много; 2 — да») ----------
+_mos = {}
+
+
+def utmos(arr, sr=SR):
+    """Естественность UTMOS 1–5 (живой диктор ≈ 4–4,5). Для выбора лучшего из дублей одной реплики."""
+    if "m" not in _mos:
+        _mos["m"] = torch.hub.load("tarepan/SpeechMOS:v1.2.0", "utmos22_strong", trust_repo=True)
+    a = resample(np.asarray(arr, dtype=np.float32), sr, 16000)
+    with torch.no_grad():
+        return round(float(_mos["m"](torch.from_numpy(np.ascontiguousarray(a))[None], 16000)), 2)
+
+
+def qrise(arr, st=3.0, tail=0.35, sr=SR):
+    """Конец вопроса «да/нет»: от высоты за tail секунд до конца — плавный подъём на st полутонов (Praat, PSOLA).
+    Пробы 27.11 (37i en): +3 пт — UTMOS 4,20 → 3,91, на слух Михаила «да, не много»."""
+    s = snd(arr, sr)
+    man = call(s, "To Manipulation", 0.01, 75, 700)
+    pt = call(man, "Extract pitch tier")
+    n = int(call(pt, "Get number of points"))
+    if n < 5:
+        return arr
+    tv = [(call(pt, "Get time from index", i), call(pt, "Get value at index", i)) for i in range(1, n + 1)]
+    tend = tv[-1][0]
+    t0 = tend - tail
+    before = [v for t, v in tv if t < t0]
+    base = float(np.median(before[-5:])) if before else tv[0][1]
+    call(pt, "Remove points between", t0, tend + 0.01)
+    for t, v in tv:
+        if t >= t0:
+            x = (t - t0) / max(1e-3, tend - t0)
+            call(pt, "Add point", t, base * 2 ** (st * x * x / 12))
+    call([pt, man], "Replace pitch tier")
+    out = call(man, "Get resynthesis (overlap-add)")
+    a = np.asarray(out.values[0], dtype=np.float32)
+    pk = float(np.max(np.abs(a))) or 1.0
+    return a / pk * 0.9 if pk > 0.99 else a
