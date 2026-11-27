@@ -1,0 +1,32 @@
+name: sb-cover
+# Обложки сборников на языках дубляжа (sb_cover_lang.py). Запрос — sbcover-request.txt, каждая строка — одна обложка.
+on:
+  push:
+    branches: [golos-en]
+    paths: ['sbcover-request.txt']
+permissions:
+  contents: write
+jobs:
+  cover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Шрифты и Pillow
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-inter fonts-noto-core fonts-noto-extra
+          pip install -q pillow
+          python3 -c "from PIL import features; print('raqm', features.check('raqm'))"
+      - name: Обложки серий на языках (ветка dub-files)
+        run: |
+          git fetch -q --depth 1 origin dub-files
+          mkdir -p df && git archive FETCH_HEAD $(grep -v '^#' sbcover-request.txt | awk '{for(i=4;i<=NF;i++) print $i}' | sort -u) | tar -x -C df
+          ls df
+      - name: Обложки сборников
+        run: python3 sb_cover_lang.py
+      - name: В ветку
+        if: always()
+        run: |
+          git config user.name dub; git config user.email dub@users.noreply.github.com
+          git add out_cover 2>/dev/null && git commit -qm "обложки сборников на языках" || echo nothing
+          for i in 1 2 3 4 5; do git pull --rebase -q && git push -q && break; sleep $((RANDOM % 10 + 3)); done
