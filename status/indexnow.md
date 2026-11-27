@@ -1,3 +1,29 @@
+# IndexNow — 2026-11-27 10:13 UTC, коммит 412935f
+- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
+- режим: изменённые страницы (41) из 135 изменённых файлов; без изменений по сути (только ?v=): 88
+  https://nashdekor.ru/catalog/plintus-s-podsvetkoy/
+  https://nashdekor.ru/catalog/plintusy/
+  https://nashdekor.ru/p/a004/
+  https://nashdekor.ru/p/a005/
+  https://nashdekor.ru/p/a100l/
+  https://nashdekor.ru/p/a105/
+  https://nashdekor.ru/p/a11-100/
+  https://nashdekor.ru/p/a11-80/
+  https://nashdekor.ru/p/a12-100/
+  https://nashdekor.ru/p/a122/
+  https://nashdekor.ru/p/a137/
+  https://nashdekor.ru/p/a15/
+  https://nashdekor.ru/p/a153/
+  https://nashdekor.ru/p/a31/
+  https://nashdekor.ru/p/a33/
+  … и ещё 26
+- https://www.bing.com/indexnow: HTTP 200 — принято, ключ проверен 
+- https://yandex.com/indexnow: HTTP 202 — принято, ключ ещё проверяется {
+  "success":true
+}
+
+---
+
 # IndexNow — 2026-11-26 09:57 UTC, коммит 46da709
 - ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
 - режим: изменённые страницы (8) из 132 изменённых файлов; без изменений по сути (только ?v=): 119
@@ -457,10 +483,3 @@
 - https://yandex.com/indexnow: HTTP 200 — принято, ключ проверен {
   "success":true
 }
-
----
-
-# IndexNow — 2026-11-17 17:32 UTC, коммит 663f76d
-- ключ на сайте: https://nashdekor.ru/00822149077422ab29d00b8938ccdbcb.txt → 200, совпадает
-- режим: изменённые страницы (0) из 37 изменённых файлов; без изменений по сути (только ?v=): 0
-- отправлять нечего (изменились не страницы)
