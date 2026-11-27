@@ -1,8 +1,8 @@
-ВЫЛОЖЕНО 2026-11-27 слот 1: mass_cars №12 https://youtube.com/shorts/ZBf3N5pqN9I, за 36 с
+ВЫЛОЖЕНО 2026-11-27 слот 2: mass_cities №6 https://youtube.com/shorts/YGFaT_Ck99Y, за 37 с
 
 {
- "title": "1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts",
- "description": "1000 ta shar — 10 ta mashina. Qaysi mashinaning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 машин. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Cobalt, Matiz, Gentra, Tahoe, Onix, BYD Song, Chery Tiggo, Nexia, Labo, Spark\n\nSen qaysi mashina tarafdorisan? Izohlarda yoz 👇\nА ты за какую машину? Пиши в комментариях 👇\nMashinang yoʻqmi? Yoz — qoʻshamiz! · Нет твоей машины? Напиши — добавим!\n\n#uzbekistan #ozbekiston #mashina #cobalt #gentra #1000tashar #гонкашариков #shorts",
+ "title": "1000 ta shar! Toshkent, Termiz, Jizzax… Qaysi shahar yutadi? Какой город победит? №6 #shorts",
+ "description": "1000 ta shar — 10 ta shahar. Qaysi shaharning sharlari kubokka koʻproq tushadi?\n1000 шариков — 10 городов Узбекистана. Чьих шариков в кубке окажется больше?\n\nIshtirokchilar / Участники: Urganch, Toshkent, Navoiy, Samarqand, Jizzax, Termiz, Asaka, Namangan, Andijon, Qarshi\n\nSen qaysi shahar muxlisisan? Izohlarda yoz 👇\nЗа какой город болеешь? Пиши в комментариях 👇\nShahring yoʻqmi? Yoz — qoʻshamiz! · Нет твоего города? Напиши — добавим!\n\n#uzbekistan #ozbekiston #toshkent #samarqand #1000tashar #гонкашариков #shorts",
  "tags": [
   "oʻzbekiston",
   "uzbekistan",
@@ -13,30 +13,29 @@
   "marble race",
   "1000 ta shar",
   "1000 шариков",
-  "qaysi mashina yutadi",
-  "какая машина победит",
-  "mashina",
-  "chevrolet",
+  "qaysi shahar yutadi",
+  "какой город победит",
+  "города узбекистана",
   "1000 marbles",
-  "Cobalt",
-  "Matiz",
-  "Gentra",
-  "Tahoe"
+  "Urganch",
+  "Toshkent",
+  "Navoiy",
+  "Samarqand"
  ]
 }
 
 --- журнал (время Ташкента) ---
-12:18:41 режим publish, событие workflow_dispatch
-12:18:41 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
-12:18:52 комментарии: роликов просмотрено: 15, комментариев: 1
-12:18:53 «1000 ta shar» (cars) №12: Cobalt, Matiz, Gentra, Tahoe, Onix, BYD Song, Chery Tiggo, Nexia, Labo, Spark
-12:18:58 «1000 шарик»: действие 19.3 с, ролик 23.8 с; в кубке 408; победа Tahoe 48
-12:18:58 кадр 0 / 715
-12:19:01 кадр 150 / 715
-12:19:04 кадр 300 / 715
-12:19:06 кадр 450 / 715
-12:19:09 кадр 600 / 715
-12:19:14 ролик готов: 24 с, 11 МБ, сборка 33 с; победил Tahoe, топ-3: Tahoe, BYD Song, Labo, в кубке 408
-12:19:16 YouTube: https://youtube.com/shorts/ZBf3N5pqN9I
-12:19:17 в плейлисте
-12:19:17 статус: public uploaded
+15:36:04 режим publish, событие workflow_dispatch
+15:36:04 канал: Kim yutadi? @kimyutadi_uz (UC93S31Qkgoz4cFgKBzz-mLA)
+15:36:16 комментарии: роликов просмотрено: 15, комментариев: 1
+15:36:17 «1000 ta shar» (cities) №6: Urganch, Toshkent, Navoiy, Samarqand, Jizzax, Termiz, Asaka, Namangan, Andijon, Qarshi
+15:36:22 «1000 шарик»: действие 16.9 с, ролик 21.5 с; в кубке 417; победа Urganch 49
+15:36:22 кадр 0 / 644
+15:36:25 кадр 150 / 644
+15:36:28 кадр 300 / 644
+15:36:31 кадр 450 / 644
+15:36:36 кадр 600 / 644
+15:36:38 ролик готов: 21 с, 12 МБ, сборка 35 с; победил Urganch, топ-3: Urganch, Termiz, Toshkent, в кубке 417
+15:36:40 YouTube: https://youtube.com/shorts/YGFaT_Ck99Y
+15:36:40 в плейлисте
+15:36:41 статус: public uploaded

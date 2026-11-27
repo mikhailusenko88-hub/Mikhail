@@ -64,3 +64,4 @@
 | 2026-11-26 | 2 | mass_cities №5 | Qoʻqon | https://youtube.com/shorts/5r3Ae6cv9C4 | public |
 | 2026-11-26 | 3 | mass_cars №11 | Tico | https://youtube.com/shorts/Ki0KPOMteic | public |
 | 2026-11-27 | 1 | mass_cars №12 | Tahoe | https://youtube.com/shorts/ZBf3N5pqN9I | public |
+| 2026-11-27 | 2 | mass_cities №6 | Urganch | https://youtube.com/shorts/YGFaT_Ck99Y | public |

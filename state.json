@@ -1656,6 +1656,16 @@
    "link": "https://youtube.com/shorts/ZBf3N5pqN9I",
    "title": "1000 ta shar! Gentra, Nexia, BYD Song… Qaysi mashina yutadi? Какая машина победит? №12 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-27",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 6,
+   "final": false,
+   "link": "https://youtube.com/shorts/YGFaT_Ck99Y",
+   "title": "1000 ta shar! Toshkent, Termiz, Jizzax… Qaysi shahar yutadi? Какой город победит? №6 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1849,28 +1859,28 @@
    ]
   },
   "cities": {
-   "no": 5,
+   "no": 6,
    "cnt": {
-    "Asaka": 2,
+    "Asaka": 3,
     "Nukus": 2,
-    "Namangan": 2,
+    "Namangan": 3,
     "Shahrisabz": 2,
     "Angren": 2,
     "Qoʻqon": 2,
     "Xiva": 2,
     "Fargʻona": 2,
-    "Samarqand": 5,
-    "Toshkent": 5,
-    "Andijon": 2,
-    "Jizzax": 2,
+    "Samarqand": 6,
+    "Toshkent": 6,
+    "Andijon": 3,
+    "Jizzax": 3,
     "Buxoro": 2,
     "Olmaliq": 2,
     "Guliston": 2,
     "Chirchiq": 2,
-    "Qarshi": 2,
-    "Termiz": 2,
-    "Urganch": 2,
-    "Navoiy": 2,
+    "Qarshi": 3,
+    "Termiz": 3,
+    "Urganch": 3,
+    "Navoiy": 3,
     "Zarafshon": 2,
     "Margʻilon": 2
    },
@@ -1939,6 +1949,19 @@
      ],
      "in_cup": 348,
      "link": "https://youtube.com/shorts/5r3Ae6cv9C4"
+    },
+    {
+     "no": 6,
+     "date": "2026-11-27",
+     "slot": 2,
+     "winner": "Urganch",
+     "top3": [
+      "Urganch",
+      "Termiz",
+      "Toshkent"
+     ],
+     "in_cup": 417,
+     "link": "https://youtube.com/shorts/YGFaT_Ck99Y"
     }
    ]
   }
