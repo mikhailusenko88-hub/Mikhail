@@ -1,0 +1,55 @@
+URL: https://reviews.yandex.ru/shop/nashdekor.ru
+КОД: 404
+ЗАГОЛОВКИ:
+Set-Cookie: _yasc=dkP9qmFyKK2ID/qetE0ujjt96FhmoCyPWkFpxmcNxsSXB1+OS4WoO4F8m8jhsWqc23s=; domain=.yandex.ru; path=/; expires=Mon, 24 Nov 2036 05:56:04 GMT; SameSite=None; Secure
+Set-Cookie: pi=Zq4xE6x9uAHHITJrSghKVISqSz/4o1p+ZwHXKGHhAmq9myMqY2sRWseFvXRQl8Pc9DW2Pv+KlpWWA0buB2yJZ+aaO4Y=; Expires=Sun, 26-Nov-2028 05:56:04 GMT; Domain=.yandex.ru; Path=/; Secure; HttpOnly; Partitioned
+Set-Cookie: i=wTMevf0FqHkhJpCqX6Q+4i4Cr3i/YBTZ80UqdU6jQjHsDqJHpzSb4eKr63y3gNHkEeLcaiwEAJPIokLSVb8oApQ0F68=; Expires=Sun, 26-Nov-2028 05:56:04 GMT; Domain=.yandex.ru; Path=/; Secure; HttpOnly
+Set-Cookie: yandexuid=4600200881795758964; Expires=Sun, 26-Nov-2028 05:56:04 GMT; Domain=.yandex.ru; Path=/; Secure
+Set-Cookie: yashr=73251551795758964; Path=/; Domain=.yandex.ru; Expires=Sat, 27 Nov 2027 05:56:04 GMT; Secure; HttpOnly; Partitioned
+Content-Type: text/html; charset=utf-8
+Content-Type: text/html; charset=utf-8
+Connection: Close
+X-Yandex-Req-Id: 1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL
+X-Req-Id: 1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL
+Transfer-Encoding: chunked
+
+Найти 
+ Войти 
+ Поиск Алиса AI Отзывы Отзывы Картинки Видео Карты Товары Финансы Квартиры Переводчик 
+ Все 
+ Такой страницы нет
+ Проверьте адрес страницы или воспользуйтесь поиском 
+ Ричмонд 
+ Сообщить об ошибке 
+ Настройки 
+ ya.ru 
+ О компании Коммерческие предложения Вакансии Лицензия на использование Политика конфиденциальности Правила рекомендаций 
+ Яндекс Яндекс Яндекс {"e4az0":{"state":{"headerProps":{"form":{"action":"/ugcpub/object/shop/nashdekor.ru","searchLabel":"Найти","clearLabel":"Очистить","logo":{"href":"//ya.ru","size":44}},"actions":{"favorites":{"ariaLabel":"Избранное","targetServiceUrl":"https://ya.ru/favs?from=desktop_header&lr=29363"}},"user":{"loggedIn":false,"ariaLabel":"Меню","plus":false,"birthdayHat":false,"child":false,"dialogProps":{"host":"yandex.ru","lang":"ru","project":"reviews","queryParams":{"exp_flags":"skin","preset":"oceania","utm_source":"reviews-app"},"retpath":"https%3A%2F%2Freviews.yandex.ru%2Fugcpub%2Fobject%2Fshop%2Fnashdekor.ru%3Flr%3D29363%26pers_suggest%3D0%26text%3Dsite%253Anashdekor.ru%26ncrnd%3D51021","tld":"ru","platform":"desktop"},"loginUrl":"https://passport.yandex.ru/auth?retpath=%2F&origin=serp_desktop_auth_new","loginText":"Войти"},"navigation":{"tabs":[{"id":"search","label":"Поиск","url":"//yandex.ru/search","params":{"text":"[$query]","site":"[$site]","source":"tabbar"}},{"id":"alice_chat","label":"Алиса AI","url":"//yandex.ru/alice","params":{"reqid":"1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL","utm_source":"yandex","utm_campaign":"serp_alicetab_chat","utm_medium":"interface","alice_deeplink":"[$aliceDeeplink]","source_query":"[$query]","theme":"serp"},"target":"_self","viewTransition":true},{"id":"reviews","label":"Отзывы","url":"/shop/nashdekor.ru","params":{"from":"tabbar"},"target":"_self"},{"id":"images","label":"Картинки","url":"//yandex.ru/images/search","params":{"text":"[$query]","site":"[$site]","noreask":"[$noreask]","nomisspell":"[$nomisspell]","parent-reqid":"[$reqid]","from":"tabbar"}},{"id":"video","label":"Видео","url":"//yandex.ru/video/search","params":{"text":"[$query]","site":"[$site]","noreask":"[$noreask]","parent-reqid":"[$reqid]","from":"tabbar"}},{"id":"maps","label":"Карты","url":"//yandex.ru/maps","params":{"text":"[$query]","source":"serp_navig"}},{"id":"products","label":"Товары","url":"//yandex.ru/search","params":{"text":"[$query]","noreask":"[$noreask]","products_mode":"1","from":"tabbar"}},{"id":"finance","label":"Финансы","url":"//yandex.ru/finance","params":{"text":"[$query]","lr":"[$lr]","from":"tabbar"}},{"id":"realty","label":"Квартиры","url":"//yandex.ru/realty/search","params":{"text":"[$query]","lr":"[$lr]","from":"tabbar"}},{"id":"translate","label":"Переводчик","url":"//translate.yandex.ru","params":{"text":"[$query]","from":"tabbar"}},{"id":"all","label":"Все","url":"//yandex.ru/all","params":{"text":"[$query]","from":"tabbar"}}],"alwaysVisibleTabs":11},"context":{"reqid":"1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL","lr":"29363","aliceDeeplink":"{\"text\":\"site:nashdekor.ru\"}","selectedTabId":"reviews","counters":{"type":"b","data":{"$header":"e4azz000","logo":"e4azz001","advanced-search":"e4azz002","login":"e4azz004","usermenu":"e4azz005","more-button":"e4azz006","cbir":"e4azz007","clear":"e4azz008","submit":"e4azz009","alice":"e4azz00a","favorites":"e4azz00b","ecom-orders":"e4azz00c","weather-informer":"e4azz00d","$navigation":"e4azz00e","item":"e4azz00z","tab-search":"e4azz00g","tab-alice_chat":"e4azz00i","tab-reviews":"e4azz00k","tab-images":"e4azz00m","tab-video":"e4azz00o","tab-maps":"e4azz00q","tab-products":"e4azz00s","tab-finance":"e4azz00u","tab-realty":"e4azz00w","tab-translate":"e4azz00y","tab-all":"e4azz010"}}},"loggedIn":false,"mix":{"outerContainer":[]},"suggestUrl":"/ugcpub/suggest?strict=true&source=common&srv=reviews_ru_desktop&platform=desktop&min_reviews_count=1&remove_punctuation=true","suggestPlaceholder":"Найти отзывы на товары и магазины"},"baobab":{"parentNode":{"context":{"genInfo":{"prefix":"e4azw01-0-1"},"ui":"desktop","service":"reviews","fast":{"name":"reviews/page","subtype":"header"}}}}},"type":"reviews/page","subtype":"header"},"e4az1":{"state":{"linksGroups":[{"type":"geo","links":[{"label":"Ричмонд","title":"Ричмонд","url":"//yandex.ru/tune/geo","logNode":{"name":"region"},"target":"_self","a11yLabel":"Ваш регион Ричмонд","needRetpath":true}]},{"type":"feedback","links":[{"label":"Сообщить об ошибке","logNode":{"name":"feedback","attrs":{"behaviour":{"type":"dynamic"}}}}]},{"type":"settings","links":[{"label":"Настройки","url":"//yandex.ru/tune/common","logNode":{"name":"settings"},"target":"_self","needRetpath":true}]},{"type":"morda","links":[{"label":"ya.ru","url":"//ya.ru/?from=reviews_vertical_footer","logNode":{"name":"morda"},"target":"_self"}]},{"type":"company","links":[{"label":"О компании","url":"https://company.yandex.ru","logNode":{"name":"about"},"target":"_blank"},{"label":"Коммерческие предложения","url":"/search/direct?text=site%3Anashdekor.ru&filters_docs=direct_cm","logNode":{"name":"commercial"},"target":"_blank"},{"label":"Вакансии","url":"//yandex.ru/jobs","logNode":{"name":"vacancy"},"target":"_blank"},{"label":"Лицензия на использование","url":"//yandex.ru/legal/termsofuse/","logNode":{"name":"license"},"target":"_blank"},{"label":"Политика конфиденциальности","url":"//yandex.ru/legal/confidential/","logNode":{"name":"confidential"},"target":"_blank"},{"label":"Правила рекомендаций","url":"//yandex.ru/legal/recommendations/#index__search","logNode":{"name":"recommendations"},"target":"_blank"}],"a11yHidden":true}],"reportFeedbackProps":{"feature":"Вертикаль отзывов","title":"Сообщить об ошибке","checkBoxLabels":[]},"baobab":{"parentNode":{"context":{"genInfo":{"prefix":"e4azw03-0-1"},"ui":"desktop","service":"reviews","fast":{"name":"reviews/page","subtype":"footer"}}}}},"type":"reviews/page","subtype":"footer"},"e4az2":{"state":{"baobab":{"parentNode":{"context":{"genInfo":{"prefix":"e4azw05-0-1"},"ui":"desktop","service":"reviews","fast":{"name":"mini-suggest-load"}}}}},"type":"mini-suggest-load"},"e4az3":{"state":{"statusCode":"404","path":"ugcpub/object/shop/nashdekor.ru","ugcStat":{"reviewsCount":0,"itemsCount":0},"baobab":{"parentNode":{"context":{"genInfo":{"prefix":"e4azw06-0-1"},"ui":"desktop","service":"reviews","fast":{"name":"reviews/page","subtype":"logger"}}}}},"type":"reviews/page","subtype":"logger"}}
+
+ССЫЛКИ:
+//translate.yandex.ru?from=tabbar
+//ya.ru
+//ya.ru/?from=reviews_vertical_footer
+//yandex.ru/alice?reqid=1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL&amp;utm_source=yandex&amp;utm_campaign=serp_alicetab_chat&amp;utm_medium=interface&amp;alice_deeplink=%7B%22text%22%3A%22site%3Anashdekor.ru%22%7D&amp;theme=serp
+//yandex.ru/all?from=tabbar
+//yandex.ru/finance?lr=29363&amp;from=tabbar
+//yandex.ru/images/search?parent-reqid=1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL&amp;from=tabbar
+//yandex.ru/jobs
+//yandex.ru/legal/confidential/
+//yandex.ru/legal/termsofuse/
+//yandex.ru/maps?source=serp_navig
+//yandex.ru/realty/search?lr=29363&amp;from=tabbar
+//yandex.ru/search?products_mode=1&amp;from=tabbar
+//yandex.ru/search?source=tabbar
+//yandex.ru/tune/common
+//yandex.ru/tune/geo
+//yandex.ru/video/search?parent-reqid=1795758964439710-12977546204627217253-zxfx7vcjhfkkxngx-BAL&amp;from=tabbar
+//yastatic.net/s3/home/fonts/ys/4/text-bold.woff2
+//yastatic.net/s3/home/fonts/ys/4/text-medium.woff2
+//yastatic.net/s3/home/fonts/ys/4/text-regular.woff2
+//yastatic.net/s3/reefstatic/_/v2/static/media/AppFavicon-Icon_size64_ru.53b1bf2f.png
+/search/direct?text=site%3Anashdekor.ru&amp;filters_docs=direct_cm
+/shop/nashdekor.ru?from=tabbar
+https://company.yandex.ru
+https://passport.yandex.ru/auth?retpath=%2F&amp;origin=serp_desktop_auth_new
+https://ya.ru/favs?from=desktop_header&amp;lr=29363

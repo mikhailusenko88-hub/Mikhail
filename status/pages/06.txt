@@ -1,0 +1,665 @@
+URL: https://www.fontanka.ru/contacts/
+КОД: 200
+ЗАГОЛОВКИ:
+Server: ddos-guard
+Connection: close
+Set-Cookie: __ddg8_=mSBzAzI3kWDkjPWl; Domain=.fontanka.ru; Path=/; Expires=Fri, 27-Nov-2026 06:16:06 GMT
+Set-Cookie: __ddg10_=1795758966; Domain=.fontanka.ru; Path=/; Expires=Fri, 27-Nov-2026 06:16:06 GMT
+Set-Cookie: __ddg9_=20.49.14.65; Domain=.fontanka.ru; Path=/; Expires=Fri, 27-Nov-2026 06:16:06 GMT
+Set-Cookie: __ddg1_=6FmWh9YK1UCindElzOZj; Domain=.fontanka.ru; HttpOnly; Path=/; Expires=Sat, 27-Nov-2027 05:56:06 GMT
+Date: Fri, 27 Nov 2026 05:56:06 GMT
+Content-Type: text/html
+Content-Length: 535679
+x-envoy-upstream-service-time: 75
+X-Frame-Options: SAMEORIGIN
+Set-Cookie: ngs_uid=wxPcFWsJG3a/EgeWEnN8Ag==; expires=Mon, 24-Nov-36 05:56:06 GMT; path=/
+P3P: CP="NOI ADM DEV PSAi COM NAV OUR OTRo STP IND DEM"
+
+Контакты - 7 мая 2026 | ФОНТАНКА.ру 
+ Признание и Влияние 
+ (от)Личный Питер 
+ Серебряное ожерелье 
+ Lemon Guide 
+ Фонтанка ГО 
+ Фонтанка SUP 
+ ЗСД Фонтанка Фест 
+ Петербургский завтрак 
+ Афиша Plus 
+ Доктор Питер — Премия 
+ Афиша для детей 
+ Телепрограмма 
+ Игры 
+ Промокоды 
+ Сейчас -3°C 
+ Сейчас в Санкт-Петербурге
+ -3° пасмурно, без осадков
+ ощущается как -10
+ 8 м/c,
+ с-з.
+ 766мм 80% 
+ Подробнее 
+ 6 Пробки USD 82,13 
+ EUR 89,81 
+ Чем Петербург поможет вьетнамскому метро
+ Блеск Тележной улицы
+ Трудности семейного образования
+ Квартиры в Петербурге дорожают быстрее
+ Чем раздражает молодежь
+ Ты не один
+ Рейтинги «Фонтанки»
+ Все СПБ 
+ 24 часа 
+ 08:49 В Пулково на вылет задержаны 25 рейсов, есть отмены
+ 08:46 В Латвии и Эстонии объявляли тревогу. Над ними летал самолёт НАТО
+ 08:38 Летевший в Петербург самолёт сел в Хельсинки
+ 08:30 Дрозденко дал отбой. Пострадавших и повреждений в Ленобласти нет
+ 08:17 Пулково открыли. Аэропорт Пскова тоже
+ 08:11 Исповедь выжившего: честная история борьбы с лимфомой 4-й стадии
+ 08:00 Куда пойти 27–29 ноября: «Русский кокошник», выставка про GTA и рок-мюзикл о Малевиче
+ 07:58 Ладожский мост во время атаки БПЛА использовали как площадку для огневых групп
+ 07:54 «В ближайшее время ожидаем отбой». Дрозденко выдал новые данные об атаке БПЛА
+ 07:45 Атака БПЛА в Новороссийске: горят два дома, пострадали три человека
+ 07:34 Над Пулково приоткрыли небо
+ 07:24 Ладожский мост через Неву внезапно перекрыли
+ 07:12 Новые данные о сбитых БПЛА в Ленобласти — уже 44
+ 07:03 В Пулково сообщили о задержках и отменах
+ 06:52 В Петербурге минус, но снега не ожидается
+ 06:36 Мобильный интернет сбоит. Напоминаем, что делать, если его нет
+ 06:14 Уже 30 БПЛА сбито в Ленобласти. Что говорят в Петербурге
+ 06:10 Пулково закрыт. Много рейсов задержано
+ 05:58 В Петербурге угроза БПЛА. В Ленобласти сбито уже 18 дронов
+ 05:34 Вы можете похвастаться эрудицией? На эти 10 вопросов ответит только гений — тест
+ 03:03 В Этнографическом музее открылась большая выставка кокошников
+ 02:48 Театр Karlsson Haus выпускает моноспектакль о гениальном пианисте, который никогда не был на суше
+ 02:30 Константин Шолмов расскажет, куда плавал Одиссей
+ 02:29 Абоненты МТС сообщили о сбое связи в Петербурге
+ 02:10 «Не только Бродский»: в Музее Бродского напомнят о забытых местах и именах ленинградского андеграунда
+ 00:45 Вы только посмотрите. Манулы из Ленинградского зоопарка достигли своей идеальной формы
+ 00:25 Мощный шторм обрушился на США в День благодарения
+ 26/11 Задержанный за попытку завладеть «Великан Парком» адвокат не признал вину и отправился под стражу
+ 26/11 68-й мировой рекорд! Дагестанец Омар Ханапиев зубами протащил тепловоз весом 125 тонн — видео
+ 26/11 Не подводит ли вас смекалка? Составьте больше 25 слов из слова «сухарик»
+ 26/11 Чемпион удивил претендента. Борьба за шахматную корону пока не выявила лидера
+ 26/11 Жерар Депардье предстанет перед судом по обвинению в изнасиловании
+ 26/11 Пройдите тест по сериалам и узнайте, какую скрытую эмоцию вы пытаетесь заглушить
+ 26/11 Лиговский ограничат почти на два года. Просвещения — до середины декабря
+ 26/11 Умер Строуб Тэлботт — главный советник Билла Клинтона по России
+ 26/11 Лариса Долина спела «Погоду в доме» на концерте в Северной Корее. Ей внимал Ким Чен Ын
+ 26/11 В Петербурге — новые случаи оспы обезьян
+ 26/11 Московский барьер. «Зенит» узнал первого соперника по плей-офф Кубка России
+ 26/11 Можно ли засыпать под телевизор или аудиокнигу? Сомнолог объяснил, как это меняет сон
+ 26/11 Вышел первый тизер нового триллера от создателей немецкого сериала «Тьма»
+ 26/11 «Я там просто сидел и получал много денег». Бывший футболист «Зенита» рассказал всю правду
+ 26/11 Вы экстраверт, мечтатель или тревожник? Какие тайны о вас выдает походка
+ 26/11 В Индии на свадьбу дочери местного политика заявились 400 000 гостей — видео
+ 26/11 Министр спорта Финляндии отказался награждать российских лыжников в случае их победы
+ 26/11 Штрафы и сроки за публикации о последствиях ударов и терактов. Рассказываем, кого и за что хотят наказывать
+ 26/11 Минобороны отчиталось об отражении атак БПЛА. Власти сообщили о пострадавших
+ 26/11 Все на одного: каким получился «Рассвет Жатвы» — новый фильм в мире «Голодных игр»
+ 26/11 Наш проект: Каждый пятый взрослый — с ожирением. Российские уколы стройности спасают соседнюю страну
+ 26/11 Движение на фиолетовой ветке метро в Петербурге останавливали из-за пассажира
+ 26/11 В огне 900 «квадратов»: что происходит сейчас на Бассейной улице
+ 26/11 Меньше фестивалей, больше безопасности. Ленобласть меняет приоритеты финансирования
+ 26/11 Подорожник не помог: мужчина плохо обработал рану на руке и заработал опасную инфекцию
+ 26/11 Петербургская электричка сбила автомобиль в Ленобласти. Водитель не выжил
+ 26/11 «Дире́кторы» и «директора́»? В этой путанице виновато число, которого уже не существует
+ 26/11 «Должно хватить всем»: Дрозденко — о ситуации с топливом в Ленобласти
+ 26/11 Проверка обязательна. Для покупки и продажи крипты в РФ нужно будет пройти тестирование
+ 26/11 Музей Мирового океана открыл свою «Планету»
+ 26/11 Путин о развитии ИИ: не нужно пытаться блокировать технологии
+ 26/11 После фатального удара по голове взрослого на проспекте Ветеранов арестован подросток
+ 26/11 Посылка с руками и ногами. На МКС прилетел российский робот
+ 26/11 Расписание только в МАКС. В ГУАПе удивили студентов перед сессией
+ 26/11 Разрушая мифы: кардиолог объяснила, как кофе, баня и алкоголь на самом деле влияют на сердце. Видео
+ 26/11 Подозреваемый в краже миллионов из Lamborghini петербургского блогера подписал явку с повинной
+ 26/11 Для чего ученые отправили образцы мозга больных Альцгеймером на 40 дней в космос
+ 26/11 Витебский проспект парализовало из-за пожара. Пробка — в несколько километров
+ 26/11 «Машина времени для интернета». Бывшие соратники Маска решили научить ИИ предсказывать будущее
+ 26/11 Несправедливо? Адвокаты обжалуют приговор по делу о мошенничестве в центре соцобслуживания Красносельского района
+ 26/11 Не только пресса. Смольный будет сдавать городские киоски под мелкорозничную торговлю
+ 26/11 Операция без границ. Петербургский хирург прооперировал пациента с расстояния в 6 тысяч километров
+ 26/11 AI-AINA: картина историка Соколова в музее, микропластик в ладожской рыбе и преображение Тележной улицы
+ Все новости 
+ Контакты 
+ Контакты
+ Адрес редакции: 191023, Санкт-Петербург, ул. Зодчего Росси, д. 1-3, 6-й подъезд.
+ Телефон редакции: +7 812 416 77 70, +7 812 710 46 23 
+ Выпускающий редактор:
+ mail@fontanka.ru 
+ или заполните форму, чтобы отправить сообщение:
+ Мы в соцсетях 
+ Написать в редакцию 
+ По вопросам размещения рекламы: 
+ Адрес коммерческого отдела: 191023, Санкт-Петербург, наб. Реки Фонтанки, д. 59, БЦ «Лениздат», пом. 215А.
+ Телефон коммерческого отдела: +7 812 416 777 3, 
+ электронная почта reklama@fontanka.ru 
+ Увидели опечатку? Выделите фрагмент и нажмите Ctrl+Enter 
+ 1
+ «Мерзкое поведение»: в Сети проехались по Селивановым и Малафеевым — что те натворили на «Ставке на любовь»
+ 2
+ «Процедуры применяет — это 100%». Узнали у пластического хирурга, ложилась ли под нож Наталья Водянова
+ 3
+ Никита Джигурда снова оказался в реанимации: что известно
+ 4
+ Кто эта секс-бомба? Стал известен самый стильный мужчина 2026 года — гляньте на него
+ 5
+ Оксана Самойлова сделала новое заявление о детях и Джигане — как семья живет спустя полгода после стрельбы
+ Присоединиться
+ Самые яркие фото и видео дня — в наших группах в социальных сетях
+ ВКонтакте Телеграм Дзен 
+ Новости СМИ2 
+ Новости компаний
+ «Главстрой Санкт-Петербург» выбрал оператора соседского центра в «Юнтолово» Девелоперская компания «Главстрой Санкт-Петербург» привлекла партнёра для создания соседского центра. Концепцию нового пространства разработает команда урбаниста Юлии Молчановой. 
+ 26 ноября, 20:52 
+ Новости компаний
+ Новая квартира в Петербурге — от 187 тыс. руб. за квадратный метр Застройщик «Терминал-Ресурс» объявил о праздничных скидках* в жилых комплексах «Образцовые кварталы». Теперь новостройку в Пушкинском районе города можно приобрести от 187 тыс руб.** за квадратный метр. 
+ 26 ноября, 18:00 
+ Новости компаний
+ Премиальный дом «Акватория» вошел в ТОП-25 ЖК в сегменте бизнес и премиум «Акватория» вошла в число ТОП-25 ЖК высокого класса по версии Циан. К своему 25-летию крупнейший российский классифайд недвижимости подготовил особую подборку — «Дома, которые изменили города за 25 лет». Проекты для нее отбирали по всей стране независимые эксперты: урбанисты, архитекторы, историки и аналитики рынка. 
+ 26 ноября, 17:38 
+ ТОП 5
+ 1 Уже 30 БПЛА сбито в Ленобласти. Что говорят в Петербурге 65 040 
+ 2 В Петербурге угроза БПЛА. В Ленобласти сбито уже 18 дронов 56 194 
+ 3 Новые данные о сбитых БПЛА в Ленобласти — уже 44 28 280 
+ 4 Арестован заместитель главкома ВКС Юрий Грехов 21 578 
+ 5 Девочка умерла от голода, её братья и сестры в больнице. Что известно о вологодской семье с 12 детьми 21 115 
+ 373 
+ Промокоды 
+ Скидка 20% на первый и все повторные заказы продукции Geltek на WB
+ До 30 ноября, 2026
+ Распродажа до 70%
+ До 31 декабря, 2026
+ Интернет в 180+ странах мира без роуминга и сим-карт
+ До 31 декабря, 2026
+ Все промокоды 
+ Новости компаний 
+ «Главстрой Санкт-Петербург» выбрал оператора соседского центра в «Юнтолово» Девелоперская компания «Главстрой Санкт-Петербург» привлекла партнёра для создания соседского центра. Концепцию нового пространства разработает команда урбаниста Юлии Молчановой. 
+ 26 ноября, 20:52 
+ Новая квартира в Петербурге — от 187 тыс. руб. за квадратный метр Застройщик «Терминал-Ресурс» объявил о праздничных скидках* в жилых комплексах «Образцовые кварталы». Теперь новостройку в Пушкинском районе города можно приобрести от 187 тыс руб.** за квадратный метр. 
+ 26 ноября, 18:00 
+ Премиальный дом «Акватория» вошел в ТОП-25 ЖК в сегменте бизнес и премиум «Акватория» вошла в число ТОП-25 ЖК высокого класса по версии Циан. К своему 25-летию крупнейший российский классифайд недвижимости подготовил особую подборку — «Дома, которые изменили города за 25 лет». Проекты для нее отбирали по всей стране независимые эксперты: урбанисты, архитекторы, историки и аналитики рынка. 
+ 26 ноября, 17:38 
+ Второй в Петербурге, четвёртый в Ленобласти: самые популярные этажи в новостройках Аналитики Группы Аквилон выяснили, что более половины приобретённых в 2026 году квартир в проектах Группы Аквилон в Санкт-Петербурге и Ленинградской области расположены на средних этажах — с четвертого по девятый. При этом предпочтения покупателей обоих регионов несколько различаются. 
+ 26 ноября, 17:12 
+ Вниманию предпринимателей: две недели остается до розыгрыша билетов на новогодний балет «Щелкунчик» Банк «Санкт-Петербург» в ноябре запустил ежегодную акцию* для представителей малого и среднего бизнеса — «Искусство быть предпринимателем» и разыгрывает билеты на новогодний балет «Щелкунчик» в Мариинском театре. 
+ 26 ноября, 12:49 
+ МТС возглавила рейтинг цифрового лидерства Информационно-аналитическое агентство Телеком Дейли опубликовало «Индекс цифрового лидерства операторов связи». Максимальную оценку среди телекоммуникационных операторов 8,58 балла из 10, получил МТС. 
+ 26 ноября, 12:20 
+ Как Сибирь оказалась в Ленинградской области? История особенного жилого комплекса от ГК «Союз» Жилой комплекс «Сибирь» от Группы компаний «Союз» — это больше, чем масштабный строительный проект. Это концептуальное пространство, в основе которого лежат характер, самобытность и культурные особенности сибирского региона. 
+ 26 ноября, 11:38 
+ Тепло, естественный свет и уют: формула комфортной зимы Осенью меняется не только погода, но и привычный уклад жизни. Световой день становится короче, за окном всё чаще дождь, ветер, и выходить из дома лишний раз не хочется. 
+ 25 ноября, 18:00 
+ Ваша улыбка решает, приедет ли в Петербург с концертом Ваня Дмитриенко Этой осенью Сбер проводит «Улыбатл» — соревнование между городами, в котором учитываются покупки, оплаченные улыбкой. 
+ 25 ноября, 17:23 
+ Группа RBI заняла пятую строчку по объему текущего строительства в Петербурге RBI за прошедший календарный год вывела на рынок рекордный для себя объем строительства — порядка 150 тыс. кв. м. А по показателю текущего строительства жилья поднялась на пятую строчку рейтинга ЕРЗ.рф по Петербургу с показателем 260 тыс. кв. м. 
+ 25 ноября, 16:52 
+ Банк «Санкт Петербург» представляет декабрьские категории кешбэка программы лояльности ЯРКО БСПБ представляет предновогодние категории повышенных бонусов* в рамках программы лояльности ЯРКО, они будут действовать для держателей карт ЕКП и «ЯСЧИТАЮ» в течение декабря 2026 года. 
+ 25 ноября, 15:31 
+ Петербуржцы смогут пользоваться 5G на крупнейших горнолыжных курортах России В преддверии зимнего сезона МегаФон запустил 5G на двух популярных горнолыжных курортах — «Роза Хутор» в Краснодарском крае и «Манжерок» в Республике Алтай. 
+ 25 ноября, 14:54 
+ Новости компаний
+ «Главстрой Санкт-Петербург» выбрал оператора соседского центра в «Юнтолово» Девелоперская компания «Главстрой Санкт-Петербург» привлекла партнёра для создания соседского центра. Концепцию нового пространства разработает команда урбаниста Юлии Молчановой. 
+ 26 ноября, 20:52 
+ Новости компаний
+ Новая квартира в Петербурге — от 187 тыс. руб. за квадратный метр Застройщик «Терминал-Ресурс» объявил о праздничных скидках* в жилых комплексах «Образцовые кварталы». Теперь новостройку в Пушкинском районе города можно приобрести от 187 тыс руб.** за квадратный метр. 
+ 26 ноября, 18:00 
+ Новости компаний
+ Премиальный дом «Акватория» вошел в ТОП-25 ЖК в сегменте бизнес и премиум «Акватория» вошла в число ТОП-25 ЖК высокого класса по версии Циан. К своему 25-летию крупнейший российский классифайд недвижимости подготовил особую подборку — «Дома, которые изменили города за 25 лет». Проекты для нее отбирали по всей стране независимые эксперты: урбанисты, архитекторы, историки и аналитики рынка. 
+ 26 ноября, 17:38 
+ ТОП 5
+ 1 Уже 30 БПЛА сбито в Ленобласти. Что говорят в Петербурге 65 040 
+ 2 В Петербурге угроза БПЛА. В Ленобласти сбито уже 18 дронов 56 194 
+ 3 Новые данные о сбитых БПЛА в Ленобласти — уже 44 28 280 
+ 4 Арестован заместитель главкома ВКС Юрий Грехов 21 578 
+ 5 Девочка умерла от голода, её братья и сестры в больнице. Что известно о вологодской семье с 12 детьми 21 115 
+ 373 
+ Промокоды 
+ Скидка 20% на первый и все повторные заказы продукции Geltek на WB
+ До 30 ноября, 2026
+ Распродажа до 70%
+ До 31 декабря, 2026
+ Интернет в 180+ странах мира без роуминга и сим-карт
+ До 31 декабря, 2026
+ Все промокоды 
+ Сообщить новость 
+ Рубрики 
+ О сайте 
+ Контакты 
+ Техподдержка 
+ Реклама 
+ Наши мероприятия 
+ О компании 
+ Наши вакансии 
+ Статистика канала в MAX 
+ Все города сети 
+ Проекты 
+ Сообщить новость 
+ О компании О сайте 
+ Контакты 
+ Техподдержка 
+ Реклама 
+ Наши мероприятия 
+ О компании 
+ Наши вакансии 
+ Статистика канала в MAX 
+ Рубрики Авто 
+ Афиша+ 
+ Бизнес 
+ Бизнес-трибуна 
+ Видео 
+ Викторины «Фонтанки» 
+ Власть 
+ Гиды 
+ Город 
+ Доброе дело 
+ Еда 
+ ЖКХ 
+ Недвижимость 
+ Образ жизни 
+ Общество 
+ Особое мнение 
+ Подкасты 
+ Проиcшествия 
+ Спорт 
+ Строительство 
+ Технологии 
+ Туризм 
+ Финансы 
+ Финляндия 
+ Фонтанка SUP 
+ Фото 
+ Проекты Фонтанка Pro 
+ Фонтанка SUP 
+ (От)Личный Петербург 
+ Фонтанка Го 
+ Городская премия «Фонтанка.ру — Признание и Влияние» 
+ Lemon Guide 
+ ЗСД Фонтанка Фест 
+ Петербургский завтрак 
+ Городская премия «Доктор Питер — частная медицина» 
+ Наша коллекция 
+ Книги «Фонтанки» 
+ Fontanka.digital 
+ Дом Радио 
+ Кронштадт: Главное 
+ Круглые столы 
+ Высота Петербурга 
+ Все проекты 
+ Мобильное приложение Google Play App Store App Gallery RuStore 
+ Мы в соцсетях 
+ Архангельск 
+ Барнаул 
+ Владивосток 
+ Волгоград 
+ Воронеж 
+ Екатеринбург 
+ Иркутск 
+ Казань 
+ Краснодар 
+ Красноярск 
+ Кузбасс 
+ Курган 
+ Москва 
+ Мурманск 
+ Нижний Новгород 
+ Новосибирск 
+ Омск 
+ Оренбург 
+ Пермь 
+ Ростов-на-Дону 
+ Рязань 
+ Самара 
+ Санкт-Петербург 
+ Сочи 
+ Тольятти 
+ Тула 
+ Тюмень 
+ Уфа 
+ ХМАО — Югра 
+ Челябинск 
+ Чита 
+ Якутск 
+ Ярославль 
+ Великий Новгород 
+ Вологда 
+ Ижевск 
+ Киров 
+ Липецк 
+ Магнитогорск 
+ Салехард 
+ Саратов 
+ Ставрополь 
+ Стерлитамак 
+ Тамбов 
+ Томск 
+ Ульяновск 
+ Контактные данные для Роскомнадзора и государственных органов 
+ «Фонтанка» — петербургское сетевое издание, где можно найти не только новости Петербурга, но и последние новости дня, и все важное и интересное, что происходит в России и в мире. Здесь вы отыщете наиболее значимые происшествия, новости Санкт-Петербурга, последние новости бизнеса, а также события в обществе, культуре, искусстве. Политика и власть, бизнес и недвижимость, дороги и автомобили, финансы и работа, город и развлечения — вот только некоторые из тем, которые освещает ведущее петербургское сетевое общественно-политическое издание. Санкт-Петербург читает «Фонтанку»! Наша аудитория — лидеры бизнеса и политики, чиновники, десятки тысяч горожан.
+ Пользовательское соглашение Политика обработки персональных данных Правила использования материалов сайта Политика использования cookies Рекомендательные системы Деятельность в сфере ИТ Руководство пользователя Наши награды Пользовательское соглашение сервиса «Подписка без баннерной рекламы» 
+ © 2000-2026 Фонтанка.Ру 
+ Регистрационный номер Роскомнадзора ЭЛ № ФС 77-66333 от 14.07.2016
+ © ООО «Интернет Технологии» 
+ Информация о возрастных ограничениях в отношении информационной продукции, подлежащая распространению на основании норм Федерального закона «О защите детей от информации, причиняющей вред их здоровью и развитию». 
+ Некоторые материалы настоящего раздела могут содержать информацию, запрещенную для детей.
+
+ССЫЛКИ:
+/
+//cdn.hsmedia.ru
+//mc.yandex.ru
+//mc.yandex.ru/metrika/tag.js
+//px.hsmedia.ru
+//www.tns-counter.ru
+//yandex.ru
+/24hours/
+/24hours/?content=news
+/auto/
+/bt/
+/business/
+/charity/
+/exchange/
+/family/
+/finances/
+/fontanka_fi/
+/food/
+/format/guidebook/
+/format/podcasts/
+/incidents/
+/kupony/
+/mention/
+/politic/
+/pressrelease/
+/realty/
+/society/
+/spb/
+/sport/
+/stroy/
+/tech/
+/text/tags/test/
+/theme/dom_radio/
+/theme/fontanka_books/
+/theme/main_kronshtadt/
+/theme/sup/
+/theme/video_news/
+/theme/vysota_peterburga/
+/turizm/
+/zhkh/
+http://www.liveinternet.ru/click;hsdigital/rn/smi/178
+https://advert.fontanka.ru/
+https://appgallery.huawei.ru/app/C107443733
+https://apps.rustore.ru/app/ru.fontanka.client
+https://award.doctorpiter.ru/
+https://award.fontanka.ru/
+https://calendar.fontanka.ru/
+https://cdn.hsmedia.ru
+https://cdn.hsmedia.ru/scrooge-client/hsm-creative-manager.853.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockContactsForm-D0ZvTUOJ.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockContactsForm-DAbhKJQC.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockDisclaimers-D-nZwmuA.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockDisclaimers-cbf9PI-Z.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockEmbed-BDTvIiDI.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockEmbed-DWtVjBc_.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockEmbedIframe-BNKBXYMV.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockEmbedIframe-CKA7VV2N.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockText-D7swe_RM.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBlockText-w1vil_ls.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBottom-D1KM7lU9.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleBottom-igIYoIoR.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleHeaderDateAndStats-BopOSxVq.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleHeaderDateAndStats-C4nNAyji.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticlePage-Cy3BAlWC.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticlePageCP-DK8c3A3G.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleSubHeaderDesktop-CG4x-XCA.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ArticleSubHeaderDesktop-CHRUDoXA.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BaseBlock-BDH60UBi.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BaseLink-Dz1Wgf3D.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BlockNewsFeed-DyPcMpyl.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BlockPreloader-BuF4PqdW.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BlockPreloader-Dd8lpnmY.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BlockRecentTabloids-9vFNmOWx.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/BlockRecentTabloids-DUBWOJ_c.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/CookiesPopup-DDS3_fKS.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/CookiesPopup-DZSAf7Af.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Image-wBhC2srL.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/InfinityFeedRsya-CsbDYfs1.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Label-BgBZcCm7.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Label-D4hQWSDf.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Layout-wByWHnZY.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/LazyBlock-DTY70-ku.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/LazyBlockEditorialOffice-BOUfaUVA.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/LazyBlockEditorialOffice-DfSQ8MNj.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/LazyBlockTopNews-BUH_LEKt.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/LazyBlockTopNews-Dl4ctdlK.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Link-DohXOV3X.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Link-DwMolGnV.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/PageFooter-DqWfc6qV.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/PageFooter-hIOJfVbk.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/PageFooter.analytics-DDuaBNrg.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/PartnersBlock-C3iRo2Ro.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/PartnersBlock-D66arIMR.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Quotic-CwFVXGlg.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Quotic-DKLQUYrs.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/RecommendationRsya-C_rOEKhc.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Scrollable-B3sFkFqq.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/SimpleImage-BHp327-X.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/SimpleImage-DtlydSzt.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Slider-Cip6emBV.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Slider-a9QBuxOq.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/SliderButton-BsqV9NFA.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Smi2-DmgDHjDZ.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Smi24-BUaS-wNt.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/Sparrow-BWn02E-Z.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ViqeoFlyrollAdv-Cc0sQWLV.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/ViqeoFlyrollAdv-DyyKj1FD.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/YandexRecommendations-B1yeTB64.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/advMark-B6_Xy56Y.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/announcementInfo-CHXdgywO.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/announcementInfo-CLH0YoYW.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articleContent-CykYJjgo.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articleContent-DI2ARBla.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articleLayout-DOTSNSjD.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articleLeftColumn-CyLtXmgw.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articleRightColumn-FIcL8Nwm.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/articlesLeftColumnAdv-DGbcorzC.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/blockCompanyNews-BGoNeGqy.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/blockCompanyNews-hL0qTRx1.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/blockInformer-Cvi4LonU.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/blockSocial-CMvRoazI.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/blockSocial-CYC-9nrR.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/companyNewsItem-CIrXeFRx.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/companyNewsItem-DxyPocrO.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/desktopFullscreenBanner-CM5ib8g_.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/gridArticle-DGO9abXC.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/imageCaption-2wG_5WO9.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/imageCaption-dxfIPQkU.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/index-DhLPoUNm.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/plotsLine-Cx96zHGQ.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/popover-DUrFEtYb.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/popover-DxkMPKfN.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/projectLogo-DY-ZXWVF.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/promocodeBlock-Dn7rE_eY.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/promocodeBlock-ktE5FIe-.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/rightColumnCreative-DsusUkz7.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/rightColumnCreative-DxJbpJQT.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/scrollAnalytics-B6S_0NAY.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/scrollAnalytics-BIa0TahW.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sharing-BOGWS47z.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sharing-Bkv2yjC1.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sharing-CE4uIIqk.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sharingList-C3w35Kh0.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sharingList-CA_UNMYh.css
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/sidebarAdv-D03WfhkT.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/stickyAdv-BxoRYczJ.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/assets/topAdv-DZQztPMx.js
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto-slab/roboto-slab-v13-latin_cyrillic-700.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto-slab/roboto-slab-v13-latin_cyrillic-regular.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-300.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-500.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-700.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-700italic.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-italic.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/fonts/roboto/roboto-v27-latin_cyrillic-regular.woff2
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/projects-assets/fontanka/favicons/apple-favicon-180.png
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/projects-assets/fontanka/favicons/favicon.ico
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/projects-assets/fontanka/favicons/favicon.svg
+https://cdn.hsmedia.ru/ump-webapp-public/dist/client/projects-assets/fontanka/favicons/manifest.v2.json
+https://cdn.viqeo.tv/js/vq_starter.js
+https://doctorpiter.ru/novosti/podorozhnik-ne-pomog-muzhchina-plokho-obrabotal-ranu-na-ruke-i-zarabotal-opasnuyu-infekciyu-id76791930/
+https://doctorpiter.ru/obraz-zhizni/proidite-test-po-serialam-i-uznaite-kakuyu-skrytuyu-emociyu-vy-pytaetes-zaglushit-id76783767/
+https://doctorpiter.ru/zdorove/dlya-chego-uchenye-otpravili-obrazcy-mozga-bolnykh-alcgeimerm-na-40-dnei-v-kosmos-id76791243/
+https://doctorpiter.ru/zdorove/ispoved-vyzhivshego-chestnaya-istoriya-borby-s-limfomoi-4-i-stadii-id76789226/
+https://doctorpiter.ru/zdorove/mozhno-li-zasypat-pod-televizor-ili-audioknigu-somnolog-obyasnil-kak-eto-menyaet-son-id76791432/
+https://doctorpiter.ru/zdorove/rossiiskii-preparat-dlya-lecheniya-diabeta-i-ozhireniya-vykhodit-na-rynki-chetyrekh-stran-sng-id76732578/
+https://dzen.ru/fontanka.ru?from=news_share
+https://events.fontanka.ru/
+https://events.fontanka.ru/ks
+https://fontanka.ru/rss-feeds/rss.xml
+https://fontankago.ru/
+https://fontankasup.ru/
+https://games.woman.ru/
+https://guide-spb.fontanka.ru/award/
+https://itunes.apple.com/ru/app/%5Cu0444%5Cu043e%5Cu043d%5Cu0442%5Cu0430%5Cu043d%5Cu043a%5Cu0430/id1263907987
+https://lemonguide.ru/
+https://mamado.su/sankt-peterburg/e/afisha?utm_campaign=afisha_detyam&amp;utm_medium=button&amp;utm_source=fontanka
+https://max.ru/fontanka
+https://maxdash.ru/channel/fontanka
+https://mediakit.iportal.ru/our-team/
+https://play.google.com/store/apps/details?id=ru.fontanka.client
+https://shkulevholding.ru/
+https://shkulevholding.ru/structure/portals/
+https://shkulevholding.ru/structure/portals/career/
+https://silverway.fontanka.ru/
+https://smi2.ru/
+https://spbzavtrak.ru/
+https://support.shkulevholding.ru/
+https://t.me/fontanka_reporter_bot
+https://t.me/fontankaspb?from=news_share
+https://t.me/fontankaspb?utm_campaign=fontanka&amp;utm_medium=messenger&amp;utm_source=telegram
+https://tv.starhit.ru/sankt-peterburg
+https://vk.com/fontanka?from=news_share
+https://vk.com/fontanka?utm_campaign=fontanka&amp;utm_medium=social&amp;utm_source=vk
+https://www.fontanka.ru/2026/11/21/76781833/
+https://www.fontanka.ru/2026/11/23/76784865/
+https://www.fontanka.ru/2026/11/24/76785683/
+https://www.fontanka.ru/2026/11/24/76787462/
+https://www.fontanka.ru/2026/11/25/76788196/
+https://www.fontanka.ru/2026/11/25/76789409/
+https://www.fontanka.ru/2026/11/25/76789432/
+https://www.fontanka.ru/2026/11/25/76789590/
+https://www.fontanka.ru/2026/11/25/76789757/
+https://www.fontanka.ru/2026/11/25/76789799/
+https://www.fontanka.ru/2026/11/25/76789803/
+https://www.fontanka.ru/2026/11/25/76790011/
+https://www.fontanka.ru/2026/11/26/76784712/
+https://www.fontanka.ru/2026/11/26/76786915/
+https://www.fontanka.ru/2026/11/26/76787084/
+https://www.fontanka.ru/2026/11/26/76787630/
+https://www.fontanka.ru/2026/11/26/76791359/
+https://www.fontanka.ru/2026/11/26/76791359/comments/
+https://www.fontanka.ru/2026/11/26/76791395/
+https://www.fontanka.ru/2026/11/26/76791446/
+https://www.fontanka.ru/2026/11/26/76791504/
+https://www.fontanka.ru/2026/11/26/76791514/
+https://www.fontanka.ru/2026/11/26/76791597/
+https://www.fontanka.ru/2026/11/26/76791599/
+https://www.fontanka.ru/2026/11/26/76791817/
+https://www.fontanka.ru/2026/11/26/76792115/
+https://www.fontanka.ru/2026/11/26/76792233/
+https://www.fontanka.ru/2026/11/26/76792243/
+https://www.fontanka.ru/2026/11/26/76792252/
+https://www.fontanka.ru/2026/11/26/76792254/
+https://www.fontanka.ru/2026/11/26/76792258/
+https://www.fontanka.ru/2026/11/26/76792405/
+https://www.fontanka.ru/2026/11/26/76792501/
+https://www.fontanka.ru/2026/11/26/76792574/
+https://www.fontanka.ru/2026/11/26/76792626/
+https://www.fontanka.ru/2026/11/26/76792678/
+https://www.fontanka.ru/2026/11/26/76792847/
+https://www.fontanka.ru/2026/11/26/76792892/
+https://www.fontanka.ru/2026/11/26/76792902/
+https://www.fontanka.ru/2026/11/26/76792908/
+https://www.fontanka.ru/2026/11/26/76792910/
+https://www.fontanka.ru/2026/11/26/76792935/
+https://www.fontanka.ru/2026/11/26/76792937/
+https://www.fontanka.ru/2026/11/26/76792941/
+https://www.fontanka.ru/2026/11/26/76792946/
+https://www.fontanka.ru/2026/11/26/76792953/
+https://www.fontanka.ru/2026/11/26/76792956/
+https://www.fontanka.ru/2026/11/26/76792959/
+https://www.fontanka.ru/2026/11/26/76792972/
+https://www.fontanka.ru/2026/11/26/76793038/
+https://www.fontanka.ru/2026/11/26/76793045/
+https://www.fontanka.ru/2026/11/26/76793047/
+https://www.fontanka.ru/2026/11/26/76793053/
+https://www.fontanka.ru/2026/11/26/76793054/
+https://www.fontanka.ru/2026/11/26/76793068/
+https://www.fontanka.ru/2026/11/26/76793069/
+https://www.fontanka.ru/2026/11/26/76793071/
+https://www.fontanka.ru/2026/11/26/76793073/
+https://www.fontanka.ru/2026/11/26/76793081/
+https://www.fontanka.ru/2026/11/26/76793092/
+https://www.fontanka.ru/2026/11/26/76793094/
+https://www.fontanka.ru/2026/11/26/76793097/
+https://www.fontanka.ru/2026/11/26/76793099/
+https://www.fontanka.ru/2026/11/26/76793106/
+https://www.fontanka.ru/2026/11/26/76793107/
+https://www.fontanka.ru/2026/11/26/76793108/
+https://www.fontanka.ru/2026/11/26/76793110/
+https://www.fontanka.ru/2026/11/27/76792251/
+https://www.fontanka.ru/2026/11/27/76792700/
+https://www.fontanka.ru/2026/11/27/76793074/
+https://www.fontanka.ru/2026/11/27/76793117/
+https://www.fontanka.ru/2026/11/27/76793129/
+https://www.fontanka.ru/2026/11/27/76793181/
+https://www.fontanka.ru/2026/11/27/76793185/
+https://www.fontanka.ru/2026/11/27/76793190/
+https://www.fontanka.ru/2026/11/27/76793196/
+https://www.fontanka.ru/2026/11/27/76793209/
+https://www.fontanka.ru/2026/11/27/76793240/
+https://www.fontanka.ru/2026/11/27/76793278/
+https://www.fontanka.ru/2026/11/27/76793371/
+https://www.fontanka.ru/2026/11/27/76793385/
+https://www.fontanka.ru/2026/11/27/76793397/
+https://www.fontanka.ru/2026/11/27/76793415/
+https://www.fontanka.ru/2026/11/27/76793416/
+https://www.fontanka.ru/2026/11/27/76793438/
+https://www.fontanka.ru/2026/11/27/76793472/
+https://www.fontanka.ru/2026/11/27/76793475/
+https://www.fontanka.ru/2026/11/27/76793485/
+https://www.fontanka.ru/2026/11/27/76793493/
+https://www.fontanka.ru/__site/about/
+https://www.fontanka.ru/__site/contacts/
+https://www.fontanka.ru/best/
+https://www.fontanka.ru/contacts/
+https://www.fontanka.ru/cookie-policy-soglasie/
+https://www.fontanka.ru/deyatelnost-v-sfere-it/
+https://www.fontanka.ru/dokumentaciya-soderzhashaya-informaciyu-neobkhodimuyu-dlya-ekspluatacii-po/
+https://www.fontanka.ru/fproject/
+https://www.fontanka.ru/html-to-img/og/P0yg97hBAThilYaSXAHv4g/article-id7013737-16x9.jpg?1778141253
+https://www.fontanka.ru/ispolzovanie-materialov/
+https://www.fontanka.ru/kupony/
+https://www.fontanka.ru/longreads/76727696/
+https://www.fontanka.ru/maps-traffic/
+https://www.fontanka.ru/nagrady-redakcii/
+https://www.fontanka.ru/politika-ao-azhur-media-v-otnoshenii-obrabotki-personalnykh-dannykh/
+https://www.fontanka.ru/polzovatelskoe-soglashenie-servisa-podpiska-bez-bannernoi-reklamy/
+https://www.fontanka.ru/polzovatelskoe-soglashenie/
+https://www.fontanka.ru/primenenie-rekomendatelnykh-tekhnologii/
+https://www.fontanka.ru/projects/
+https://www.fontanka.ru/society/
+https://www.fontanka.ru/theme/cool_piter/
+https://www.fontanka.ru/theme/food/
+https://www.fontanka.ru/theme/kubok-fontanki-po-igre-go/
+https://www.fontanka.ru/theme/rating/
+https://www.fontanka.ru/theme/ratings/
+https://www.fontanka.ru/theme/ty-ne-odin/
+https://www.fontanka.ru/video/
+https://www.fontanka.ru/weather.html
+https://www.fontanka.ru/witness/
+https://www.fontanka.ru/zsd_fest/
+https://www.youtube.com/user/fontankaRU?utm_campaign=fontanka&amp;utm_medium=social&amp;utm_source=youtube
+https://yandex.ru/ads/system/context.js
+https://yandex.ru/ads/system/header-bidding.js
+https://zen.yandex.ru/fontanka.ru?utm_campaign=fontanka&amp;utm_medium=social&amp;utm_source=dzen
+https://zsdfest.ru/
+mailto:mail@fontanka.ru
+mailto:reklama@fontanka.ru
