@@ -67,7 +67,7 @@ window.job=async function(j){
     for(const [e,v,nm] of [[te,TT,'t'],[de,DD,'d']]){ if(!e){log.push(nm+'?');continue;} if(e.innerText.trim().length>3){log.push(nm+'=есть');continue;} e.focus(); document.execCommand('selectAll'); document.execCommand('insertText',false,v); await sleep(400); log.push(nm+'+'); }
     const tr=[...dlg.querySelectorAll('tr')].find(t=>t.getClientRects().length && /^Thumbnail/.test(t.innerText.trim()));
     const ab=tr && btnIn(tr,/^Add$/);
-    if(ab && j.cover){ ab.click(); await sleep(1500); const b=await getBlob(j.cover); const inp=document.querySelector('#file-loader');
+    if(ab && j.cover){ ab.click(); await sleep(1500); const b=await getBlob(j.cover); const inp=[...document.querySelectorAll('#file-loader')].pop();   // 27.11: после перехода по SPA старый #file-loader остаётся — обложка «загружалась» в него и не вставала
       if(b && inp){ const dt=new DataTransfer(); dt.items.add(new File([b],j.cname,{type:'image/jpeg'})); inp.files=dt.files; inp.dispatchEvent(new Event('change',{bubbles:true})); await sleep(4000); log.push('обл+'+b.size);} else log.push('обл?'); }
     else log.push(j.cover?'обл=есть':'обл нет файла');
     dlg=vis().find(d=>d.innerText.trim().startsWith(j.lang));
