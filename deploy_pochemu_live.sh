@@ -65,7 +65,7 @@ if [ "${1:-}" = "--key" ]; then
   KEY="${2:-}"
   [ ${#KEY} -ge 20 ] || fail "ключ короткий — скопируй его целиком (Pixabay: pixabay.com/api/docs после входа, поле key)"
   case "$KEY" in *[!A-Za-z0-9-]*) fail "в ключе лишние знаки (пробел, кавычка?) — скопируй ещё раз";; esac
-  if [[ "$KEY" =~ ^[0-9]+-[0-9a-f]+$ ]]; then NAME=PIXABAY_API_KEY; else NAME=PEXELS_API_KEY; fi
+  if [[ "$KEY" =~ ^[0-9]+-[A-Za-z0-9]+$ ]]; then NAME=PIXABAY_API_KEY; else NAME=PEXELS_API_KEY; fi
   touch .env && chmod 600 .env
   grep -v "^$NAME=" .env > .env.tmp; echo "$NAME=$KEY" >> .env.tmp; mv .env.tmp .env; chmod 600 .env
   echo "== Ключ записан в $D/.env ($NAME)"
