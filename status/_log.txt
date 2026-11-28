@@ -1,34 +1,40 @@
-2026-11-28 07:18 UTC
-200 https://www.youtube.com/@cartoon_friend3
-200 avatar cartoon_friend3
-200 banner cartoon_friend3
-200 https://www.youtube.com/@cartoon_friend3/shorts
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-200 https://www.youtube.com/@cartoon_friend3/videos
-200 https://www.youtube.com/@Beautiful_shorts-s6u
-200 avatar Beautiful_shorts-s6u
-200 banner Beautiful_shorts-s6u
-200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?playlist_id=UU6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-200 https://www.youtube.com/@Beautiful_shorts-s6u/videos
-200 https://www.youtube.com/@pochemu_tak_fakty
-200 avatar pochemu_tak_fakty
-200 banner pochemu_tak_fakty
-200 https://www.youtube.com/@pochemu_tak_fakty/shorts
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-200 https://www.youtube.com/@pochemu_tak_fakty/videos
+2026-11-28 07:56 UTC
+200 https://www.youtube.com/@TheHandwriting_of_Silence
+200 avatar TheHandwriting_of_Silence
+200 banner TheHandwriting_of_Silence
+200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUkt1JJZzMwZRW7ojZzOyswg
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
+200 https://www.youtube.com/@TheHandwriting_of_Silence/videos
+200 https://www.youtube.com/@LivingLinesTV
+200 avatar LivingLinesTV
+200 banner LivingLinesTV
+200 https://www.youtube.com/@LivingLinesTV/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUuufuU5RCswqp9N1HE0NZlw
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
+200 https://www.youtube.com/@LivingLinesTV/videos
 200 https://www.youtube.com/@bilesin_be_kz
 200 avatar bilesin_be_kz
 200 banner bilesin_be_kz
 200 https://www.youtube.com/@bilesin_be_kz/shorts
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUN5T4AgjFCPUOETZpzTKA8g
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
 200 https://www.youtube.com/@bilesin_be_kz/videos
+200 https://www.youtube.com/@pochemu_tak_fakty
+200 avatar pochemu_tak_fakty
+200 banner pochemu_tak_fakty
+200 https://www.youtube.com/@pochemu_tak_fakty/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
+200 https://www.youtube.com/@pochemu_tak_fakty/videos
+200 https://www.youtube.com/@Beautiful_shorts-s6u
+200 avatar Beautiful_shorts-s6u
+200 banner Beautiful_shorts-s6u
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/@Beautiful_shorts-s6u/videos
 200 https://www.youtube.com/@FlagballArenaTV
 200 avatar FlagballArenaTV
 200 banner FlagballArenaTV
@@ -39,167 +45,42 @@
 200 avatar kimyutadi_uz
 200 banner kimyutadi_uz
 200 https://www.youtube.com/@kimyutadi_uz/shorts
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-200 https://www.youtube.com/@kimyutadi_uz/videos
-200 https://www.youtube.com/@LivingLinesTV
-200 avatar LivingLinesTV
-200 banner LivingLinesTV
-200 https://www.youtube.com/@LivingLinesTV/shorts
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
+200 https://www.youtube.com/@cartoon_friend3
+200 avatar cartoon_friend3
+200 banner cartoon_friend3
+200 https://www.youtube.com/@cartoon_friend3/shorts
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+200 https://www.youtube.com/@cartoon_friend3/videos
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-200 https://www.youtube.com/@LivingLinesTV/videos
-200 https://www.youtube.com/@TheHandwriting_of_Silence
-200 avatar TheHandwriting_of_Silence
-200 banner TheHandwriting_of_Silence
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
+200 https://www.youtube.com/@pochemu_tak_fakty/shorts
+RSS pochemu_tak_fakty: ответил с попытки 2
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UU6rsqAcsearK9uRE38bRbmw
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
+200 https://www.youtube.com/@FlagballArenaTV/shorts
+RSS FlagballArenaTV: ответил с попытки 2
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?playlist_id=UUe72zB7nk8xkf3cHFL15luA
+503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
 200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-200 https://www.youtube.com/@TheHandwriting_of_Silence/videos
-200 https://www.youtube.com/watch?v=mo1ZnkhjVYI&hl=ru
-200 player WEB mo1ZnkhjVYI
-ERR player ANDROID mo1ZnkhjVYI HTTP Error 400: Bad Request
-200 thumb mo1ZnkhjVYI/maxresdefault.jpg 164647 B
-200 thumb mo1ZnkhjVYI/sddefault.jpg 60605 B
-ERR thumb mo1ZnkhjVYI/oar2.jpg HTTP Error 404: Not Found
-200 thumb mo1ZnkhjVYI/hqdefault.jpg 17320 B
-200 thumb mo1ZnkhjVYI/hq1.jpg 8999 B
-200 thumb mo1ZnkhjVYI/hq2.jpg 12522 B
-200 thumb mo1ZnkhjVYI/hq3.jpg 13054 B
-200 https://www.youtube.com/watch?v=P6UAa77a-vE&hl=ru
-200 player WEB P6UAa77a-vE
-ERR player ANDROID P6UAa77a-vE HTTP Error 400: Bad Request
-200 thumb P6UAa77a-vE/maxresdefault.jpg 195864 B
-200 thumb P6UAa77a-vE/sddefault.jpg 71605 B
-ERR thumb P6UAa77a-vE/oar2.jpg HTTP Error 404: Not Found
-200 thumb P6UAa77a-vE/hqdefault.jpg 20591 B
-200 thumb P6UAa77a-vE/hq1.jpg 8097 B
-200 thumb P6UAa77a-vE/hq2.jpg 12231 B
-200 thumb P6UAa77a-vE/hq3.jpg 13194 B
-200 https://www.youtube.com/watch?v=DSKSoIpqPvc&hl=ru
-200 player WEB DSKSoIpqPvc
-ERR player ANDROID DSKSoIpqPvc HTTP Error 400: Bad Request
-200 thumb DSKSoIpqPvc/maxresdefault.jpg 197212 B
-200 thumb DSKSoIpqPvc/sddefault.jpg 74464 B
-ERR thumb DSKSoIpqPvc/oar2.jpg HTTP Error 404: Not Found
-200 thumb DSKSoIpqPvc/hqdefault.jpg 21034 B
-200 thumb DSKSoIpqPvc/hq1.jpg 14725 B
-200 thumb DSKSoIpqPvc/hq2.jpg 13200 B
-200 thumb DSKSoIpqPvc/hq3.jpg 13098 B
-200 https://www.youtube.com/watch?v=dxSzLbcBfRA&hl=ru
-200 player WEB dxSzLbcBfRA
-ERR player ANDROID dxSzLbcBfRA HTTP Error 400: Bad Request
-200 thumb dxSzLbcBfRA/maxresdefault.jpg 211272 B
-200 thumb dxSzLbcBfRA/sddefault.jpg 80090 B
-ERR thumb dxSzLbcBfRA/oar2.jpg HTTP Error 404: Not Found
-200 thumb dxSzLbcBfRA/hqdefault.jpg 22592 B
-200 thumb dxSzLbcBfRA/hq1.jpg 14196 B
-200 thumb dxSzLbcBfRA/hq2.jpg 16471 B
-200 thumb dxSzLbcBfRA/hq3.jpg 11331 B
-200 https://www.youtube.com/watch?v=iEd3d9m7PlQ&hl=ru
-200 player WEB iEd3d9m7PlQ
-ERR player ANDROID iEd3d9m7PlQ HTTP Error 400: Bad Request
-200 thumb iEd3d9m7PlQ/maxresdefault.jpg 139942 B
-200 thumb iEd3d9m7PlQ/sddefault.jpg 70182 B
-200 thumb iEd3d9m7PlQ/oar2.jpg 187040 B
-200 thumb iEd3d9m7PlQ/hqdefault.jpg 17800 B
-200 thumb iEd3d9m7PlQ/hq1.jpg 17815 B
-200 thumb iEd3d9m7PlQ/hq2.jpg 17800 B
-200 thumb iEd3d9m7PlQ/hq3.jpg 15984 B
-200 https://www.youtube.com/watch?v=RxTYbB3I4JY&hl=ru
-200 player WEB RxTYbB3I4JY
-ERR player ANDROID RxTYbB3I4JY HTTP Error 400: Bad Request
-200 thumb RxTYbB3I4JY/maxresdefault.jpg 142648 B
-200 thumb RxTYbB3I4JY/sddefault.jpg 74453 B
-200 thumb RxTYbB3I4JY/oar2.jpg 218917 B
-200 thumb RxTYbB3I4JY/hqdefault.jpg 18246 B
-200 thumb RxTYbB3I4JY/hq1.jpg 9545 B
-200 thumb RxTYbB3I4JY/hq2.jpg 18246 B
-200 thumb RxTYbB3I4JY/hq3.jpg 17686 B
-200 https://www.youtube.com/watch?v=1tZcFYIjxJk&hl=ru
-200 player WEB 1tZcFYIjxJk
-ERR player ANDROID 1tZcFYIjxJk HTTP Error 400: Bad Request
-200 thumb 1tZcFYIjxJk/maxresdefault.jpg 94906 B
-200 thumb 1tZcFYIjxJk/sddefault.jpg 52811 B
-200 thumb 1tZcFYIjxJk/oar2.jpg 178017 B
-200 thumb 1tZcFYIjxJk/hqdefault.jpg 13519 B
-200 thumb 1tZcFYIjxJk/hq1.jpg 11777 B
-200 thumb 1tZcFYIjxJk/hq2.jpg 13519 B
-200 thumb 1tZcFYIjxJk/hq3.jpg 11816 B
-200 https://www.youtube.com/watch?v=wcS0IVz_o6A&hl=ru
-200 player WEB wcS0IVz_o6A
-ERR player ANDROID wcS0IVz_o6A HTTP Error 400: Bad Request
-200 thumb wcS0IVz_o6A/maxresdefault.jpg 111834 B
-200 thumb wcS0IVz_o6A/sddefault.jpg 58352 B
-200 thumb wcS0IVz_o6A/oar2.jpg 235758 B
-200 thumb wcS0IVz_o6A/hqdefault.jpg 17129 B
-200 thumb wcS0IVz_o6A/hq1.jpg 18096 B
-200 thumb wcS0IVz_o6A/hq2.jpg 15356 B
-200 thumb wcS0IVz_o6A/hq3.jpg 17088 B
-200 https://www.youtube.com/watch?v=-MpYDyFQwWM&hl=ru
-200 player WEB -MpYDyFQwWM
-ERR player ANDROID -MpYDyFQwWM HTTP Error 400: Bad Request
-200 thumb -MpYDyFQwWM/maxresdefault.jpg 66322 B
-200 thumb -MpYDyFQwWM/sddefault.jpg 30847 B
-200 thumb -MpYDyFQwWM/oar2.jpg 101520 B
-200 thumb -MpYDyFQwWM/hqdefault.jpg 9453 B
-200 thumb -MpYDyFQwWM/hq1.jpg 7792 B
-200 thumb -MpYDyFQwWM/hq2.jpg 9239 B
-200 thumb -MpYDyFQwWM/hq3.jpg 9241 B
-200 https://www.youtube.com/watch?v=Y_YmMMSFvko&hl=ru
-200 player WEB Y_YmMMSFvko
-ERR player ANDROID Y_YmMMSFvko HTTP Error 400: Bad Request
-200 thumb Y_YmMMSFvko/maxresdefault.jpg 79671 B
-200 thumb Y_YmMMSFvko/sddefault.jpg 42345 B
-200 thumb Y_YmMMSFvko/oar2.jpg 161026 B
-200 thumb Y_YmMMSFvko/hqdefault.jpg 12752 B
-200 thumb Y_YmMMSFvko/hq1.jpg 17391 B
-200 thumb Y_YmMMSFvko/hq2.jpg 12512 B
-200 thumb Y_YmMMSFvko/hq3.jpg 8386 B
-200 https://www.youtube.com/watch?v=mjW3yX2cM3Y&hl=ru
-200 player WEB mjW3yX2cM3Y
-ERR player ANDROID mjW3yX2cM3Y HTTP Error 400: Bad Request
-200 thumb mjW3yX2cM3Y/maxresdefault.jpg 47790 B
-200 thumb mjW3yX2cM3Y/sddefault.jpg 25687 B
-200 thumb mjW3yX2cM3Y/oar2.jpg 90274 B
-200 thumb mjW3yX2cM3Y/hqdefault.jpg 7108 B
-200 thumb mjW3yX2cM3Y/hq1.jpg 8640 B
-200 thumb mjW3yX2cM3Y/hq2.jpg 7673 B
-200 thumb mjW3yX2cM3Y/hq3.jpg 7464 B
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCUKgRxWtL1kPWr9hdfL8qQw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UC93S31Qkgoz4cFgKBzz-mLA
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
-503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
-RSS cartoon_friend3: не ответил за 5 попыток — данные только с вкладок
-RSS Beautiful_shorts-s6u: не ответил за 5 попыток — данные только с вкладок
-RSS pochemu_tak_fakty: не ответил за 5 попыток — данные только с вкладок
-RSS bilesin_be_kz: не ответил за 5 попыток — данные только с вкладок
-RSS FlagballArenaTV: не ответил за 5 попыток — данные только с вкладок
-RSS kimyutadi_uz: не ответил за 5 попыток — данные только с вкладок
-RSS LivingLinesTV: не ответил за 5 попыток — данные только с вкладок
-RSS TheHandwriting_of_Silence: не ответил за 5 попыток — данные только с вкладок
+RSS TheHandwriting_of_Silence: ответил с попытки 3
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCuufuU5RCswqp9N1HE0NZlw
+200 https://www.youtube.com/@LivingLinesTV/shorts
+RSS LivingLinesTV: ответил с попытки 3
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCN5T4AgjFCPUOETZpzTKA8g
+200 https://www.youtube.com/@bilesin_be_kz/shorts
+RSS bilesin_be_kz: ответил с попытки 3
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
+200 https://www.youtube.com/@Beautiful_shorts-s6u/shorts
+RSS Beautiful_shorts-s6u: ответил с попытки 3
+200 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
+200 https://www.youtube.com/@cartoon_friend3/shorts
+RSS cartoon_friend3: ответил с попытки 3
