@@ -1,0 +1,227 @@
+{
+ "ok": true,
+ "notes": [],
+ "file": {
+  "mb": 65.5,
+  "dur": 87.11,
+  "video": "h264",
+  "w": 1920,
+  "h": 1080,
+  "fps": 25.0,
+  "audio": "aac",
+  "hz": 44100,
+  "ch": "mono",
+  "plan_dur": 86.61,
+  "dur_ok": true
+ },
+ "sheets": {
+  "step": 3,
+  "files": [
+   "list_01.jpg"
+  ]
+ },
+ "frames": {
+  "checked": 87,
+  "dark_sec": [],
+  "still_from_sec": [],
+  "mean_brightness": 196.8
+ },
+ "kadry": 11,
+ "audio": {
+  "lufs": -15.3,
+  "lra": 6.5,
+  "peak_db": 0.1,
+  "silences": []
+ },
+ "words_second_pass": 0,
+ "words": {
+  "pct": 100.0,
+  "lines": 12,
+  "by_hero": {
+   "Барсик": 100.0,
+   "Топа": 100.0,
+   "Филя": 100.0,
+   "Пик": 100.0,
+   "Рон": 100.0
+  },
+  "worst": []
+ },
+ "voices": {
+  "Барсик": {
+   "f0": 235.0,
+   "range_st": 5.2,
+   "hnr": 14.1,
+   "jitter": 2.1,
+   "shimmer": 8.8,
+   "F1": 463.5,
+   "F2": 2114.5,
+   "F3": 3301.0,
+   "bright": -11.7,
+   "air": -14.4,
+   "cog": 675.0,
+   "rate": 4.5,
+   "voiced": 0.6,
+   "n": 4,
+   "age": "подросток/женский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Пик": {
+   "f0": 344.0,
+   "range_st": 8.2,
+   "hnr": 15.1,
+   "jitter": 2.1,
+   "shimmer": 8.0,
+   "F1": 609.0,
+   "F2": 2147.0,
+   "F3": 3400.0,
+   "bright": -15.6,
+   "air": -19.2,
+   "cog": 845.0,
+   "rate": 5.5,
+   "voiced": 0.6,
+   "n": 1,
+   "age": "мультяшно-детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Рон": {
+   "f0": 302.0,
+   "range_st": 7.6,
+   "hnr": 14.4,
+   "jitter": 1.5,
+   "shimmer": 8.1,
+   "F1": 525.0,
+   "F2": 2139.0,
+   "F3": 3649.0,
+   "bright": -17.2,
+   "air": -18.8,
+   "cog": 1068.0,
+   "rate": 3.4,
+   "voiced": 0.6,
+   "n": 3,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  },
+  "Топа": {
+   "f0": 167.0,
+   "range_st": 4.9,
+   "hnr": 9.7,
+   "jitter": 2.8,
+   "shimmer": 11.0,
+   "F1": 455.0,
+   "F2": 2164.0,
+   "F3": 3187.0,
+   "bright": -12.4,
+   "air": -16.4,
+   "cog": 755.0,
+   "rate": 3.4,
+   "voiced": 0.5,
+   "n": 1,
+   "age": "взрослый",
+   "pleasant": 3.8,
+   "why": [
+    "немного шумный тембр",
+    "дрожит высота"
+   ],
+   "clear_pct": 100.0
+  },
+  "Филя": {
+   "f0": 279.5,
+   "range_st": 4.7,
+   "hnr": 15.6,
+   "jitter": 1.6,
+   "shimmer": 7.4,
+   "F1": 451.5,
+   "F2": 2296.0,
+   "F3": 3330.5,
+   "bright": -14.3,
+   "air": -17.6,
+   "cog": 688.0,
+   "rate": 4.1,
+   "voiced": 0.6,
+   "n": 2,
+   "age": "детский",
+   "pleasant": 5.0,
+   "why": [],
+   "clear_pct": 100.0
+  }
+ },
+ "voices_close": [],
+ "vnutri": [],
+ "kraj": {
+  "shots": 4,
+  "bad": 0,
+  "bad_sec": 0,
+  "tot_sec": 11,
+  "list": []
+ },
+ "build": {
+  "ok": true,
+  "err": null,
+  "total_sec": 427,
+  "mode": "как в кино",
+  "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+  "card": {
+   "status": "built",
+   "dur": 86.60735663470287,
+   "video": "video/Кот Барсик - 40. Санки едут сами!.mp4",
+   "voiceFb": 0,
+   "made": {
+    "app": "студия",
+    "ver": "625a7aa",
+    "intro": "overlay",
+    "open": "new",
+    "q": "hq",
+    "at": null,
+    "text": "заставка: плашкой поверх действия · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+   },
+   "perf": {
+    "r": 14,
+    "e": 128,
+    "b": 4,
+    "w": 1,
+    "n": 2160,
+    "at": 2160,
+    "pipe": true
+   }
+  },
+  "stat": {
+   "tts": 0,
+   "ttsFail": 0,
+   "voice": 14,
+   "voiceFail": 0,
+   "voiceSec": 12,
+   "ttsSec": 0,
+   "frames": 2166,
+   "dialogs": [],
+   "errors": [],
+   "stages": [],
+   "lufs_in": -22.9,
+   "lufs_out": -15.3,
+   "gain_db": 8.8
+  },
+  "start": {
+   "ok": true,
+   "series": "Кот Барсик",
+   "episode": 40,
+   "title": "Санки едут сами?!",
+   "scenes": 1,
+   "errors": [],
+   "unknownWords": [],
+   "unknownObjects": [],
+   "unknownNames": [],
+   "probe": [
+    "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+    "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+    "Рон: {\"speaker\":\"svoy_ron\",\"F\":1.1,\"P\":1.1,\"R\":1.7,\"T\":1.12,\"vend\":1.7,\"gap\":0.25,\"qrise\":3,\"laugh\":\"F16\"}",
+    "Барсик: {\"speaker\":\"svoy_barsik\",\"F\":1.09,\"P\":1.1,\"R\":0.9,\"T\":1.12,\"gap\":0.3,\"qrise\":3}",
+    "Пик: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.33,\"qrise\":3}"
+   ]
+  }
+ }
+}
