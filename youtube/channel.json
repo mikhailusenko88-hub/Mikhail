@@ -1,20 +1,80 @@
 {
  "channel": "Кот Барсик | Мультфильмы для детей",
- "subs": "56",
- "videos": "65",
+ "subs": "62",
+ "videos": "68",
  "playlists": [
   {
    "id": "PLKIEWQEeV1UA",
    "title": "Кот Барсик 🐱 | Смешные моменты и Shorts",
-   "n": 44
+   "n": 45
   },
   {
    "id": "PLSaY8-Tx3Vwg",
    "title": "Кот Барсик 🐱 | Все серии подряд | Мультики для детей",
-   "n": 54
+   "n": 55
   }
  ],
  "last": [
+  {
+   "id": "x_yxFUnwokg",
+   "title": "Кто рисует на окне?! 🐱 Кот Барсик | 38 серия #shorts",
+   "published": "2026-11-28T06:30:19Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT27S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "kLap1CYx4bs",
+   "title": "❄️ КТО РИСУЕТ НА ОКНЕ?! Тайна морозных узоров | Кот Барсик | Новая серия 38",
+   "published": "2026-11-28T05:30:16Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M38S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "E7MJ9DqFk40",
+   "title": "Лужа стала льдом?! 🐱 Кот Барсик | 37 серия #shorts",
+   "published": "2026-11-27T13:30:35Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT28S",
+   "views": 1,
+   "likes": 1
+  },
+  {
+   "id": "DplvBw_v7lQ",
+   "title": "Санки едут сами?! 🐱 Кот Барсик | 40 серия #shorts",
+   "published": "2026-11-27T11:27:58Z",
+   "privacy": "private",
+   "publishAt": "2026-11-30T07:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT26S",
+   "views": 0,
+   "likes": 0
+  },
+  {
+   "id": "9WkWQUeXjCk",
+   "title": "🛷 САНКИ ЕДУТ САМИ?! Секрет горки | Кот Барсик | Новая серия 40",
+   "published": "2026-11-27T11:06:10Z",
+   "privacy": "private",
+   "publishAt": "2026-11-30T06:30:00Z",
+   "kids": true,
+   "category": "1",
+   "dur": "PT8M30S",
+   "views": 0,
+   "likes": 0
+  },
   {
    "id": "mo1ZnkhjVYI",
    "title": "🧊 ЛУЖА СТАЛА ЛЬДОМ?! Секрет мороза | Кот Барсик | Новая серия 37",
@@ -24,8 +84,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M56S",
-   "views": 1,
-   "likes": 0
+   "views": 1138,
+   "likes": 1
   },
   {
    "id": "WYEunfcK7QI",
@@ -52,42 +112,6 @@
    "likes": 0
   },
   {
-   "id": "x_yxFUnwokg",
-   "title": "Кто рисует на окне?! 🐱 Кот Барсик | 38 серия #shorts",
-   "published": "2026-11-26T17:36:45Z",
-   "privacy": "private",
-   "publishAt": "2026-11-28T06:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT27S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "kLap1CYx4bs",
-   "title": "❄️ КТО РИСУЕТ НА ОКНЕ?! Тайна морозных узоров | Кот Барсик | Новая серия 38",
-   "published": "2026-11-26T17:34:49Z",
-   "privacy": "private",
-   "publishAt": "2026-11-28T05:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M38S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "E7MJ9DqFk40",
-   "title": "Лужа стала льдом?! 🐱 Кот Барсик | 37 серия #shorts",
-   "published": "2026-11-26T16:59:34Z",
-   "privacy": "private",
-   "publishAt": "2026-11-27T13:30:00Z",
-   "kids": true,
-   "category": "1",
-   "dur": "PT28S",
-   "views": 0,
-   "likes": 0
-  },
-  {
    "id": "EuvuGeu65bU",
    "title": "Куда ушёл снеговик?! 🐱 Кот Барсик | 36 серия #shorts",
    "published": "2026-11-26T13:30:36Z",
@@ -96,8 +120,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT25S",
-   "views": 1,
-   "likes": 0
+   "views": 7,
+   "likes": 1
   },
   {
    "id": "rTKjyRowWIE",
@@ -120,32 +144,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M42S",
-   "views": 1376,
-   "likes": 4
-  },
-  {
-   "id": "9QT3Rapwjrc",
-   "title": "Лужа стала льдом?! 🐱 Кот Барсик | 37 серия #shorts",
-   "published": "2026-11-25T17:27:55Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT27S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "ZEQyEyFngUk",
-   "title": "🧊 ЛУЖА СТАЛА ЛЬДОМ?! Секрет мороза | Кот Барсик | Новая серия 37",
-   "published": "2026-11-25T17:25:22Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M42S",
-   "views": 0,
-   "likes": 0
+   "views": 1649,
+   "likes": 5
   },
   {
    "id": "nCJHU-PLZK8",
@@ -156,7 +156,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT26S",
-   "views": 12,
+   "views": 13,
    "likes": 1
   },
   {
@@ -168,8 +168,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT6M6S",
-   "views": 1276,
-   "likes": 3
+   "views": 1945,
+   "likes": 4
   },
   {
    "id": "fJ8ZJ2N9cx4",
@@ -180,7 +180,7 @@
    "kids": true,
    "category": "1",
    "dur": "PT28S",
-   "views": 13,
+   "views": 17,
    "likes": 2
   },
   {
@@ -192,56 +192,8 @@
    "kids": true,
    "category": "1",
    "dur": "PT5M49S",
-   "views": 1961,
-   "likes": 3
-  },
-  {
-   "id": "B86QuwSDoB8",
-   "title": "Кто рисует на окне?! 🐱 Кот Барсик | 38 серия #shorts",
-   "published": "2026-11-23T21:35:00Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT25S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "nfDYiVC-dpo",
-   "title": "❄️ КТО РИСУЕТ НА ОКНЕ?! Тайна морозных узоров | Кот Барсик | Новая серия 38",
-   "published": "2026-11-23T21:32:47Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M21S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "EtxnmePX5RY",
-   "title": "Почему у снежинки лучики?! 🐱 Кот Барсик | 39 серия #shorts",
-   "published": "2026-11-23T20:59:08Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT26S",
-   "views": 0,
-   "likes": 0
-  },
-  {
-   "id": "M2qZeQuFbzM",
-   "title": "❄️ ПОЧЕМУ У СНЕЖИНКИ ЛУЧИКИ?! Секрет снежной звёздочки | Кот Барсик | Новая серия 39",
-   "published": "2026-11-23T20:56:54Z",
-   "privacy": "private",
-   "publishAt": null,
-   "kids": true,
-   "category": "1",
-   "dur": "PT5M",
-   "views": 0,
-   "likes": 0
+   "views": 2757,
+   "likes": 7
   },
   {
    "id": "cjAd-R1eaH0",
@@ -252,8 +204,56 @@
    "kids": true,
    "category": "1",
    "dur": "PT25S",
-   "views": 29,
+   "views": 49,
    "likes": 1
+  },
+  {
+   "id": "SCE7JcQNMAM",
+   "title": "🌲 ШИШКА ЗНАЕТ ПОГОДУ?! Лесной секрет | Кот Барсик | Новая серия 33",
+   "published": "2026-11-23T12:30:22Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M48S",
+   "views": 632,
+   "likes": 0
+  },
+  {
+   "id": "ko1NB7Hx32Q",
+   "title": "🐱 КОТ БАРСИК — 5 серий подряд! Лодка, зеркало, жёлудь, Луна и лужа | Мультики для детей",
+   "published": "2026-11-22T08:30:39Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT29M47S",
+   "views": 2128,
+   "likes": 3
+  },
+  {
+   "id": "2KnQrxCPnUw",
+   "title": "Упрямая стрелка?! 🐱 Кот Барсик | 32 серия #shorts",
+   "published": "2026-11-22T06:30:39Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT26S",
+   "views": 11,
+   "likes": 2
+  },
+  {
+   "id": "ZL6aDwt8dN4",
+   "title": "🧭 УПРЯМАЯ СТРЕЛКА?! Секрет компаса | Кот Барсик | Новая серия 32",
+   "published": "2026-11-22T05:30:24Z",
+   "privacy": "public",
+   "publishAt": null,
+   "kids": true,
+   "category": "1",
+   "dur": "PT5M33S",
+   "views": 745,
+   "likes": 2
   }
  ]
 }
