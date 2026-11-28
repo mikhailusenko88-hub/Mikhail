@@ -124,8 +124,9 @@ async function cabinet() {
     if (!a) { S(IDS[id] + ' — в списке нет'); continue; }
     // 28.11: страница «Мои объявления» поменялась — прежний подъём «до блока длиннее 160 знаков» доходил до всего списка, у всех шести выходил один текст.
     // Теперь поднимаемся, пока в блоке нет ссылок на другие наши объявления: это и есть карточка одного объявления.
-    let e = a;
-    for (let i = 0; i < 16 && e.parentElement; i++) { const p = e.parentElement; if (Object.keys(IDS).some(x => x !== id && p.querySelector('a[href*="' + x + '"]'))) break; e = p; }
+    // проверено 28.11 10:13: карточка объявления — DIV[data-marker="item-snippet/<номер>"]; запасной путь — подъём ниже
+    let e = d.querySelector('[data-marker="item-snippet/' + id + '"]') || a;
+    if (e === a) for (let i = 0; i < 16 && e.parentElement; i++) { const p = e.parentElement; if (Object.keys(IDS).some(x => x !== id && p.querySelector('a[href*="' + x + '"]'))) break; e = p; }
     const txt = (e.innerText || '').trim();
     S(IDS[id] + ' | ' + txt.replace(/\s+/g, ' ').replace(/−\d+% на продвижение.*$/, '').slice(0, 320));   // числа: просмотры всего[+из них сегодня] контакты избранное
   }
