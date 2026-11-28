@@ -67,3 +67,4 @@
 | 2026-11-27 | 2 | mass_cities №6 | Urganch | https://youtube.com/shorts/YGFaT_Ck99Y | public |
 | 2026-11-27 | 3 | mass_cars №13 | Cobalt | https://youtube.com/shorts/JMUw5Wy958s | public |
 | 2026-11-28 | 1 | mass_cars №14 | Jiguli | https://youtube.com/shorts/RHHKIvUxXd8 | public |
+| 2026-11-28 | 2 | mass_cities №7 | Olmaliq | https://youtube.com/shorts/pKPbOLBj6zo | public |

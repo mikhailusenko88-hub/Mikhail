@@ -1686,6 +1686,16 @@
    "link": "https://youtube.com/shorts/RHHKIvUxXd8",
    "title": "1000 ta shar! Gentra, Nexia, Equinox… Qaysi mashina yutadi? Какая машина победит? №14 #shorts",
    "pl": true
+  },
+  {
+   "date": "2026-11-28",
+   "slot": 2,
+   "league": "mass_cities",
+   "no": 7,
+   "final": false,
+   "link": "https://youtube.com/shorts/pKPbOLBj6zo",
+   "title": "1000 ta shar! Samarqand, Margʻilon, Chirchiq… Qaysi shahar yutadi? Какой город победит? №7 #shorts",
+   "pl": true
   }
  ],
  "seen_comments": [
@@ -1905,30 +1915,30 @@
    ]
   },
   "cities": {
-   "no": 6,
+   "no": 7,
    "cnt": {
     "Asaka": 3,
     "Nukus": 2,
     "Namangan": 3,
     "Shahrisabz": 2,
-    "Angren": 2,
+    "Angren": 3,
     "Qoʻqon": 2,
-    "Xiva": 2,
-    "Fargʻona": 2,
-    "Samarqand": 6,
-    "Toshkent": 6,
+    "Xiva": 3,
+    "Fargʻona": 3,
+    "Samarqand": 7,
+    "Toshkent": 7,
     "Andijon": 3,
     "Jizzax": 3,
-    "Buxoro": 2,
-    "Olmaliq": 2,
-    "Guliston": 2,
-    "Chirchiq": 2,
+    "Buxoro": 3,
+    "Olmaliq": 3,
+    "Guliston": 3,
+    "Chirchiq": 3,
     "Qarshi": 3,
     "Termiz": 3,
     "Urganch": 3,
     "Navoiy": 3,
     "Zarafshon": 2,
-    "Margʻilon": 2
+    "Margʻilon": 3
    },
    "results": [
     {
@@ -2008,6 +2018,19 @@
      ],
      "in_cup": 417,
      "link": "https://youtube.com/shorts/YGFaT_Ck99Y"
+    },
+    {
+     "no": 7,
+     "date": "2026-11-28",
+     "slot": 2,
+     "winner": "Olmaliq",
+     "top3": [
+      "Olmaliq",
+      "Chirchiq",
+      "Guliston"
+     ],
+     "in_cup": 361,
+     "link": "https://youtube.com/shorts/pKPbOLBj6zo"
     }
    ]
   }
