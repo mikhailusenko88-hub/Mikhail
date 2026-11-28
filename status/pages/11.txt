@@ -1,0 +1,229 @@
+URL: https://kvsspb.ru/klientam/partnyory_kompanii/
+КОД: 200
+ЗАГОЛОВКИ:
+Server: nginx
+Date: Sat, 28 Nov 2026 05:53:08 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 57980
+Connection: close
+Set-Cookie: auth.strategy=local; Path=/
+ETag: "e27c-CoMs9qQ7DyL6ow7f/HF2qGuoLz0"
+Accept-Ranges: none
+Vary: Accept-Encoding
+X-var-ru: /klientam/programmy/
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Content-Security-Policy: frame-ancestors 'self' https://spb.domclick.ru;
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+
+Строительная компания «КВС» | Продажа жилой и коммерческой недвижимости от застройщика в СПб и ЛО 
+ Клиентам 
+ Контакты 
+ Регионам 
+ Группа компаний «КВС» Строим мир — строим отношения! 
+ Заказать звонок 
+ 8 812 645 5555
+ Объекты в продаже 
+ Квартира в зачет 
+ Коммерция 
+ Как купить 
+ Акции 
+ Новости 
+ О компании 
+ 0 
+ 0 
+ Онлайн-магазин
+ Главная
+ Клиентам
+ Партнерские акции
+ Партнерские программы
+ Услуги
+ Вопрос-ответ
+ Программа лояльности
+ Заявка на приeмку квартиры
+ Партнерские программы
+ Школа дольщика
+ Партнерская программа «КВС» объединяет около тридцати компаний, которые предлагают скидки нашим клиентам. Среди них — производители мебели, клиники, спортивные клубы, транспортные компании, развлекательные центры. Чтобы воспользоваться предложениями наших партнеров, нужно предъявить дисконтную карту «КВС».Она есть у всех покупателей, которые приобрели квартиры или коммерческие помещения в наших домах.
+ Все
+ Услуги переезда
+ Системы хранения
+ Техника
+ Мягкая мебель
+ Кухни
+ Развлечения и отдых
+ Спортивные клубы
+ Медицина
+ Товары для дома
+ A-Fitness и Alex Fitness
+ Спортивные клубы
+ Крупнейшая частная медицинская компания INVITRO
+ Медицина
+ «Мария»
+ Кухни
+ Магазин обоев, краски и тканей
+ Товары для дома
+ Загородный клуб «Жемчужина»
+ Развлечения и отдых
+ MaybeSmart
+ Товары для дома
+ Производитель мебели из шпона PARRA
+ Мягкая мебель
+ Клининговая компания Cleacom
+ Товары для дома
+ Termoland Пулковский
+ Развлечения и отдых
+ Петрович — всё для строительства и ремонта
+ Товары для дома
+ Экодар
+ Товары для дома
+ Отель «Новый Петергоф» 
+ Развлечения и отдых
+ Mr.Doors
+ Кухни
+ Divan.ru
+ Мягкая мебель
+ DУЭТ
+ Кухни
+ Медицинский центр «‎XXI век»‎ 
+ Медицина
+ Показать еще
+ 8 812 645 5555 info@kvsspb.ru 
+ 194100, г. Санкт‐Петербург, ст. м. Лесная, ул. Грибалёвой, д. 9к1
+ отдел продаж 
+ Оставить заявку
+ Квартиры в новостройках комнатность
+ Студии 
+ Однокомнатные 
+ Двухкомнатные 
+ Трехкомнатные 
+ Четырехкомнатные 
+ местоположение
+ Ленобласть 
+ Санкт-Петербург 
+ по району
+ Московский район 
+ Калининский район 
+ Пушкинский район 
+ Петродворцовый район 
+ Всеволожский район 
+ Фрунзенский район 
+ Объекты в продаже бизнес
+ Проект «Дом на Курской» 
+ Квартал «М36» 
+ Квартал «Дубровский» 
+ Квартал «Б15» 
+ комфорт
+ ЖК «ПАТИО. Уютный квартал» 
+ ЖК «ЮгТаун» 
+ ЖК «Любоград» 
+ ЖК «Ясно.Янино» 
+ Способы покупки субсидии и программы
+ Аккредитив 
+ Субсидии 
+ Материнский капитал 
+ ипотека и рассрочка
+ Ипотека 
+ Рассрочка 
+ 194100, г. Санкт‐Петербург, ст. м. Лесная, ул. Грибалёвой, д. 9к1
+ отдел продаж 
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ 2026, Группа компаний «КВС» 
+ Политика персональных данных
+ Информация правового характера
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Группа компаний «КВС» в Тикток
+ Напишите в мессенджер
+
+ССЫЛКИ:
+/
+/_nuxt/7eb2315.js
+/_nuxt/8c61afd.js
+/_nuxt/9667a57.js
+/_nuxt/bc66a2f.js
+/_nuxt/css/4c9f346.css
+/_nuxt/css/d930d58.css
+/_nuxt/css/f6b35ff.css
+/_nuxt/e8649e5.js
+/akcii/
+/cart/
+/favicon.png
+/favicon.svg
+/informatsiya-pravovogo-kharaktera/
+/kak-kupit/
+/kak-kupit/informaciya/akkreditiv/
+/kak-kupit/ipoteki/na-pervichnuyu-nedvizhimost/
+/kak-kupit/materinskij-kapital/
+/kak-kupit/rassrochka/
+/kak-kupit/zhilishchnye-programmy/
+/katalog/?group%5B0%5D=1&amp;group%5B1%5D=647&amp;group%5B2%5D=33
+/katalog/?group%5B0%5D=39
+/katalog/?group%5B0%5D=39&amp;group%5B1%5D=33&amp;group%5B2%5D=647&amp;group%5B3%5D=18&amp;group%5B4%5D=1
+/katalog/?group%5B0%5D=511
+/katalog/?group%5B0%5D=511&amp;group%5B1%5D=528
+/katalog/?group%5B0%5D=528&amp;group%5B1%5D=18
+/katalog/?group%5B0%5D=705
+/katalog/?group%5B0%5D=782
+/katalog/?type_flat%5B0%5D=1088
+/katalog/?type_flat%5B0%5D=1089
+/katalog/?type_flat%5B0%5D=1090
+/katalog/?type_flat%5B0%5D=7878
+/katalog/?type_flat%5B1%5D=1091
+/klientam/
+/klientam/priemka-kvartiry/
+/klientam/programma-loyalnosti/
+/klientam/programmy/
+/klientam/programmy/alex-fitness/
+/klientam/programmy/divan-ru/
+/klientam/programmy/duet/
+/klientam/programmy/ekodar/
+/klientam/programmy/gamma-decor-interernyy-salon/
+/klientam/programmy/kliningovaya-kompaniya-cleacom/
+/klientam/programmy/krupneyshaya-chastnaya-meditsinskaya-kompaniya-invitro/
+/klientam/programmy/mariya/
+/klientam/programmy/maybesmart/
+/klientam/programmy/meditsinskiy-tsentr-xxi-vek-/
+/klientam/programmy/mr-doors/
+/klientam/programmy/otel-novyy-petergof-/
+/klientam/programmy/petrovich-vsye-dlya-stroitelstva-i-remonta/
+/klientam/programmy/proizvoditel-mebeli-iz-shpona-parra/
+/klientam/programmy/termoland-pulkovskiy/
+/klientam/programmy/zagorodnyy-klub-zhemchuzhina/
+/klientam/shkola/
+/klientam/uslugi/
+/klientam/vopros-otvet/
+/kommerciya/
+/kompaniya/
+/kontakty/
+/kvartira-v-zachet/
+/novosti/
+/obekty/
+/obekty/dom-na-kurskoy/
+/obekty/kvartal-biznes-klassa-b15/
+/obekty/lyubograd/
+/obekty/m36/
+/obekty/patio/
+/obekty/yasno-yanino/
+/obekty/yugtaun/
+/obekty/zhiloy-kvartal-dubrovskiy/
+/politika-konfidentsialnosti/
+/regionam/
+https://eagent.kvsspb.ru
+https://max.ru/stroit_kvs
+https://mc.yandex.ru/metrika/tag.js
+https://rutube.ru/channel/25614090
+https://school.kvsspb.ru/teach/control
+https://t.me/kvs_life
+https://vk.com/stroit_kvs
+https://vkvideo.ru/@stroit_kvs
+https://zen.yandex.ru/kvs_life
+mailto:info@kvsspb.ru
+tel:8 812 645 5555

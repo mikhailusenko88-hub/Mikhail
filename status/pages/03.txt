@@ -1,19 +1,398 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/453d2aff-8a57-47e3-976e-b5efa54ea34d
+URL: https://cds.spb.ru/
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Fri, 27 Nov 2026 08:48:28 GMT
-Content-Type: application/json
-Content-Length: 67
+Date: Sat, 28 Nov 2026 05:52:47 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
 Connection: close
-Cache-Control: no-store
+Vary: Accept-Encoding
+Set-Cookie: PHPSESSID=jb9mstbk9j25648grree9ckcuo; path=/
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Referrer-Policy: origin-when-cross-origin
+Set-Cookie: vuid=5a43916fe402ecd081ed168ae747fc51; path=/
+X-XSS-Protection: 1; mode=block
 X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Referrer-Policy: no-referrer-when-downgrade
+Permissions-Policy: interest-cohort=()
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Content-Security-Policy: default-src https: http: 'self' *.cds.spb.ru ukcds.spb.ru; style-src 'self' *.cds.spb.ru ukcds.spb.ru https://*.googleapis.com 'unsafe-inline'; script-src data: blob: https: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self' *.cds.spb.ru; font-src https: data:; img-src https: data:;  frame-src https: *.cds.spb.ru ukcds.spb.ru; connect-src https: *.cds.spb.ru ukcds.spb.ru; media-src https: blob: *.cds.spb.ru ukcds.spb.ru;
 
-{"error":"","sent_at":"2026-11-27T11:47:08+03:00","status":"sent"}
+ЦДС — квартиры в Санкт‐Петербурге от застройщика, недорогие квартиры в рассрочку (кредит) в новых домах, жилье в Санкт‐Петербурге По вопросам приёмки квартиры обращайтесь по номеру +7 (812) 676-06-28 
+ Закрыть 
+ ЦДС Dreamline
+ м. Комендантский проспект
+ Город Первых
+ м. Ломоносовская
+ Parkolovo
+ м. Озерки
+ Мурино Space
+ м. Девяткино
+ ЦДС «Чёрная Речка»
+ м. Лесная
+ ЦДС «Новые Горизонты», участок 2
+ м. Девяткино
+ ЦДС «Приневский»
+ м. Ломоносовская
+ ЦДС «Северный»
+ м. Девяткино
+ Все объекты 
+ Личный кабинет 
+ Купившим квартиру 
+ Управляющая компания 
+ Строим для детей 
+ Возврат средств по брони 
+ Объекты 
+ Тендеры 
+ Коммерция 
+ Ипотека 
+ Компания 
+ Шоу‐румы 
+ Отделка 
+ Акции 
+ Новости 
+ Документы 
+ Как купить 
+ Агентам 
+ Переуступка 
+ Вопросы и ответы 
+ Контакты 
+ Пресс-центр 
+ Вакансии 
+ Регионам 
+ Центральный офис
+ Пр. Добролюбова, 8 А Спортивная 
+ Пн–Пт: 10:00–18:00
+ Сб–Вс: Выходной
+ Все офисы в Петербурге 
+ Квартиры 8 800 555 80 70 Купить квартиру 
+ Меню 
+ -5% на готовые квартиры
+ по 30 ноября 2026
+ Студия 
+ 1 
+ 2 
+ 3+ 
+ Найти квартиры 
+ Узнать об акциях
+ Наши видео
+ Ипотечный калькулятор
+ Рассчитайте стоимость ипотеки в разных банках
+ Скидки на паркинг
+ Быстрый подбор квартиры
+ Местоположение Любое Санкт-Петербург 
+ Девяткино 
+ Новосаратовка 
+ Любое 
+ Санкт-Петербург 
+ Девяткино 
+ Новосаратовка 
+ Комнатность Любая комнатность Студия 
+ Однокомнатная 
+ Любая комнатность 
+ Студия 
+ Однокомнатная 
+ Стоимость Любая стоимость От 3.5 до 4.5 млн 
+ От 4.5 до 6.5 млн 
+ От 7.5 до 10.5 млн 
+ От 10.5 млн 
+ Любая стоимость 
+ От 3.5 до 4.5 млн 
+ От 4.5 до 6.5 млн 
+ От 7.5 до 10.5 млн 
+ От 10.5 млн 
+ Поиск предложений 
+ Новости Показать все 
+ Повышение цен на все парковочные места с 16 ноября 2026!
+ 11 ноября 
+ Получено разрешение на ввод в эксплуатацию ЖК Dreamline, корпуса 5 и 6
+ 8 октября 
+ Старт продаж парковочных мест в ЖК ЦДС "Новые Горизонты"
+ 8 июня 
+ Повышение цен на квартиры в ЖК ЦДС Dreamline корп.25-28 с 15 мая 2026г.
+ 5 мая 
+ Введена в эксплуатацию школа на 1550 мест в квартале Parkolovo
+ 27 апреля 
+ Группа ЦДС ввела в эксплуатацию поликлинику в ЖК ЦДС «Московский»
+ 14 апреля 
+ Старт продаж кладовых в корпусах 3.3.1 3.3.2 3.3.3 Parkolovo
+ 7 апреля 
+ Повышение цен на квартиры в ЖК ЦДС Город Первых и ЖК ЦДС Dreamline с 15 апреля 2026г.
+ 2 апреля 
+ Изменения в графике работы
+ 11 марта 
+ Старт продаж кладовых в корпусе 4.7 Города первых
+ 24 февраля 
+ Жилые комплексы
+ Скидки на паркинг до 19%
+ ЦДС «Новосаратовка» Город Первых
+ ЦДС «Новосаратовка»
+ Город Первых
+ Масштабный урбанистический проект с сформированной средой для жизни.
+ Метро
+ Ломоносовская
+ Улица Дыбенко
+ Квартиры
+ 2-комнатные (евро) — от 7,7 млн ₽
+ 3-комнатные (евро) — от 10,1 млн ₽
+ Город у города Масштабный урбанистический проект с сформированной средой для жизни.
+ Очередь 1 Все дома построены 
+ Город Первых Очередь 1 
+ Сроки сдачи
+ Корпус 1.1 — сдан
+ Корпус 1.2 — сдан
+ Корпус 1.3 — сдан
+ Корпус 1.4 — сдан
+ Город Первых
+ Очередь 1
+ Очередь 2 Все дома построены 
+ Город Первых Очередь 2 
+ Сроки сдачи
+ Корпус 2.1 — сдан
+ Корпус 2.2 — сдан
+ Корпус 2.3 — сдан
+ Еще 4 корпуса
+ Город Первых
+ Очередь 2
+ Очередь 3 Корпуса 4.5 - 4.7 построены От 7,7 млн ₽ 
+ Город Первых Очередь 3 
+ Сроки сдачи
+ Корпус 4.5 — сдан
+ Корпус 4.6 — сдан
+ Корпус 4.7 — сдан
+ Город Первых
+ Очередь 3
+ Квартиры
+ 2-комнатные (евро) — от 7,7 млн ₽ 2-комн. (евро) — от 7,7 млн ₽ 
+ 3-комнатные (евро) — от 10,1 млн ₽ 3-комн. (евро) — от 10,1 млн ₽ 
+ От 7,7 млн ₽ 
+ Подробнее о проекте 
+ ул. Плесецкая ЦДС Dreamline 
+ Скидки на паркинг до 19%
+ Сроки сдачи
+ Корпуса 1.1—2.4 — сданы
+ Корпуса 2.5—2.6 — сданы
+ Корпуса 2.7—2.8 — III кв. 2027
+ ул. Плесецкая
+ ЦДС Dreamline
+ Метро
+ Комендантский проспект
+ Квартиры
+ Студии — от 11,1 млн ₽ Студии — от 11,1 млн ₽ 
+ 1-комнатные — от 10,2 млн ₽ 1-комн. — от 10,2 млн ₽ 
+ 2-комнатные (евро) — от 10,0 млн ₽ 2-комн. (евро) — от 10,0 млн ₽ 
+ 3-комнатные (евро) — от 17,2 млн ₽ 3-комн. (евро) — от 17,2 млн ₽ 
+ 4-комнатные (евро) — от 20,4 млн ₽ 4-комн. (евро) — от 20,4 млн ₽ 
+ От 10,0 млн ₽ 
+ Скидки на паркинг до 5%
+ наб. Чёрной речки ЦДС «Чёрная Речка»
+ наб. Чёрной речки
+ ЦДС «Чёрная Речка»
+ Метро
+ Лесная
+ Чёрная речка
+ Квартиры
+ 3-комнатные (евро) — от 23,5 млн ₽ 3-комн. (евро) — от 23,5 млн ₽ 
+ 4-комнатные (евро) — от 28,3 млн ₽ 4-комн. (евро) — от 28,3 млн ₽ 
+ 1‐я очередь Все дома построены От 28,3 млн ₽ 
+ ЦДС «Чёрная Речка» 1‐я очередь 
+ Сроки сдачи
+ Корпус 2* — сдан
+ Корпус 3* — сдан
+ ЦДС «Чёрная Речка»
+ 1‐я очередь
+ Квартиры
+ 4-комнатные (евро) — от 28,3 млн ₽ 4-комн. (евро) — от 28,3 млн ₽ 
+ От 28,3 млн ₽ 
+ 2‐я очередь Все дома построены От 23,5 млн ₽ 
+ ЦДС «Чёрная Речка» 2‐я очередь 
+ Сроки сдачи
+ Корпус 1 — сдан
+ ЦДС «Чёрная Речка»
+ 2‐я очередь
+ Квартиры
+ 3-комнатные (евро) — от 23,5 млн ₽ 3-комн. (евро) — от 23,5 млн ₽ 
+ От 23,5 млн ₽ 
+ 3-я очередь Все дома построены 
+ ЦДС «Чёрная Речка» 3-я очередь 
+ Сроки сдачи
+ Корпус 5 — сдан
+ ЦДС «Чёрная Речка»
+ 3-я очередь
+ 4-я очередь Все дома построены 
+ ЦДС «Чёрная Речка» 4-я очередь 
+ Сроки сдачи
+ Корпус 4 — сдан
+ Корпус 6* — сдан
+ Корпус 7* — сдан
+ ЦДС «Чёрная Речка»
+ 4-я очередь
+ Подробнее о проекте 
+ Скидки до 23%
+ ЦДС «Новые Горизонты»
+ ЦДС «Новые Горизонты»
+ Метро
+ Девяткино
+ Проспект Просвещения
+ Парнас
+ Территория комфорта Современные дома для гармоничной жизни в экологически чистом районе 
+ Участок 2 Все корпуса сданы 
+ Бугры, м. Проспект Просвещения Участок 2 
+ Введён в эксплуатацию
+ Бугры, м. Проспект Просвещения
+ Участок 2
+ Метро
+ Девяткино
+ Проспект Просвещения
+ Парнас
+ Участок 7 Все корпуса сданы 
+ Девяткино, м. Девяткино Участок 7 
+ Введён в эксплуатацию
+ Девяткино, м. Девяткино
+ Участок 7
+ Метро
+ Девяткино
+ Проспект Просвещения
+ Парнас
+ Участок 3 Все корпуса сданы 
+ Бугры, м. Проспект Просвещения Участок 3 
+ Введён в эксплуатацию
+ Бугры, м. Проспект Просвещения
+ Участок 3
+ Метро
+ Девяткино
+ Проспект Просвещения
+ Парнас
+ Участок 4 Все корпуса сданы 
+ Бугры, м. Проспект Просвещения Участок 4 
+ Введён в эксплуатацию
+ Бугры, м. Проспект Просвещения
+ Участок 4
+ Метро
+ Девяткино
+ Проспект Просвещения
+ Подробнее о проекте 
+ Показать все объекты Смотрите далее Все акции
+ Мы собрали все наши спецпредложения на одной странице
+ Узнать больше Жилые объекты Город Первых 
+ ЦДС Dreamline 
+ ЦДС «Чёрная Речка» 
+ Parkolovo 
+ Мурино Space 
+ Новые Горизонты 
+ ЦДС «Приневский» 
+ ЦДС «Северный» 
+ Комнатность Студии 
+ Однокомнатные 
+ Двухкомнатные 
+ Трехкомнатные 
+ Европланировки 
+ Еще варианты 
+ Сроки сдачи Готовые квартиры 
+ Сдаются в 2025 
+ Сдаются в 2026 
+ Местоположение Квартиры в СПб 
+ Квартиры у метро 
+ Квартиры в Девяткино 
+ Квартиры в Буграх 
+ Персональные данные 
+ Тендеры 
+ Центральный офис Пр. Добролюбова, 8 А
+ Все офисы 
+ Подписка на новости
+ Я согласен на обработку своих персональных данных 
+ © ЦДС, 1999–2026 
+ Вся информация (в том числе цены и сроки и условия проведения акций) носит справочный характер и не является публичной офертой, определяемой положениями статьи 437 ГК РФ.
+Точные цены, сроки и условия проведения акций необходимо уточнять у менеджеров отдела продаж по телефону +7 (812) 320‐12‐00.
+Все материалы, в том числе изображения, размещаемые на сайте, принадлежат ООО «ЦДС». Любое использование текстов, изображений, файлов планировок и видео, расположенных на сайте www.cds.spb.ru, не допускается без письменного разрешения ООО «ЦДС». 
+В соответствии с Федеральным законом от 30.12.2004 № 214‐ФЗ, полная информация о застройщике и проекте строительства размещена на сайте https://наш.дом.рф/ .
+Специальная оценка условий труда https://cds.spb.ru/sout/ .
+ Создание сайта — M18 
+ В сравнении
 
 ССЫЛКИ:
+/agents/
+/assignment/
+/buy/
+/buy/foreigners/
+/buy/mortgage/
+/choose/apartments/
+/choose/apartments/?filter%5Bcheckbox%5D%5Bconstruction_state%5D%5Bfinished%5D=finished
+/choose/apartments/?filter%5Bcheckbox%5D%5Bdistricts%5D%5B2%5D=2
+/choose/apartments/?filter%5Bcheckbox%5D%5Bdistricts%5D%5B4%5D=4
+/choose/apartments/?filter%5Bcheckbox%5D%5Bdistricts%5D%5B5%5D=5
+/choose/apartments/?filter%5Bcheckbox%5D%5Broom_count%5D%5B0%5D=0
+/choose/apartments/?filter%5Bcheckbox%5D%5Broom_count%5D%5B1%5D=1
+/choose/apartments/?filter%5Bcheckbox%5D%5Broom_count%5D%5B2%5D=2
+/choose/apartments/?filter%5Bcheckbox%5D%5Broom_count%5D%5B2euro%5D=2euro&amp;filter%5Bcheckbox%5D%5Broom_count%5D%5B3euro%5D=3euro&amp;filter%5Bcheckbox%5D%5Broom_count%5D%5B4euro%5D=4euro
+/choose/apartments/?filter%5Bcheckbox%5D%5Broom_count%5D%5B3%5D=3
+/choose/apartments/?filter%5Brange%5D%5Bdeadline%5D%5Buser_min%5D=2025-01-01+00%3A00%3A00&amp;filter%5Brange%5D%5Bdeadline%5D%5Buser_max%5D=2025-12-31+17%3A37%3A14
+/choose/apartments/?filter%5Brange%5D%5Bdeadline%5D%5Buser_min%5D=2026-01-01+00%3A00%3A00&amp;filter%5Brange%5D%5Bdeadline%5D%5Buser_max%5D=2026-12-31+17%3A37%3A14
+/collection/
+/commercial/
+/company/
+/company/jobs/
+/compare/?uid=wo9zfgox9w25648teerr9pxphb643d4848
+/complex/
+/complex/chyornaya-rechka/
+/complex/dreamline/
+/complex/gorod-pervyh/
+/complex/murino-space/
+/complex/novye-gorizonty-2/
+/complex/novye-gorizonty-3/
+/complex/novye-gorizonty-4/
+/complex/novye-gorizonty/
+/complex/parkolovo/
+/complex/prinevskiy/
+/complex/severnyy/
+/contacts/
+/documents/
+/faq/
+/favicon.ico
+/finishing/
+/for-kids/
+/houses-managment
+/kvartir-u-metro
+/my/
+/news/
+/news/izmeneniya-v-grafik-raboty-2026/
+/news/news-gruppa-cds-vvela-v-ekspluatatsiyu-polikliniku-v-zhk-cds/
+/news/news-news-gruppa-cds-vvela-v-ekspluatatsiyu-shkolu-v-zhk-par/
+/news/news-news-news-povyshenie-tsen-na-parkingi-s-16-11/
+/news/news-news-povyshenie-tsen-na-kvartiry-v-dreamline-s-15-maya/
+/news/news-news-start-prodazh-parkinga-v-zhk-ng7/
+/news/news-polucheno-rnv-zhk-dreamline2526/
+/news/news-povyshenie-tsen-na-kvartiry-v-gorode-pervyh-i-dreamline/
+/news/news-start-prodazh-kladovyh-v-korpuse-3-3-1-3-3-2-3-3-3-park/
+/news/start-prodazh-kladovyh-v-korpuse-4-7-goroda-pervyh/
+/owners/
+/press/
+/privacy-policy/
+/promotions/
+/showrooms/
+/soglasie-naobrabotku-personalnyh-dannyh/
+/spot/novye-gorizonty/
+/spot/spot-gorod-pervyh/
+/styles/common.css?1792773306
+/styles/fonts.css
+/styles/likely.css
+/styles/new-common.css?1792773294
+http://m18.ru/
+https://cds.spb.ru/images/og.png
+https://cds.spb.ru/sout/
+https://cds.video/
+https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700&amp;subset=cyrillic,cyrillic-ext&display=swap
+https://lk-client.cds.spb.ru/
+https://ok.ru/spbcds
+https://t.me/cds_development
+https://tender.cds.spb.ru/Tenders
+https://vk.com/spbcds
+https://www.cds.spb.ru
+https://www.youtube.com/c/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0%D0%A6%D0%94%D0%A1
+https://www.youtube.com/c/ГруппаЦДС
+https://zen.yandex.ru/cds
+https://наш.дом.рф/
+tel:+78126760628
+tel:88005558070

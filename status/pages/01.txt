@@ -1,19 +1,368 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/5837ae4a-6b6f-40c1-8450-a83121bb6140
+URL: https://setlgroup.ru/
 КОД: 200
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Fri, 27 Nov 2026 08:48:27 GMT
-Content-Type: application/json
-Content-Length: 67
+Content-Type: text/html;charset=utf-8
+Content-Length: 777885
 Connection: close
-Cache-Control: no-store
+Server: nginx/1.29.8
+Date: Sat, 28 Nov 2026 05:51:53 GMT
+x-powered-by: Nuxt
+X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Set-Cookie: session-cookie=18ec1f9d8496883d31355314e59e4e023c925627c23082558a0b50696cfc4037426b7b0a3a411a497397e77668d2f346; Max-Age=86400; Path=/; secure
 
-{"error":"","sent_at":"2026-11-27T11:47:05+03:00","status":"sent"}
+Setl Group — Официальный cайт застройщика 
+ Собственникам 
+ Инвесторам 
+ Тендеры 
+ Меню 
+ Проекты 
+ Выбрать квартиру 
+ Способы покупки 
+ О нас 
+ Контакты 
+ +7 (812) 335-51-11 
+ Сэтл –
+ это честно
+ Мы не просто строим дома. Мы строим доверие.
+ Подробнее 
+ ИМПЕРИАЛ КЛАБ Ключи от 8,2 млн. ₽ 
+ до 31.01.2027 
+ Квартира с отделкой 1,3 млн ₽ первый взнос 
+ до 30.11.2026 
+ Выбрать объект 
+ Все фильтры 
+ Фильтры 
+ Фильтры 
+ На карте 
+ Найдено 24 проекта с такими параметрами 
+ Сбросить фильтры 
+ Выберите
+ По популярности ↑ 
+ По популярности ↓ 
+ По стоимости ↑ 
+ По стоимости ↓ 
+ По сроку сдачи ↑ 
+ По сроку сдачи ↓ 
+ Комфорт 
+ Сэтл Дворцовый от 6,7 млн ₽ 
+ м. пр. Ветеранов 25 мин. 
+ Санкт-Петербург, пос. Стрельна
+ II кв. 2029 158 квартир 
+ Премиум 
+ SetlHome 
+ Кристалл Холл от 17,3 млн ₽ 
+ м. Балтийская 15 мин. 
+ Санкт-Петербург, Адмиралтейский район, Санкт-Петербург, Рижский проспект, дом 26, литера Б
+ II кв. 2030 61 квартиру 
+ Бизнес 
+ SetlHome 
+ Аристократ от 13,1 млн ₽ 
+ м. Горный институт 10 мин. 
+ г. Санкт-Петербург, 26 линия ВО, дом 1, корпус 1, лит. А
+ II кв. 2029 — IV кв. 2030 94 квартиры 
+ Комфорт 
+ Есть сданные дома 
+ Город звезд от 4,9 млн ₽ 
+ м. Обухово 13 мин. 
+ Ленинградская область, Всеволожский район, д. Новосаратовка
+ Госкомиссия — III кв. 2030 463 квартиры 
+ Высокий комфорт 
+ Сэтл Лофт от 8,3 млн ₽ 
+ м. Звездная 25 мин. 
+ г. Санкт-Петербург, ул. Георгия Чернышёва
+ IV кв. 2027 75 квартир 
+ Смотреть все объекты 
+ Акции и скидки
+ Показать ещё 
+ Стиль жизни Setl
+ Инфраструктура, которая создает комфорт и особый стиль жизни Холдинг Setl Group не просто строит дома. Вместе мы создаем счастливую жизнь для своих жильцов, окружая их заботой и комфортом во всех сферах жизни. Занятия спортом, прогулки, игры с детьми и их обучение, знакомство и теплые вечера с соседями – все продумано в проектах Setl Group. Подробнее 
+ Стандарты Setl В фокусе стандартов Setl – главные ценности современного человека и представления о комфортной жилой среде. Каждый стандарт разработан совместно с экспертами – психологами, тренерами, дизайнерами, чтобы сделать жизнь в наших ЖК максимально комфортной и вдохновляющей. Школа Setl Школа Setl — концепция современных школ, лицеев и гимназий с насыщенной образовательной программой, дружелюбной средой и уникальным пространством. Концепция реализуется совместно со стратегическим партнером — Санкт-Петербургским политехническим университетом Петра Великого. Сообщество единомышленников Жить комфортно – это значит дружить, общаться, творить и реализовываться. Setl Комьюнити – это сообщество, где можно найти единомышленников, познакомиться с соседями, весело и с пользой провести время или монетизировать свои профессиональные навыки и хобби. 
+ Новости
+ Новости объектов 
+ +2 
+ Setl Group открыл проектное финансирование на строительство 5 очереди ЖК «Астра Континенталь» 24.11.2026
+ Новости компании 
+ Setl Group – надежный застройщик России-2026 20.11.2026
+ Новости компании 
+ Setl Group стал лауреатом премии «Формула доверия» 19.11.2026
+ Новости объектов 
+ +2 
+ Setl Group строит детскую поликлинику в ЖК «Парадный ансамбль» 23.11.2026
+ Новости ESG 
+ +1 
+ Волонтёры Setl Group помогают маленьким пациентам онкоцентров 17.11.2026
+ Больше обновлений на странице новостей 
+ Будьте в курсе последних событий Setl Group 
+ Все новости 
+ Все новости 
+ +7 812 335-51-11 info@setlgroup.ru 
+ Санкт-Петербург, Ушаковская набережная, д.3 корп.1
+ © 2026. «SetlGroup»
+ О холдинге 
+ Вакансии 
+ Покупателям 
+ Новости 
+ Собственникам 
+ Контакты 
+ Инвесторам 
+ Тендеры 
+ Устойчивое развитие 
+ Стиль жизни Setl 
+ Комфорт-класс 
+ Сэтл Дворцовый 
+ Город звезд 
+ Дворцовый фасад 
+ Смотреть все 
+ Высокий комфорт-класс 
+ Сэтл Лофт 
+ Астра Континенталь 
+ Сэтл Ривьера 
+ Смотреть все 
+ Бизнес-класс 
+ Аристократ 
+ Svetlana Park 
+ Притяжение 
+ Резиденс (The Residence) 
+ Премиум-класс 
+ Кристалл Холл 
+ Империал Клаб 
+ GRAND VIEW 
+ Смотреть все 
+ Калининград 
+ Кроны и Волны 
+ Лэйк Сити-4 
+ Лэйк Сити-9 
+ Смотреть все 
+ Комфорт-класс 
+ Сэтл Дворцовый 
+ Город звезд 
+ Дворцовый фасад 
+ Парадный ансамбль 
+ Универ Сити 
+ Зеленый квартал на Пулковских высотах 
+ Чистое небо 
+ Смотреть все 
+ Высокий комфорт-класс 
+ Сэтл Лофт 
+ Астра Континенталь 
+ Сэтл Ривьера 
+ Прайм Приморский 
+ Панорама парк Сосновка 
+ Пульс Премьер 
+ Сенат 
+ Смотреть все 
+ Бизнес-класс 
+ Аристократ 
+ Svetlana Park 
+ Притяжение 
+ Резиденс (The Residence) 
+ Премиум-класс 
+ Кристалл Холл 
+ Империал Клаб 
+ GRAND VIEW 
+ The One 
+ Петровский Квартал на воде 
+ Стокгольм (STOCKHOLM) 
+ Дом на Кирочной 
+ Калининград 
+ Кроны и Волны 
+ Лэйк Сити-4 
+ Лэйк Сити-9 
+ Консул 
+ Лэйк Сити-7 
+ Лэйк Сити-10 
+ Лэйк Сити-11 
+ Смотреть все 
+ Реквизиты 
+ Информация об охране труда 
+ Защита персональных данных 
+ Главная 
+ Выбрать квартиру 
+ Проекты 
+ Покупателям 
+ Меню
 
 ССЫЛКИ:
+/
+/_nuxt/0dVukMUh.js
+/_nuxt/3GGPw30n.js
+/_nuxt/41nHLnW3.js
+/_nuxt/6qqCVz_7.js
+/_nuxt/8VCycq5X.js
+/_nuxt/B9q-Fa7x.js
+/_nuxt/BG68GTpY.js
+/_nuxt/BRTx1PBU.js
+/_nuxt/BTdvw9Zg.js
+/_nuxt/BZcAnTYu.js
+/_nuxt/Ba88sknZ.js
+/_nuxt/BfrCzLJp.js
+/_nuxt/Bk2HEuO0.js
+/_nuxt/BnjhyGLM.js
+/_nuxt/BoCjaoja.js
+/_nuxt/C1UbbX8Q.js
+/_nuxt/C2Uepw-g.js
+/_nuxt/C3yTwb6a.js
+/_nuxt/C40OCfI0.js
+/_nuxt/CDmjgaK2.js
+/_nuxt/CFLO_BgF.js
+/_nuxt/CHsiHj1Y.js
+/_nuxt/CIcov6r5.js
+/_nuxt/CQD0OBPV.js
+/_nuxt/CVNS2noL.js
+/_nuxt/C_GeS1kz.js
+/_nuxt/Cavo8x4D.js
+/_nuxt/Cc3hZFK0.js
+/_nuxt/Cd5eTtCz.js
+/_nuxt/CgJVJ5m-.js
+/_nuxt/Cl-ojDXU.js
+/_nuxt/Co1S4J1I.js
+/_nuxt/CoWo9R2p.js
+/_nuxt/Cpj98o6Y.js
+/_nuxt/CqVrwWsQ.js
+/_nuxt/CvEK9gUk.js
+/_nuxt/CwYboQK4.js
+/_nuxt/Cy2db_u8.js
+/_nuxt/D2Ve2iVj.js
+/_nuxt/D3oQhIcN.js
+/_nuxt/D7zECcp-.js
+/_nuxt/DDJW8JJZ.js
+/_nuxt/DHQcH9yI.js
+/_nuxt/DL3wxB49.js
+/_nuxt/DLm-TbLT.js
+/_nuxt/DOy4ytwC.js
+/_nuxt/DQ9FBS4-.js
+/_nuxt/DUbYlb-l.js
+/_nuxt/D_i0mTRn.js
+/_nuxt/DcvfT3Og.js
+/_nuxt/Djsu2t2M.js
+/_nuxt/DmkgnCty.js
+/_nuxt/Dn4W0xlQ.js
+/_nuxt/Dwcg0_5Q.js
+/_nuxt/DzUGNIeN.js
+/_nuxt/Dz_e-2sV.js
+/_nuxt/FoYKsijF.js
+/_nuxt/GSCo82up.js
+/_nuxt/K2W2iEhl.js
+/_nuxt/M-RfmGYs.js
+/_nuxt/MXOnpwlp.js
+/_nuxt/Ozmk57Ji.js
+/_nuxt/SetlActions.DK9XWhIS.css
+/_nuxt/SetlBreadcrumbs.BhbjUX_G.css
+/_nuxt/SetlButton.QLN51aQ9.css
+/_nuxt/SetlCheckboxTags.D5z7K5ek.css
+/_nuxt/SetlCitySelect.DN0Fyg18.css
+/_nuxt/SetlDropdown.TndN2EkZ.css
+/_nuxt/SetlDropdownList.BO_M495A.css
+/_nuxt/SetlEmptyState.BxQLKpWe.css
+/_nuxt/SetlExpander.D0-DyLrE.css
+/_nuxt/SetlGroupChip.DJn8lp6b.css
+/_nuxt/SetlHeroPromotions.oRBeJ8aH.css
+/_nuxt/SetlHint.D7BUWEN5.css
+/_nuxt/SetlLink.BcvnH8ME.css
+/_nuxt/SetlMap.C5t63_q1.css
+/_nuxt/SetlModal.lhoZ2mQQ.css
+/_nuxt/SetlNavigation.G0PnB6Xb.css
+/_nuxt/SetlPageHeader.CwcGjQjP.css
+/_nuxt/SetlPageMenu.CkoSwUPr.css
+/_nuxt/SetlPagination.BE4tiPqh.css
+/_nuxt/SetlPicture.CPX4rjNt.css
+/_nuxt/SetlProjectCard.J03tII5S.css
+/_nuxt/SetlProjectCardAdvantage.DecJiWk_.css
+/_nuxt/SetlProjectCardSlider.XPXd7RXK.css
+/_nuxt/SetlProjectsList.DW1JR1M5.css
+/_nuxt/SetlProjectsMap.BOm83W6V.css
+/_nuxt/SetlProjectsMapPopup.DopGRrLw.css
+/_nuxt/SetlRange.N9ku79p6.css
+/_nuxt/SetlSelect.BkMXTq6v.css
+/_nuxt/SetlSwiper.CWt8Tda2.css
+/_nuxt/SetlTabs.DseasxbA.css
+/_nuxt/SetlTag.DEVyj08X.css
+/_nuxt/SetlTags.DJgSUSZG.css
+/_nuxt/SetlTextContent.Cau_iX19.css
+/_nuxt/SetlTooltip.Tjt_y-39.css
+/_nuxt/Zkv7zc1h.js
+/_nuxt/_AbmI11h.js
+/_nuxt/b_x3Qh4a.js
+/_nuxt/entry.G06tKn28.css
+/_nuxt/fTcuc_yf.js
+/_nuxt/i1vE-57d.js
+/_nuxt/i96TSxcD.js
+/_nuxt/icons.abEI4lB-.svg
+/_nuxt/infra.DHkivKjJ.svg
+/_nuxt/irJ5B7yN.js
+/_nuxt/mRNvoov5.js
+/_nuxt/p5hIKWvw.js
+/_nuxt/rBfMmmpD.js
+/_nuxt/thtRDo1x.js
+/_nuxt/useBuildingFilter.DLq5mvI2.css
+/_nuxt/z_d6bJuc.js
+/about
+/buildings/search/flats/spb
+/contacts
+/customers
+/favorite
+/fonts/Inter/Inter-Medium.woff2
+/fonts/Inter/Inter-Regular.woff2
+/fonts/Inter/Inter-SemiBold.woff2
+/fonts/Montserrat/Montserrat-Medium.woff2
+/fonts/Montserrat/Montserrat-SemiBold.woff2
+/investors
+/lifestyle
+/news
+/news/2967
+/news/2968
+/news/2969
+/news/2970
+/news/95624
+/owners
+/projects/aristokrat
+/projects/artilleriiskaya
+/projects/astra-kontinental
+/projects/chistoe-nebo
+/projects/crystal-hall
+/projects/dom-na-kirochnoi
+/projects/dvortsovyi-fasad
+/projects/gorod-zvezd
+/projects/grand-view
+/projects/green-kvartal
+/projects/imperial-club
+/projects/krony-i-volny
+/projects/lake-city-10
+/projects/lake-city-11
+/projects/lake-city-4
+/projects/lake-city-7
+/projects/lake-city-9
+/projects/panorama-park-u-sosnovki
+/projects/paradnyi-ansambl
+/projects/petrovskii-kvartal
+/projects/praim-primorskii
+/projects/prityazhenie-na-vyborgskoi
+/projects/pulse-premier
+/projects/search/kaliningrad
+/projects/search/spb
+/projects/search/spb/classtype-comfort
+/projects/search/spb/classtype-high_comfort
+/projects/search/spb/classtype-premium
+/projects/senat
+/projects/setl-loft
+/projects/setl-palace
+/projects/setl-rivera
+/projects/stockholm
+/projects/svetlana-park
+/projects/the-one
+/projects/the-residence
+/projects/univer-city
+/sustainability
+/tenders/partnership
+https://job.setlgroup.ru/
+https://lk.pn.ru/auth
+https://setlgroup.ru/
+https://setlgroup.ru/back/documents/ohrana-truda
+https://setlgroup.ru/back/documents/personal-data
+https://setlgroup.ru/back/documents/requisites
+https://setlgroup.ru/lifestyle
+https://t.me/setlgroup
+https://vk.com/setlgroupnews
+mailto:info@setlgroup.ru
+tel:+7 812 33-55-111

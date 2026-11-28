@@ -1,19 +1,372 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/017aa7f6-c375-47eb-b707-6199a9c4cc22
+URL: https://etalongroup.ru/spb/
 КОД: 200
 ЗАГОЛОВКИ:
 Server: nginx
-Date: Fri, 27 Nov 2026 08:48:30 GMT
-Content-Type: application/json
-Content-Length: 43
+Date: Sat, 28 Nov 2026 05:52:52 GMT
+Content-Type: text/html;charset=utf-8
+Content-Length: 657784
 Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
+Vary: Accept-Encoding
+set-cookie: user-ip=; Max-Age=7200; Path=/
+set-cookie: city-code-token=spb; Max-Age=1209600; Path=/
+set-cookie: favorite=%7B%22flat%22%3A%5B%5D%2C%22parking%22%3A%5B%5D%2C%22storage%22%3A%5B%5D%2C%22commerce%22%3A%5B%5D%7D; Max-Age=5184000; Path=/
+x-powered-by: Nuxt
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Origin: *
+X-Processed-By: dev
 
-{"error":"","sent_at":"","status":"saved"}
+Купить квартиру в Санкт-Петербурге в новостройке от застройщика ГК "Эталон" 
+ Камеры 
+ Инвесторам 
+ Агентствам недвижимости 
+ Новости 
+ Тендеры и закупки 
+ Недвижимость Способы покупки Акции О компании Контакты 
+ +7 (812) 380-05-25
+ Санкт-Петербург
+ Ягодное Река Парк
+ рассрочка 0% до 2028 года
+ Подробнее 
+ Клюква.Парк
+ рассрочка 20 000 ₽ в месяц
+ Подробнее 
+ Пулковский дом
+ квартиры на высоте
+ Подробнее 
+ АВЕНЮ-АПАРТ ПУЛКОВО
+ апарт-отель в Московском районе
+ Подробнее 
+ Бронируйте квартиру
+online
+ Ягодное Река Парк
+ скидки до 10%
+ Семейная ипотека от 1,5%
+ на весь срок
+ Объекты в Санкт-Петербурге
+ Количество комнат 
+ Студия 
+ 1 
+ 2 
+ 3 
+ Стоимость 
+ 5105642
+ 22282539
+ Фильтры 
+ Карта 
+ Найдено 532 
+ -26% 
+ IV кв. 2028г 
+ Клюква.Парк Купчино
+ 15 мин
+ от 5.1 млн ₽
+ Квартиры от 19.3 м²
+ от 5.1 млн ₽
+ Коммерция от 44 м²
+ от 13.7 млн ₽
+ -10% 
+ IV кв. 2028 г. 
+ Ягодное Река Парк Всеволожский
+ от 7.2 млн ₽
+ Квартиры от 32.9 м²
+ от 7.2 млн ₽
+ Коммерция от 39.8 м²
+ от 12.2 млн ₽
+ -30% 
+ Дом сдан 
+ Пулковский дом Пушкинский
+ от 9.0 млн ₽
+ Квартиры от 35.6 м²
+ от 9.0 млн ₽
+ Дом сдан 
+ АВЕНЮ-АПАРТ ПУЛКОВО Московский
+ от 7.9 млн ₽
+ Квартиры от 17.1 м²
+ от 7.9 млн ₽
+ Коммерция от 44.5 м²
+ от 23.2 млн ₽
+ Беспроцентная рассрочка на кладовые
+ Все фильтры 
+ Количество комнат 
+ Студия 
+ 1 
+ 2 
+ 3 
+ Цена со скидкой 
+ Стоимость 
+ 5105642
+ 22282539
+ Площадь 
+ 17
+ 84
+ Этаж 
+ 1
+ 16
+ Район
+ Метро
+ Район 
+ Проект 
+ Корпус 
+ Секция 
+ Срок сдачи 
+ Тип помещения 
+ Все
+ Отделка 
+ Преимущества 
+ Сбросить фильтры 
+ Применить 532 
+ Рассчитайте ипотеку
+ Тип ипотеки 
+ Семейная ипотека 
+ Стоимость 
+ 5105642
+ Первоначальный взнос 
+ 1026235
+ Сумма кредита 
+ Срок кредита 
+ 15
+ Получить одобрение 
+ Семейная ипотека
+ Процентная ставка 
+ 12 %
+ Ежемесячный платеж 
+ Лучшие условия
+ Процентная ставка 
+ 9,5 %
+ Ежемесячный платеж 
+ Экономия 
+ Остались вопросы?
+ Имя 
+ Номер телефона 
+ Email 
+ Даю согласие на обработку персональных данных. Подробнее об обработке в Политике 
+ Даю согласие на получение рекламных рассылок
+ Отправить 
+ Контакты
+ Богатырский пр., д. 3 корп. 3
+ Адрес
+ +7 (812) 380-05-25 Контакт-центр в Санкт-Петербурге
+ +7 (495) 378-88-24 RC_OPO@etalongroup.com Для тех, кто уже купил
+ Скачайте приложение 
+ Мой Дом Эталон 
+ На Android и IOS
+ Социальные сети
+ Объекты Клюква.Парк
+ -26% 
+ Ягодное Река Парк
+ -10% 
+ Пулковский дом
+ -30% 
+ АВЕНЮ-АПАРТ ПУЛКОВО
+ Дом сдан 
+ Акции 
+ Способы покупки Ипотека
+ Материнский капитал
+ Полная оплата
+ Квартиры Студии
+ 1-комнатные квартиры
+ 2-комнатные квартиры
+ 3-комнатные квартиры
+ Апартаменты
+ Паркинги 
+ Кладовые 
+ Коммерческая недвижимость 
+ О компании Офисы продаж
+ Вакансии
+ Агентствам недвижимости
+ Тендеры и закупки
+ Специальная оценка условий труда
+ Показать все
+ Покупателям
+ Онлайн-оплата
+ Эталон Страхование
+ Услуги
+ Инструкции по эксплуатации
+ Купившим
+ Социальные программы
+ Информация, предоставленная на сайте, не является публичной офертой. Все цены действительны на 28.11.2026, при условии единовременной оплаты.
+ Готовые объекты могут отличаться от представленных на визуализациях, возможны изменения в отделке с сохранением аналогичного уровня брендов и качества. Мебель, светильники и предметы интерьера не входят в пакет отделки.
+ Любое использование текстов, изображений, файлов, планировок и видео, расположенных на сайте etalongroup.ru , не допускается без письменного разрешения АО «ГК «Эталон». В соответствии с Федеральным законом от 30.12.2004 № 214-ФЗ, полная информация о застройщике и проектах строительства размещена на сайте наш.дом.рф 
+ Адрес страницы в сети Интернет, предоставляемой информационным агентством, аккредитованным Банком России на проведение действий по раскрытию информации о ценных бумагах и об иных финансовых инструментах, на которой осуществляется опубликование информации АО «Эталон-Финанс» 
+ Адрес страницы в сети Интернет, предоставляемой информационным агентством, аккредитованным Банком России на раскрытие информации о ценных бумагах ПАО «АТЭ-1» 
+ Страница раскрытия ПАО «АТЭ-1» 
+ © 2026 Группа «Эталон». Все права защищены
+ Порядок обработки персональных данных 
+ Пользовательское соглашение 
+ Единая горячая линия о нарушениях и злоупотреблениях
 
 ССЫЛКИ:
+/
+/_nuxt/35LUMj5H.js
+/_nuxt/5ceoG_tk.js
+/_nuxt/B-kL8Q81.js
+/_nuxt/B2KZLS_M.js
+/_nuxt/B3BkQcft.js
+/_nuxt/B8S-ZuLS.js
+/_nuxt/BAWWI_4B.js
+/_nuxt/BFivIo5v.js
+/_nuxt/BJitzhXC.js
+/_nuxt/BLcTwZTw.js
+/_nuxt/BOkyYZU4.js
+/_nuxt/BPEDBwqx.js
+/_nuxt/BPwmd3RV.js
+/_nuxt/BSEFUM2i.js
+/_nuxt/BUlk3CK6.js
+/_nuxt/BVUPEZq8.js
+/_nuxt/BWm5nBdp.js
+/_nuxt/BqVr1sUv.js
+/_nuxt/BrN-U5ZN.js
+/_nuxt/BxFxSieI.js
+/_nuxt/BzS63ii7.js
+/_nuxt/C-Z4jins.js
+/_nuxt/C0ccz8hG.js
+/_nuxt/C4aXD1-w.js
+/_nuxt/C7_LU43U.js
+/_nuxt/CCattIaq.js
+/_nuxt/CG3c5Vv6.js
+/_nuxt/CQwsyNpz.js
+/_nuxt/CTYze6lA.js
+/_nuxt/CUKIjTpl.js
+/_nuxt/CVt3-KQJ.js
+/_nuxt/CaT5SQPv.js
+/_nuxt/CaX7tWSb.js
+/_nuxt/CiaddefL.js
+/_nuxt/CoUV2WYS.js
+/_nuxt/CvuyFhlW.js
+/_nuxt/D2mmg46n.js
+/_nuxt/D2yspDgs.js
+/_nuxt/D9rvRB9Z.js
+/_nuxt/DBNDbK0W.js
+/_nuxt/DDla5NqU.js
+/_nuxt/DDylhEVt.js
+/_nuxt/DFnySC3o.js
+/_nuxt/DH1fc3MS.js
+/_nuxt/DMt6tcXs.js
+/_nuxt/DWZBPVJk.js
+/_nuxt/DWeeEVvN.js
+/_nuxt/DXcJu_EV.js
+/_nuxt/DZOou3Ye.js
+/_nuxt/DZul5gXp.js
+/_nuxt/D_HwDmn5.js
+/_nuxt/DbB7nXh6.js
+/_nuxt/DiD8FxK0.js
+/_nuxt/DqlyOK5L.js
+/_nuxt/DsIWIDM-.js
+/_nuxt/Dw45IhD8.js
+/_nuxt/Io3H_Bvf.js
+/_nuxt/JmHSDoWc.js
+/_nuxt/LRKrV9fc.js
+/_nuxt/Main.BuA10tax.css
+/_nuxt/Main.CMtdIXaF.css
+/_nuxt/Main.D1_QfErl.css
+/_nuxt/Main.f4zIQ26V.css
+/_nuxt/Main.n_4QdK6D.css
+/_nuxt/MshUdECx.js
+/_nuxt/NVvdeW6X.js
+/_nuxt/NavBar.BHcXPLQT.css
+/_nuxt/UBadge.CJ9OSnA3.css
+/_nuxt/UCardObject.1I3lbhbj.css
+/_nuxt/UChip.Ct12W8Sh.css
+/_nuxt/UChipGroup.Cr8hHZct.css
+/_nuxt/UExpansionPanels.Co_puj8c.css
+/_nuxt/UField.BfgTrgoP.css
+/_nuxt/UImg.BCqPJCMd.css
+/_nuxt/UInputRange.CqFm1HMm.css
+/_nuxt/ULink.DQ5vCU7a.css
+/_nuxt/UMapBlock.DVfYExCr.css
+/_nuxt/UMapBoxMarkers.BZRCXCyR.css
+/_nuxt/UModal.fPHp2nVP.css
+/_nuxt/USelect.CaYu8PjR.css
+/_nuxt/USkeletonLoader.D9Xbn-_e.css
+/_nuxt/USwiper.BQRX3O2J.css
+/_nuxt/USwitch.CNISX2YW.css
+/_nuxt/UTabs.AiriuKuh.css
+/_nuxt/UTextField.CR99-ICV.css
+/_nuxt/VInput.CPe36i82.css
+/_nuxt/VSlideGroup.BsYIg1rJ.css
+/_nuxt/VTabsWindowItem.CS40hjuS.css
+/_nuxt/XpJn3TLf.js
+/_nuxt/activeFilters.pRujEa8m.css
+/_nuxt/builds/meta/ad8cd7f0-6a56-4c66-94e9-210f20df1393.json
+/_nuxt/default.BOX9H4DO.css
+/_nuxt/eiVPTI9d.js
+/_nuxt/entry.BFnroqNL.css
+/_nuxt/gGNn4sXn.js
+/_nuxt/index.Bo4DkT0q.css
+/_nuxt/jfuKvf0U.js
+/_nuxt/k2Lh209I.js
+/_nuxt/l4NNgCzL.js
+/_nuxt/poYMuf41.js
+/_nuxt/sLRsqYwB.js
+/_nuxt/scrollbar.Dl1Sj9E8.css
+/_nuxt/swiper.BiEk7v8n.css
+/_nuxt/ug6F9YAg.js
+/_nuxt/useFavorite.BtuT5mHq.css
+/about/
+/agents/
+/favicon.ico
+/favorite/
+/insurance/
+/pages/for_clients_spb/
+/pages/for_investors/
+/pages/hotline/
+/pages/instrukcii-po-ekspluatacii/
+/pages/online-buy/?utm_source=main_banner&amp;utm_medium=spb&amp;utm_campaign=spb_main_banner_onlinebuy
+/pages/pao-ate-1/
+/pages/specocenka/
+/service/
+/social/
+/spb/actions/
+/spb/actions/besprocentnaya_rassrochka_na_kladovye_spb/
+/spb/actions/semeynaya_ipoteka_spb/?utm_source=main_banner&amp;utm_medium=spb&amp;utm_campaign=semeynaya_ipoteka_spb
+/spb/actions/yagodnoe-reka-park-skidki-spb/?utm_source=main_banner&amp;utm_medium=spb&amp;utm_campaign=yagodnoe-reka-park-skidki-spb
+/spb/choose/commerce/
+/spb/choose/flat/
+/spb/choose/flat/1-rooms/
+/spb/choose/flat/2-rooms/
+/spb/choose/flat/3-rooms/
+/spb/choose/flat/?apart=apart
+/spb/choose/flat/studii/
+/spb/choose/parking/
+/spb/choose/storage/
+/spb/how-to-buy/
+/spb/how-to-buy/materinskiy_capital_spb/
+/spb/how-to-buy/polnayia_oplata_spb/
+/spb/mortgage/
+/spb/news/
+/spb/object/
+/spb/object/avenue-apart-pulkovo/
+/spb/object/avenue-apart-pulkovo/commerce/
+/spb/object/avenue-apart-pulkovo/flat/
+/spb/object/klyukva_park/
+/spb/object/klyukva_park/commerce/
+/spb/object/klyukva_park/flat/
+/spb/object/pulkovskiy-dom/
+/spb/object/pulkovskiy-dom/flat/
+/spb/object/yagodnoe-reka-park/
+/spb/object/yagodnoe-reka-park/commerce/
+/spb/object/yagodnoe-reka-park/flat/
+/spb/online/
+/spb/sales-offices/
+https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css
+https://dzen.ru/gk_etalon
+https://etalongroup.ru/
+https://etalongroup.ru/spb/
+https://etalongroup.ru/upload/etalongroup.content/1c9/kicwsf5eu5t8cdr0epb5s8rfhnpxwf9r.pdf
+https://etalongroup.ru/upload/etalongroup.content/77f/evcfb9i8txa3u3c9cii7a6710p007kg6.pdf
+https://etalongroup.ru/upload/etalongroup.content/808/ry3ahykcf34n8o9f19uy5y1quvvrycu7.pdf
+https://etalongroup.ru/upload/etalongroup.content/8fa/10cn8z9ig5o9tjgb8xvf70xc8acv1fgo.pdf
+https://lk.etalongroup.ru
+https://lk.etalongroup.ru/developer/profile/installment
+https://max.ru/id7717154511_biz
+https://rutube.ru/u/etalongroup/
+https://spb.hh.ru/employer/140987
+https://t.me/group_etalon
+https://tender.etalongroup.ru/
+https://vk.com/etalon_saintpetersburg
+https://www.e-disclosure.ru/portal/company.aspx?id=1243
+https://www.e-disclosure.ru/portal/company.aspx?id=36668
+https://наш.дом.рф
+mailto:RC_OPO@etalongroup.com
+tel:+74953788824
+tel:+78123800525

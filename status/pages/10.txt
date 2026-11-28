@@ -1,0 +1,652 @@
+URL: https://rbi.ru/
+КОД: 200
+ЗАГОЛОВКИ:
+Server: nginx
+Date: Sat, 28 Nov 2026 05:53:05 GMT
+Content-Type: text/html; charset=utf-8
+Transfer-Encoding: chunked
+Connection: close
+Cache-Control: no-cache, private
+Set-Cookie: XSRF-TOKEN=eyJpdiI6IkdTNEZubU9MeC96N0IxMjhvcXY3bkE9PSIsInZhbHVlIjoiWUF1d1R0R1V1ZUZsdGtSWG5pQ3kxeThPRWFzMGZVZnNWNmZxcTlKUXpITkxHaWY3TVVCbkQ4TTJ3Ri9ReGlUZGx3RXBVMFhzeUk5SkZoYWNwS1RFRExoZkQ5Ukk3WmViTG1FZm9zbE5JUjNTLzdWcTMrczN2cDlSZEoxaG5LRmMiLCJtYWMiOiJjZGQyYThkYmNiY2VmZDNmYzhmOGU2NmU4MzliMzAzZDI3NGVkMjc0MDhjMjY1ZDcyMmIyNzI0MjU5MzM0NTk3IiwidGFnIjoiIn0%3D; expires=Sat, 28 Nov 2026 07:53:05 GMT; Max-Age=7200; path=/; secure; samesite=lax
+Set-Cookie: rbi2025_session=eyJpdiI6Im9MMTA0K093NG4yOFBGYW9udUU4TkE9PSIsInZhbHVlIjoiNGpTbDBaVXRJZlh4bmdXV3ZXbG1EbTUxS1FleGpXa09JR3MyNTZZYndEL3lnZmRzdzFubzBQSFlObTlUUjAyNmg3R2dVdmFuTlhZMlh4YTUyaXBFWThrbjIzd3dpR2hSc0J0N09sRERwK0g5ZU8wVWlqK05TSTRFWWpsaW5mQTQiLCJtYWMiOiI3MTBhZDVmYzdlZDMwMmQwMzhhNTJmMjcwNmU1MzNmYjM2OGQ3OGQ2Y2FjNDEyZTFlNjdkNGFmNDRiZGE2NmY5IiwidGFnIjoiIn0%3D; expires=Sat, 28 Nov 2026 07:53:05 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax
+Alt-Svc: h3=":443"; ma=86400
+Strict-Transport-Security: max-age=31536000;preload
+
+Официальный сайт компании-застройщика RBI (Эр Би Ай) 
+ Недвижимость 
+ Недвижимость 
+ Проекты 
+ Репин
+ Курортный район
+ 35 вариантов 
+ От 29,5 млн ₽ 
+ Цвет Зеленогорска
+ Курортный район
+ 45 вариантов 
+ От 15,8 млн ₽ 
+ Передвижники
+ Адмиралтейский район
+ 80 вариантов 
+ От 11,5 млн ₽ 
+ Передвижники 2.0
+ Адмиралтейский район
+ 226 вариантов 
+ От 10,6 млн ₽ 
+ Визионер
+ Петроградский район
+ 60 вариантов 
+ От 29,1 млн ₽ 
+ Коллекционер
+ Петроградский район
+ 40 вариантов 
+ От 35,2 млн ₽ 
+ МИРЪ
+ Центральный район
+ 10 вариантов 
+ От 22,0 млн ₽ 
+ Гений
+ Невский район
+ 332 варианта 
+ От 8,5 млн ₽ 
+ Струны
+ Выборгский район
+ 148 вариантов 
+ От 13,7 млн ₽ 
+ Литера
+ Невский район
+ 32 варианта 
+ От 15,5 млн ₽ 
+ Куинджи
+ Фрунзенский район
+ 23 варианта 
+ От 11,1 млн ₽ 
+ Ультра Сити 3.0
+ Приморский район
+ 159 вариантов 
+ От 8,0 млн ₽ 
+ Светоч
+ Петроградский район
+ 35 вариантов 
+ От 18,0 млн ₽ 
+ Типография
+ Центральный район
+ 50 вариантов 
+ От 11,8 млн ₽ 
+ ARTSTUDIO M103
+ Московский район
+ 12 вариантов 
+ От 9,0 млн ₽ 
+ ARTSTUDIO Moskovsky
+ Московский район
+ 4 варианта 
+ От 8,8 млн ₽ 
+ EcoCity
+ Всеволожский район
+ 1 вариант 
+ От 8,9 млн ₽ 
+ Созидатели
+ Адмиралтейский район
+ 1 вариант 
+ От 50,0 млн ₽ 
+ О компании 
+ О нас 
+ Социальная ответственность 
+ Пресс-центр 
+ Карьера в RBI 
+ Стать партнёром 
+ Отчётность и декларации 
+ Философия 
+ Как купить 
+ Этапы покупки 
+ Ипотека 
+ Trade-in 
+ Рассрочка 
+ Маткапитал 
+ Лизинг 
+ Переуступка 
+ Акции 
+ Блог 
+ Контакты 
+ +7 (812) 600-76-76 
+ 0 
+ Санкт-Петербург 
+ МЕНЮ
+ 0 
+ Санкт-Петербург 
+ +7 (812) 600-76-76 
+ Недвижимость 
+ Недвижимость 
+ Проекты 
+ Назад 
+ Репин
+ Курортный район
+ 35 вариантов 
+ От 29,5 млн ₽ 
+ Цвет Зеленогорска
+ Курортный район
+ 45 вариантов 
+ От 15,8 млн ₽ 
+ Передвижники
+ Адмиралтейский район
+ 80 вариантов 
+ От 11,5 млн ₽ 
+ Передвижники 2.0
+ Адмиралтейский район
+ 226 вариантов 
+ От 10,6 млн ₽ 
+ Визионер
+ Петроградский район
+ 60 вариантов 
+ От 29,1 млн ₽ 
+ Коллекционер
+ Петроградский район
+ 40 вариантов 
+ От 35,2 млн ₽ 
+ МИРЪ
+ Центральный район
+ 10 вариантов 
+ От 22,0 млн ₽ 
+ Гений
+ Невский район
+ 332 варианта 
+ От 8,5 млн ₽ 
+ Струны
+ Выборгский район
+ 148 вариантов 
+ От 13,7 млн ₽ 
+ Литера
+ Невский район
+ 32 варианта 
+ От 15,5 млн ₽ 
+ Куинджи
+ Фрунзенский район
+ 23 варианта 
+ От 11,1 млн ₽ 
+ Ультра Сити 3.0
+ Приморский район
+ 159 вариантов 
+ От 8,0 млн ₽ 
+ Светоч
+ Петроградский район
+ 35 вариантов 
+ От 18,0 млн ₽ 
+ Типография
+ Центральный район
+ 50 вариантов 
+ От 11,8 млн ₽ 
+ ARTSTUDIO M103
+ Московский район
+ 12 вариантов 
+ От 9,0 млн ₽ 
+ ARTSTUDIO Moskovsky
+ Московский район
+ 4 варианта 
+ От 8,8 млн ₽ 
+ EcoCity
+ Всеволожский район
+ 1 вариант 
+ От 8,9 млн ₽ 
+ Созидатели
+ Адмиралтейский район
+ 1 вариант 
+ От 50,0 млн ₽ 
+ О компании 
+ Назад 
+ О нас 
+ Социальная ответственность 
+ Пресс-центр 
+ Карьера в RBI 
+ Стать партнёром 
+ Отчётность и декларации 
+ Философия 
+ Как купить 
+ Назад 
+ Этапы покупки 
+ Ипотека 
+ Trade-in 
+ Рассрочка 
+ Маткапитал 
+ Лизинг 
+ Переуступка 
+ Акции 
+ Блог 
+ Контакты 
+ THE ART OF 
+ real estate 
+ creation 
+ architecture 
+ life 
+ technology 
+ comfort 
+ Листайте
+вниз 
+ Подробнее о нашей философии 
+ О компании 
+ Мы объединяем архитектуру, эстетику и ответственность, создавая пространство, в котором хочется жить.
+ Философия 
+ Мы видим в архитектуре форму мысли и стремимся к гармонии, где каждая деталь наполнена смыслом.
+ Агентам и брокерам 
+ Мы строим партнёрство на доверии, открытости и профессионализме, достигая успеха вместе с вами.
+ Социальная ответственность 
+ Мы создаём проекты, приносящие пользу городу и людям, вкладывая заботу в качество среды вокруг нас.
+ Подробнее об Art Of
+ Подробнее об Art Of
+ Блог
+ Читать блог 
+ Читать блог 
+ В Центральном районе Петербурга открылся современный детский сад
+ Компания 
+ 25 ноября 
+ Что такое жилая площадь квартиры и чем она отличается от общей
+ Строительство 
+ 23 ноября 
+ В Невском районе реконструируют школу по петербургскому стандарту
+ Компания 
+ 20 ноября 
+ Что значит полная чистовая отделка квартиры и что в неё входит
+ Строительство 
+ 18 ноября 
+ 1 — 4 
+ Читать блог 
+ Читать блог 
+ Ответим
+на все вопросы
+ Санкт-Петербург, Петроградская сторона, Барочная улица, 4а, стр. 1. «Левашовский хлебозавод» 
+ Чкаловская
+ -->
+ Понедельник — Четверг — с 9:00 до 20:00
+ Пятница — с 9:00 до 19:00
+ Суббота и воскресенье — по записи 
+ +7 (812) 600-76-76 
+ Заказать звонок 
+ Заказать звонок 
+ Недвижимость 
+ Проекты 
+ О компании 
+ Блог 
+ Акции 
+ Отчётность 
+ Как купить 
+ Контакты 
+ Философия 
+ +7 (812) 600-76-76 
+ С 9:00 до 20:00
+ rbi@rbi.ru 
+ Заказать звонок 
+ Заказать звонок 
+ Жилые комплексы
+ Передвижники 2 
+ Передвижники 
+ Цвет Зеленогорска 
+ Коллекционер 
+ Гений 
+ Визионер 
+ Куинджи 
+ Струны 
+ Литера 
+ МИРЪ 
+ EcoCity 
+ Ультра Сити 3 
+ Апартаменты
+ Светоч 
+ Типография 
+ Репин 
+ ARTSTUDIO M103 
+ ARTSTUDIO Moskovsky 
+ Районы
+ Квартиры в центре 
+ Адмиралтейский 
+ Всеволожский 
+ Выборгский 
+ Курортный 
+ Московский 
+ Невский 
+ Петроградский 
+ Приморский 
+ Центральный 
+ Фрунзенский 
+ Готовность
+ В готовых домах 
+ В строящихся домах 
+ Метро
+ Площадь Восстания 
+ Елизаровская 
+ Пл. Александра Невского 
+ Петроградская 
+ Спортивная 
+ Горьковская 
+ Комендантский проспект 
+ Фрунзенская 
+ Звенигородская 
+ Владимирская 
+ Достоевская 
+ Пушкинская 
+ Чкаловская 
+ Обводный канал 
+ Крестовский остров 
+ Парнас 
+ Проспект Просвещения 
+ Улица Дыбенко 
+ Балтийская 
+ Комнатность
+ Студии 
+ Однокомнатные 
+ Двухкомнатные 
+ Трёхкомнатные 
+ Четырёхкомнатные 
+ Пятикомнатные 
+ Евродвушки 
+ Евротрешки 
+ Типы недвижимости
+ Квартиры 
+ Апартаменты 
+ Дома комфорт-класса 
+ Дома бизнес-класса 
+ Элитные дома 
+ Дома премиум-класса 
+ Клубные дома 
+ Особенные квартиры
+ Видовые квартиры 
+ С большой кухней 
+ С террасой 
+ Двухуровневые квартиры 
+ Апартаменты с полной отделкой 
+ Квартиры с белой отделкой 
+ Квартиры с полной отделкой 
+ Квартиры с европланировкой 
+ Квартиры от собственников 
+ Жилые комплексы
+ Передвижники 2 
+ Передвижники 
+ Цвет Зеленогорска 
+ Коллекционер 
+ Гений 
+ Визионер 
+ Куинджи 
+ Струны 
+ Литера 
+ МИРЪ 
+ EcoCity 
+ Ультра Сити 3 
+ Апартаменты
+ Светоч 
+ Типография 
+ Репин 
+ ARTSTUDIO M103 
+ ARTSTUDIO Moskovsky 
+ Районы
+ Квартиры в центре 
+ Адмиралтейский 
+ Всеволожский 
+ Выборгский 
+ Курортный 
+ Московский 
+ Невский 
+ Петроградский 
+ Приморский 
+ Центральный 
+ Фрунзенский 
+ Готовность
+ В готовых домах 
+ В строящихся домах 
+ Метро
+ Площадь Восстания 
+ Елизаровская 
+ Пл. Александра Невского 
+ Петроградская 
+ Спортивная 
+ Горьковская 
+ Комендантский проспект 
+ Фрунзенская 
+ Звенигородская 
+ Владимирская 
+ Достоевская 
+ Пушкинская 
+ Чкаловская 
+ Обводный канал 
+ Крестовский остров 
+ Парнас 
+ Проспект Просвещения 
+ Улица Дыбенко 
+ Балтийская 
+ Комнатность
+ Студии 
+ Однокомнатные 
+ Двухкомнатные 
+ Трёхкомнатные 
+ Четырёхкомнатные 
+ Пятикомнатные 
+ Евродвушки 
+ Евротрешки 
+ Типы недвижимости
+ Квартиры 
+ Апартаменты 
+ Дома комфорт-класса 
+ Дома бизнес-класса 
+ Элитные дома 
+ Дома премиум-класса 
+ Клубные дома 
+ Особенные квартиры
+ Видовые квартиры 
+ С большой кухней 
+ С террасой 
+ Двухуровневые квартиры 
+ Апартаменты с полной отделкой 
+ Квартиры с белой отделкой 
+ Квартиры с полной отделкой 
+ Квартиры с европланировкой 
+ Квартиры от собственников 
+ Информация не является публичной офертой 
+ Политика персональных данных 
+ 1993-2026 © RBI — ООО «Холдинг Эр-Би-Ай».
+ 197110, г. Санкт-Петербург, вн. тер. г. муниципальный округ Чкаловское, ул. Барочная, д. 4А, стр. 1, оф. 606, пом. 606, р.м.1
+ ООО «Холдинг Эр-Би-Ай»
+ Карта сайта 
+ Сделано в Kelnik 
+ Обратный звонок
+ менеджер оперативно свяжется с вами
+ Номер телефона
+ На данный номер будет отправлен СМС‑код
+ Ваше имя
+ Комментарий 
+ Я согласен с условиями политики конфиденциальности и даю согласие на обработку персональных данных 
+ Введите СМС-код в поле заявки
+ На ваш номер отправлен смс-код для подтверждения. Введите его в поле ниже:
+ Смс-код
+ Попробуйте заполнить форму позднее
+ Не получили код? Повторно код можно получить через
+ секунд
+ Получить код повторно
+ Отправить заявку
+ Отправить заявку
+ Изменить номер телефона 
+ Изменить номер телефона 
+ Заявка отправлена
+ Менеджер свяжется с вами, ожидайте звонка в ближайшее время
+ Закрыть
+ Закрыть
+ Ошибка
+ Мы не смогли отправить вашу заявку,
+пожалуйста, попробуйте позже
+ Закрыть
+ Закрыть
+ Бронирование помещений
+ Наш менеджер оперативно свяжется с вами.
+ Номер телефона
+ На данный номер будет отправлен СМС‑код
+ Ваше имя
+ Комментарий 
+ Нажимая кнопку, вы подтверждаете свое согласие на обработку персональных данных
+ На ваш номер отправлен смс-код для подтверждения. Введите его в поле ниже:
+ Смс-код 
+ Попробуйте заполнить форму позднее
+ Не получили код? Повторно код можно получить через
+ секунд
+ Получить код повторно
+ Забронировать 
+ Изменить номер телефона 
+ Изменить номер телефона 
+ Заявка отправлена
+ Наш менеджер оперативно свяжется с вами, ожидайте звонка в ближайшее время
+ Что-то пошло не так
+ Мы не смогли отправить вашу заявку,
+пожалуйста, попробуйте позже
+ Сайт использует файлы cookies , они делают его удобным для вас. Оставаясь на сайте, вы даете согласие на обработку персональных данных .
+ Принимаю 
+ Принимаю
+
+ССЫЛКИ:
+//www.rbi.ru/
+//www.rbi.ru/search/
+//www.rbi.ru/security-policy/
+/about/
+/about/career/
+/about/history/
+/about/partners/
+/about/press/
+/about/us/
+/apartamenty-artstudio/
+/apartamenty-artstudioMsk/
+/apartamenty-u-metro-frunzenskaya/
+/apartamenty-v-moskovskom-rajone/
+/apartamenty/
+/apartment_otdelka/
+/art_of/
+/belaya_otdelka/
+/blog/
+/blog/articles/chto-takoe-chistovaya-otdelka-kvartiry
+/blog/articles/chto-takoe-zhilaya-ploshchad-kvartiry
+/blog/news/v-centralnom-raione-peterburga-otkrylsia-sovremennyi-detskii-sad-251126
+/blog/news/v-nevskom-raione-rekonstruiruiut-skolu-po-peterburgskomu-standartu-271126
+/chetyrehkomnatnye-kvartiry/
+/contacts/
+/css/common/styles.css?id=408f0e61079c12739ebc89804fa17dae
+/doma-biznes-klassa/
+/doma-komfort-klassa/
+/doma-premium-klassa/
+/dvuhkomnatnye-kvartiry/
+/dvyhurovnevye-kvartiry/
+/elitnye-doma/
+/evrodvushki/
+/evrotreshki/
+/favorite/
+/gotovyye-doma/
+/howtobuy/
+/howtobuy/actions/
+/howtobuy/assignment/
+/howtobuy/capital/
+/howtobuy/contract/
+/howtobuy/leasing/
+/howtobuy/mortgage/
+/howtobuy/rassrochka/
+/howtobuy/trade-in/
+/klubnye-doma/
+/kvartiry-ecocity/
+/kvartiry-frunzenskij-rajon/
+/kvartiry-geniy/
+/kvartiry-kollektsioner/
+/kvartiry-kuindzhi/
+/kvartiry-litera/
+/kvartiry-mir/
+/kvartiry-ot-sobstvennikov/
+/kvartiry-repin/
+/kvartiry-s-bolshoi-kuhnei/
+/kvartiry-s-evroplanirovkoi/
+/kvartiry-s-polnoj-otdelkoj/
+/kvartiry-s-terrasoy/
+/kvartiry-struny/
+/kvartiry-studii/
+/kvartiry-v-centralnom-rajone/
+/kvartiry-v-nevskom-rajone/
+/kvartiry-v-petrogradskom-rajone/
+/kvartiry-v-primorskom-rajone/
+/kvartiry-v-tsentre/
+/kvartiry-v-viborgskom-rajone/
+/kvartiry-v-vsevolozhskom-rajone/
+/kvartiry-visioner/
+/kvartiry/
+/kvartiry_peredvizhniki2/
+/kvartiry_svetoch/
+/kvartiry_tipographiya/
+/kvartiry_tsvet_zelenogorska/
+/kvartiry_ultracity3/
+/kvartiry_v_admiralteyskom_rajone/
+/kvartity_peredvizhniki/
+/lounge-v-kurortnom-rajone/
+/metro-anevskogo/
+/metro-baltiyskaya/
+/metro-chkalovskaya/
+/metro-dibenko/
+/metro-dostoevskaya/
+/metro-elizarovskaja/
+/metro-gorkovskaya/
+/metro-komendantskiy-prospekt/
+/metro-krestovskiy-ostrov/
+/metro-obvodnij-kanal/
+/metro-parnas/
+/metro-petrogradskaya/
+/metro-ploshhad-vosstaniya/
+/metro-prosvescheniya/
+/metro-pushkinskaya/
+/metro-sportivnaya/
+/metro-vladimirskaya/
+/metro-zvenigorodskaya/
+/objects/
+/odnokomnatnye-kvartiry/
+/otcetnost-i-dokumenty/
+/pyatikomnatnye-kvartiry/
+/search/
+/sitemap.xml
+/storage/32/9b/770/329b29917757486dce61683454a095b211ab0b50.woff2
+/storage/image/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w114/h114/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w120/h120/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w144/h144/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w152/h152/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w16/h16/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w180/h180/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w32/h32/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w48/h48/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w57/h57/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w60/h60/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w72/h72/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w76/h76/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/storage/image/w96/h96/c/f57dbecbf67cfa9845a022f4e00911266613b783.png
+/stroyashiesya-doma/
+/trehkomnatnye-kvartiry/
+/vidovye-kvartiry/
+callback
+https://api.mindbox.ru/assets/manifest.json
+https://artstudio-m103.rbi.ru/
+https://dzen.ru/rbi
+https://ecocity.rbi.ru/
+https://geniy.rbi.ru
+https://kollektsioner.rbi.ru/
+https://kuindzhi.rbi.ru/
+https://litera.rbi.ru/
+https://max.ru/rbi_official
+https://mir.rbi.ru/
+https://peredvizhniki.rbi.ru/
+https://peredvizhniki2.rbi.ru/
+https://repin.rbi.ru/
+https://rutube.ru/channel/24742354/
+https://sozidateli.rbi.ru
+https://struny.rbi.ru/
+https://studiomoskovsky.rbi.ru/
+https://svetoch.rbi.ru/
+https://t.me/+WH5g9p6-bnw3YTc6
+https://tipographiya.rbi.ru/
+https://tsvet.rbi.ru/
+https://ultracity.rbi.ru/
+https://visioner.rbi.ru
+https://vk.com/rbi_official
+https://www.kelnik.ru/
+https://www.rbi.ru/
+https://www.rbi.ru/blog/
+https://www.rbi.ru/cookie/
+https://www.rbi.ru/important/
+https://www.rbi.ru/objects/
+https://www.rbi.ru/otcetnost-i-dokumenty/
+https://www.rbi.ru/security-policy/
+mailto:rbi@rbi.ru
+tel:+78126007676

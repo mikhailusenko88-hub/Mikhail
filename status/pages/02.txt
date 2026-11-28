@@ -1,19 +1,7 @@
-URL: https://crm.nashdekor.ru/api/outbox/status/5eac501c-c33c-45bf-8244-44125a4e180f
-КОД: 200
+URL: https://www.lsr.ru/spb/
+КОД: ошибка: <urlopen error timed out>
 ЗАГОЛОВКИ:
-Server: nginx
-Date: Fri, 27 Nov 2026 08:48:27 GMT
-Content-Type: application/json
-Content-Length: 67
-Connection: close
-Cache-Control: no-store
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-Referrer-Policy: same-origin
-Vary: Cookie
-Strict-Transport-Security: max-age=15552000
-X-Robots-Tag: noindex, nofollow
 
-{"error":"","sent_at":"2026-11-27T11:47:06+03:00","status":"sent"}
+
 
 ССЫЛКИ:
