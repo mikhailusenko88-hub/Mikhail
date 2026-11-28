@@ -96,3 +96,4 @@
 | shorts | 2026-11-27 | 2 | Mexico vs Germany vs Philippines | https://youtube.com/shorts/PUs313igFkU | public (только Shorts) |
 | shorts | 2026-11-27 | 3 | Egypt vs Iran vs Australia | https://youtube.com/shorts/wtC3UKxt1Kk | public (только Shorts) |
 | shorts | 2026-11-28 | 1 | Germany vs Pakistan vs Italy | https://youtube.com/shorts/yOj6mRbBnz0 | public (только Shorts) |
+| shorts | 2026-11-28 | 2 | Pakistan vs Australia vs Romania | https://youtube.com/shorts/LOt21_NQhsc | public (только Shorts) |
