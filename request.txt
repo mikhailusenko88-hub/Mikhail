@@ -1,2 +1,20 @@
-# 28.11 06:56 UTC обход: полный сбор (daily 06:23 ещё не пришёл)
-all
+# 28.11 07:20 UTC обход: RSS своих каналов (в 06:54 — 503) + кадры топа ниш и наших новых (H50, с38, Почему так 27.11)
+rss-retry:12
+@cartoon_friend3
+@Beautiful_shorts-s6u
+@pochemu_tak_fakty
+@bilesin_be_kz
+@FlagballArenaTV
+@kimyutadi_uz
+@LivingLinesTV
+@TheHandwriting_of_Silence
+info:6TSl7E9VaYQ
+info:kLap1CYx4bs
+info:tKm2_KzcVZo
+info:9QTKsAC-7Rc
+info:wtC3UKxt1Kk
+info:kqXjOqWvfwY
+info:_QcrXGHAKqw
+info:CljrYJ9y-xc
+info:J9f7zHHeFOU
+info:Giccj7-OcVQ
