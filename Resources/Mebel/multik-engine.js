@@ -638,7 +638,7 @@ const DUR = { water: 2.6, jump: .9, wave: 1.6, dance: 3, spin: .8, nod: .9, shak
     Горка слева позади компании: вершина T, низ склона B. У каждого героя своя дорожка (сдвиг вбок), его санки ждут наверху, после катания остаются внизу слева (R). */
 const HILL = { T: [-6.0, -6.4], B: [-4.9, -1.6], h: 2.0 }, RIDES = new WeakMap();   /* RIDES: сцена (её C) → кто когда по какой дорожке едет */
 MK.HILL = HILL;
-MK.ride = { RUN: 3.2, SIT: .7, GO: 2.5, STOP: .45, UP: .75,
+MK.ride = { RUN: 3.2, SIT: .7, GO: 2.5, STOP: .45, UP: .75, CLEAR: .12,   /* CLEAR — после катания отойти от места остановки хотя бы на столько (доля ширины сцены); 0 — стоять, где остановился (как до 28.11.2026) */
   geo(id, x, trk) { const tx = HILL.B[0] - HILL.T[0], tz = HILL.B[1] - HILL.T[1], L = Math.hypot(tx, tz), ux = tx / L, uz = tz / L, nx = uz, nz = -ux, off = trk != null ? trk : ((MK.hash32('tr' + id) >>> 0) % 3 - 1) * .8;   /* trk — дорожка (сдвиг вбок, м): кто едет одновременно — на разных */
     const T0 = [HILL.T[0] + nx * off, HILL.T[1] + nz * off], B0 = [HILL.B[0] + nx * off, HILL.B[1] + nz * off], R = [B0[0] + ux * .6 - .35, 0], rx = (x - .5) * 10, G = [rx, -1.9];
     const climb = Math.hypot(G[0] - rx, G[1]) + Math.hypot(T0[0] - G[0], T0[1] - G[1]); return { L, ux, uz, T0, B0, R, G, climb, tc: climb / MK.ride.RUN, xe: (R[0] + .55) / 10 + .5 }; },
@@ -1165,7 +1165,10 @@ MK.compile = function (ep, lib, audio) {
             if (sn) sfx.push({ t: st0 + s0 + .25, n: sn, rep: sn === 'drum' ? 6 : 3, gap: sn === 'drum' ? .32 : .6 }); }
           if (d === 'ride') { RIDES.get(C).push({ t0: s0, t1: start + dur, trk }); const rg = MK.ride.geo(who, ch.x, trk), R = MK.ride, tg = s0 + rg.tc + R.SIT; if (step.sfx !== false) { for (let tt = s0 + .1, k = 0; tt < s0 + rg.tc; tt += .3, k++) sfx.push({ t: st0 + tt, n: 'crunch', v: .55 * (k % 2 ? .85 : 1) }); sfx.push({ t: st0 + tg + .1, n: 'whoosh' }); sfx.push({ t: st0 + tg + R.GO * .5, n: 'whoosh', v: .6 }); }   // 25.11.2026: бежит на горку — снег хрустит, съезжает — свист
             { const bt = beats[beats.length - 1]; if (bt && bt.d === 'ride' && bt.who === who) bt.go = tg; }
-            ch.ev.push({ t: start + dur, k: 'move', x0: rg.xe, x1: rg.xe, t1: start + dur + .01 }); ch.ev.push({ t: start + dur, k: 'face', v: 1 }); ch.x = rg.xe; }   // после катания стоит внизу горки, лицом к друзьям
+            ch.ev.push({ t: start + dur, k: 'move', x0: rg.xe, x1: rg.xe, t1: start + dur + .01 }); ch.ev.push({ t: start + dur, k: 'face', v: 1 }); ch.x = rg.xe;   // после катания стоит внизу горки, лицом к друзьям
+            if (MK.ride.CLEAR) { const z0 = ch.z || 0, ok = xx => !Object.keys(C).some(o => o !== who && C[o].vis && (C[o].z || 0) === z0 && Math.abs(C[o].x - xx) < (wOf(who) + wOf(o)) / 2 + .025); let fx = null;   // 28.11.2026 (серия 40): кто съехал по одному, вставал в одну точку R — следующий съезжал в стоящего. Теперь съехал — отходит от горки на свободное место (вправо, к друзьям), место внизу горки свободно для следующего
+              for (let xx = rg.xe + MK.ride.CLEAR; xx <= .93 && fx == null; xx += .02) if (ok(xx)) fx = xx;
+              if (fx != null) { const wd = Math.abs(fx - rg.xe) / .22, t0 = start + dur + .05; ch.ev.push({ t: t0, k: 'move', x0: rg.xe, x1: fx, t1: t0 + wd }); ch.x = fx; dur += wd + .05; for (let tt = t0 + .05, k = 0; tt < t0 + wd - .05; tt += .3, k++) sfx.push({ t: st0 + tt, n: 'crunch', v: .45 * (k % 2 ? .85 : 1) }); } } }
           if (AUTO_SFX[d] && step.sfx !== false) sfx.push({ t: st0 + s0 + (d === 'fall' ? .3 : d === 'clap' ? 0 : d === 'kick' ? .45 : d === 'throw' ? .45 : .05), n: AUTO_SFX[d], rep: d === 'clap' ? 4 : d === 'stomp' ? 3 : d === 'eat' ? 3 : 1, gap: d === 'stomp' ? .35 : d === 'eat' ? .5 : .22 });
           if (d === 'kick' || d === 'throw') { const p = d === 'throw' ? props.find(p => p.holder === who) : (props.find(p => p.id === step.prop) || props.filter(free).sort((a, b) => Math.abs(a.x - ch.x) - Math.abs(b.x - ch.x))[0]);
             if (p) { const fromX = d === 'throw' ? ch.x : p.x; const to = step.to && C[step.to] ? C[step.to].x : clamp(ch.x + (ch.face >= 0 ? 1 : -1) * (d === 'kick' ? .45 : .35), .05, .95);
