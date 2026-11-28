@@ -1,2 +1,2 @@
-# 27.11 16:20 МСК — Михаил: старые копии перезалитых удалять (правило). Закрытые дубли 37–39 и их Shorts
-delete ZEQyEyFngUk 9QT3Rapwjrc nfDYiVC-dpo B86QuwSDoB8 M2qZeQuFbzM EtxnmePX5RY
+# 28.11 10:40 МСК — обход менеджера: итоги выхода 38-й
+stats
