@@ -60,6 +60,27 @@ const [W, H] = (process.argv[2] || '859x237').split('x').map(Number), OUT = '/tm
   const e3 = await p.evaluate(() => ({ mode: window.__mud.mode, st: window.__mud.S.state, awd: window.__mud.S.cfg.b.awd, saved: window.__mud.save.build.awd || 0, coins: window.__mud.save.coins, x: Math.round(window.__mud.S.truck.x) }));
   chk(e3.mode === 'play' && e3.st === 'play' && e3.awd === 1 && !e3.saved && e3.coins === 100 && e3.x < 200, 'после ролика — 4×4 на рейс, заказ с начала, монеты целы ' + JSON.stringify(e3));
   chk(p.errs.length === 0, 'ошибок нет ' + p.errs.join('; ')); await p.close();
+  // 8) большие колёса и мотор 1 на заказе 7 («Слоёная грязь»): механик советует вернуть малые, кнопка ставит; «В рейс» не навязывает
+  const sv8 = { coins: 500, own: { awd: [1], low: [1], lock: [1], tires: [1], wheel: [2], eng: [1] }, build: { awd: 1, low: 1, lock: 1, tires: 1, wheel: 2, eng: 1 }, stars: { village: 3, farm: 3, creek: 3, pit: 3, mill: 3, bog: 3 }, seen: { first: 1, big: 1 }, ts: 1 };
+  p = await page(sv8);
+  await p.evaluate(() => window.__mud.press('c:6')); await p.waitForTimeout(400); await p.screenshot({ path: OUT + '/8wheel-card.png' });
+  const w1 = await p.evaluate(() => ({ ids: window.__mud.buttons.map((q) => q.id), go: window.__mud.mode }));
+  chk(w1.ids.includes('adv'), 'в карточке заказа 7 совет «поставь малые колёса» с кнопкой: ' + w1.ids);
+  await p.evaluate(() => window.__mud.press('adv')); await p.waitForTimeout(300);
+  chk((await p.evaluate(() => [window.__mud.save.build.wheel, window.__mud.save.coins, window.__mud.mode].join())) === '0,500,menu', 'кнопка поставила малые бесплатно');
+  await p.close();
+  p = await page(sv8);
+  await p.evaluate(() => { const m = window.__mud; m.press('c:6'); m.press('go'); }); await p.waitForTimeout(500);
+  chk((await p.evaluate(() => [window.__mud.mode, window.__mud.S.cfg.b.wheel].join())) === 'play,2', '«В рейс» не меняет колёса без спроса');
+  await p.evaluate(() => { const S = window.__mud.S; for (let i = 0; i < 60 * 60 && S.state === 'play'; i++) S.step({ gas: true, awd: true, low: true, lock: true }); });
+  await p.keyboard.down('ArrowRight'); await p.waitForFunction(() => window.__mud.S.state === 'dead', null, { timeout: 120000 }).catch(() => 0); await p.keyboard.up('ArrowRight');
+  await p.waitForFunction(() => window.__mud.buttons.some((q) => q.id === 'quit'), null, { timeout: 30000 }).catch(() => 0); await p.waitForTimeout(300); await p.screenshot({ path: OUT + '/8wheel-fail.png' });
+  const w2 = await p.evaluate(() => ({ ids: window.__mud.buttons.map((q) => q.id), why: window.__mud.S.why }));
+  chk(w2.ids.includes('buyre'), 'на больших колёсах встал (' + w2.why + ') — на экране аварии «поставить малые и заново»: ' + w2.ids);
+  await p.evaluate(() => window.__mud.press('buyre')); await p.waitForTimeout(500);
+  const w3 = await p.evaluate(() => ({ mode: window.__mud.mode, st: window.__mud.S.state, wheel: window.__mud.S.cfg.b.wheel, coins: window.__mud.save.coins }));
+  chk(w3.mode === 'play' && w3.st === 'play' && w3.wheel === 0 && w3.coins === 500, 'поставил малые и начал заново ' + JSON.stringify(w3));
+  chk(p.errs.length === 0, 'ошибок нет ' + p.errs.join('; ')); await p.close();
   // 4) длинные подписи на других языках
   for (const lg of ['es', 'de', 'tr', 'pl']) { p = await page(sv, lg); await p.evaluate(() => window.__mud.press('c:1')); await p.waitForTimeout(300); await p.screenshot({ path: OUT + '/4card-' + lg + '.png' }); chk(p.errs.length === 0, lg + ' без ошибок'); await p.close(); }
   console.log(`итог: ${ok} OK, ${bad} FAIL`); await b.close(); process.exit(bad ? 1 : 0); })();
