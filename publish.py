@@ -173,7 +173,7 @@ def main():
         dry = "--dry" in a
         ids = [x for x in a[1:] if not x.startswith("--")]
         keep = {"DSKSoIpqPvc", "nCJHU-PLZK8", "P6UAa77a-vE", "EuvuGeu65bU", "mo1ZnkhjVYI", "E7MJ9DqFk40", "kLap1CYx4bs", "x_yxFUnwokg",
-                "3U-NlUBrul4", "WYEunfcK7QI", "9WkWQUeXjCk", "DplvBw_v7lQ", "rTKjyRowWIE", "ko1NB7Hx32Q", "SCE7JcQNMAM", "cjAd-R1eaH0", "dxSzLbcBfRA", "fJ8ZJ2N9cx4"}   # серии 33–40 и сборники, что выходят (при перезаливке — заменить id здесь; 27.11: 37–39 — свои голоса, 40)
+                "3U-NlUBrul4", "WYEunfcK7QI", "9WkWQUeXjCk", "DplvBw_v7lQ", "86Rsz0cOm4I", "eUkvsIvS2ho", "rTKjyRowWIE", "ko1NB7Hx32Q", "SCE7JcQNMAM", "cjAd-R1eaH0", "dxSzLbcBfRA", "fJ8ZJ2N9cx4"}   # серии 33–41 и сборники, что выходят (при перезаливке — заменить id здесь; 27.11: 37–39 — свои голоса, 40; 28.11: 41)
         vids = yt.last_videos(50)
         res = [f"{v}: {yt.delete_dup(v, vids, keep, dry)}" for v in ids]
         n = sum(1 for x in res if ("можно удалить" if dry else "УДАЛЁН") in x)
