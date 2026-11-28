@@ -13,7 +13,7 @@
   "avatar": "https://yt3.googleusercontent.com/wefYK3hoTThf90hy93wCVtVPKkdJB4JASlWU7V_lVOkalg0NqT7y8kX1m_QOskPaex4lMLRw=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/CtLAfow-c31AX9e2TjWnkbFk_Utt5vyxw9cR70GIqdhdCQf1X2Q6QAkXSpTsc2CRUK7F2X33i1c=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-28 06:54 UTC",
+ "checked": "2026-11-28 07:07 UTC",
  "shorts_status": 200,
  "shorts": [
   {
@@ -25,20 +25,20 @@
   {
    "id": "iWjIL9yItvg",
    "title": "5 МЫСЛЕЙ О РАДОСТИ ✨ Твен, Шамфор, Диккенс #shorts",
-   "views": "355 просмотров",
-   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О РАДОСТИ ✨ Твен, Шамфор, Диккенс #shorts, 355 просмотров\""
+   "views": "354 просмотра",
+   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О РАДОСТИ ✨ Твен, Шамфор, Диккенс #shorts, 354 просмотра\""
   },
   {
    "id": "D5zhYXk7zj8",
    "title": "Под лежачий камень вода не течёт ✨ Words to keep | Russian proverb #shorts",
-   "views": "269 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Под лежачий камень вода не течёт ✨ Words to keep | Russian proverb #shorts, 269 просмотров\""
+   "views": "268 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Под лежачий камень вода не течёт ✨ Words to keep | Russian proverb #shorts, 268 просмотров\""
   },
   {
    "id": "ZbDCDYedguw",
    "title": "5 МЫСЛЕЙ О ДЕНЬГАХ И БОГАТСТВЕ ✨ Достоевский, Торо, Сенека #shorts",
-   "views": "502 просмотра",
-   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О ДЕНЬГАХ И БОГАТСТВЕ ✨ Достоевский, Торо, Сенека #shorts, 502 просмотра\""
+   "views": "496 просмотров",
+   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О ДЕНЬГАХ И БОГАТСТВЕ ✨ Достоевский, Торо, Сенека #shorts, 496 просмотров\""
   },
   {
    "id": "VnZ7piuSXfQ",
@@ -55,8 +55,8 @@
   {
    "id": "jC41YztYov8",
    "title": "5 МЫСЛЕЙ О ВРЕМЕНИ ✨ Франклин, Вергилий, Сенека #shorts",
-   "views": "631 просмотр",
-   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О ВРЕМЕНИ ✨ Франклин, Вергилий, Сенека #shorts, 631 просмотр\""
+   "views": "639 просмотров",
+   "a11y": "Воспроизвести короткое видео \"5 МЫСЛЕЙ О ВРЕМЕНИ ✨ Франклин, Вергилий, Сенека #shorts, 639 просмотров\""
   },
   {
    "id": "HDsLSDiOlBw",
@@ -307,7 +307,7 @@
  ],
  "rss_status": 503,
  "rss": [],
- "rss_tries": 1,
+ "rss_tries": 5,
  "videos_status": 200,
  "videos": []
 }

@@ -14,7 +14,7 @@
   "avatar": "https://yt3.googleusercontent.com/grguQ-5U5jTFK_EiY9VhoMPsTvY912vAvegr1emSueE0oh8-8_aE4ca0YDP2-wgdznjNf2p0GA=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/W1dimkaexsxiU_rvNmjdeQHcZk4A_jr3dcs822Tx9Dz3CkRH_7wlwW0TWnSDVLOGNO8p85JY2g=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-28 06:54 UTC",
+ "checked": "2026-11-28 07:07 UTC",
  "shorts_status": 200,
  "shorts": [
   {
@@ -26,8 +26,8 @@
   {
    "id": "tKm2_KzcVZo",
    "title": "Самый мощный взрыв из космоса #shorts",
-   "views": "969 просмотров",
-   "a11y": "Воспроизвести короткое видео \"Самый мощный взрыв из космоса #shorts, 969 просмотров\""
+   "views": "970 просмотров",
+   "a11y": "Воспроизвести короткое видео \"Самый мощный взрыв из космоса #shorts, 970 просмотров\""
   },
   {
    "id": "9QTKsAC-7Rc",
@@ -38,8 +38,8 @@
   {
    "id": "1gOx1MftHPY",
    "title": "Никогда не выходи на тонкий лёд #shorts",
-   "views": "823 просмотра",
-   "a11y": "Воспроизвести короткое видео \"Никогда не выходи на тонкий лёд #shorts, 823 просмотра\""
+   "views": "824 просмотра",
+   "a11y": "Воспроизвести короткое видео \"Никогда не выходи на тонкий лёд #shorts, 824 просмотра\""
   },
   {
    "id": "-i2sJbB6oks",
@@ -308,7 +308,7 @@
  ],
  "rss_status": 503,
  "rss": [],
- "rss_tries": 1,
+ "rss_tries": 5,
  "videos_status": 200,
  "videos": []
 }

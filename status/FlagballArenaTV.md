@@ -1,8 +1,9 @@
 # Flagball Arena  (@FlagballArenaTV)
-Проверено: 2026-11-28 06:54 UTC
+Проверено: 2026-11-28 07:07 UTC
 
 - Страница канала: HTTP 200; ID: UCUKgRxWtL1kPWr9hdfL8qQw
 - Шапка: 27 подписчиков · 96 видео
+- RSS: попыток 5, последний ответ HTTP 503
 
 ## Последние открытые ролики (RSS, точные просмотры) — 0 шт.
 - (пусто или лента недоступна, HTTP 503)
@@ -25,13 +26,13 @@
 - 2 нед. назад · ? ·  · 24 Countries, 3 Lives ❤️ Japan vs Russia vs Philippines | Country Marble Survival #10 · n-1K-JsMI_E
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
-- 779 просмотров · Race 60/67: 8 of 24 lose a life 😱 Germany vs Pakistan vs Italy #shorts · yOj6mRbBnz0
-- 22 просмотра · Iran on its LAST life ❤️ Egypt vs Iran vs Australia — Who Survives? #shorts · wtC3UKxt1Kk
-- 511 просмотров · Last chance for Mexico 😱 Mexico vs Germany vs Philippines | Country Marble Race #shorts · PUs313igFkU
-- 16 просмотров · Last chance for Italy 😱 Vietnam vs Thailand vs Italy | Country Marble Race #shorts · R80c42VFMUg
+- 790 просмотров · Race 60/67: 8 of 24 lose a life 😱 Germany vs Pakistan vs Italy #shorts · yOj6mRbBnz0
+- 16 просмотров · Iran on its LAST life ❤️ Egypt vs Iran vs Australia — Who Survives? #shorts · wtC3UKxt1Kk
+- 512 просмотров · Last chance for Mexico 😱 Mexico vs Germany vs Philippines | Country Marble Race #shorts · PUs313igFkU
+- 39 просмотров · Last chance for Italy 😱 Vietnam vs Thailand vs Italy | Country Marble Race #shorts · R80c42VFMUg
 - 15 просмотров · Brazil vs UK vs Egypt 😱 Who Survives? Country Marble Race #shorts · fMINMQRXyuI
 - 1 тыс. просмотров · Mexico on its LAST life ❤️ Mexico vs Germany vs Ukraine — Who Survives? #shorts · Y_YmMMSFvko
-- 455 просмотров · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
+- 453 просмотра · Only 106 countries still alive 🌍 Brazil vs Vietnam vs Italy — who drops out? #shorts · JIvXUmbhnqA
 - 213 просмотров · Last chance for UK 😱 UK vs Chile vs Guatemala | Country Marble Race #shorts · cGm9VQp4WvM
 - 1 тыс. просмотров · Russia ❤️ vs Philippines ❤️❤️ vs Thailand ❤️❤️ — Who Survives? #shorts · veEHzBR50OE
 - 644 просмотра · Sweden on its LAST life ❤️ Algeria vs Portugal vs Sweden — Who Survives? #shorts · yilHRkug2sE

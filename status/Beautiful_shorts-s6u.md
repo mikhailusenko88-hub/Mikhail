@@ -1,8 +1,9 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-28 06:54 UTC
+Проверено: 2026-11-28 07:07 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 241 подписчик · 153 видео
+- RSS: попыток 5, последний ответ HTTP 503
 
 ## Последние открытые ролики (RSS, точные просмотры) — 0 шт.
 - (пусто или лента недоступна, HTTP 503)
@@ -18,7 +19,7 @@
 
 ## Вкладка Shorts (видно всем) — 48 шт. на первой странице
 - 1,3 тыс. просмотров · Christmas Ornament With 925 Balls Shatters… Then Rebuilds 🎄 Satisfying 3D Simulation #shorts #asmr · 6TSl7E9VaYQ
-- 2,1 тыс. просмотров · Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr · iEd3d9m7PlQ
+- 2 тыс. просмотров · Red vs Gold Christmas Ornaments Shatter — 1,850 Balls Inside! 🎄 Satisfying 3D #shorts #asmr · iEd3d9m7PlQ
 - 3,1 тыс. просмотров · Glass Cat vs Glass Bear — Which Holds More? 🐱🐻 Satisfying 3D Simulation #shorts #asmr · RxTYbB3I4JY
 - 2 тыс. просмотров · 3,294 Balls Into a Glass Bear… and Back 🔄🐻 Satisfying 3D Loop #shorts #asmr · 1tZcFYIjxJk
 - 2,9 тыс. просмотров · 3,294 Balls Into a Glass Cat — Will It Fill Up? 😳 Satisfying 3D Simulation #shorts #asmr · 2_3HjiQtR8s

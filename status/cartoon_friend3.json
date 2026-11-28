@@ -4,13 +4,16 @@
  "channel_id": "UCe72zB7nk8xkf3cHFL15luA",
  "title": "Кот Барсик | Мультфильмы для детей",
  "description": "Кот Барсик — добрый мультсериал для детей 3–7 лет. Рыжий котёнок Барсик и его друзья — мышонок Пик, щенок Рон, медвежонок Топа и зайчонок Филя — разгадывают загадки природы: почему лодка не тонет, куд",
- "header": [],
+ "header": [
+  "62 подписчика",
+  "68 видео"
+ ],
  "alerts": [],
  "images": {
   "avatar": "https://yt3.googleusercontent.com/0kg_VQf-UgRscqYPAiiWWizLHL-0sbbE8D4KKNv085vlL3HSaER295tcOJoX9-x-itZ-Yqt_dQ=s900-c-k-c0x00ffffff-no-rj",
   "banner": "https://yt3.googleusercontent.com/beRBeyMEBXXfS9pf0THOlcy-8NpmoKARtS5Ovcs7YkD4qFpd6P4WCEbhZZ5u8VFqKQ-roUYb=w2560-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
  },
- "checked": "2026-11-28 06:54 UTC",
+ "checked": "2026-11-28 07:07 UTC",
  "shorts_status": 200,
  "shorts": [
   {
@@ -190,7 +193,7 @@
  ],
  "rss_status": 503,
  "rss": [],
- "rss_tries": 1,
+ "rss_tries": 5,
  "videos_status": 200,
  "videos": [
   {
