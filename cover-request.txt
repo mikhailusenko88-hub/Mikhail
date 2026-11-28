@@ -1,9 +1,9 @@
-# 2026-11-27 — серия 40 (сборка 40b, элементы 40): обложки на 7 языках, en — для сверки картинки с русской
-40b 40 v1.py el=40
-en;EPISODE 40;THE SLED GOES|BY ITSELF?
-es;EPISODIO 40;¿EL TRINEO|VA SOLO?
-pt;EPISÓDIO 40;O TRENÓ ANDA|SOZINHO?
-de;FOLGE 40;FÄHRT DER SCHLITTEN|VON ALLEIN?
-hi;एपिसोड 40;स्लेज अपने आप|चलती है?
-fr;ÉPISODE 40;LA LUGE AVANCE|TOUTE SEULE ?
-ar;الحلقة 40;المزلجة تنزل وحدها؟
+# 2026-11-28 — серия 41 (сборка 41b, элементы 41): обложки на 7 языках, en — для сверки картинки с русской
+41b 41 v1.py el=41
+en;EPISODE 41;WHERE DO STARS HIDE?
+es;EPISODIO 41;¿DÓNDE SE ESCONDEN|LAS ESTRELLAS?
+pt;EPISÓDIO 41;ONDE AS ESTRELAS|SE ESCONDEM?
+de;FOLGE 41;WO VERSTECKEN SICH|DIE STERNE?
+hi;एपिसोड 41;तारे कहाँ छिपते हैं?
+fr;ÉPISODE 41;OÙ SE CACHENT|LES ÉTOILES ?
+ar;الحلقة 41;أين تختبئ النجوم؟
