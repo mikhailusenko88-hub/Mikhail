@@ -1,9 +1,13 @@
 """«Почему так?» — живые кадры вместо значка (гипотеза H49, «да» Михаила 27.11.2026).
 
 В выбранные часы (config.json: live_hours, по МСК, до даты live_until) ролик собирается так:
-фон — настоящие видеоклипы Pexels (бесплатная лицензия, указывать автора не нужно) по теме сценария,
-на кадре — подпись 2–4 слова (caps из банка), голос, музыка и звуковые акценты — как в виде v2.
-Нет ключа PEXELS_API_KEY, нет клипов или любая ошибка — make_video.build делает обычный вид v2.
+фон — настоящие видеоклипы по теме сценария, на кадре — подпись 2–4 слова (caps из банка),
+голос, музыка и звуковые акценты — как в виде v2.
+Откуда клипы (28.11.2026: Pexels перестал выдавать новые ключи — «New API key issuance is currently paused»):
+  PIXABAY_API_KEY в .env — Pixabay (бесплатная лицензия Pixabay, коммерческое использование без указания автора;
+                           вертикальных клипов мало — горизонтальные обрезаются по центру до 9:16);
+  PEXELS_API_KEY  в .env — Pexels (если ключ когда-нибудь появится; берётся, только когда нет ключа Pixabay).
+Нет ключа, нет клипов или любая ошибка — make_video.build делает обычный вид v2.
 
 Проверка ключа на сервере:  python3 live.py --check
 """
@@ -25,7 +29,7 @@ import make_video as mv
 W, H, FPS = mv.W, mv.H, mv.FPS
 MSK = dt.timezone(dt.timedelta(hours=3))
 
-# слова из поля stock банка -> запрос для Pexels (по-английски находит намного больше)
+# слова из поля stock банка -> запрос для поиска клипов (по-английски находит намного больше)
 EN = {
     "аккумулятор": "battery", "акула": "shark", "аптека": "pharmacy", "атом": "science laboratory",
     "банка": "glass jar", "бензин": "gas station", "богомол": "praying mantis", "верблюд": "camel",
@@ -82,7 +86,7 @@ def want(cfg, now=None):
 
 
 def queries(script):
-    """Запросы для Pexels: stock_en из сценария, если есть, иначе перевод слов поля stock (без повторов)."""
+    """Запросы для поиска клипов: stock_en из сценария, если есть, иначе перевод слов поля stock (без повторов)."""
     if script.get("stock_en"):
         q = script["stock_en"]
         return [x.strip() for x in (q if isinstance(q, list) else q.split("|")) if x.strip()]
@@ -95,35 +99,71 @@ def queries(script):
 
 
 def _get(url, headers=None, timeout=60):
-    req = urllib.request.Request(url, headers={"User-Agent": "pochemu-live", **(headers or {})})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; pochemu-live)", **(headers or {})})
     return urllib.request.urlopen(req, timeout=timeout)
 
 
-def search(query, key, per_page=15):
+def provider():
+    """('pixabay'|'pexels', ключ) — Pixabay главный (Pexels с 28.11.2026 новых ключей не выдаёт)."""
+    if os.environ.get("PIXABAY_API_KEY"):
+        return "pixabay", os.environ["PIXABAY_API_KEY"]
+    if os.environ.get("PEXELS_API_KEY"):
+        return "pexels", os.environ["PEXELS_API_KEY"]
+    return None, None
+
+
+def search(query, key, per_page=15, src="pixabay"):
+    """Список клипов в общем виде: {id, duration, w, h, link}; только mp4, меньшая сторона ≥720, большая ≤3840."""
+    out = []
+    if src == "pixabay":
+        url = "https://pixabay.com/api/videos/?" + urllib.parse.urlencode(
+            {"key": key, "q": query[:100], "video_type": "film", "safesearch": "true",
+             "per_page": max(3, min(per_page * 2, 200))})
+        with _get(url, timeout=30) as r:
+            hits = json.load(r).get("hits", [])
+        for v in hits:
+            vs = [f for f in (v.get("videos") or {}).values()
+                  if isinstance(f, dict) and f.get("url") and f.get("width") and f.get("height")]
+            vs = [f for f in vs if 720 <= min(f["width"], f["height"]) and max(f["width"], f["height"]) <= 3840]
+            if not vs:
+                continue
+            # кадр 1080×1920: вертикальному нужна высота ~1920, горизонтальному — ~1080 (дальше режем по центру)
+            f = min(vs, key=lambda f: (abs(f["height"] - (1920 if f["height"] >= f["width"] else 1080)),
+                                      f["width"] * f["height"]))
+            out.append({"id": f"pb{v.get('id')}", "duration": v.get("duration", 0),
+                        "w": f["width"], "h": f["height"], "link": f["url"]})
+        out.sort(key=lambda c: c["h"] < c["w"])          # вертикальные — первыми
+        return out
     url = "https://api.pexels.com/videos/search?" + urllib.parse.urlencode(
         {"query": query, "orientation": "portrait", "size": "medium", "per_page": per_page})
     with _get(url, {"Authorization": key}, 30) as r:
-        return json.load(r).get("videos", [])
-
-
-def pick_file(v):
-    files = [f for f in v.get("video_files", []) if f.get("file_type") == "video/mp4"
-             and f.get("height") and f.get("width") and f["height"] >= f["width"] and 960 <= f["height"] <= 2160]
-    return min(files, key=lambda f: abs(f["height"] - 1920)) if files else None
+        vids = json.load(r).get("videos", [])
+    for v in vids:
+        files = [f for f in v.get("video_files", []) if f.get("file_type") == "video/mp4"
+                 and f.get("height") and f.get("width") and f["height"] >= f["width"] and 960 <= f["height"] <= 2160]
+        if files:
+            f = min(files, key=lambda f: abs(f["height"] - 1920))
+            out.append({"id": f"px{v.get('id')}", "duration": v.get("duration", 0),
+                        "w": f["width"], "h": f["height"], "link": f["link"]})
+    return out
 
 
 def fetch_clips(qs, n, work, rnd, log=print):
-    """До n разных вертикальных клипов: по очереди из каждого запроса, чтобы соседние сцены отличались."""
-    key = os.environ.get("PEXELS_API_KEY")
+    """До n разных клипов: по очереди из каждого запроса, чтобы соседние сцены отличались."""
+    src, key = provider()
     if not key:
-        raise RuntimeError("нет ключа PEXELS_API_KEY в .env")
+        raise RuntimeError("нет ключа PIXABAY_API_KEY (или PEXELS_API_KEY) в .env")
     pools = []
     for q in qs[:4]:
-        vids = [v for v in search(q, key) if v.get("duration", 0) >= 4 and pick_file(v)]
-        rnd.shuffle(vids)
+        vids = [v for v in search(q, key, src=src) if v.get("duration", 0) >= 4]
+        top = [v for v in vids if v["h"] >= v["w"]]      # вертикальные — в начале пула, остальные — вперемешку за ними
+        rest = [v for v in vids if v["h"] < v["w"]]
+        rnd.shuffle(top)
+        rnd.shuffle(rest)
+        vids = top + rest
         if vids:
             pools.append((q, vids))
-        log(f"Pexels «{q}»: {len(vids)} подходящих")
+        log(f"{src} «{q}»: {len(vids)} подходящих (вертикальных {len(top)})")
     out, seen, k = [], set(), 0
     while len(out) < n and any(p[1] for p in pools):
         q, vids = pools[k % len(pools)]
@@ -134,10 +174,9 @@ def fetch_clips(qs, n, work, rnd, log=print):
         if v["id"] in seen:
             continue
         seen.add(v["id"])
-        f = pick_file(v)
         dest = work / f"live{len(out)}.mp4"
         try:
-            with _get(f["link"], timeout=120) as r, open(dest, "wb") as o:
+            with _get(v["link"], timeout=120) as r, open(dest, "wb") as o:
                 shutil.copyfileobj(r, o)
             if mv.duration(dest) < 3:
                 continue
@@ -315,27 +354,30 @@ def build_live(script, cfg, out_path, work_dir, tts=None, log=print):
         cmd += ["-map", "0:v", "-map", "1:a"]
     cmd += ["-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", f"{total_dur:.3f}", "-movflags", "+faststart", out_path]
     mv.run(cmd)
-    log(f"Живые кадры: {len(clips)} клипа, {total_dur:.1f} с")
+    log(f"Живые кадры: {len(clips)} клипа ({provider()[0]}), {total_dur:.1f} с")
     return total_dur
 
 
 def check():
-    """Для команды обновления: есть ли ключ и отвечает ли Pexels."""
+    """Для команды обновления: есть ли ключ и отвечает ли источник клипов."""
     env = mv.BASE / ".env"
     if env.exists():
         for line in env.read_text(encoding="utf-8").splitlines():
-            if line.strip().startswith("PEXELS_API_KEY=") and not os.environ.get("PEXELS_API_KEY"):
-                os.environ["PEXELS_API_KEY"] = line.split("=", 1)[1].strip().strip('"').strip("'")
-    key = os.environ.get("PEXELS_API_KEY")
+            for name in ("PIXABAY_API_KEY", "PEXELS_API_KEY"):
+                if line.strip().startswith(name + "=") and not os.environ.get(name):
+                    os.environ[name] = line.split("=", 1)[1].strip().strip('"').strip("'")
+    src, key = provider()
     if not key:
         print("КЛЮЧА НЕТ")
         return 3
+    name = "PIXABAY" if src == "pixabay" else "PEXELS"
     try:
-        vids = [v for v in search("ice lake", key, 10) if pick_file(v)]
+        vids = search("ice lake", key, 10, src)
     except Exception as e:  # noqa: BLE001
-        print(f"PEXELS НЕ ОТВЕЧАЕТ: {e}")
+        print(f"{name} НЕ ОТВЕЧАЕТ: {e}")
         return 4
-    print(f"PEXELS ОК: по запросу «ice lake» {len(vids)} вертикальных клипов")
+    vert = sum(1 for v in vids if v["h"] >= v["w"])
+    print(f"{name} ОК: по запросу «ice lake» {len(vids)} клипов (вертикальных {vert}, остальные обрежу по центру)")
     return 0 if vids else 4
 
 
