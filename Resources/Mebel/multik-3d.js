@@ -3119,7 +3119,7 @@ function mediumFit(c, id, seg, lib, zk, cl) {   /* cl — крупный пла�
   const lc = lib.characters[id], rg = lc && rigFor(lc), fit = c[ck] = { id, zk, d: 0, s: 1 }; if (!rg || !rg.headH || !global.MK || !global.MK._sceneState || MK3D.MEDIUM_FIT === false) return fit;
   const cs = seg.cam.filter(q => !q.shake), i = cs.indexOf(c), tA = c.t, tB = i >= 0 && i + 1 < cs.length ? cs[i + 1].t : seg.t1 - seg.t0;
   const times = tB - tA > 1.2 ? [tA + .2, (tA + tB) / 2, tB - .2] : [(tA + tB) / 2];
-  const hy = rg.headH, hr = rg.headR, D0 = cl ? hr * 6.4 / zk : Math.max(hr * 11.5, hy * 1.9) / zk, T = Math.tan(19 * Math.PI / 180), TX = T * 16 / 9, half0 = D0 * TX;
+  const hy = rg.faceH || rg.headH, hr = rg.headR, D0 = cl ? hr * 6.4 / zk : Math.max(hr * 11.5, hy * 1.9) / zk, T = Math.tan(19 * Math.PI / 180), TX = T * 16 / 9, half0 = D0 * TX;
   const sMin = cl ? .74 : Math.max(.8, Math.min(1, Math.max(hy * .4 + hr * 1.75 + .05, hy * .6 + .02) / T / D0)), lk = cl ? .2 : .4, ok = cl ? .7 : 1.2, dMax = cl ? .4 : .5;   // ближе нельзя: герой во весь рост, с ушками и лапами
   const wOf = o => { const l = lib.characters[o], r = l && rigFor(l); return r && r.headR ? r.headR * 1.8 + .04 : .7; };   // полуширина героя с ушами и лапами ≈ 1,8 радиуса головы
   const fr = []; let side = null; for (const t of times.length > 1 ? [times[1], times[0], times[2]] : times) { let S; try { S = global.MK._sceneState({ audio: {} }, seg, t, 0); } catch (e) { return fit; } const st = S[id]; if (!st || !st.vis) continue;
@@ -3165,7 +3165,7 @@ function camFor(c, S, seg, lib) {
       const el = front ? .2 : .74; return { pos: new THREE.Vector3(v.x + sd * d * .1, v.y + d * Math.sin(el), v.z + d * Math.cos(el)), look: new THREE.Vector3(v.x, v.y, v.z) }; }
     return camFor(Object.assign({}, c, { mode: id ? 'medium' : 'wide', on: id || null }), S, seg, lib); }
   if (c.mode === 'close' || c.mode === 'medium') { const id = c.on || ids[0], hh = h(id), x = px(id), z = pz(id); const close = c.mode === 'close', side = c.vert ? 0 : S[id] && S[id].face < 0 ? -1 : 1;   /* vert — Shorts 9:16: герой по центру кадра */
-    const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
+    const lc = lib.characters[id], rg = lc && rigFor(lc); if (rg && rg.headH) { const hy = rg.faceH || rg.headH, hr = rg.headR, zk = c.zoom ? c.zoom / (close ? 2.3 : 1.55) : 1; // кадр по голове героя: крупно — лицо и плечи, средний — во весь рост
       const out = close ? (mf => { const up = Math.max(0, 1 - mf.s) * hr * 2.2; return { pos: new THREE.Vector3(x + side * hr * .9 + mf.d, hy - hr * .05 + up, z + hr * 6.4 / zk * mf.s), look: new THREE.Vector3(x + side * hr * .2 + mf.d, hy - hr * .32 + up, z) }; })(c.vert || MK3D.CLOSE_FIT === false ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk, true))
         : (mf => { const sd = mf.side != null ? mf.side : side; return { pos: new THREE.Vector3(x + sd * hr * 1.6 + mf.d, hy * .78, z + Math.max(hr * 11.5, hy * 1.9) / zk * mf.s), look: new THREE.Vector3(x + sd * hr * .4 + mf.d, hy * .6, z) }; })(c.vert ? { d: 0, s: 1 } : mediumFit(c, id, seg, lib, zk));   // средний: края кадра — между героями
       return lieCam(out, S[id], rg, close, side, hr, hy, zk); }

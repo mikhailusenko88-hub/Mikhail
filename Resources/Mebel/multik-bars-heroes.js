@@ -390,7 +390,8 @@ async function buildTemplate(name) {
   const T = { name, info, items: [], t: {} }; T.t.load = now() - t0;
   // голова: середина головы по коже — по ней приложение кадрирует «крупно» и подбирает размер
   { const s = D.skins.head; let y0 = 1e9, y1 = -1e9, x0 = 1e9, x1 = -1e9; for (let i = 0; i < s.nv; i++) { const x = s.p[i * 3], y = s.p[i * 3 + 1]; if (y < y0) y0 = y; if (y > y1) y1 = y; if (x < x0) x0 = x; if (x > x1) x1 = x; }
-    T.headC = (y0 + y1) / 2; T.headR = (x1 - x0) / 2; T.headTop = y1; }
+    T.headC = (y0 + y1) / 2; T.headR = (x1 - x0) / 2; T.headTop = y1;
+    T.faceC = y1 - y0 > 2.8 * T.headR ? y0 + T.headR * 1.1 : T.headC; }   // 28.11.2026: у Фили в коже головы — длинные уши (высота 3,5 радиуса): середина «головы» выше мордочки на 0,7 радиуса, и крупный план резал мордочку по нос (41-я 0:08–0:13). Камера кадрирует по мордочке (rig.faceH); размер героя — по-прежнему по headC
   T.center = new THREE.Vector3(0, 0.55 * NM.k, 0);
   const L = T.L = lamps(); T.bakeU = lightsFor(L, T.center);
   const V3 = a => new THREE.Vector3(a[0], a[1], a[2]);
@@ -645,7 +646,7 @@ H6.attach = function (T3, rig) {
   const k = (rig.P && rig.P.headY ? rig.P.headY : T.headC) / T.headC; I.root.scale.setScalar(k); I.root.userData.noGround = true; rig.pose.add(I.root);
   I.k = k; I.who = who; rig.h6 = I; rig._gp = rig._gpB = null; rig.fur = []; I.rest = { arms: rig.arms.map(g => new THREE.Euler(0, 0, (g.userData.side || (g.position.x < 0 ? -1 : 1)) * .35)), legs: rig.legs.map(g => g.rotation.clone()) };   // покой скелета: лапы отведены на .35 рад — у героя образца они висят вдоль тела (иначе плечи заходят в ошейник)
   rig.root.traverse(o => { if (!o.isMesh || o.userData.bars || o.userData.blob) return; if (o.userData.strands) { o.visible = false; return; } o.layers.set(1); });   // старый герой: только тень и «кости»
-  rig.headH = T.headC * k * (rig.scale || 1); rig.headR = T.headR * k * (rig.scale || 1);
+  rig.headH = T.headC * k * (rig.scale || 1); rig.headR = T.headR * k * (rig.scale || 1); rig.faceH = (T.faceC || T.headC) * k * (rig.scale || 1);
   const pre = function (R, scene, cam) { const f = R.info.render.frame; if (I._f === f && I._cam === cam) return; I._f = f; I._cam = cam; camFrame(I, R, cam); };
   I.meshes.forEach(m => { m.onBeforeRender = pre; });
   return true;
