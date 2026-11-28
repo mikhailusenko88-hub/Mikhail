@@ -1,1 +1,2 @@
-40b en es pt hi de fr
+# 2026-11-28 — серия 41 (сборка 41b): en es pt hi de fr
+41b en es pt hi de fr
