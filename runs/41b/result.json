@@ -1,0 +1,74 @@
+{
+ "ok": true,
+ "err": null,
+ "start": {
+  "ok": true,
+  "series": "Кот Барсик",
+  "episode": 41,
+  "title": "Куда прячутся звёзды?!",
+  "scenes": 10,
+  "errors": [],
+  "unknownWords": [],
+  "unknownObjects": [],
+  "unknownNames": [],
+  "probe": [
+   "Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}",
+   "Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}",
+   "Рон: {\"speaker\":\"svoy_ron\",\"F\":1.1,\"P\":1.1,\"R\":1.7,\"T\":1.12,\"vend\":1.7,\"gap\":0.25,\"qrise\":3,\"laugh\":\"F16\"}",
+   "Барсик: {\"speaker\":\"svoy_barsik\",\"F\":1.09,\"P\":1.1,\"R\":0.9,\"T\":1.12,\"gap\":0.3,\"qrise\":3}",
+   "Пик: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.33,\"qrise\":3}"
+  ]
+ },
+ "video": {
+  "name": "Кот Барсик - 41. Куда прячутся звёзды!",
+  "path": "video/Кот Барсик - 41. Куда прячутся звёзды!.mp4",
+  "frames": 12310,
+  "sec": 1672,
+  "ok": true,
+  "err": ""
+ },
+ "card": {
+  "status": "built",
+  "dur": 492.381132161901,
+  "video": "video/Кот Барсик - 41. Куда прячутся звёзды!.mp4",
+  "voiceFb": 0,
+  "made": {
+   "app": "студия",
+   "ver": "ddcb405",
+   "intro": "after",
+   "open": "new",
+   "q": "hq",
+   "at": 15,
+   "text": "заставка: после завязки · начало: новое · качество: как в кино · 1920×1080 25 к/с"
+  },
+  "perf": {
+   "r": 8,
+   "e": 123,
+   "b": 4,
+   "w": 1,
+   "n": 12310,
+   "at": 12310,
+   "pipe": true
+  }
+ },
+ "stat": {
+  "tts": 4,
+  "ttsFail": 0,
+  "voice": 122,
+  "voiceFail": 0,
+  "voiceSec": 73,
+  "ttsSec": 2,
+  "frames": 12871,
+  "dialogs": [],
+  "errors": [],
+  "stages": [],
+  "lufs_in": -25.3,
+  "lufs_out": -15.2,
+  "gain_db": 11
+ },
+ "gl": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)",
+ "total_sec": 3894,
+ "mode": "как в кино",
+ "res": 1080,
+ "fps": 25
+}
