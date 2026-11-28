@@ -2,22 +2,22 @@
  "spec": "search-month:satisfying 3d loop",
  "url": "https://www.youtube.com/results?search_query=satisfying%203d%20loop&sp=EgIIBA%3D%3D",
  "status": 200,
- "checked": "2026-11-27 08:04 UTC",
+ "checked": "2026-11-28 06:54 UTC",
  "header": "",
  "items": [
   {
    "id": "bdeJyOYSBkI",
    "kind": "video",
    "title": "Oddly Satisfying 3D Loops Compilation: 10 Min of Relaxing Color Waves",
-   "views": 259,
-   "views_txt": "259 просмотров",
+   "views": 284,
+   "views_txt": "284 просмотра",
    "age": "3 нед. назад",
    "length": "10:28",
    "channel": "Smooth Loops",
    "handle": "@SmoothLoops-t9b",
    "channel_id": "UCi9WG1btnqHLedc4NwCwBgA",
    "snippet": "10 minutes of oddly satisfying 3D loops: colorful tubes rise, ripple and fall into the center in smooth waves, one calm loop after ...",
-   "channel_subs": 103,
+   "channel_subs": 115,
    "age_h": null,
    "per_day": null,
    "tags": []
@@ -34,10 +34,9 @@
    "handle": "@LoopsMochi",
    "channel_id": "UCDwA6RjqujkLlTyk2OhJf7Q",
    "snippet": "Enjoy 1 hour of satisfying bouncing ball animation! ✨ Watch a smooth, endlessly repeating 3D ball animation designed for ...",
-   "published": "2026-11-01T21:30:13+00:00",
    "channel_subs": 9,
-   "age_h": 610.5712867933333,
-   "per_day": 1,
+   "age_h": null,
+   "per_day": null,
    "tags": []
   }
  ]
