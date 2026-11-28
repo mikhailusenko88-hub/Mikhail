@@ -1,5 +1,5 @@
 # Beautiful_shorts  (@Beautiful_shorts-s6u)
-Проверено: 2026-11-28 07:07 UTC
+Проверено: 2026-11-28 07:18 UTC
 
 - Страница канала: HTTP 200; ID: UC6rsqAcsearK9uRE38bRbmw
 - Шапка: 241 подписчик · 153 видео

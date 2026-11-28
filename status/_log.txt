@@ -1,4 +1,4 @@
-2026-11-28 07:07 UTC
+2026-11-28 07:18 UTC
 200 https://www.youtube.com/@cartoon_friend3
 200 avatar cartoon_friend3
 200 banner cartoon_friend3
@@ -53,106 +53,116 @@
 200 https://www.youtube.com/@TheHandwriting_of_Silence/shorts
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UCkt1JJZzMwZRW7ojZzOyswg
 200 https://www.youtube.com/@TheHandwriting_of_Silence/videos
-200 https://www.youtube.com/watch?v=6TSl7E9VaYQ&hl=ru
-200 player WEB 6TSl7E9VaYQ
-ERR player ANDROID 6TSl7E9VaYQ HTTP Error 400: Bad Request
-200 thumb 6TSl7E9VaYQ/maxresdefault.jpg 133911 B
-200 thumb 6TSl7E9VaYQ/sddefault.jpg 70719 B
-200 thumb 6TSl7E9VaYQ/oar2.jpg 208250 B
-200 thumb 6TSl7E9VaYQ/hqdefault.jpg 19028 B
-200 thumb 6TSl7E9VaYQ/hq1.jpg 12188 B
-200 thumb 6TSl7E9VaYQ/hq2.jpg 19028 B
-200 thumb 6TSl7E9VaYQ/hq3.jpg 10504 B
-200 https://www.youtube.com/watch?v=kLap1CYx4bs&hl=ru
-200 player WEB kLap1CYx4bs
-ERR player ANDROID kLap1CYx4bs HTTP Error 400: Bad Request
-200 thumb kLap1CYx4bs/maxresdefault.jpg 218722 B
-200 thumb kLap1CYx4bs/sddefault.jpg 74461 B
-ERR thumb kLap1CYx4bs/oar2.jpg HTTP Error 404: Not Found
-200 thumb kLap1CYx4bs/hqdefault.jpg 19186 B
-200 thumb kLap1CYx4bs/hq1.jpg 14643 B
-200 thumb kLap1CYx4bs/hq2.jpg 12128 B
-200 thumb kLap1CYx4bs/hq3.jpg 13661 B
-200 https://www.youtube.com/watch?v=tKm2_KzcVZo&hl=ru
-200 player WEB tKm2_KzcVZo
-ERR player ANDROID tKm2_KzcVZo HTTP Error 400: Bad Request
-200 thumb tKm2_KzcVZo/maxresdefault.jpg 47289 B
-200 thumb tKm2_KzcVZo/sddefault.jpg 26762 B
-200 thumb tKm2_KzcVZo/oar2.jpg 84851 B
-200 thumb tKm2_KzcVZo/hqdefault.jpg 7560 B
-200 thumb tKm2_KzcVZo/hq1.jpg 7825 B
-200 thumb tKm2_KzcVZo/hq2.jpg 6773 B
-200 thumb tKm2_KzcVZo/hq3.jpg 7840 B
-200 https://www.youtube.com/watch?v=9QTKsAC-7Rc&hl=ru
-200 player WEB 9QTKsAC-7Rc
-ERR player ANDROID 9QTKsAC-7Rc HTTP Error 400: Bad Request
-200 thumb 9QTKsAC-7Rc/maxresdefault.jpg 50284 B
-200 thumb 9QTKsAC-7Rc/sddefault.jpg 28287 B
-200 thumb 9QTKsAC-7Rc/oar2.jpg 91139 B
-200 thumb 9QTKsAC-7Rc/hqdefault.jpg 7916 B
-200 thumb 9QTKsAC-7Rc/hq1.jpg 10475 B
-200 thumb 9QTKsAC-7Rc/hq2.jpg 8000 B
-200 thumb 9QTKsAC-7Rc/hq3.jpg 8693 B
-200 https://www.youtube.com/watch?v=wtC3UKxt1Kk&hl=ru
-200 player WEB wtC3UKxt1Kk
-ERR player ANDROID wtC3UKxt1Kk HTTP Error 400: Bad Request
-200 thumb wtC3UKxt1Kk/maxresdefault.jpg 65556 B
-200 thumb wtC3UKxt1Kk/sddefault.jpg 32656 B
-200 thumb wtC3UKxt1Kk/oar2.jpg 143244 B
-200 thumb wtC3UKxt1Kk/hqdefault.jpg 9760 B
-200 thumb wtC3UKxt1Kk/hq1.jpg 16259 B
-200 thumb wtC3UKxt1Kk/hq2.jpg 10409 B
-200 thumb wtC3UKxt1Kk/hq3.jpg 9535 B
-200 https://www.youtube.com/watch?v=kqXjOqWvfwY&hl=ru
-200 player WEB kqXjOqWvfwY
-ERR player ANDROID kqXjOqWvfwY HTTP Error 400: Bad Request
-200 thumb kqXjOqWvfwY/maxresdefault.jpg 145556 B
-200 thumb kqXjOqWvfwY/sddefault.jpg 82817 B
-200 thumb kqXjOqWvfwY/oar2.jpg 224148 B
-200 thumb kqXjOqWvfwY/hqdefault.jpg 21051 B
-200 thumb kqXjOqWvfwY/hq1.jpg 20267 B
-200 thumb kqXjOqWvfwY/hq2.jpg 21051 B
-200 thumb kqXjOqWvfwY/hq3.jpg 20093 B
-200 https://www.youtube.com/watch?v=_QcrXGHAKqw&hl=ru
-200 player WEB _QcrXGHAKqw
-ERR player ANDROID _QcrXGHAKqw HTTP Error 400: Bad Request
-200 thumb _QcrXGHAKqw/maxresdefault.jpg 83942 B
-200 thumb _QcrXGHAKqw/sddefault.jpg 49888 B
-200 thumb _QcrXGHAKqw/oar2.jpg 125664 B
-200 thumb _QcrXGHAKqw/hqdefault.jpg 13995 B
-200 thumb _QcrXGHAKqw/hq1.jpg 13565 B
-200 thumb _QcrXGHAKqw/hq2.jpg 13995 B
-200 thumb _QcrXGHAKqw/hq3.jpg 14060 B
-200 https://www.youtube.com/watch?v=CljrYJ9y-xc&hl=ru
-200 player WEB CljrYJ9y-xc
-ERR player ANDROID CljrYJ9y-xc HTTP Error 400: Bad Request
-200 thumb CljrYJ9y-xc/maxresdefault.jpg 112311 B
-200 thumb CljrYJ9y-xc/sddefault.jpg 48902 B
-200 thumb CljrYJ9y-xc/oar2.jpg 183586 B
-200 thumb CljrYJ9y-xc/hqdefault.jpg 11274 B
-200 thumb CljrYJ9y-xc/hq1.jpg 12627 B
-200 thumb CljrYJ9y-xc/hq2.jpg 11274 B
-200 thumb CljrYJ9y-xc/hq3.jpg 9289 B
-200 https://www.youtube.com/watch?v=J9f7zHHeFOU&hl=ru
-200 player WEB J9f7zHHeFOU
-ERR player ANDROID J9f7zHHeFOU HTTP Error 400: Bad Request
-200 thumb J9f7zHHeFOU/maxresdefault.jpg 363518 B
-200 thumb J9f7zHHeFOU/sddefault.jpg 128201 B
-ERR thumb J9f7zHHeFOU/oar2.jpg HTTP Error 404: Not Found
-200 thumb J9f7zHHeFOU/hqdefault.jpg 34601 B
-200 thumb J9f7zHHeFOU/hq1.jpg 9323 B
-200 thumb J9f7zHHeFOU/hq2.jpg 15950 B
-200 thumb J9f7zHHeFOU/hq3.jpg 11808 B
-200 https://www.youtube.com/watch?v=Giccj7-OcVQ&hl=ru
-200 player WEB Giccj7-OcVQ
-ERR player ANDROID Giccj7-OcVQ HTTP Error 400: Bad Request
-200 thumb Giccj7-OcVQ/maxresdefault.jpg 38650 B
-200 thumb Giccj7-OcVQ/sddefault.jpg 20170 B
-200 thumb Giccj7-OcVQ/oar2.jpg 74627 B
-200 thumb Giccj7-OcVQ/hqdefault.jpg 6356 B
-200 thumb Giccj7-OcVQ/hq1.jpg 5546 B
-200 thumb Giccj7-OcVQ/hq2.jpg 6356 B
-200 thumb Giccj7-OcVQ/hq3.jpg 7518 B
+200 https://www.youtube.com/watch?v=mo1ZnkhjVYI&hl=ru
+200 player WEB mo1ZnkhjVYI
+ERR player ANDROID mo1ZnkhjVYI HTTP Error 400: Bad Request
+200 thumb mo1ZnkhjVYI/maxresdefault.jpg 164647 B
+200 thumb mo1ZnkhjVYI/sddefault.jpg 60605 B
+ERR thumb mo1ZnkhjVYI/oar2.jpg HTTP Error 404: Not Found
+200 thumb mo1ZnkhjVYI/hqdefault.jpg 17320 B
+200 thumb mo1ZnkhjVYI/hq1.jpg 8999 B
+200 thumb mo1ZnkhjVYI/hq2.jpg 12522 B
+200 thumb mo1ZnkhjVYI/hq3.jpg 13054 B
+200 https://www.youtube.com/watch?v=P6UAa77a-vE&hl=ru
+200 player WEB P6UAa77a-vE
+ERR player ANDROID P6UAa77a-vE HTTP Error 400: Bad Request
+200 thumb P6UAa77a-vE/maxresdefault.jpg 195864 B
+200 thumb P6UAa77a-vE/sddefault.jpg 71605 B
+ERR thumb P6UAa77a-vE/oar2.jpg HTTP Error 404: Not Found
+200 thumb P6UAa77a-vE/hqdefault.jpg 20591 B
+200 thumb P6UAa77a-vE/hq1.jpg 8097 B
+200 thumb P6UAa77a-vE/hq2.jpg 12231 B
+200 thumb P6UAa77a-vE/hq3.jpg 13194 B
+200 https://www.youtube.com/watch?v=DSKSoIpqPvc&hl=ru
+200 player WEB DSKSoIpqPvc
+ERR player ANDROID DSKSoIpqPvc HTTP Error 400: Bad Request
+200 thumb DSKSoIpqPvc/maxresdefault.jpg 197212 B
+200 thumb DSKSoIpqPvc/sddefault.jpg 74464 B
+ERR thumb DSKSoIpqPvc/oar2.jpg HTTP Error 404: Not Found
+200 thumb DSKSoIpqPvc/hqdefault.jpg 21034 B
+200 thumb DSKSoIpqPvc/hq1.jpg 14725 B
+200 thumb DSKSoIpqPvc/hq2.jpg 13200 B
+200 thumb DSKSoIpqPvc/hq3.jpg 13098 B
+200 https://www.youtube.com/watch?v=dxSzLbcBfRA&hl=ru
+200 player WEB dxSzLbcBfRA
+ERR player ANDROID dxSzLbcBfRA HTTP Error 400: Bad Request
+200 thumb dxSzLbcBfRA/maxresdefault.jpg 211272 B
+200 thumb dxSzLbcBfRA/sddefault.jpg 80090 B
+ERR thumb dxSzLbcBfRA/oar2.jpg HTTP Error 404: Not Found
+200 thumb dxSzLbcBfRA/hqdefault.jpg 22592 B
+200 thumb dxSzLbcBfRA/hq1.jpg 14196 B
+200 thumb dxSzLbcBfRA/hq2.jpg 16471 B
+200 thumb dxSzLbcBfRA/hq3.jpg 11331 B
+200 https://www.youtube.com/watch?v=iEd3d9m7PlQ&hl=ru
+200 player WEB iEd3d9m7PlQ
+ERR player ANDROID iEd3d9m7PlQ HTTP Error 400: Bad Request
+200 thumb iEd3d9m7PlQ/maxresdefault.jpg 139942 B
+200 thumb iEd3d9m7PlQ/sddefault.jpg 70182 B
+200 thumb iEd3d9m7PlQ/oar2.jpg 187040 B
+200 thumb iEd3d9m7PlQ/hqdefault.jpg 17800 B
+200 thumb iEd3d9m7PlQ/hq1.jpg 17815 B
+200 thumb iEd3d9m7PlQ/hq2.jpg 17800 B
+200 thumb iEd3d9m7PlQ/hq3.jpg 15984 B
+200 https://www.youtube.com/watch?v=RxTYbB3I4JY&hl=ru
+200 player WEB RxTYbB3I4JY
+ERR player ANDROID RxTYbB3I4JY HTTP Error 400: Bad Request
+200 thumb RxTYbB3I4JY/maxresdefault.jpg 142648 B
+200 thumb RxTYbB3I4JY/sddefault.jpg 74453 B
+200 thumb RxTYbB3I4JY/oar2.jpg 218917 B
+200 thumb RxTYbB3I4JY/hqdefault.jpg 18246 B
+200 thumb RxTYbB3I4JY/hq1.jpg 9545 B
+200 thumb RxTYbB3I4JY/hq2.jpg 18246 B
+200 thumb RxTYbB3I4JY/hq3.jpg 17686 B
+200 https://www.youtube.com/watch?v=1tZcFYIjxJk&hl=ru
+200 player WEB 1tZcFYIjxJk
+ERR player ANDROID 1tZcFYIjxJk HTTP Error 400: Bad Request
+200 thumb 1tZcFYIjxJk/maxresdefault.jpg 94906 B
+200 thumb 1tZcFYIjxJk/sddefault.jpg 52811 B
+200 thumb 1tZcFYIjxJk/oar2.jpg 178017 B
+200 thumb 1tZcFYIjxJk/hqdefault.jpg 13519 B
+200 thumb 1tZcFYIjxJk/hq1.jpg 11777 B
+200 thumb 1tZcFYIjxJk/hq2.jpg 13519 B
+200 thumb 1tZcFYIjxJk/hq3.jpg 11816 B
+200 https://www.youtube.com/watch?v=wcS0IVz_o6A&hl=ru
+200 player WEB wcS0IVz_o6A
+ERR player ANDROID wcS0IVz_o6A HTTP Error 400: Bad Request
+200 thumb wcS0IVz_o6A/maxresdefault.jpg 111834 B
+200 thumb wcS0IVz_o6A/sddefault.jpg 58352 B
+200 thumb wcS0IVz_o6A/oar2.jpg 235758 B
+200 thumb wcS0IVz_o6A/hqdefault.jpg 17129 B
+200 thumb wcS0IVz_o6A/hq1.jpg 18096 B
+200 thumb wcS0IVz_o6A/hq2.jpg 15356 B
+200 thumb wcS0IVz_o6A/hq3.jpg 17088 B
+200 https://www.youtube.com/watch?v=-MpYDyFQwWM&hl=ru
+200 player WEB -MpYDyFQwWM
+ERR player ANDROID -MpYDyFQwWM HTTP Error 400: Bad Request
+200 thumb -MpYDyFQwWM/maxresdefault.jpg 66322 B
+200 thumb -MpYDyFQwWM/sddefault.jpg 30847 B
+200 thumb -MpYDyFQwWM/oar2.jpg 101520 B
+200 thumb -MpYDyFQwWM/hqdefault.jpg 9453 B
+200 thumb -MpYDyFQwWM/hq1.jpg 7792 B
+200 thumb -MpYDyFQwWM/hq2.jpg 9239 B
+200 thumb -MpYDyFQwWM/hq3.jpg 9241 B
+200 https://www.youtube.com/watch?v=Y_YmMMSFvko&hl=ru
+200 player WEB Y_YmMMSFvko
+ERR player ANDROID Y_YmMMSFvko HTTP Error 400: Bad Request
+200 thumb Y_YmMMSFvko/maxresdefault.jpg 79671 B
+200 thumb Y_YmMMSFvko/sddefault.jpg 42345 B
+200 thumb Y_YmMMSFvko/oar2.jpg 161026 B
+200 thumb Y_YmMMSFvko/hqdefault.jpg 12752 B
+200 thumb Y_YmMMSFvko/hq1.jpg 17391 B
+200 thumb Y_YmMMSFvko/hq2.jpg 12512 B
+200 thumb Y_YmMMSFvko/hq3.jpg 8386 B
+200 https://www.youtube.com/watch?v=mjW3yX2cM3Y&hl=ru
+200 player WEB mjW3yX2cM3Y
+ERR player ANDROID mjW3yX2cM3Y HTTP Error 400: Bad Request
+200 thumb mjW3yX2cM3Y/maxresdefault.jpg 47790 B
+200 thumb mjW3yX2cM3Y/sddefault.jpg 25687 B
+200 thumb mjW3yX2cM3Y/oar2.jpg 90274 B
+200 thumb mjW3yX2cM3Y/hqdefault.jpg 7108 B
+200 thumb mjW3yX2cM3Y/hq1.jpg 8640 B
+200 thumb mjW3yX2cM3Y/hq2.jpg 7673 B
+200 thumb mjW3yX2cM3Y/hq3.jpg 7464 B
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UCe72zB7nk8xkf3cHFL15luA
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UC6rsqAcsearK9uRE38bRbmw
 503 https://www.youtube.com/feeds/videos.xml?channel_id=UCdDvKqtKU40VG7juESwXRRQ
