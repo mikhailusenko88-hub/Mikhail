@@ -1,6 +1,6 @@
-[00:07] страница: Failed to load resource: the server responded with a status of 404 (Not Found)
-[00:07] страница готова; видеокарта: ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)
-[00:07] серия принята: {"ok":true,"series":"Кот Барсик","episode":41,"title":"Куда прячутся звёзды?!","scenes":10,"errors":[],"unknownWords":[],"unknownObjects":[],"unknownNames":[],"probe":["Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}","Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}","Рон: {\"speaker\":\"svoy_ron\",\"F\":1.1,\"P\":1.1,\"R\":1.7,\"T\":1.12,\"vend\":1.7,\"gap\":0.25,\"qrise\":3,\"laugh\":\"F16\"}","Барсик: {\"speaker\":\"svoy_barsik\",\"F\":1.09,\"P\":1.1,\"R\":0.9,\"T\":1.12,\"gap\":0.3,\"qrise\":3}","Пик: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.33,\"qrise\":3}"]}
-[00:37] Серия 41. Куда прячутся звёзды?! · 3% · Озвучка реплик · 62 из 152: Чем дальше, тем меньше. Рон, отойди пода
-[01:07] Серия 41. Куда прячутся звёзды?! · 6% · Озвучка реплик · 117 из 152: Смотрите, солнце садится. Небо темнеет.
-[01:37] Серия 41. Куда прячутся звёзды?! · 8% · Музыка и звуки · Свожу звуковую дорожку…
+[00:08] страница: Failed to load resource: the server responded with a status of 404 (Not Found)
+[00:08] страница готова; видеокарта: ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Unspecified Version)
+[00:08] серия принята: {"ok":true,"series":"Кот Барсик","episode":41,"title":"Куда прячутся звёзды?!","scenes":10,"errors":[],"unknownWords":[],"unknownObjects":[],"unknownNames":[],"probe":["Филя: {\"speaker\":\"ru_alfia\",\"F\":1.2,\"P\":1.4,\"R\":1.1,\"laugh\":\"F16\",\"vow\":\"и\"}","Топа: {\"speaker\":\"ru_miyau\",\"R\":1.15,\"F\":1.12,\"P\":1.4,\"laugh\":\"B5\"}","Рон: {\"speaker\":\"svoy_ron\",\"F\":1.1,\"P\":1.1,\"R\":1.7,\"T\":1.12,\"vend\":1.7,\"gap\":0.25,\"qrise\":3,\"laugh\":\"F16\"}","Барсик: {\"speaker\":\"svoy_barsik\",\"F\":1.09,\"P\":1.1,\"R\":0.9,\"T\":1.12,\"gap\":0.3,\"qrise\":3}","Пик: {\"speaker\":\"svoy_pik\",\"F\":1.38,\"P\":1.7,\"R\":1.2,\"T\":1.33,\"qrise\":3}"]}
+[00:38] Серия 41. Куда прячутся звёзды?! · 3% · Озвучка реплик · 58 из 152: Прямо сейчас? Над нашим домом?
+[01:08] Серия 41. Куда прячутся звёзды?! · 6% · Озвучка реплик · 120 из 152: Ха-ха-ха-ха!
+[01:38] Серия 41. Куда прячутся звёзды?! · 8% · Музыка и звуки · Свожу звуковую дорожку…
